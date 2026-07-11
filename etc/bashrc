@@ -30,6 +30,7 @@ alias py="python3 -B "
 alias vi="nvim"
 alias eg="make eg"
 alias doc="make doc"
+alias mace="make -C .."
 
 export BASH_SILENCE_DEPRECATION_WARNING=1
 export PATH="$PWD:/opt/homebrew/bin:$PATH"
