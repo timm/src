@@ -16,41 +16,47 @@
 #|
 # tiny-xai: from zero to someplace cool
 
-Here is the problem. Tables of data are cheap to collect
-but *labels* are dear: running a benchmark, compiling a
-config, polling a focus group. So the real question is not
-"how good is the model?" but "how few labels buy a good
-answer?"
+Tables of data are cheap; *labels* are dear: running a
+benchmark, compiling a config, polling a focus group. So the
+question is not "how good is the model?" but "how few labels
+buy a good answer?"
 
-This file walks tiny-xai from its atoms (summarizing one
-column) to a working active learner that finds near-best
-rows after labelling only a few dozen, then *explains* its
-choices with a small tree. Every demo below runs; every
-output is machine-generated, never hand-copied.
+One table runs through this whole file: auto93, 398 cars
+from the 1970s-80s. Every idea below acts on these same
+rows, so each new concept is just a new thing happening to
+data you already know. Every demo prints what it sees and
+asserts what must hold; outputs are machine-made, never
+hand-copied.
 |#
 
 
 #|
-## Settings
+## The running example
 
-Every tool needs knobs. All of tiny-xai's live in one
-`settings` struct whose slot names double as CLI flags,
-so `--budget 20` just overwrites a slot. One struct, one
-help string, no config files.
+First, look at the data. The header names the columns; each
+later row is one car. Notice the header spellings -- they
+matter soon.
 |#
 
-(defun eg--my ()
-  "Print the settings"
-  (format t "~&~s~%" *my*)
-  (assert (settings-p *my*)))
+(defun eg--rows (&aux (n 0))
+  "The running example: header, then the first rows"
+  (mapcsv (lambda (row)
+            (when (< (incf n) 6) (print row))
+            (when (search "auto93" (? *my* --file))
+              (assert (= (length row) 8))))
+          (? *my* --file))
+  (format t "~&... plus ~a more rows~%" (- n 5))
+  (when (search "auto93" (? *my* --file))
+    (assert (= n 399))))
 
 
 #|
-## Reading strings
+## Reading cells
 
-CSV cells arrive as strings. `thing` coerces each to a
-number, `?` (missing), `t`, `nil`, or a trimmed string --
-guessing types so column code never has to.
+Those cells arrived as strings. `thing` coerces each one:
+" 23 " becomes the number 23, "?" marks a missing value,
+anything else stays text. Notice "-1e2" becoming -100.0 --
+csv cells can hide exponents.
 |#
 
 (defun eg--thing ()
@@ -62,78 +68,100 @@ guessing types so column code never has to.
 
 
 #|
-## Reproducible randomness
+## Knobs
 
-Common Lisp's `random` differs across implementations, so
-same-seed runs would diverge between sbcl and clisp. A
-16807 Lehmer generator (`rand`, `rint`) makes every trace
-in this tutorial reproducible everywhere.
+Where did the file name come from? One `settings` struct
+holds every knob; slot names double as CLI flags, so --file
+swaps the table and --seed the randomness. Notice
+--budget 50: the whole game is spending it well.
 |#
 
-(defun eg--rand (&aux a b)
-  "Seeded rand is deterministic and in (0,1)"
-  (setf *seed* 1 a (rand)
-        *seed* 1 b (rand))
-  (format t "~&rand ~,3f rint ~a~%" a (rint 10))
-  (assert (= a b))
-  (assert (< 0 a 1)))
+(defun eg--my ()
+  "Print the settings"
+  (format t "~&~s~%" *my*)
+  (assert (settings-p *my*)))
 
 
 #|
-## Columns: the atoms
+## Symbolic columns
 
-What are we processing here? In any table of data there
-are columns of `num`bers and columns of `sym`bols. Numbers
-are things we can add, subtract, average; symbols we can
-only count and compare. So tiny-xai has exactly two column
-summaries: `num` (incremental mean and standard deviation,
-via Welford) and `sym` (counts, mode, entropy). Everything
-else in the system is built by folding rows into these.
-
-The `num` demo is a sneaky double-check: summing three
-uniform randoms (Irwin-Hall) approximates a normal, so
-after 10,000 samples `mid` must be near 0 and `spread`
-near 1 -- testing `rand`, `add`, and Welford in one go.
+Lowercase header names (like origin) make `sym` columns:
+things we can only count and compare. First a case tiny
+enough to check by eye, then the table's own origin column.
+Notice entropy: high when counts are even, low when one
+value dominates.
 |#
 
-(defun eg--num (&aux (i (make-num)))
-  "Irwin-Hall: 10k samples -> mean 0, sd 1"
+(defun eg--sym (&aux (i (make-sym)))
+  "Sym mode and entropy: tiny case, then a real column"
+  (dolist (v '(a a a a b b c)) (add i v))
+  (format t "~&(a a a a b b c): mid ~a ent ~,3f~%"
+          (mid i) (spread i))
+  (assert (eq (mid i) 'a))
+  (assert (< (abs (- (spread i) 1.379)) 0.01))
+  (let* ((d (make-data (? *my* --file)))
+         (origin (find "origin" (? d cols all)
+                       :key (lambda (c) (? c txt))
+                       :test #'equal)))
+    (when origin
+      (format t "origin: mid ~a ent ~,3f~%"
+              (mid origin) (spread origin)))))
+
+
+#|
+## Numeric columns
+
+Uppercase names (like Mpg+) make `num` columns: things we
+can average. Folding all 398 Mpg cells one at a time
+(Welford's trick: no list kept, just n, mu, m2) gives the
+column's mean and standard deviation. Notice: the average
+1970s car did about 24 mpg.
+|#
+
+(defun eg--num (&aux (i (make-data (? *my* --file))))
+  "Fold one num column; watch mu and sd emerge"
+  (let ((mpg (car (last (? i cols y)))))
+    (format t "~&~a: n ~a mu ~,2f sd ~,2f~%"
+            (? mpg txt) (? mpg n) (mid mpg) (spread mpg))
+    (when (search "auto93" (? *my* --file))
+      (assert (< (abs (- (mid mpg) 23.84)) 0.1))
+      (assert (< (abs (- (spread mpg) 8.34)) 0.1)))))
+
+
+#|
+## Reproducible randomness
+
+Later demos shuffle and sample, so first: `rand`, a seeded
+16807 Lehmer generator that repeats exactly on sbcl and
+clisp (Common Lisp's own `random` does not). The second
+check sums three uniforms 10,000 times (Irwin-Hall): mean
+lands on 0, sd on 1 -- testing `rand`, `add`, and Welford
+in one shot.
+|#
+
+(defun eg--rand (&aux a b (i (make-num)))
+  "Seeded rand repeats; 10k Irwin-Hall -> mean 0, sd 1"
+  (setf *seed* 1 a (rand)
+        *seed* 1 b (rand))
+  (format t "~&rand ~,3f ~,3f rint ~a~%" a b (rint 10))
+  (assert (= a b))
+  (assert (< 0 a 1))
   (dotimes (k 10000)
     (add i (/ (- (+ (rand) (rand) (rand)) 1.5) 0.5)))
-  (format t "~&num mu ~,3f sd ~,3f~%" (mid i) (spread i))
+  (format t "~&irwin-hall mu ~,3f sd ~,3f~%" (mid i) (spread i))
   (assert (< (abs (mid i)) 0.05))
   (assert (< (abs (- (spread i) 1)) 0.05)))
 
-(defun eg--sym (&aux (i (make-sym)))
-  "Sym mode and entropy on a known distribution"
-  (dolist (v '(a a a a b b c)) (add i v))
-  (format t "~&sym mid ~a ent ~,3f~%" (mid i) (spread i))
-  (assert (eq (mid i) 'a))
-  (assert (< (abs (- (spread i) 1.379)) 0.01)))
-
 
 #|
-## Tables
+## The whole table
 
-Column roles hide in the CSV header: leading uppercase
-means numeric; a trailing `+` or `-` marks a goal to
-maximize or minimize; trailing `X` means ignore. So
-`make-data` needs no schema file: the first row builds
-`cols`, later rows update every column summary as they
-stream past. The demo data is auto93: 398 cars, 4 inputs,
-3 goals (minimize `Lbs-`, maximize `Acc+` and `Mpg+`).
+`make-data` streams the csv once: the first row builds one
+column summary per header name (trailing `-` or `+` = goal
+to minimize or maximize; trailing `X` = ignore), and later
+rows update them. Notice the goals: minimize Lbs-, maximize
+Acc+ and Mpg+ -- light, quick, thrifty cars win.
 |#
-
-(defun eg--csv (&aux (n 0))
-  "Csv reader: row shapes and count"
-  (mapcsv (lambda (row)
-            (when (< (incf n) 4) (print row))
-            (when (search "auto93" (? *my* --file))
-              (assert (= (length row) 8))))
-          (? *my* --file))
-  (format t "~&rows ~a~%" n)
-  (when (search "auto93" (? *my* --file))
-    (assert (= n 399))))
 
 (defun eg--data (&aux (i (make-data (? *my* --file))))
   "Data build: col roles and goal stats"
@@ -155,41 +183,71 @@ stream past. The demo data is auto93: 398 cars, 4 inputs,
 
 
 #|
-## Distance
+## Distance to heaven
 
-Two distances, two jobs. `disty` reads only the goal
-columns: each row's distance to "heaven" (all goals at
-their best), 0 = ideal. `distx` reads only the inputs:
-how far apart two rows are before we know their goals.
-Optimization *scores* with y but *navigates* with x --
-that split is what lets us label so few rows.
+Now re-view the rows. `disty` scores each by its distance
+to the ideal goals (0 = heaven), reading only y columns;
+sort by it and the best car floats up while the worst
+sinks. `distx` measures difference over the x columns only.
+Notice: the rig *scores* with y but *navigates* with x --
+keeping those apart is what lets us label so few rows
+later.
 |#
 
 (defun eg--dists (&aux (i (make-data (? *my* --file))))
-  "Disty in [0,1]; distx zero-self, symmetric, bounded"
-  (let* ((rows (? i rows))
-         (ys   (sort (mapcar (lambda (r) (disty i r)) rows)
-                     #'<))
-         (r1   (first rows))
-         (r2   (second rows)))
-    (format t "~&disty lo ~,3f hi ~,3f~%"
-            (first ys) (car (last ys)))
-    (assert (<= 0 (first ys) (car (last ys)) 1))
-    (assert (= 0 (distx i r1 r1)))
-    (assert (< (abs (- (distx i r1 r2) (distx i r2 r1)))
+  "Re-sort the rows by disty; probe distx properties"
+  (let* ((rows (sort (copy-list (? i rows)) #'<
+                     :key (lambda (r) (disty i r))))
+         (lo (first rows))
+         (hi (car (last rows))))
+    (format t "~&best  (disty ~,3f):" (disty i lo))
+    (print lo)
+    (format t "~&worst (disty ~,3f):" (disty i hi))
+    (print hi)
+    (format t "~&distx best->best ~a  best->worst ~,3f~%"
+            (distx i lo lo) (distx i lo hi))
+    (assert (<= 0 (disty i lo) (disty i hi) 1))
+    (assert (= 0 (distx i lo lo)))
+    (assert (< (abs (- (distx i lo hi) (distx i hi lo)))
                1e-6))
-    (assert (<= 0 (distx i r1 r2) 1))))
+    (assert (<= 0 (distx i lo hi) 1))))
 
 
 #|
-## Landscape sampling: the active learner
+## When do two results differ?
 
-Now the payoff. `landscape` labels a handful of rows,
-projects the rest onto a line between two distant labelled
-poles (good end, bad end), culls the third nearest the bad
-pole, and repeats -- spending at most `budget` labels.
-Note the demo's asserts: the labels come back sorted, and
-the best of ~45 labels already lands under 0.4 disty.
+One tool before any experiment: `same` calls two lists of
+numbers equal only if `cohen` AND `cliffs` AND `ks` all
+agree. Take 20 disty scores from our table: they equal
+themselves, survive a 0.02 nudge, and differ after a +1
+shift. Notice how conservative this is -- tiny changes are
+treated as noise, so later "X beats Y" claims mean
+something.
+|#
+
+(defun eg--same (&aux (i (make-data (? *my* --file))) xs)
+  "Same: true for a nudge, false for a shift"
+  (setf xs (mapcar (lambda (r) (disty i r))
+                   (few (? i rows) 20)))
+  (let ((ys (mapcar (lambda (x) (+ x 0.02)) xs))
+        (zs (mapcar (lambda (x) (+ x 1)) xs)))
+    (format t "~&same: self ~a nudged(+.02) ~a shifted(+1) ~a~%"
+            (same xs xs) (same xs ys) (same xs zs))
+    (assert (same xs xs))
+    (assert (same xs ys))
+    (assert (not (same xs zs)))))
+
+
+#|
+## The active learner
+
+The payoff. `landscape` labels a handful of rows, projects
+the rest onto a line between two distant labelled poles
+(good end, bad end), culls the third nearest the bad pole,
+and repeats -- spending at most --budget labels. Notice the
+best labelled row: found after ~45 labels, it is the kind
+of car that floated to the top back when we (expensively)
+scored all 398.
 |#
 
 (defun eg--land (&aux (i (make-data (? *my* --file))))
@@ -198,6 +256,8 @@ the best of ~45 labels already lands under 0.4 disty.
          (ys  (mapcar (lambda (r) (disty i r)) lab)))
     (format t "~&labelled ~a best ~,3f worst ~,3f~%"
             (length lab) (first ys) (car (last ys)))
+    (format t "~&best labelled row:")
+    (print (first lab))
     (assert (<= (length lab)
                 (- (? *my* --budget) (? *my* --check))))
     (assert (equal ys (sort (copy-list ys) #'<)))
@@ -205,13 +265,14 @@ the best of ~45 labels already lands under 0.4 disty.
 
 
 #|
-## Cuts
+## Explaining: one cut
 
-To explain "what makes a row good" we need splits. `split`
-tries one cut per x column and keeps the cheapest, where
-cost is the size-weighted spread of the two halves. The
-assert: the best single cut always beats the unsplit
-spread -- otherwise explanation would be hopeless.
+Why are the good cars good? `split` tries one cut per x
+column and keeps the cheapest, where cost is the
+size-weighted spread of the two halves. The assert: the
+best cut beats the unsplit spread, else explanation would
+be hopeless. Notice the winner reads like something a
+mechanic would say: small engines differ from big ones.
 |#
 
 (defun eg--cuts (&aux (i (make-data (? *my* --file))))
@@ -230,13 +291,13 @@ spread -- otherwise explanation would be hopeless.
 
 
 #|
-## Trees
+## Explaining: a whole tree
 
-Recurse the cuts and a tree falls out: each branch is a
-readable condition (`Volume <= 183`), each leaf holds the
-rows that satisfy the path to it. `leaf` walks a new row
-down to a prediction; `about` reports a happy fact -- the
-tree usually needs only a few of the x columns.
+Recurse the cuts and a tree falls out. Each printed line is
+n, the mean Mpg of those rows, then the branch condition;
+read any root-to-leaf path as a rule about our cars. Notice
+how few x columns the tree needs -- most columns never
+mattered.
 |#
 
 (defun eg--tree (&aux (i (make-data (? *my* --file))))
@@ -261,10 +322,12 @@ tree usually needs only a few of the x columns.
 #|
 ## Grading
 
-How good is a picked row? `wins` calibrates per dataset:
+How good is a picked row? `wins` calibrates per table:
 100 = the pick equals the best row, 0 = no better than the
-median, negative = worse than median. All later studies
-report on this scale so results compare across datasets.
+median, negative = worse than median. All studies report on
+this scale, so results compare across datasets. Notice the
+worst row grades far below zero: picking badly is worse
+than not picking at all.
 |#
 
 (defun eg--wins (&aux (i (make-data (? *my* --file))))
@@ -283,38 +346,15 @@ report on this scale so results compare across datasets.
 
 
 #|
-## When are two results "the same"?
-
-Comparing methods needs a conservative equality: `same` is
-true only if a cohen check (small mean gap), cliff's delta
-(small effect), AND kolmogorov-smirnov (close CDFs) all
-agree. The demo: a distribution equals itself, survives a
-tiny nudge, and differs after a real shift.
-|#
-
-(defun eg--same (&aux xs)
-  "Same: true for a nudge, false for a shift"
-  (dotimes (k 20) (push (rand) xs))
-  (let ((ys (mapcar (lambda (x) (+ x 0.02)) xs))
-        (zs (mapcar (lambda (x) (+ x 1)) xs)))
-    (format t "~&same: self ~a nudged ~a shifted ~a~%"
-            (same xs xs) (same xs ys) (same xs zs))
-    (assert (same xs xs))
-    (assert (same xs ys))
-    (assert (not (same xs zs)))))
-
-
-#|
 ## Someplace cool: the whole rig
 
-`holdout` puts it all together. Split the data 50:50;
-run `landscape` on the train half under the label budget;
-grow a tree from those few labels; use the tree to rank
-the *unseen* test half; label only the top `check` rows
-and return the best. A good win here means a few dozen
-labels found a near-best row among rows never labelled
-during training. That is the whole point of the toolkit,
-in one function you can now read.
+Split the table 50:50. Landscape-label the train half under
+the budget; grow a tree from those few labels; let the tree
+rank the *unseen* test half; label only the top --check
+rows and keep the best. Notice the win: a few dozen labels
+found a near-best car among cars never seen in training.
+That is the whole toolkit, in one function you can now
+read.
 |#
 
 (defun eg--holdout (&aux (i (make-data (? *my* --file))))
@@ -337,8 +377,8 @@ Demos convince; studies measure. Each study-- function
 repeats the holdout rig 20 times and reports on the wins
 scale, answering the research questions: how good is the
 rig (rq0), does more budget help (rq1), and does active
-beat random labelling (rq2). `deltas` prints 0 when
-`same` says two treatments tie, else the mean gap.
+beat random labelling (rq2). `deltas` prints 0 when `same`
+says two treatments tie, else the mean gap.
 |#
 
 (defun study--holdouts (&aux (i (make-data (? *my* --file)))
@@ -389,9 +429,9 @@ beat random labelling (rq2). `deltas` prints 0 when
 #|
 ## Runners
 
-`eg--all` and `eg--study` find their functions by name
-(see `egs` in the library), reseeding before each so any
-demo can be reproduced in isolation.
+`eg--all` and `eg--study` find their functions by name (see
+`egs` in the library), reseeding before each so any demo
+reproduces in isolation.
 |#
 
 (defun run-egs (lst)
