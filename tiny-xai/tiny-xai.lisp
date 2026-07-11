@@ -30,6 +30,10 @@ Every OPTION below is a flag (e.g. --seed 1 --file x.csv).
 Every TEST and STUDY runs by its flag (e.g. --all --tree).")
 
 ;;; ## Settings and structs
+;;; All state lives in six structs. `settings` holds the
+;;; knobs (slot names double as CLI flags). `sym` and `num`
+;;; summarize one column each; `cols` and `data` hold
+;;; tables; `node` is one tree node.
 ;;;   _  _|_  ._        _  _|_   _
 ;;;  _>   |_  |   |_|  (_   |_  _>
 
@@ -50,6 +54,10 @@ Every TEST and STUDY runs by its flag (e.g. --all --tree).")
 (defstruct node at v n mid rows yes no)
 
 ;;; ## Macros and accessors
+;;; One accessor, `ats`, spans hash-tables and structs, so
+;;; callers never care which they hold. `?` nests it;
+;;; inside methods the `$slot` reader macro abbreviates
+;;; (ats i 'slot). `aif` binds `it` to its test.
 ;;;  ._ _    _.   _  ._   _    _
 ;;;  | | |  (_|  (_  |   (_)  _>
 
@@ -89,6 +97,12 @@ Every TEST and STUDY runs by its flag (e.g. --all --tree).")
     h))
 
 ;;; ## Update and summarize
+;;; `add` folds one value into a `sym` (counts) or `num`
+;;; (Welford's incremental mean/m2); `mid` and `spread` are
+;;; centrality and dispersion for either. `minus` subtracts
+;;; one summary from another -- cut scoring needs it.
+;;; `make-data` streams rows: first row builds `make-cols`
+;;; from header names, the rest update every column.
 ;;;   _|   _.  _|_   _.
 ;;;  (_|  (_|   |_  (_|
 
@@ -194,6 +208,11 @@ Every TEST and STUDY runs by its flag (e.g. --all --tree).")
   row)
 
 ;;; ## Distances
+;;; `minkowski` is the p-norm skeleton; missing cells are
+;;; skipped. `disty` reads only y columns: distance to the
+;;; ideal goals (0 = heaven). `distx` reads only x columns.
+;;; `*label*` is the hook where live models compute y on
+;;; demand (see dtlz.lisp).
 ;;;   _|  o   _  _|_
 ;;;  (_|  |  _>   |_
 
@@ -233,6 +252,11 @@ Every TEST and STUDY runs by its flag (e.g. --all --tree).")
     (lambda (col u) (gap col u (elt r2 (? col at))))))
 
 ;;; ## Landscape sampling
+;;; The active learner. `active` labels a few rows, sorts
+;;; the pool by `project`-ion onto the line joining two
+;;; distant labelled poles, culls the third nearest the bad
+;;; pole, repeats. `landscape` caps it at budget-check
+;;; labels and returns them best-first.
 ;;;  |   _.  ._    _|   _   _   _.  ._    _
 ;;;  |  (_|  | |  (_|  _>  (_  (_|  |_)  (/_
 ;;;                                 |
@@ -284,6 +308,11 @@ Every TEST and STUDY runs by its flag (e.g. --all --tree).")
     lab))
 
 ;;; ## Cuts
+;;; `split` finds the single cheapest cut over all x cols;
+;;; cost is the size-weighted `spread` of the two halves
+;;; (the far half computed by `minus`, not a second pass).
+;;; `keep-best-cut` is a closure holding the running best;
+;;; `has-p` says which side a row falls on (? = yes).
 ;;;   _       _|_   _
 ;;;  (_  |_|   |_  _>
 
@@ -340,6 +369,11 @@ Every TEST and STUDY runs by its flag (e.g. --all --tree).")
       (funcall keeper this ys at x))))
 
 ;;; ## Trees
+;;; `tree` recurses on the best cut while `grow-p` allows;
+;;; leaves keep their rows and a `mid` prediction. `leaf`
+;;; routes a new row down; `show` prints branch conditions
+;;; as text. Passing a different accum (make-sym) turns the
+;;; same code from regression into classification.
 ;;;  _|_  ._   _    _
 ;;;   |_  |   (/_  (/_
 
@@ -421,6 +455,11 @@ Every TEST and STUDY runs by its flag (e.g. --all --tree).")
           (length (? data cols x))))
 
 ;;; ## Stats
+;;; `wins` grades any row: 100 = equals the best, 0 = no
+;;; better than median. `holdout` is the evaluation rig:
+;;; budgeted train, tree-ranked test. `same` is a
+;;; conservative equality: cohen AND cliffs AND ks must all
+;;; agree before two result sets are called equal.
 ;;;   _  _|_   _.  _|_   _
 ;;;  _>   |_  (_|   |_  _>
 
@@ -485,6 +524,11 @@ Every TEST and STUDY runs by its flag (e.g. --all --tree).")
              (* conf (sqrt (/ (+ n m) (* n m))))))))
 
 ;;; ## Lib
+;;; No-surprise utilities: `thing`/`things` coerce csv
+;;; cells; `mapcsv` streams a file (`path` expands $MOOT);
+;;; `rand` is a seeded Lehmer generator so runs reproduce
+;;; across sbcl and clisp; plus `shuffle`, `few`,
+;;; `argmin`/`argmax`, `cat`.
 ;;;  |  o  |_
 ;;;  |  |  |_)
 
@@ -576,6 +620,10 @@ Every TEST and STUDY runs by its flag (e.g. --all --tree).")
   (subseq (shuffle lst) 0 (min k (length lst))))
 
 ;;; ## Main
+;;; `cli` maps --flags onto `settings` slots, then runs any
+;;; eg--/study-- functions named by the remaining flags;
+;;; `egs` finds those by introspection, so adding a demo to
+;;; the eg file needs no registration here.
 ;;;  ._ _    _.  o  ._
 ;;;  | | |  (_|  |  | |
 
