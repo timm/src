@@ -30,12 +30,12 @@ Every OPTION below is a flag (e.g. --seed 1 --file x.csv).
 Every TEST and STUDY runs by its flag (e.g. --all --tree).")
 
 ;;; ## Settings and structs
+;;;   _  _|_  ._        _  _|_   _
+;;;  _>   |_  |   |_|  (_   |_  _>
 ;;; All state lives in six structs. `settings` holds the
 ;;; knobs (slot names double as CLI flags). `sym` and `num`
 ;;; summarize one column each; `cols` and `data` hold
 ;;; tables; `node` is one tree node.
-;;;   _  _|_  ._        _  _|_   _
-;;;  _>   |_  |   |_|  (_   |_  _>
 
 (defstruct (settings (:conc-name))
   (--seed 1234567891) (--p 2) (--depth 4)
@@ -46,29 +46,27 @@ Every TEST and STUDY runs by its flag (e.g. --all --tree).")
 (defvar *my* (make-settings))
 
 (defstruct sym (at 0) (txt " ") (n 0) (w 1) (has (o)))
+
 (defstruct num (at 0) (txt " ") (n 0) (w 1) (mu 0.0) (m2 0.0))
 
 (defstruct (cols (:constructor %make-cols)) names all x y)
+
 (defstruct (data (:constructor %make-data)) cols rows)
 
 (defstruct node at v n mid rows yes no)
 
-;;; ## Macros and accessors
-;;; One accessor, `ats`, spans hash-tables and structs, so
-;;; callers never care which they hold. `?` nests it;
+;;; ## One accessor, three spellings
+;;;   _.  _|_   _
+;;;  (_|   |_  _>
+;;; The function `ats` reads hash keys and struct slots
+;;; alike; the macro `?` nests it, as in (? data cols x);
 ;;; inside methods the `$slot` reader macro abbreviates
-;;; (ats i 'slot). `aif` binds `it` to its test.
-;;;  ._ _    _.   _  ._   _    _
-;;;  | | |  (_|  (_  |   (_)  _>
+;;; (ats i 'slot). `(setf ats)` writes either; `ats!`
+;;; fills a missing key on first touch.
 
 (defmacro ? (x k &rest ks)
   "Nested slot/hash access: (? data cols x)"
   (if ks `(? (ats ,x ',k) ,@ks) `(ats ,x ',k)))
-
-(defmacro aif (test then &optional else)
-  "Anaphoric if: `it` holds the test value"
-  `(let ((it ,test))
-     (if it ,then ,else)))
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (set-macro-character #\$
@@ -90,21 +88,66 @@ Every TEST and STUDY runs by its flag (e.g. --all --tree).")
   "Get x's k, else stash and return a fresh (new)"
   (or (ats x k) (setf (ats x k) (funcall new))))
 
+;;; ## Conveniences
+;;;   _   _|_   _
+;;;  (/_   |_  (_
+;;; Two conveniences: `aif` binds `it` to its test value;
+;;; `o` makes a fresh equal hash, optionally primed.
+
+(defmacro aif (test then &optional else)
+  "Anaphoric if: `it` holds the test value"
+  `(let ((it ,test))
+     (if it ,then ,else)))
+
 (defun o (&rest kvs)
   "Fresh equal hash-table, optionally primed with k v pairs"
   (let ((h (make-hash-table :test #'equal)))
     (loop for (k v) on kvs by #'cddr do (setf (gethash k h) v))
     h))
 
-;;; ## Update and summarize
-;;; `add` folds one value into a `sym` (counts) or `num`
-;;; (Welford's incremental mean/m2); `mid` and `spread` are
-;;; centrality and dispersion for either. `minus` subtracts
-;;; one summary from another -- cut scoring needs it.
-;;; `make-data` streams rows: first row builds `make-cols`
-;;; from header names, the rest update every column.
-;;;   _|   _.  _|_   _.
-;;;  (_|  (_|   |_  (_|
+;;; ## Construction
+;;;  ._ _    _.  |    _
+;;;  | | |  (_|  |<  (/_
+;;; Tables are born here. `make-cols` reads roles from the
+;;; header (uppercase = num; -,+,! = goals; X = skip);
+;;; `make-data` streams rows from a csv file or a list;
+;;; `clone` reuses one table's header over other rows.
+
+(defun make-cols (names &optional (i (%make-cols :names names)))
+  "Columns from header names; fill all, x, y"
+  (loop for s across names for at from 0 do
+    (let* ((a (char s 0))
+           (z (char s (1- (length s))))
+           (col (if (upper-case-p a)
+                    (make-num :at at :txt s)
+                    (make-sym :at at :txt s))))
+      (push col $all)
+      (cond ((find z "-+!")
+             (when (eql z #\-) (setf (? col w) 0))
+             (push col $y))
+            ((not (eql z #\X)) (push col $x)))))
+  (setf $all (nreverse $all) $x (nreverse $x) $y (nreverse $y))
+  i)
+
+(defun make-data (&optional src &aux (i (%make-data)))
+  "Table from a csv file name or a list of rows"
+  (labels ((inc (row) (add i row)))
+    (if (stringp src)
+        (mapcsv #'inc src)
+        (mapc #'inc src))
+    i))
+
+(defun clone (data rows)
+  "Fresh data over a subset of rows"
+  (make-data (cons (? data cols names) rows)))
+
+;;; ## Update
+;;;   _.   _|   _|
+;;;  (_|  (_|  (_|
+;;; `add` grows a summary by one value: `sym`s count,
+;;; `num`s fold mu and m2 by Welford (w<0 removes), and
+;;; `data` routes each cell to its column, keeping the row.
+;;; `adds` folds a whole list.
 
 (defmethod add ((i sym) v &optional (w 1))
   "Count v (weight w); return v"
@@ -121,9 +164,28 @@ Every TEST and STUDY runs by its flag (e.g. --all --tree).")
       (incf $m2 (* w d (- v $mu)))))
   v)
 
+(defmethod add ((i data) row &optional (w 1))
+  "First row makes cols; later rows update them"
+  (if $cols
+      (dolist (col (? $cols all) (push row $rows))
+        (let ((v (elt row (? col at))))
+          (unless (eq v '?) (add col v w))))
+      (setf $cols (make-cols row)))
+  row)
+
 (defun adds (lst &optional (i (make-num)))
   "Fold a list into a summary; return the summary"
   (dolist (v lst i) (add i v)))
+
+;;; ## Query
+;;;   _.        _   ._
+;;;  (_|  |_|  (/_  |   \/
+;;;    |                /
+;;; Questions for summaries. `mid` = central tendency
+;;; (mean or mode); `spread` = dispersion (sd or entropy);
+;;; `norm` maps a num onto 0..1 by a logistic z-score;
+;;; `minus` = summary of i's data without j's -- cut
+;;; scoring depends on it.
 
 (defmethod mid ((i num))
   "Central tendency of a num"
@@ -170,51 +232,15 @@ Every TEST and STUDY runs by its flag (e.g. --all --tree).")
            $has)
   k)
 
-(defun make-cols (names &optional (i (%make-cols :names names)))
-  "Columns from header names; fill all, x, y"
-  (loop for s across names for at from 0 do
-    (let* ((a (char s 0))
-           (z (char s (1- (length s))))
-           (col (if (upper-case-p a)
-                    (make-num :at at :txt s)
-                    (make-sym :at at :txt s))))
-      (push col $all)
-      (cond ((find z "-+!")
-             (when (eql z #\-) (setf (? col w) 0))
-             (push col $y))
-            ((not (eql z #\X)) (push col $x)))))
-  (setf $all (nreverse $all) $x (nreverse $x) $y (nreverse $y))
-  i)
-
-(defun make-data (&optional src &aux (i (%make-data)))
-  "Table from a csv file name or a list of rows"
-  (labels ((inc (row) (add i row)))
-    (if (stringp src)
-        (mapcsv #'inc src)
-        (mapc #'inc src))
-    i))
-
-(defun clone (data rows)
-  "Fresh data over a subset of rows"
-  (make-data (cons (? data cols names) rows)))
-
-(defmethod add ((i data) row &optional (w 1))
-  "First row makes cols; later rows update them"
-  (if $cols
-      (dolist (col (? $cols all) (push row $rows))
-        (let ((v (elt row (? col at))))
-          (unless (eq v '?) (add col v w))))
-      (setf $cols (make-cols row)))
-  row)
-
 ;;; ## Distances
-;;; `minkowski` is the p-norm skeleton; missing cells are
-;;; skipped. `disty` reads only y columns: distance to the
-;;; ideal goals (0 = heaven). `distx` reads only x columns.
-;;; `*label*` is the hook where live models compute y on
-;;; demand (see dtlz.lisp).
 ;;;   _|  o   _  _|_
 ;;;  (_|  |  _>   |_
+;;; `minkowski` is the p-norm skeleton; missing cells are
+;;; skipped. `disty` reads only y columns: distance to the
+;;; ideal goals (0 = heaven); `*label*` is the hook where
+;;; live models compute y on demand (see dtlz.lisp).
+;;; `gap` scores one x value pair and serves only `distx`,
+;;; the distance over x columns.
 
 (defun minkowski (row cols fun &aux (n +tiny+) (d 0))
   "P-norm of (fun col cell) over cols; missing cells skipped"
@@ -224,6 +250,15 @@ Every TEST and STUDY runs by its flag (e.g. --all --tree).")
         (setf n (1+ n)
               d (+ d (expt (funcall fun col v)
                            (? *my* --p))))))))
+
+(defvar *label* #'identity
+  "hook: label a row on demand (see dtlz.lisp)")
+
+(defun disty (data row)
+  "Row's distance to the best goals (0 = ideal)"
+  (let ((row (funcall *label* row)))
+    (minkowski row (? data cols y)
+      (lambda (col v) (abs (- (norm col v) (? col w)))))))
 
 (defmethod gap ((i sym) u v)
   "Distance between two sym values"
@@ -237,29 +272,19 @@ Every TEST and STUDY runs by its flag (e.g. --all --tree).")
                 (norm i v))))
     (abs (- u v))))
 
-(defvar *label* #'identity
-  "hook: label a row on demand (see dtlz.lisp)")
-
-(defun disty (data row)
-  "Row's distance to the best goals (0 = ideal)"
-  (let ((row (funcall *label* row)))
-    (minkowski row (? data cols y)
-      (lambda (col v) (abs (- (norm col v) (? col w)))))))
-
 (defun distx (data r1 r2)
   "Distance between two rows over the x cols"
   (minkowski r1 (? data cols x)
     (lambda (col u) (gap col u (elt r2 (? col at))))))
 
 ;;; ## Landscape sampling
+;;;  |   _.  ._    _|
+;;;  |  (_|  | |  (_|
 ;;; The active learner. `active` labels a few rows, sorts
 ;;; the pool by `project`-ion onto the line joining two
 ;;; distant labelled poles, culls the third nearest the bad
 ;;; pole, repeats. `landscape` caps it at budget-check
 ;;; labels and returns them best-first.
-;;;  |   _.  ._    _|   _   _   _.  ._    _
-;;;  |  (_|  | |  (_|  _>  (_  (_|  |_)  (/_
-;;;                                 |
 
 (defun project (rows x y)
   "Row -> position on the east-west line (x=dist, y=goal)"
@@ -308,13 +333,13 @@ Every TEST and STUDY runs by its flag (e.g. --all --tree).")
     lab))
 
 ;;; ## Cuts
+;;;   _       _|_   _
+;;;  (_  |_|   |_  _>
 ;;; `split` finds the single cheapest cut over all x cols;
 ;;; cost is the size-weighted `spread` of the two halves
 ;;; (the far half computed by `minus`, not a second pass).
 ;;; `keep-best-cut` is a closure holding the running best;
 ;;; `has-p` says which side a row falls on (? = yes).
-;;;   _       _|_   _
-;;;  (_  |_|   |_  _>
 
 (defmethod has-p ((i sym) w v)
   "Row value w on the yes-side of cut v? (? = yes)"
@@ -369,13 +394,13 @@ Every TEST and STUDY runs by its flag (e.g. --all --tree).")
       (funcall keeper this ys at x))))
 
 ;;; ## Trees
+;;;  _|_  ._   _    _    _
+;;;   |_  |   (/_  (/_  _>
 ;;; `tree` recurses on the best cut while `grow-p` allows;
 ;;; leaves keep their rows and a `mid` prediction. `leaf`
 ;;; routes a new row down; `show` prints branch conditions
 ;;; as text. Passing a different accum (make-sym) turns the
 ;;; same code from regression into classification.
-;;;  _|_  ._   _    _
-;;;   |_  |   (/_  (/_
 
 (defun tree (data rows y &optional (accum #'make-num) (lvl 0))
   "Recursively split rows on the min-cost cut"
@@ -455,13 +480,13 @@ Every TEST and STUDY runs by its flag (e.g. --all --tree).")
           (length (? data cols x))))
 
 ;;; ## Stats
+;;;   _  _|_   _.  _|_   _
+;;;  _>   |_  (_|   |_  _>
 ;;; `wins` grades any row: 100 = equals the best, 0 = no
 ;;; better than median. `holdout` is the evaluation rig:
 ;;; budgeted train, tree-ranked test. `same` is a
-;;; conservative equality: cohen AND cliffs AND ks must all
-;;; agree before two result sets are called equal.
-;;;   _  _|_   _.  _|_   _
-;;;  _>   |_  (_|   |_  _>
+;;; conservative equality: `cohen` AND `cliffs` AND `ks`
+;;; must all agree before two result sets are called equal.
 
 (defun wins (data)
   "Grader: row -> % of gap to best closed, [-100,100]"
@@ -523,22 +548,13 @@ Every TEST and STUDY runs by its flag (e.g. --all --tree).")
          (<= (ks xs ys)
              (* conf (sqrt (/ (+ n m) (* n m))))))))
 
-;;; ## Lib
-;;; No-surprise utilities: `thing`/`things` coerce csv
-;;; cells; `mapcsv` streams a file (`path` expands $MOOT);
-;;; `rand` is a seeded Lehmer generator so runs reproduce
-;;; across sbcl and clisp; plus `shuffle`, `few`,
-;;; `argmin`/`argmax`, `cat`.
+;;; ## Strings and files
 ;;;  |  o  |_
 ;;;  |  |  |_)
-
-(defun slot-names (x)
-  "Slot names of a struct instance or type"
-  (mapcar #+sbcl  #'sb-mop:slot-definition-name
-          #+clisp #'clos:slot-definition-name
-          (#+sbcl  sb-mop:class-slots
-           #+clisp clos:class-slots
-           (find-class (if (symbolp x) x (type-of x))))))
+;;; `thing` and `things` coerce csv cells; `trim` strips
+;;; whitespace; `mapcsv` streams a file, with `path`
+;;; expanding a leading $MOOT (env via `getenv`, else
+;;; HOME/gits/moot).
 
 (defun trim (s)
   "Strip spaces, tabs, returns"
@@ -582,6 +598,14 @@ Every TEST and STUDY runs by its flag (e.g. --all --tree).")
     (with-open-file (s (path file))
       (loop (line (or (read-line s nil) (return)))))))
 
+;;; ## Random and picking
+;;;  ._   _.  ._    _|
+;;;  |   (_|  | |  (_|
+;;; `rand` is a seeded 16807 Lehmer generator, so runs
+;;; reproduce across sbcl and clisp; `rint`, `shuffle`
+;;; (Fisher-Yates) and `few` ride on it. `argmin`/`argmax`
+;;; pick extremes; `cat` glues printed forms.
+
 (defvar *seed* 1234567891)
 
 (defun rand (&optional (n 1))
@@ -593,9 +617,15 @@ Every TEST and STUDY runs by its flag (e.g. --all --tree).")
   "Random integer 0 <= i < n"
   (floor (rand n)))
 
-(defun cat (&rest xs)
-  "Concatenate the printed forms of xs"
-  (format nil "~{~a~}" xs))
+(defun shuffle (lst &aux (v (coerce lst 'vector)))
+  "Fisher-Yates, driven by the seeded rand"
+  (loop for i from (1- (length v)) downto 1 do
+    (rotatef (elt v i) (elt v (rint (1+ i)))))
+  (coerce v 'list))
+
+(defun few (lst k)
+  "K items picked at random"
+  (subseq (shuffle lst) 0 (min k (length lst))))
 
 (defun argmin (fun lst &aux best (lo +big+))
   "Element of lst minimizing (fun x)"
@@ -609,23 +639,25 @@ Every TEST and STUDY runs by its flag (e.g. --all --tree).")
     (let ((v (funcall fun x)))
       (when (> v hi) (setf hi v best x)))))
 
-(defun shuffle (lst &aux (v (coerce lst 'vector)))
-  "Fisher-Yates, driven by the seeded rand"
-  (loop for i from (1- (length v)) downto 1 do
-    (rotatef (elt v i) (elt v (rint (1+ i)))))
-  (coerce v 'list))
-
-(defun few (lst k)
-  "K items picked at random"
-  (subseq (shuffle lst) 0 (min k (length lst))))
+(defun cat (&rest xs)
+  "Concatenate the printed forms of xs"
+  (format nil "~{~a~}" xs))
 
 ;;; ## Main
-;;; `cli` maps --flags onto `settings` slots, then runs any
-;;; eg--/study-- functions named by the remaining flags;
-;;; `egs` finds those by introspection, so adding a demo to
-;;; the eg file needs no registration here.
 ;;;  ._ _    _.  o  ._
 ;;;  | | |  (_|  |  | |
+;;; `slot-names` and `egs` are the introspection: demos are
+;;; found by name, so the eg file registers nothing here.
+;;; `cli` maps --flags onto `settings` slots then runs the
+;;; named eg--/study-- functions; `help` prints everything.
+
+(defun slot-names (x)
+  "Slot names of a struct instance or type"
+  (mapcar #+sbcl  #'sb-mop:slot-definition-name
+          #+clisp #'clos:slot-definition-name
+          (#+sbcl  sb-mop:class-slots
+           #+clisp clos:class-slots
+           (find-class (if (symbolp x) x (type-of x))))))
 
 (defun egs (prefix)
   "Sorted fbound tiny-xai symbols starting with prefix"
