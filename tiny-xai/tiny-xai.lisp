@@ -29,6 +29,7 @@ minimize; trailing X = ignore; ? cells = missing.
 Every OPTION below is a flag (e.g. --seed 1 --file x.csv).
 Every TEST and STUDY runs by its flag (e.g. --all --tree).")
 
+
 ;;; ## Settings and structs
 ;;;   _  _|_  ._        _  _|_   _
 ;;;  _>   |_  |   |_|  (_   |_  _>
@@ -55,6 +56,7 @@ Every TEST and STUDY runs by its flag (e.g. --all --tree).")
 
 (defstruct node at v n mid rows yes no)
 
+
 ;;; ## One accessor, three spellings
 ;;;   _.  _|_   _
 ;;;  (_|   |_  _>
@@ -88,6 +90,7 @@ Every TEST and STUDY runs by its flag (e.g. --all --tree).")
   "Get x's k, else stash and return a fresh (new)"
   (or (ats x k) (setf (ats x k) (funcall new))))
 
+
 ;;; ## Conveniences
 ;;;   _   _|_   _
 ;;;  (/_   |_  (_
@@ -105,6 +108,7 @@ Every TEST and STUDY runs by its flag (e.g. --all --tree).")
     (loop for (k v) on kvs by #'cddr do (setf (gethash k h) v))
     h))
 
+
 ;;; ## Construction
 ;;;  ._ _    _.  |    _
 ;;;  | | |  (_|  |<  (/_
@@ -141,6 +145,7 @@ Every TEST and STUDY runs by its flag (e.g. --all --tree).")
   "Fresh data over a subset of rows"
   (make-data (cons (? data cols names) rows)))
 
+
 ;;; ## Update
 ;;;   _.   _|   _|
 ;;;  (_|  (_|  (_|
@@ -177,6 +182,7 @@ Every TEST and STUDY runs by its flag (e.g. --all --tree).")
   "Fold a list into a summary; return the summary"
   (dolist (v lst i) (add i v)))
 
+
 ;;; ## Query
 ;;;   _.        _   ._
 ;;;  (_|  |_|  (/_  |   \/
@@ -232,6 +238,7 @@ Every TEST and STUDY runs by its flag (e.g. --all --tree).")
            $has)
   k)
 
+
 ;;; ## Distances
 ;;;   _|  o   _  _|_
 ;;;  (_|  |  _>   |_
@@ -277,6 +284,7 @@ Every TEST and STUDY runs by its flag (e.g. --all --tree).")
   (minkowski r1 (? data cols x)
     (lambda (col u) (gap col u (elt r2 (? col at))))))
 
+
 ;;; ## Landscape sampling
 ;;;  |   _.  ._    _|
 ;;;  |  (_|  | |  (_|
@@ -332,6 +340,7 @@ Every TEST and STUDY runs by its flag (e.g. --all --tree).")
                               (project here x y)))))))
     lab))
 
+
 ;;; ## Cuts
 ;;;   _       _|_   _
 ;;;  (_  |_|   |_  _>
@@ -393,6 +402,7 @@ Every TEST and STUDY runs by its flag (e.g. --all --tree).")
     (when (and rest (not (eql x (caar rest))))
       (funcall keeper this ys at x))))
 
+
 ;;; ## Trees
 ;;;  _|_  ._   _    _    _
 ;;;   |_  |   (/_  (/_  _>
@@ -479,6 +489,7 @@ Every TEST and STUDY runs by its flag (e.g. --all --tree).")
           (length (used i))
           (length (? data cols x))))
 
+
 ;;; ## Stats
 ;;;   _  _|_   _.  _|_   _
 ;;;  _>   |_  (_|   |_  _>
@@ -548,6 +559,7 @@ Every TEST and STUDY runs by its flag (e.g. --all --tree).")
          (<= (ks xs ys)
              (* conf (sqrt (/ (+ n m) (* n m))))))))
 
+
 ;;; ## Strings and files
 ;;;  |  o  |_
 ;;;  |  |  |_)
@@ -602,6 +614,7 @@ Every TEST and STUDY runs by its flag (e.g. --all --tree).")
   "Concatenate the printed forms of xs"
   (format nil "~{~a~}" xs))
 
+
 ;;; ## Random and picking
 ;;;  ._   _.  ._    _|
 ;;;  |   (_|  | |  (_|
@@ -643,6 +656,7 @@ Every TEST and STUDY runs by its flag (e.g. --all --tree).")
     (let ((v (funcall fun x)))
       (when (> v hi) (setf hi v best x)))))
 
+
 ;;; ## Main
 ;;;  ._ _    _.  o  ._
 ;;;  | | |  (_|  |  | |

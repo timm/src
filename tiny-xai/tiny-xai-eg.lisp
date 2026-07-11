@@ -12,6 +12,7 @@
 
 (in-package :tiny-xai)
 
+
 #|
 # tiny-xai: from zero to someplace cool
 
@@ -28,6 +29,7 @@ choices with a small tree. Every demo below runs; every
 output is machine-generated, never hand-copied.
 |#
 
+
 #|
 ## Settings
 
@@ -42,6 +44,7 @@ help string, no config files.
   (format t "~&~s~%" *my*)
   (assert (settings-p *my*)))
 
+
 #|
 ## Reading strings
 
@@ -57,6 +60,7 @@ guessing types so column code never has to.
     (print got)
     (assert (equal got '(23 3.14 -100.0 ? t nil "abc")))))
 
+
 #|
 ## Reproducible randomness
 
@@ -74,6 +78,7 @@ in this tutorial reproducible everywhere.
   (assert (= a b))
   (assert (< 0 a 1)))
 
+
 #|
 ## Columns: the atoms
 
@@ -106,6 +111,7 @@ near 1 -- testing `rand`, `add`, and Welford in one go.
   (assert (eq (mid i) 'a))
   (assert (< (abs (- (spread i) 1.379)) 0.01)))
 
+
 #|
 ## Tables
 
@@ -147,6 +153,7 @@ stream past. The demo data is auto93: 398 cars, 4 inputs,
       (assert (< (abs (- (mid mpg) 23.84)) 0.1))
       (assert (< (abs (- (spread mpg) 8.34)) 0.1)))))
 
+
 #|
 ## Distance
 
@@ -173,6 +180,7 @@ that split is what lets us label so few rows.
                1e-6))
     (assert (<= 0 (distx i r1 r2) 1))))
 
+
 #|
 ## Landscape sampling: the active learner
 
@@ -195,6 +203,7 @@ the best of ~45 labels already lands under 0.4 disty.
     (assert (equal ys (sort (copy-list ys) #'<)))
     (assert (< (first ys) 0.4))))
 
+
 #|
 ## Cuts
 
@@ -219,6 +228,7 @@ spread -- otherwise explanation would be hopeless.
     (when (search "auto93" (? *my* --file))
       (assert (eql (third best) 183)))))
 
+
 #|
 ## Trees
 
@@ -247,6 +257,7 @@ tree usually needs only a few of the x columns.
                   (length (? i cols x))))
       (assert (numberp (leaf i tr (first rows)))))))
 
+
 #|
 ## Grading
 
@@ -270,6 +281,7 @@ report on this scale so results compare across datasets.
     (dolist (r (few rows 30))
       (assert (<= -100 (funcall w r) 100)))))
 
+
 #|
 ## When are two results "the same"?
 
@@ -291,6 +303,7 @@ tiny nudge, and differs after a real shift.
     (assert (same xs ys))
     (assert (not (same xs zs)))))
 
+
 #|
 ## Someplace cool: the whole rig
 
@@ -316,6 +329,7 @@ in one function you can now read.
     (when (search "auto93" (? *my* --file))
       (assert (> w 0)))))
 
+
 #|
 ## Studies
 
@@ -371,6 +385,7 @@ beat random labelling (rq2). `deltas` prints 0 when
   (setf (? i rows) (few (? i rows) (? *my* --cap)))
   (deltas i '--budget 200 50))
 
+
 #|
 ## Runners
 
