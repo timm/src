@@ -53,7 +53,7 @@ it well.
 ; order (see each file's #| markdown |# prose).
 (dolist (f '("lib-eg" "macros-eg" "cols-eg" "query-eg"
              "rand-eg" "tbl-eg" "dist-eg" "stats-eg"
-             "landscape-eg" "bins-eg" "tree-eg" "main-eg"))
+             "acquire-eg" "bins-eg" "tree-eg" "main-eg"))
   (load (merge-pathnames
           (concatenate 'string f ".lisp")
           #.(or *compile-file-truename* *load-truename*))))

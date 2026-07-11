@@ -102,7 +102,7 @@ portable to both.
     query.lisp        mid, spread, norm, minus
     tbl.lisp          make-cols, make-tbl, clone
     dist.lisp         minkowski, disty, distx, *label*
-    landscape.lisp    active sampling under a budget
+    acquire.lisp      active sampling under a budget
     bins.lisp         cheapest single x split
     tree.lisp         grow, walk, print trees
     stats.lisp        cliffs, ks, cohen, same

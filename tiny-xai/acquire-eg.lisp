@@ -1,5 +1,5 @@
 ; vim: set lispwords+=loop,aif :
-;;;; Tutorial and tests for landscape.lisp: the active
+;;;; Tutorial and tests for acquire.lisp: the active
 ;;;; learner.
 
 #|

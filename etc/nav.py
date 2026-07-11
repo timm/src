@@ -4,35 +4,18 @@ nav.py docs/NAME.html: inject badges, a grouped TOC and
 <prev | next> links into a pycco page, before its first <h1>.
 
 Run from inside a project dir. Page order = `sh INSTALL.md
-list`. Code pages (x.lisp) get a TOC of all code pages plus
-one "tests" entry; test pages (x-eg.lisp) get a TOC of all
-test pages plus one "code" entry. prev/next walk the full
-INSTALL.md order.
+list`. Code pages (x.lisp) get a TOC of the code pages;
+test pages (x-eg.lisp) get a TOC of the test pages; the
+badge strip carries "code" and "tests" links to the first
+page of each group. prev/next walk the full INSTALL.md
+order. Also retitles the page NAME.scm -> NAME.lisp and
+links the <h1> to the file on github.
 """
 import os, subprocess, sys
 
 REPO = "https://github.com/timm/src"
 B    = "https://img.shields.io/badge"
 PROJ = os.path.basename(os.getcwd())
-
-def badge(alt, img, url=None):
-  img = f'<img alt="{alt}" src="{img}">'
-  return f'<a href="{url}">{img}</a>' if url else img
-
-BADGES = '<p align="center">\n' + "\n".join([
-  badge("home",     f"{B}/🏠-home-gold",
-        "https://timm.github.io/src/"),
-  badge("src",      f"{B}/src-{PROJ.replace('-', '--')}-black",
-        f"{REPO}/tree/main/{PROJ}"),
-  badge("issues",   f"{B}/issues-report-red",
-        f"{REPO}/issues"),
-  badge("license",  f"{B}/license-MIT-brightgreen",
-        f"{REPO}/blob/main/LICENSE.md"),
-  badge("language", f"{B}/language-common%20lisp-9558B2"),
-  badge("runs on",  f"{B}/runs%20on-sbcl%20|%20clisp-EE4C2C"),
-  badge("author",   f"{B}/author-timm-blueviolet",
-        "https://timm.fyi"),
-]) + "\n</p>"
 
 page  = sys.argv[1]                      # docs/name.html
 name  = page.split("/")[-1][:-len(".html")]
@@ -43,17 +26,36 @@ order = [f[:-len(".lisp")] for f in subprocess.run(
 code  = [p for p in order if not p.endswith("-eg")]
 tests = [p for p in order if p.endswith("-eg")]
 
-def link(p, txt=None):
-  txt = txt or p
-  return (f"<b>{txt}</b>" if p == name
-          else f'<a href="{p}.html">{txt}</a>')
+def badge(alt, img, url=None):
+  img = f'<img alt="{alt}" src="{img}">'
+  return f'<a href="{url}">{img}</a>' if url else img
 
-mine, (label, first) = ((tests, ("code", code[0]))
-                        if name.endswith("-eg")
-                        else (code, ("tests", tests[0])))
-toc = " | ".join([link(p) for p in mine] +
-                 [link(first, label)])
-nav = ""
+BADGES = '<p align="center">\n' + "\n".join([
+  badge("home",     f"{B}/🏠-home-gold",
+        "https://timm.github.io/src/"),
+  badge("src",      f"{B}/src-{PROJ.replace('-', '--')}-black",
+        f"{REPO}/tree/main/{PROJ}"),
+  badge("code",     f"{B}/code-{len(code)}%20files-2ea44f",
+        f"{code[0]}.html"),
+  badge("tests",    f"{B}/tests-{len(tests)}%20files-06b6d4",
+        f"{tests[0]}.html"),
+  badge("issues",   f"{B}/issues-report-red",
+        f"{REPO}/issues"),
+  badge("license",  f"{B}/license-MIT-brightgreen",
+        f"{REPO}/blob/main/LICENSE.md"),
+  badge("language", f"{B}/language-common%20lisp-9558B2"),
+  badge("runs on",  f"{B}/runs%20on-sbcl%20|%20clisp-EE4C2C"),
+  badge("author",   f"{B}/author-timm-blueviolet",
+        "https://timm.fyi"),
+]) + "\n</p>"
+
+def link(p):
+  return (f"<b>{p}</b>" if p == name
+          else f'<a href="{p}.html">{p}</a>')
+
+mine = tests if name.endswith("-eg") else code
+toc  = " | ".join(link(p) for p in mine)
+nav  = ""
 if name in order:
   i    = order.index(name)
   prev = (f'<a href="{order[i-1]}.html">&lt; prev</a>'

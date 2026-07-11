@@ -60,7 +60,7 @@ Every TEST and STUDY runs by its flag (e.g. --all --tree).")
 ; One load point for the whole engine: macros first, then
 ; each file in dependency order, each loaded exactly once.
 (dolist (f '("macros" "lib" "rand" "cols" "query" "tbl"
-             "dist" "landscape" "bins" "tree" "stats"
+             "dist" "acquire" "bins" "tree" "stats"
              "main"))
   (load (merge-pathnames
           (concatenate 'string f ".lisp")

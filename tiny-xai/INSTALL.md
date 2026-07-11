@@ -6,7 +6,7 @@ FILES="tiny-xai.lisp
        query.lisp
        tbl.lisp
        dist.lisp
-       landscape.lisp
+       acquire.lisp
        bins.lisp
        tree.lisp
        stats.lisp
@@ -21,7 +21,7 @@ FILES="tiny-xai.lisp
        tbl-eg.lisp
        dist-eg.lisp
        stats-eg.lisp
-       landscape-eg.lisp
+       acquire-eg.lisp
        bins-eg.lisp
        tree-eg.lisp
        main-eg.lisp"
