@@ -1,7 +1,10 @@
-name: tests
+name: tiny-xai
 on:
   push:
     branches: [main]
+    paths:
+      - "tiny-xai/**"
+      - ".github/workflows/tests-tiny-xai.yml"
   workflow_dispatch:
 jobs:
   eg:
@@ -12,10 +15,7 @@ jobs:
         with:
           repository: timm/moot
           path: moot
-      - run: |
-          sudo apt-get update -q
-          sudo apt-get install -y sbcl lua5.4
-          sudo ln -sf /usr/bin/lua5.4 /usr/local/bin/lua
-      - run: make eg
+      - run: sudo apt-get update -q && sudo apt-get install -y sbcl
+      - run: cd tiny-xai && sbcl --script tiny-xai-eg.lisp --all
         env:
           MOOT: ${{ github.workspace }}/moot
