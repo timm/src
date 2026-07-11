@@ -66,7 +66,8 @@ def page(path):
   nav = lambda j: " · ".join(
     f"[{t}](#b{i+1})" if i != j else f"**{t}**"
     for i, (t, _, _) in enumerate(bs))
-  out = [f"# {os.path.basename(path)}", "", intro(txt, ext), ""]
+  out = [f"# {os.path.basename(path)}", "", "{% raw %}",
+         intro(txt, ext), ""]
   if bs: out += ["---", "", nav(-1), ""]
   for i, (title, prose, code) in enumerate(bs):
     out += [f"## {title} {{#b{i+1}}}", "",
@@ -74,7 +75,7 @@ def page(path):
             "\n".join(prose).strip(), "",
             f"```{LANG[ext]}",
             "\n".join(code).rstrip(), "```", ""]
-  return "\n".join(out)
+  return "\n".join(out + ["{% endraw %}"])
 
 def main(site="_site"):
   os.makedirs(site, exist_ok=True)
