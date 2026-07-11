@@ -46,8 +46,8 @@ this file, is pasted from a real run):
 The header names the columns; each later row is one car.
 Notice the header spellings -- they matter soon.
 
-| call | gives | what |
-|------|-------|------|
+| call | returns | what |
+|------|---------|------|
 | `(mapcsv fun file)` | nil | fun applied to each row |
 |#
 
@@ -71,8 +71,8 @@ Those cells arrived as strings. `thing` coerces each one:
 anything else stays text. Notice "-1e2" becoming -100.0 --
 csv cells can hide exponents.
 
-| call | gives | what |
-|------|-------|------|
+| call | returns | what |
+|------|---------|------|
 | `(thing s)` | num, `?`, t, nil, text | coerce one csv cell |
 |#
 
@@ -92,8 +92,8 @@ holds every knob; slot names double as CLI flags, so --file
 swaps the table and --seed the randomness. Notice
 --budget 50: the whole game is spending it well.
 
-| call | gives | what |
-|------|-------|------|
+| call | returns | what |
+|------|---------|------|
 | `*my*` | `settings` struct | knobs; slots = CLI flags |
 |#
 
@@ -112,8 +112,8 @@ enough to check by eye, then the table's own origin column.
 Notice entropy: high when counts are even, low when one
 value dominates.
 
-| call | gives | what |
-|------|-------|------|
+| call | returns | what |
+|------|---------|------|
 | `(add i v)` | v | count v into sym i |
 | `(mid i)` | symbol | the mode |
 | `(spread i)` | float | entropy of the counts |
@@ -144,8 +144,8 @@ can average. Folding all 398 Mpg cells one at a time
 column's mean and standard deviation. Notice: the average
 1970s car did about 24 mpg.
 
-| call | gives | what |
-|------|-------|------|
+| call | returns | what |
+|------|---------|------|
 | `(make-data file)` | data | rows + column summaries |
 | `(mid i)` | float | mean of num i |
 | `(spread i)` | float | standard deviation |
@@ -171,8 +171,8 @@ check sums three uniforms 10,000 times (Irwin-Hall): mean
 lands on 0, sd on 1 -- testing `rand`, `add`, and Welford
 in one shot.
 
-| call | gives | what |
-|------|-------|------|
+| call | returns | what |
+|------|---------|------|
 | `(rand n)` | float 0..n | next seeded random |
 | `(rint n)` | int 0..n-1 | random integer |
 | `(add i v)` | v | Welford-update num i |
@@ -201,8 +201,8 @@ to minimize or maximize; trailing `X` = ignore), and later
 rows update them. Notice the goals: minimize Lbs-, maximize
 Acc+ and Mpg+ -- light, quick, thrifty cars win.
 
-| call | gives | what |
-|------|-------|------|
+| call | returns | what |
+|------|---------|------|
 | `(make-data src)` | data | src = file name or rows |
 | `(mid col)` | value | mean or mode |
 | `(spread col)` | float | sd or entropy |
@@ -257,8 +257,8 @@ Notice: the rig *scores* with y but *navigates* with x, and
 these tables are why that works -- rows close in x (top of
 table two) are also close in y.
 
-| call | gives | what |
-|------|-------|------|
+| call | returns | what |
+|------|---------|------|
 | `(disty data row)` | 0..1 | distance to ideal goals |
 | `(distx data r1 r2)` | 0..1 | difference over x cols |
 |#
@@ -297,8 +297,8 @@ shift. Notice how conservative this is -- tiny changes are
 treated as noise, so later "X beats Y" claims mean
 something.
 
-| call | gives | what |
-|------|-------|------|
+| call | returns | what |
+|------|---------|------|
 | `(same xs ys)` | t or nil | t iff cohen+cliffs+ks agree |
 |#
 
@@ -326,8 +326,8 @@ best labelled row: found after ~45 labels, it is the kind
 of car that floated to the top back when we (expensively)
 scored all 398.
 
-| call | gives | what |
-|------|-------|------|
+| call | returns | what |
+|------|---------|------|
 | `(landscape data)` | rows | labelled few, best first |
 |#
 
@@ -355,8 +355,8 @@ best cut beats the unsplit spread, else explanation would
 be hopeless. Notice the winner reads like something a
 mechanic would say: small engines differ from big ones.
 
-| call | gives | what |
-|------|-------|------|
+| call | returns | what |
+|------|---------|------|
 | `(split data rows y)` | (cost at v) | cheapest single cut |
 |#
 
@@ -384,8 +384,8 @@ read any root-to-leaf path as a rule about our cars. Notice
 how few x columns the tree needs -- most columns never
 mattered.
 
-| call | gives | what |
-|------|-------|------|
+| call | returns | what |
+|------|---------|------|
 | `(tree data rows y)` | node | recurse cuts into a tree |
 | `(show data node)` | -- | print the tree |
 | `(leaves node)` | list | all leaf nodes |
@@ -421,8 +421,8 @@ this scale, so results compare across datasets. Notice the
 worst row grades far below zero: picking badly is worse
 than not picking at all.
 
-| call | gives | what |
-|------|-------|------|
+| call | returns | what |
+|------|---------|------|
 | `(wins data)` | function | grader: row -> [-100,100] |
 |#
 
@@ -452,8 +452,8 @@ found a near-best car among cars never seen in training.
 That is the whole toolkit, in one function you can now
 read.
 
-| call | gives | what |
-|------|-------|------|
+| call | returns | what |
+|------|---------|------|
 | `(holdout data)` | row | best check from unseen half |
 |#
 
@@ -480,8 +480,8 @@ rig (rq0), does more budget help (rq1), and does active
 beat random labelling (rq2). `deltas` prints 0 when `same`
 says two treatments tie, else the mean gap.
 
-| call | gives | what |
-|------|-------|------|
+| call | returns | what |
+|------|---------|------|
 | `(deltas data knob v1 v2)` | -- | print 0 (tie) or gap |
 |#
 
