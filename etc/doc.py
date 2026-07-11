@@ -112,8 +112,9 @@ def main(site="_site"):
       files += [f"- [{base}]({base}.md)"]
     for f in sorted(glob.glob(f"{d}/*.md")):   # hand-written docs
       base = os.path.basename(f)
-      if base != "README.md":
-        open(f"{site}/{d}/{base}", "w").write(open(f).read())
+      if base != "README.md":                  # site copy only:
+        open(f"{site}/{d}/{base}", "w").write( # Liquid-escape
+          "{% raw %}\n" + open(f).read() + "\n{% endraw %}")
         files += [f"- [{base}]({base})"]
     lead = open(f"{d}/README.md").read().splitlines()[2] \
            if os.path.exists(f"{d}/README.md") else ""
