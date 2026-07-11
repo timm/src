@@ -58,9 +58,12 @@ def blocks(txt, ext):
         cur[2] += [line]
   if cur: yield cur
 
+TUT = {".lisp": r"\n#\|\n(.*?)\n\|#\n",
+       ".lua":  r"\n--\[\[\n(.*?)\n\]\]\n"}
+
 def tutpage(path, txt, ext):
-  "Tutorial file: #| markdown |# stanzas alternate with code."
-  bits = re.split(r"\n#\|\n(.*?)\n\|#\n", txt, flags=re.S)
+  "Tutorial file: markdown stanzas alternate with code."
+  bits = re.split(TUT[ext], txt, flags=re.S)
   out = [f"# {os.path.basename(path)}", "", "{% raw %}"]
   for i, b in enumerate(bits):
     b = b.replace("\f", "").strip("\n")
@@ -73,7 +76,7 @@ def page(path):
   "Markdown page for one source file."
   ext = os.path.splitext(path)[1]
   txt = open(path).read()
-  if ext == ".lisp" and "\n#|\n" in txt:
+  if ext in TUT and re.search(TUT[ext], txt, re.S):
     return tutpage(path, txt, ext)
   bs  = list(blocks(txt, ext))
   nav = lambda j: " · ".join(

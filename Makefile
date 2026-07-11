@@ -9,7 +9,7 @@ help: ## show targets
 eg: ## run every project's examples/tests
 	cd ezr2     && python3 ezr2-eg.py all
 	cd tiny-xai && sbcl --script tiny-xai-eg.lisp --all
-	cd luamine  && lua luamine.lua --all
+	cd luamine  && lua luamine-eg.lua --all
 
 Font ?= 4.5       # pdf font size
 Cols ?= 3         # pdf columns

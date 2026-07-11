@@ -35,6 +35,11 @@ local floor,exp,abs,log = math.floor,math.exp,math.abs,math.log
 local sqrt,pi,huge = math.sqrt, math.pi, math.huge
 local min,max,rand = math.min, math.max, math.random
 
+
+-- ## Cut ops
+-- A `cut` is one test: op(row[at], val). `eq` and `le` are
+-- the two ops; `cut` packs one with its yes/no print names
+-- and an imputation `mid`. Column types emit cuts below.
 local Cut = {}
 -- cut op: equality
 local function eq(a,b) return a==b end
@@ -45,7 +50,11 @@ local function cut(c,op,val,yes,no)
   return l.new(Cut, {at=c.at, op=op, val=val, yes=yes, no=no,
                      mid=c:mid(), txt=c.txt}) end
 
+
 -- ## Sym
+-- `Sym` summarizes one symbolic column: counts in has{}.
+-- `mid` = mode, `spread` = entropy; `cuts` emits one ==cut
+-- per value seen (one-vs-rest).
 local Sym = {}
 -- ctor: symbol counts in has{}
 function Sym.new(s,at)
@@ -72,7 +81,12 @@ function Sym.cuts(i,rows,    seen,cuts,x)
     l.push(cuts, cut(i,eq,v,"==","~=")) end
   return cuts end
 
+
 -- ## Num
+-- `Num` summarizes one numeric column by Welford (n,mu,m2):
+-- `mid`/`spread` = mean/sd; `norm` squashes to 0..1 via a
+-- logistic z-score; `cuts` emits bins-1 percentile <=cuts.
+-- A name ending "-" sets goal 0 (minimize).
 local Num = {}
 -- ctor: welford state; goal 0 if name ends "-"
 function Num.new(s,at)
@@ -112,7 +126,10 @@ function Num.cuts(i,rows,    vs,n,cuts,v,prev)
       l.push(cuts, cut(i,le,v,"<=",">")); prev = v end end
   return cuts end
 
+
 -- ## adds
+-- `adds` folds a list or iterator into any summary
+-- (default: a fresh `Num`).
 -- fold list or iterator into summary it (or Num)
 function m.adds(src,it,fn)
   it = it or Num.new()
@@ -122,7 +139,11 @@ function m.adds(src,it,fn)
          it:add(fn and fn(x) or x) end end
   return it end
 
+
 -- ## Cols
+-- `Cols` types header names into columns: leading uppercase
+-- = `Num`; trailing -,+,! = y goals (! = klass); X = skip.
+-- `add` routes one row's cells; `mid` = cached centroid.
 local Cols = {}
 -- header names -> {all,x,y,klass} typed columns
 function Cols.new(names,    i,col)
@@ -147,7 +168,12 @@ function Cols.mid(i)
   i.mids = i.mids or l.map(i.all,function(c) return c:mid() end)
   return i.mids end
 
+
 -- ## Data
+-- `Data` = rows + `Cols`; the first row is the header.
+-- `clone` reuses a header over new rows. `dxdy` bakes p
+-- into x,y,win distance views (win: 100=best, 0=median).
+-- `body` iterates a csv's rows, skipping the header.
 local Data = {}
 -- rows + cols from iterator or list-of-lists
 function Data.new(src)
@@ -185,7 +211,17 @@ function Data.dxdy(i,p,    y,lo,mid,sd,prep)
       if rng == 0 then return 100 end
       return max(-100, floor(100*(1-(x-lo)/rng))) end } end
 
+-- iter csv rows after header
+function m.body(file,    iter)
+  iter = l.csv(file); iter()
+  return iter end
+
+
 -- ## dist
+-- `distx` = Minkowski over x cols (pessimistic on "?");
+-- `disty` = distance to ideal y goals (0 = best); `better`
+-- = Zitzler domination; `near` sorts rows by distx from a
+-- query row.
 -- Minkowski dist over x cols; pessimistic "?"
 function m.distx(cols,r1,r2,  p,    d,n,v1,v2)
   d,n,p = 0,0,p or the.p
@@ -224,7 +260,11 @@ function m.near(cols,query,rows,  p)
   return l.keysort(rows, function(r)
     return r==query and 2 or m.distx(cols,query,r,p) end) end
 
+
 -- ## bayes
+-- `like` = P(v|col): m-estimate for Syms, gaussian pdf for
+-- Nums. `likes` = log-sum likelihood of one row given one
+-- class's data. Enough for naive bayes (see lapps.lua).
 -- P(v|col): Sym m-estimate, Num gaussian pdf
 function m.like(col,v,prior,    sd,z)
   if not col.mu then
@@ -244,7 +284,12 @@ function m.likes(data,row,nRows,nKlasses,  prior,out,v)
       if v > 0 then out = out + log(v) end end end
   return out end
 
+
 -- ## pick / mutate
+-- Mutators for the optimizers in lapps.lua: `pick` samples
+-- one column (Sym by frequency, Num by gauss +-3sd);
+-- `picks` mutates n random x cells; `extrapolate` is DE's
+-- a + F*(b - c), wrapped to mu +- 4sd.
 -- sample new value: Sym by freq, Num gauss+-3sd
 function m.pick(col,v,    tmp,lo,hi,new)
   if not col.mu then return l.pickDict(col.has) end
@@ -283,7 +328,12 @@ function m.extrapolate(cols,a,b,c,F,CR,
         out[col.at] = lo + (v - lo) % span end end end
   return out end
 
+
 -- ## Cut
+-- Using cuts: `apply` splits rows ("?" imputed via mid),
+-- returning both sides plus their y summaries; `score` =
+-- size-weighted y-spread; `bestCut` = min score over every
+-- cut of every x column.
 -- split rows on cut; "?" imputed via cut.mid;
 -- also returns y-summaries of both sides
 function Cut.apply(i,rows,y,Sumr,    ls,rs,lsum,rsum,x)
@@ -312,7 +362,13 @@ function m.bestCut(cols,rows,y,Sumr,    best,score,s)
       if s<score then best,score = cut,s end end end
   return best end
 
+
 -- ## Tree (build)
+-- `bitree` grows a greedy binary tree; its pick(rows)
+-- callback returns y,Sumr to keep splitting, or nil to
+-- leaf. `Data.tree` supervises on y (default: disty).
+-- `Data.ftree` is unsupervised fastmap over pole
+-- projections: y columns never consulted.
 -- generic greedy bi-tree; pick(rows)->y,Sumr|nil
 function m.bitree(cols,rows,leaf,pick,    y,Sumr,cut,ls,rs)
   y,Sumr = pick(rows)
@@ -354,7 +410,11 @@ function Data.ftree(i,leaf,p,cap,    d)
       y = function(r) return d.x(r,a) - d.x(r,b) end
       return y, Num.new end) end
 
+
 -- ## Tree (use)
+-- `relevant` walks one row to its leaf's rows; `leafStats`
+-- folds leaves into a Num; `show` prints the tree as an
+-- aligned table, best (+) and worst (-) leaves marked.
 -- walk tree to leaf for row; "?" imputed
 function m.relevant(node,row,    x)
   while not node.leaf do
@@ -436,151 +496,12 @@ function m.show(node,cols,    out,hdr,scan)
   showRows(node, cols, 0, nil, out)
   l.tabulate(out.rows, out.just, "  ") end
 
--- ## eg
-local eg = {}
-
--- synthetic Data: nx X cols + class!/numeric y
-local function mock64(rows,nx,ylabel,    n,gen)
-  rows, nx, ylabel = rows or 64, nx or 2, ylabel or "class!"
-  gen = function(    t,s)
-    n = (n or 0) + 1
-    if n == 1 then
-      t = {}
-      for i=1,nx do t[i] = "X"..i end
-      t[nx+1] = ylabel
-      return t end
-    if n <= rows+1 then
-      t,s = {},0
-      for i=1,nx do t[i] = rand(); s = s + t[i] end
-      t[nx+1] = ylabel=="class!"
-                  and (s<nx/2 and "lo" or "hi") or rand()
-      return t end end
-  return Data.new(gen) end
-
--- iter csv rows after header
-function m.body(file,    iter)
-  iter = l.csv(file); iter()
-  return iter end
-
--- train CSV if readable, else mock64
-local function egData(    f)
-  f = io.open(l.path(the.train))
-  if not f then return mock64() end
-  f:close()
-  return Data.new(l.csv(the.train)) end
-
-eg["--cols"] = function(    sym,num,cols)
-  sym  = m.adds({"a","a","b","a","c"}, Sym.new())
-  num  = m.adds{1,2,3,4,5}
-  cols = Cols.new{"Age","name","Mpg+","Wt-","statusX"}
-  return l.chk({"sym mid",sym:mid(),"a"},
-    {"sym spread>0",sym:spread()>0,true},
-    {"num mid",num:mid(),3},
-    {"num sd",num:spread(),1.5811,1E-3},
-    {"? skip",num:add("?"),"?"},
-    {"#x",#cols.x,2}, {"#y",#cols.y,2},
-    {"goal+",cols.all[3].goal,1}, {"goal-",cols.all[4].goal,0},
-    {"skipX",cols.all[5].goal,nil}) end
-
-eg["--data"] = function(    data,b,d,r1,r2)
-  data = Data.new{{"X1","X2"},{1,1},{2,2},{3,3},{4,4},{5,5}}
-  b = data:clone()
-  d = data:dxdy()
-  r1,r2 = data.rows[1], data.rows[5]
-  return l.chk({"#rows",#data.rows,5},
-    {"clone empty",#b.rows,0},
-    {"clone hdr",b.cols.all[1].txt,"X1"},
-    {"names kept",b.cols.names[2],"X2"},
-    {"centroid",data.cols:mid()[1],3},
-    {"symmetric",d.x(r1,r2)==d.x(r2,r1),true}) end
-
-eg["--dist"] = function(    data,goals)
-  data = Data.new{{"X1","X2"},{1,1},{5,5},{9,9}}
-  goals = Data.new{{"X1","Mpg+","Wt-"},
-    {1,40,1500},{2,30,2000},{3,20,2500},{4,10,3000}}
-  return l.chk(
-    {"self=0",m.distx(data.cols,{1,1},{1,1},the.p),0},
-    {"far>near",m.distx(data.cols,{1,1},{9,9},the.p)
-              > m.distx(data.cols,{1,1},{5,5},the.p),true},
-    {"1-NN",m.near(data.cols,{4,4},data.rows,the.p)[1][1],5},
-    {"dBest<dWorst",m.disty(goals.cols,{1,40,1500},the.p)
-                  < m.disty(goals.cols,{4,10,3000},the.p),true})
-  end
-
-eg["--cuts"] = function(    data,cuts,ls,rs,best,v,was)
-  was, the.bins = the.bins, 2
-  data = Data.new{{"X1","name"},
-    {1,"a"},{2,"a"},{3,"b"},{4,"b"},{5,"c"}}
-  cuts = data.cols.x[1]:cuts(data.rows)
-  ls,rs = cuts[1]:apply(data.rows, function(r) return r[1] end)
-  the.bins = 10
-  data = {{"X1","X2","class!"}}
-  for _=1,1000 do
-    v = floor(100*rand())
-    l.push(data, {v, rand(), v>67 and "a" or "b"}) end
-  data = Data.new(data)
-  best = m.bestCut(data.cols, data.rows,
-                   function(r) return r[#r] end)
-  the.bins = was
-  return l.chk({"cut val",cuts[1].val,3}, {"split",#ls+#rs,5},
-    {"finds X1",best.txt,"X1"}, {"cut ~67",best.val,67,8}) end
-
-eg["--tree"] = function(    data,root,y,count,ls)
-  data = egData()
-  data = data:clone(l.slice(l.shuffle(l.copy(data.rows)),
-                            1, the.budget))
-  y = function(r) return r[#r] end
-  root = data:tree(y, Sym.new, the.leaf)
-  m.show(root, data.cols)
-  count = function(n) if n.leaf then return #n.rows end
-                      return count(n.left)+count(n.right) end
-  ls = m.leafStats(root)
-  return l.chk({"#rows",count(root),#data.rows},
-    {"leaves>0",ls.n>0,true},
-    {"relevant",#m.relevant(root,data.rows[1])>0,true}) end
-
-eg["--ftree"] = function(    data,a,b,root,count)
-  data = egData()
-  a,b = m.poles(data:dxdy(), data.rows)
-  root = data:ftree(the.leaf, the.p, #data.rows)
-  count = function(n) if n.leaf then return #n.rows end
-                      return count(n.left)+count(n.right) end
-  return l.chk({"poles differ",a ~= b,true},
-    {"#rows",count(root),#data.rows},
-    {"is tree",root.at~=nil or root.leaf,true}) end
-
-eg["--bayes"] = function(    s,n,data,a)
-  s = m.adds({"a","a","b"}, Sym.new"k")
-  n = m.adds({1,2,3,4,5}, Num.new"Y")
-  data = Data.new{{"X1","X2","class!"},
-    {1,1,"lo"},{1,2,"lo"},{2,1,"lo"},
-    {9,9,"hi"},{9,8,"hi"},{8,9,"hi"}}
-  a = m.likes(data, {1,1,"?"}, 6, 2)
-  return l.chk({"sym like>0",m.like(s,"a",0.5) > 0,true},
-    {"num like>0",m.like(n,3,0.5) > 0,true},
-    {"finite",a==a and a > -huge,true}) end
-
-eg["--mutate"] = function(    data,n,row,out,kid)
-  data = Data.new{{"X1","X2","Y-"},
-    {1,1,10},{2,2,20},{3,3,30},{4,4,40},{5,5,50}}
-  n = data.cols.x[1]
-  row = {3,3,30}
-  out = m.picks(data, row, 2)
-  kid = m.extrapolate(data.cols.x,
-          data.rows[1], data.rows[3], data.rows[5], the.F)
-  return l.chk(
-    {"pick in range",m.pick(n,3) <= n.mu+4*n:spread(),true},
-    {"picks len",#out,#row}, {"y kept",out[3],row[3]},
-    {"kid len",#kid,3}) end
-
-eg["--body"] = function(    tmp,f,n)
-  tmp = os.tmpname()
-  f = io.open(tmp,"w")
-  f:write("a,b\n1,2\n3,4\n5,6\n"); f:close()
-  n = 0; for _ in m.body(tmp) do n=n+1 end; os.remove(tmp)
-  return l.chk({"body rows", n, 3}) end
-
+
 -- ## start
+-- Export the classes; `boot` seeds `the` from the help
+-- options, then dispatches egs only when run as main
+-- (a require never triggers the CLI).
 m.Sym, m.Num, m.Data, m.Cols = Sym,Num,Data,Cols
-l.boot(eg,b4,"luamine",help)
+m.help = help
+l.boot({},b4,"luamine",help)
 return m
