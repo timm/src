@@ -69,6 +69,10 @@ archaeology later.
 
 ## literate layout inside a library file
 
+(Full recipe for restructuring a project into this form,
+with the tutorial-stanza skeleton and gates: see tut.md.)
+
+
 - Prose per idea-block (every 4-5 functions), not per
   function. Lisp comment hierarchy: ;;;; file, ;;; block
   prose, ;; in-function.
