@@ -126,9 +126,9 @@ def main(site="_site"):
         open(f"{site}/{d}/{base}", "w").write( # Liquid-escape
           "{% raw %}\n" + open(f).read() + "\n{% endraw %}")
         files += [f"- [{base}]({base})"]
-    if os.path.isdir(f"{d}/docs"):             # pycco html, verbatim
+    if os.path.isdir(f"docs/{d}"):             # pycco html, verbatim
       os.makedirs(f"{site}/{d}/docs", exist_ok=True)
-      for f in glob.glob(f"{d}/docs/*"):
+      for f in glob.glob(f"docs/{d}/*"):
         base = os.path.basename(f)
         open(f"{site}/{d}/docs/{base}", "w").write(open(f).read())
         if base == f"{d}.html":

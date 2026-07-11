@@ -17,24 +17,29 @@ eg: ## run every project's examples/tests
 	cd tiny-xai && sbcl --script tiny-xai-eg.lisp --all
 	cd luamine  && lua luamine-eg.lua --all
 
-doc: ## pycco html per tiny-xai .lisp (order: sh INSTALL.md list)
-	@cd tiny-xai && mkdir -p docs && \
-	 for f in $$(sh INSTALL.md list); do \
-	   b=$${f%.lisp}; \
-	   awk -f ../etc/doc.awk $$f > docs/$$b.scm; \
-	   python3 ../etc/pyccot.py -d docs docs/$$b.scm >/dev/null; \
-	   rm -f docs/$$b.scm; \
-	   python3 ../etc/nav.py docs/$$b.html; \
-	 done; \
-	 python3 ../etc/toc.py; \
-	 grep -q 'timm extras' docs/pycco.css || printf '%s\n' \
-	   '/* timm extras */' \
-	   'p { text-align: right; }' \
-	   '.docs pre { font-size: .7em; line-height: 1.45; }' \
-	   '.docs table { border-collapse: collapse; margin: 1em 0 1em auto; }' \
-	   '.docs th, .docs td { border: 1px solid #ccc; padding: 2px 8px; font-size: .85em; }' \
-	   >> docs/pycco.css; \
-	 ls docs | grep -c '\.html$$'
+doc: ## pycco html into docs/<proj>/ for each project with an INSTALL.md
+	@for p in */; do p=$${p%/}; \
+	   [ -f $$p/INSTALL.md ] || continue; \
+	   mkdir -p docs/$$p; \
+	   ( cd $$p && \
+	     for f in $$(sh INSTALL.md list); do \
+	       b=$${f%.lisp}; \
+	       awk -f ../etc/doc.awk $$f > ../docs/$$p/$$b.scm; \
+	       python3 ../etc/pyccot.py -d ../docs/$$p \
+	         ../docs/$$p/$$b.scm >/dev/null; \
+	       rm -f ../docs/$$p/$$b.scm; \
+	       python3 ../etc/nav.py ../docs/$$p/$$b.html; \
+	     done; \
+	     python3 ../etc/toc.py ); \
+	   grep -q 'timm extras' docs/$$p/pycco.css || printf '%s\n' \
+	     '/* timm extras */' \
+	     'p { text-align: right; }' \
+	     '.docs pre { font-size: .7em; line-height: 1.45; }' \
+	     '.docs table { border-collapse: collapse; margin: 1em 0 1em auto; }' \
+	     '.docs th, .docs td { border: 1px solid #ccc; padding: 2px 8px; font-size: .85em; }' \
+	     >> docs/$$p/pycco.css; \
+	   ls docs/$$p | grep -c '\.html$$'; \
+	 done
 
 Font ?= 4.5       # pdf font size
 Cols ?= 3         # pdf columns
