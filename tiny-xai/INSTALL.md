@@ -1,19 +1,15 @@
 FILES="dtlz.lisp
-      tiny-xai-eg.lisp
-      tiny-xai.lisp"
+       tiny-xai-eg.lisp
+       tiny-xai.lisp"
 : <<'DOCS'
 
 # tiny-xai
 
-Install into the current dir:
+Install:
 
-    curl -fsSL http://tiny.cc/aiez/INSTALL.md | sh
-
-List files only:
-
-    curl -fsSL http://tiny.cc/aiez/INSTALL.md | sh -s -- list
+    curl -fL https://raw.githubusercontent.com/timm/src/refs/heads/main/tiny-xai/INSTALL.md | sh
 
 DOCS
 if [ -n "$1" ]; then echo $FILES; else
-   for f in $FILES; do 
-      echo "# $f"; curl -fL "http://tiny.cc/aiez/$f" -o "$f"; done
+  for f in $FILES; do 
+    echo "# $f"; curl -fL "$base/$f" -o "$f"; done; fi
