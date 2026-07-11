@@ -13,6 +13,7 @@ eg: ## run every project's examples/tests
 
 Font ?= 4.5       # pdf font size
 Cols ?= 3         # pdf columns
+LPC  ?= 113       # lines per pdf column; packs sections
 
 %.pdf: ## project dir -> ~/tmp/src/NAME.pdf via a2ps (make tiny-xai.pdf)
 	@src=$$(ls $*/$*.lisp $*/$*.py $*/$*.lua 2>/dev/null | head -1); \
@@ -23,6 +24,11 @@ Cols ?= 3         # pdf columns
 	 a2ps -Bj --landscape --line-numbers=1 --highlight-level=heavy \
 	   --borders=no --pro=color --right-footer="" --left-footer="" \
 	   --pretty-print=$$lang --footer="page %p." -M letter \
-	   --font-size=$(Font) --columns $(Cols) -o - $$src \
+	   --center-title="$$src" \
+	   --font-size=$(Font) --columns $(Cols) -o - \
+	   <(awk -v C=$(LPC) 'BEGIN{RS="\f"; ORS=""} \
+	      {n=split($$0,L,"\n")-1; \
+	       if(NR>1 && pos>0 && pos+n>C){printf "\f"; pos=0} \
+	       printf "%s",$$0; pos=(pos+n)%C}' $$src) \
 	 | ps2pdf - ~/tmp/src/$*.pdf; \
 	 open ~/tmp/src/$*.pdf 2>/dev/null || true
