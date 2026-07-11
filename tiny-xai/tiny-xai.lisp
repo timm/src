@@ -554,7 +554,7 @@ Every TEST and STUDY runs by its flag (e.g. --all --tree).")
 ;;; `thing` and `things` coerce csv cells; `trim` strips
 ;;; whitespace; `mapcsv` streams a file, with `path`
 ;;; expanding a leading $MOOT (env via `getenv`, else
-;;; HOME/gits/moot).
+;;; HOME/gits/moot). `cat` glues printed forms.
 
 (defun trim (s)
   "Strip spaces, tabs, returns"
@@ -598,13 +598,17 @@ Every TEST and STUDY runs by its flag (e.g. --all --tree).")
     (with-open-file (s (path file))
       (loop (line (or (read-line s nil) (return)))))))
 
+(defun cat (&rest xs)
+  "Concatenate the printed forms of xs"
+  (format nil "~{~a~}" xs))
+
 ;;; ## Random and picking
 ;;;  ._   _.  ._    _|
 ;;;  |   (_|  | |  (_|
-;;; `rand` is a seeded 16807 Lehmer generator, so runs
-;;; reproduce across sbcl and clisp; `rint`, `shuffle`
-;;; (Fisher-Yates) and `few` ride on it. `argmin`/`argmax`
-;;; pick extremes; `cat` glues printed forms.
+;;; Ways to pick from a list: `shuffle` (Fisher-Yates) and
+;;; `few` pick at random, driven by `rand` -- a seeded 16807
+;;; Lehmer generator so runs reproduce across sbcl and
+;;; clisp; `argmin`/`argmax` pick by score.
 
 (defvar *seed* 1234567891)
 
@@ -638,10 +642,6 @@ Every TEST and STUDY runs by its flag (e.g. --all --tree).")
   (dolist (x lst best)
     (let ((v (funcall fun x)))
       (when (> v hi) (setf hi v best x)))))
-
-(defun cat (&rest xs)
-  "Concatenate the printed forms of xs"
-  (format nil "~{~a~}" xs))
 
 ;;; ## Main
 ;;;  ._ _    _.  o  ._
