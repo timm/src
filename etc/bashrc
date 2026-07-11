@@ -1,5 +1,6 @@
 #!/bin/env bash
 # tuned shell for timm/src; enter via `make sh`
+here="${here:-$PWD}"
 me=`basename $PWD`
 me=${me^^}
 bold=$(tput bold)
@@ -27,7 +28,7 @@ alias ...='cd ../../../'
 alias h="history"
 alias ls="ls -G"
 alias py="python3 -B "
-alias vi="nvim"
+alias vi="nvim -u $here/etc/init.lua"
 alias eg="make eg"
 alias doc="make doc"
 alias mace="make -C .."
