@@ -26,6 +26,7 @@ doc: ## pycco html per tiny-xai .lisp (order: sh INSTALL.md list)
 	   rm -f docs/$$b.scm; \
 	   python3 ../etc/nav.py docs/$$b.html; \
 	 done; \
+	 python3 ../etc/toc.py; \
 	 grep -q 'timm extras' docs/pycco.css || printf '%s\n' \
 	   '/* timm extras */' \
 	   'p { text-align: right; }' \
