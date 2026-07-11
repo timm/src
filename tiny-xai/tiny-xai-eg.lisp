@@ -45,6 +45,10 @@ this file, is pasted from a real run):
 
 The header names the columns; each later row is one car.
 Notice the header spellings -- they matter soon.
+
+| calls    | takes     | returns                        |
+|----------|-----------|--------------------------------|
+| `mapcsv` | fun, file | calls fun on each row (vector) |
 |#
 
 (defun eg--rows (&aux (n 0))
@@ -66,6 +70,10 @@ Those cells arrived as strings. `thing` coerces each one:
 " 23 " becomes the number 23, "?" marks a missing value,
 anything else stays text. Notice "-1e2" becoming -100.0 --
 csv cells can hide exponents.
+
+| calls   | takes  | returns                          |
+|---------|--------|----------------------------------|
+| `thing` | string | number, `?`, t, nil, or the text |
 |#
 
 (defun eg--thing ()
@@ -83,6 +91,10 @@ Where did the file name come from? One `settings` struct
 holds every knob; slot names double as CLI flags, so --file
 swaps the table and --seed the randomness. Notice
 --budget 50: the whole game is spending it well.
+
+| calls        | takes | returns                        |
+|--------------|-------|--------------------------------|
+| `*my*` (var) | --    | `settings`; slots = CLI flags  |
 |#
 
 (defun eg--my ()
@@ -99,6 +111,12 @@ things we can only count and compare. First a case tiny
 enough to check by eye, then the table's own origin column.
 Notice entropy: high when counts are even, low when one
 value dominates.
+
+| calls    | takes      | returns                  |
+|----------|------------|--------------------------|
+| `add`    | sym, value | the value (now counted)  |
+| `mid`    | sym        | the mode                 |
+| `spread` | sym        | entropy of the counts    |
 |#
 
 (defun eg--sym (&aux (i (make-sym)))
@@ -125,6 +143,12 @@ can average. Folding all 398 Mpg cells one at a time
 (Welford's trick: no list kept, just n, mu, m2) gives the
 column's mean and standard deviation. Notice: the average
 1970s car did about 24 mpg.
+
+| calls       | takes     | returns                    |
+|-------------|-----------|----------------------------|
+| `make-data` | file name | data: rows + col summaries |
+| `mid`       | num       | mean                       |
+| `spread`    | num       | standard deviation         |
 |#
 
 (defun eg--num (&aux (i (make-data (? *my* --file))))
@@ -146,6 +170,12 @@ clisp (Common Lisp's own `random` does not). The second
 check sums three uniforms 10,000 times (Irwin-Hall): mean
 lands on 0, sd on 1 -- testing `rand`, `add`, and Welford
 in one shot.
+
+| calls  | takes      | returns                     |
+|--------|------------|-----------------------------|
+| `rand` | n (opt)    | seeded float in 0..n        |
+| `rint` | n          | integer 0 <= i < n          |
+| `add`  | num, value | the value (Welford update)  |
 |#
 
 (defun eg--rand (&aux a b (i (make-num)))
@@ -170,6 +200,12 @@ column summary per header name (trailing `-` or `+` = goal
 to minimize or maximize; trailing `X` = ignore), and later
 rows update them. Notice the goals: minimize Lbs-, maximize
 Acc+ and Mpg+ -- light, quick, thrifty cars win.
+
+| calls       | takes        | returns                  |
+|-------------|--------------|--------------------------|
+| `make-data` | file or rows | data                     |
+| `mid`       | column       | mean or mode             |
+| `spread`    | column       | sd or entropy            |
 |#
 
 (defun eg--data (&aux (i (make-data (? *my* --file))))
@@ -220,6 +256,11 @@ distx from that best car finds its near-clones:
 Notice: the rig *scores* with y but *navigates* with x, and
 these tables are why that works -- rows close in x (top of
 table two) are also close in y.
+
+| calls   | takes          | returns                   |
+|---------|----------------|---------------------------|
+| `disty` | data, row      | 0..1; 0 = ideal goals     |
+| `distx` | data, row, row | 0..1 over the x cols only |
 |#
 
 (defun eg--dists (&aux (i (make-data (? *my* --file))))
@@ -255,6 +296,10 @@ themselves, survive a 0.02 nudge, and differ after a +1
 shift. Notice how conservative this is -- tiny changes are
 treated as noise, so later "X beats Y" claims mean
 something.
+
+| calls  | takes  | returns                               |
+|--------|--------|---------------------------------------|
+| `same` | xs, ys | t iff `cohen`+`cliffs`+`ks` all agree |
 |#
 
 (defun eg--same (&aux (i (make-data (? *my* --file))) xs)
@@ -280,6 +325,10 @@ and repeats -- spending at most --budget labels. Notice the
 best labelled row: found after ~45 labels, it is the kind
 of car that floated to the top back when we (expensively)
 scored all 398.
+
+| calls       | takes | returns                        |
+|-------------|-------|--------------------------------|
+| `landscape` | data  | labelled rows, best first      |
 |#
 
 (defun eg--land (&aux (i (make-data (? *my* --file))))
@@ -305,6 +354,10 @@ size-weighted spread of the two halves. The assert: the
 best cut beats the unsplit spread, else explanation would
 be hopeless. Notice the winner reads like something a
 mechanic would say: small engines differ from big ones.
+
+| calls   | takes         | returns                   |
+|---------|---------------|---------------------------|
+| `split` | data, rows, y | cheapest (cost at v) cut  |
 |#
 
 (defun eg--cuts (&aux (i (make-data (? *my* --file))))
@@ -330,6 +383,13 @@ n, the mean Mpg of those rows, then the branch condition;
 read any root-to-leaf path as a rule about our cars. Notice
 how few x columns the tree needs -- most columns never
 mattered.
+
+| calls    | takes         | returns                 |
+|----------|---------------|-------------------------|
+| `tree`   | data, rows, y | the root node           |
+| `show`   | data, node    | prints the tree         |
+| `leaves` | node          | list of leaf nodes      |
+| `leaf`   | data, node, row | that row's leaf `mid` |
 |#
 
 (defun eg--tree (&aux (i (make-data (? *my* --file))))
@@ -360,6 +420,10 @@ median, negative = worse than median. All studies report on
 this scale, so results compare across datasets. Notice the
 worst row grades far below zero: picking badly is worse
 than not picking at all.
+
+| calls  | takes | returns                          |
+|--------|-------|----------------------------------|
+| `wins` | data  | grader: row -> win in [-100,100] |
 |#
 
 (defun eg--wins (&aux (i (make-data (? *my* --file))))
@@ -387,6 +451,10 @@ rows and keep the best. Notice the win: a few dozen labels
 found a near-best car among cars never seen in training.
 That is the whole toolkit, in one function you can now
 read.
+
+| calls     | takes | returns                        |
+|-----------|-------|--------------------------------|
+| `holdout` | data  | best checked row, unseen half  |
 |#
 
 (defun eg--holdout (&aux (i (make-data (? *my* --file))))
@@ -411,6 +479,10 @@ scale, answering the research questions: how good is the
 rig (rq0), does more budget help (rq1), and does active
 beat random labelling (rq2). `deltas` prints 0 when `same`
 says two treatments tie, else the mean gap.
+
+| calls    | takes               | returns              |
+|----------|---------------------|----------------------|
+| `deltas` | data, knob, v1, v2  | prints 0 or mean gap |
 |#
 
 (defun study--holdouts (&aux (i (make-data (? *my* --file)))
