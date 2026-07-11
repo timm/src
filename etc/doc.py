@@ -59,7 +59,8 @@ def blocks(txt, ext):
   if cur: yield cur
 
 TUT = {".lisp": r"\n#\|\n(.*?)\n\|#\n",
-       ".lua":  r"\n--\[\[\n(.*?)\n\]\]\n"}
+       ".lua":  r"\n--\[\[\n(.*?)\n\]\]\n",
+       ".py":   r'\n"""\n(#.*?)\n"""\n'}
 
 def tutpage(path, txt, ext):
   "Tutorial file: markdown stanzas alternate with code."

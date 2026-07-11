@@ -76,7 +76,12 @@ from types import SimpleNamespace as o
 BIG = 1e32
 TINY = 1e-32
 
+
 #-- Cols --------------------------------------------------------
+# `Num` is a (n,mu,m2) tuple grown by `welford`; `Sym` is a
+# dict of counts. `mid`/`var` = centrality and dispersion for
+# either; `mix` merges two summaries (inc=-1 subtracts);
+# `pick` samples one (roulette or Irwin-Hall bell).
 Sym = dict
 def is_sym(i): return isinstance(i, dict)  # Sym = dict of counts
 def Num(n=0, mu=0, m2=0): return (n, mu, m2)
@@ -131,7 +136,12 @@ def pick(col, v=None):
   r  = random.random
   return mu + sd(col)*2*(r()+r()+r()-1.5)
 
+
 #-- Data --------------------------------------------------------
+# `Data` = o(names, cols, x, y, rows, ...). `roles` types
+# columns from header suffixes; `add` folds one row in
+# (inc=-1 removes, `mids` caches the centroid); `clone`
+# reuses a header; `adds` folds any stream.
 def Data(src):
   "Build a table; first row = column names."
   src  = iter(src)
@@ -177,7 +187,13 @@ def add(i,v,inc=1):
   if v=="?": return i
   return (count if is_sym(i) else welford)(i, v, inc=inc)
 
+
 #-- Dist --------------------------------------------------------
+# `norm` squashes a num to 0..1 by a logistic z-score.
+# `disty` = distance to the ideal goals over y (0 = best);
+# `gap` scores one column pair for `distx`, distance over x.
+# `labelled` is the live-model hook (see dtlz.py). `wins`
+# grades rows: 100 = best, 0 = median, [-100,100].
 
 def norm(num, v):
   "Map v to 0..1 via a logistic on its z-score."
@@ -221,7 +237,13 @@ def wins(data, rows=None):
   return lambda r: max(-100, min(100,
     100 * (1 - (disty(data,r)-lo) / (b4-lo+TINY))))
 
+
 #-- Tree build --------------------------------------------------
+# `cuts` yields candidate (cost,at,v) splits per column;
+# `score` = size-weighted var of the halves; `tree` recurses
+# the min-cost cut; `has` picks a row's side (? = yes);
+# `leaf` routes a row down. accum=Num|Sym flips the same
+# code between regression and classification.
 def size(c): return sum(c.values()) if is_sym(c) else n_(c)
 
 def score(here, there):
@@ -276,7 +298,12 @@ def leaf(data, t, row):
     t = t.yes if has(row,data.cols[t.at],t.at,t.v) else t.no
   return t.mid
 
+
 #-- Tree show ---------------------------------------------------
+# `show` prints win, n, per-goal means, then indented
+# branch conditions (best leaf marked with an up triangle,
+# worst down); `branch` recurses best-kid-first; `cond`
+# renders one test as text.
 def leaves(t):
   "Yield every leaf node of a tree."
   if t.at is None: yield t
@@ -314,7 +341,12 @@ def branch(data, t, win, lo, hi, pad="", edge=""):
                            key=lambda kb: kb[0].mid):
       branch(data, kid, win, lo, hi, pad, cond(data, t, yes))
 
+
 #-- Landscape ---------------------------------------------------
+# The active learner. `project` maps rows onto the line
+# joining two far labelled poles; `landscape` labels a few,
+# culls the third nearest the bad pole, repeats -- spending
+# at most budget-check labels, returned best first.
 def project(rows, x, y):
   "Row -> position on the east-west line (x=dist,y=goal)."
   far  = lambda r: max(rows, key=lambda z: x(z, r))
@@ -343,7 +375,12 @@ def landscape(data):
       pool = sorted(pool, key=project(here, x, y))[n:]
   return sorted(lab.values(), key=y)
 
+
 #-- misc --------------------------------------------------------
+# `shuffle`/`some` = seeded sampling. `cliffs`+`ks`+`cohen`
+# feed `same`, the conservative stats-equality. `thing`
+# coerces strings; `settings` parses the docstring into
+# `the`; `csv` streams rows, `path` expanding $MOOT.
 def shuffle(lst): return random.sample(lst, len(lst))
 def some(lst, k): return random.sample(lst, min(k, len(lst)))
 
@@ -397,7 +434,11 @@ def csv(file, clean=lambda s: s.partition("#")[0].split(",")):
       row = [x.strip() for x in clean(line)]
       if any(row): yield [thing(x) for x in row]
 
+
 #-- Holdout (evaluation harness) --------------------------------
+# The budget rig: label half the data via `landscape`, grow
+# a tree, let it rank the unseen half, check only the top
+# few rows, return the best found.
 def holdout(data):
   "Budget rig: landscape train -> tree -> pick best test row."
   rows  = shuffle(data.rows)
@@ -408,7 +449,11 @@ def holdout(data):
   top   = sorted(test, key=lambda r: leaf(data,t,r))[:the.check]
   return min(top, key=lambda r: disty(data,r))
 
+
 #-- Main --------------------------------------------------------
+# `main` maps --key=val flags onto `the`, then runs any
+# test_* named on the command line (from the caller's
+# globals -- the eg file registers nothing).
 def main(funs):
   "Apply --key=val to `the`, then run named test_* in `funs`."
   if "-h" in sys.argv: return print(__doc__)
