@@ -16,8 +16,6 @@
 (in-package :tiny-xai)
 
 ;;; ## The models
-;;;  ._ _    _    _|   _   |   _
-;;;  | | |  (_)  (_|  (/_  |  _>
 
 ;;;; Each maps x in [0,1]^N to M objectives to MINIMIZE.
 ;;;; The last N-M+1 x's form the "distance" group xm; the
@@ -106,9 +104,6 @@
 (defvar *models* '(dtlz1 dtlz2 dtlz3 dtlz4 dtlz5 dtlz6 dtlz7))
 
 ;;; ## The pool and the label seam
-;;;  ._    _    _   |
-;;;  |_)  (_)  (_)  |
-;;;  |
 
 (defun opt (flag default)
   "Value after `flag` on the command line, else default"
@@ -124,7 +119,7 @@
                                               '?))
                         'vector)))
 
-(defun labeller (data model nn mm)
+(defun labeller (tbl model nn mm)
   "Closure for *label*: run the model, fold goals into cols"
   (lambda (row)
     (when (find '? row)
@@ -132,22 +127,20 @@
         (loop for v in (funcall model x mm)
               for at from nn do
           (setf (elt row at) v)
-          (add (col-at data at) v))))
+          (add (col-at tbl at) v))))
     row))
 
-(defun instance (data row nn win)
+(defun instance (tbl row nn win)
   "Print one row: decision vars, objectives, disty, win"
   (format t "  x ~{ ~5,2f~}~%" (coerce (subseq row 0 nn)
                                        'list))
   (format t "  f ~{ ~6,3f~}   (disty ~,3f, win ~a; ~a)~%"
           (coerce (subseq row nn) 'list)
-          (disty data row)
+          (disty tbl row)
           (round (funcall win row))
           "100=best 0=median"))
 
 ;;; ## Drive one model
-;;;   _|  ._  o       _
-;;;  (_|  |   |  \/  (/_
 
 (defun names (nn mm)
   "Header: X1..Xn decision vars, F1-..Fm- minimize goals"
@@ -160,11 +153,11 @@
 (defun oracle (model nn mm)
   "Wins grader from a fresh, fully labelled pool"
   (setf *seed* (? *my* --seed))
-  (let* ((data (make-data (cons (names nn mm)
-                                (fresh-pool 1000 nn mm))))
-         (*label* (labeller data model nn mm)))
-    (mapc *label* (? data rows))
-    (wins data)))
+  (let* ((tbl (make-tbl (cons (names nn mm)
+                              (fresh-pool 1000 nn mm))))
+         (*label* (labeller tbl model nn mm)))
+    (mapc *label* (? tbl rows))
+    (wins tbl)))
 
 (defun run-model (name nn mm &aux (model (symbol-function
                                            name)))
@@ -173,21 +166,21 @@
           name nn mm)
   (let ((win (oracle model nn mm)))
     (setf *seed* (? *my* --seed))
-    (let* ((data (make-data (cons (names nn mm)
-                                  (fresh-pool 1000 nn mm))))
-           (*label* (labeller data model nn mm))
-           (got (landscape data)))
+    (let* ((tbl (make-tbl (cons (names nn mm)
+                                (fresh-pool 1000 nn mm))))
+           (*label* (labeller tbl model nn mm))
+           (got (landscape tbl)))
       (format t "~&best option found (one instance):~%")
-      (instance data (first got) nn win)
+      (instance tbl (first got) nn win)
       (format t "~&why? which x-ranges reach good goals:~%")
-      (show data (tree data got
-                       (lambda (r) (disty data r))))
+      (show tbl (tree tbl got
+                      (lambda (r) (disty tbl r))))
       (setf *seed* (? *my* --seed))
-      (let* ((data (make-data (cons (names nn mm)
-                                    (fresh-pool 1000 nn mm))))
-             (*label* (labeller data model nn mm)))
+      (let* ((tbl (make-tbl (cons (names nn mm)
+                                  (fresh-pool 1000 nn mm))))
+             (*label* (labeller tbl model nn mm)))
         (format t "~&does it generalize? best on unseen data:~%")
-        (instance data (holdout data) nn win)))))
+        (instance tbl (holdout tbl) nn win)))))
 
 (eval-when (:execute)
   (let ((name (opt "--model" "dtlz2"))
