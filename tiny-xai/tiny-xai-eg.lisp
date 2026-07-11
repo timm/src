@@ -30,6 +30,36 @@ hand-copied.
 |#
 
 
+(defun says (rows)
+  "Print rows of cells, right-aligned per column"
+  (let* ((strs (mapcar
+                 (lambda (r) (mapcar (lambda (c)
+                                       (format nil "~a" c)) r))
+                 rows))
+         (w (apply #'mapcar
+                   (lambda (&rest col)
+                     (loop for s in col maximize (length s)))
+                   strs)))
+    (dolist (cells strs)
+      (format t "~&~{~a~}~%"
+              (mapcar (lambda (wi c) (format nil "  ~v@a" wi c))
+                      w cells)))))
+
+(defun view (data rows fun txt &optional (n 4))
+  "Sort rows by fun; table of first n, ellipsis, last n"
+  (let* ((rows (sort (copy-list rows) #'< :key fun))
+         (say  (lambda (r)
+                 (append (coerce r 'list)
+                         (list (format nil "~,3f"
+                                       (funcall fun r))))))
+         (head (append (coerce (? data cols names) 'list)
+                       (list txt))))
+    (says (append (list head)
+                  (mapcar say (subseq rows 0 n))
+                  (list (make-list (length head)
+                                   :initial-element "..."))
+                  (mapcar say (last rows n))))))
+
 #|
 ## The running example
 
@@ -38,16 +68,16 @@ later row is one car. Notice the header spellings -- they
 matter soon.
 |#
 
-(defun eg--rows (&aux (n 0))
-  "The running example: header, then the first rows"
-  (mapcsv (lambda (row)
-            (when (< (incf n) 6) (print row))
-            (when (search "auto93" (? *my* --file))
-              (assert (= (length row) 8))))
+(defun eg--rows (&aux rows)
+  "The running example: an aligned sample of the table"
+  (mapcsv (lambda (r) (push (coerce r 'list) rows))
           (? *my* --file))
-  (format t "~&... plus ~a more rows~%" (- n 5))
+  (setf rows (nreverse rows))
+  (says (subseq rows 0 6))
+  (format t "... plus ~a more rows~%" (- (length rows) 6))
   (when (search "auto93" (? *my* --file))
-    (assert (= n 399))))
+    (assert (= (length rows) 399))
+    (assert (every (lambda (r) (= (length r) 8)) rows))))
 
 
 #|
@@ -185,27 +215,26 @@ Acc+ and Mpg+ -- light, quick, thrifty cars win.
 #|
 ## Distance to heaven
 
-Now re-view the rows. `disty` scores each by its distance
-to the ideal goals (0 = heaven), reading only y columns;
-sort by it and the best car floats up while the worst
-sinks. `distx` measures difference over the x columns only.
-Notice: the rig *scores* with y but *navigates* with x --
-keeping those apart is what lets us label so few rows
-later.
+Now re-view the rows, twice. `disty` scores each row by its
+distance to the ideal goals (0 = heaven), reading only the
+y columns: sort by it and light thrifty cars float up while
+guzzlers sink. Then `distx`: sort the same rows by x-column
+distance from that best car, and its nearest neighbours are
+near-clones of it. Notice: the rig *scores* with y but
+*navigates* with x -- and the second table is why that
+works: rows close in x tend to be close in y too.
 |#
 
 (defun eg--dists (&aux (i (make-data (? *my* --file))))
-  "Re-sort the rows by disty; probe distx properties"
+  "Same rows, two sorts: by disty, by distx from the best"
   (let* ((rows (sort (copy-list (? i rows)) #'<
                      :key (lambda (r) (disty i r))))
          (lo (first rows))
          (hi (car (last rows))))
-    (format t "~&best  (disty ~,3f):" (disty i lo))
-    (print lo)
-    (format t "~&worst (disty ~,3f):" (disty i hi))
-    (print hi)
-    (format t "~&distx best->best ~a  best->worst ~,3f~%"
-            (distx i lo lo) (distx i lo hi))
+    (format t "~&sorted by disty (best up top):~%")
+    (view i rows (lambda (r) (disty i r)) "disty")
+    (format t "~%sorted by distx from that best row:~%")
+    (view i rows (lambda (r) (distx i lo r)) "distx")
     (assert (<= 0 (disty i lo) (disty i hi) 1))
     (assert (= 0 (distx i lo lo)))
     (assert (< (abs (- (distx i lo hi) (distx i hi lo)))
