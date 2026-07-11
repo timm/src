@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta http-equiv="content-type" content="text/html;charset=utf-8">
-  <title>cols.scm</title>
+  <title>cols.lisp</title>
   <link rel="stylesheet" href="pycco.css">
 </head>
 <body>
@@ -17,7 +17,7 @@
 <img alt="language" src="https://img.shields.io/badge/language-common%20lisp-9558B2">
 <img alt="runs on" src="https://img.shields.io/badge/runs%20on-sbcl%20|%20clisp-EE4C2C">
 <a href="https://timm.fyi"><img alt="author" src="https://img.shields.io/badge/author-timm-blueviolet"></a>
-</p><p><a href="tiny-xai.html">tiny-xai</a> | <a href="macros.html">macros</a> | <a href="lib.html">lib</a> | <a href="rand.html">rand</a> | <b>cols</b> | <a href="query.html">query</a> | <a href="tbl.html">tbl</a> | <a href="dist.html">dist</a> | <a href="landscape.html">landscape</a> | <a href="bins.html">bins</a> | <a href="tree.html">tree</a> | <a href="stats.html">stats</a> | <a href="main.html">main</a> | <a href="dtlz.html">dtlz</a> | <a href="tiny-xai-eg.html">tests</a></p><p><a href="rand.html">&lt; prev</a> | <a href="query.html">next &gt;</a></p><h1>cols.scm</h1></div>
+</p><p><a href="tiny-xai.html">tiny-xai</a> | <a href="macros.html">macros</a> | <a href="lib.html">lib</a> | <a href="rand.html">rand</a> | <b>cols</b> | <a href="query.html">query</a> | <a href="tbl.html">tbl</a> | <a href="dist.html">dist</a> | <a href="landscape.html">landscape</a> | <a href="bins.html">bins</a> | <a href="tree.html">tree</a> | <a href="stats.html">stats</a> | <a href="main.html">main</a> | <a href="dtlz.html">dtlz</a> | <a href="tiny-xai-eg.html">tests</a></p><p><a href="rand.html">&lt; prev</a> | <a href="query.html">next &gt;</a></p><h1><a href="https://github.com/timm/src/blob/main/tiny-xai/cols.lisp">cols.lisp</a></h1></div>
   </div>
   <div class='clearall'>
   <div class='section' id='section-0'>
@@ -76,7 +76,10 @@ rows to their columns in tbl.lisp.)</p>
       <p>Fold a list into a summary; return the summary</p>
     </div>
     <div class='code'>
-      <div class="highlight"><pre></pre></div>
+      <div class="highlight"><pre><span class="p">(</span><span class="nf">defun</span><span class="w"> </span><span class="nv">adds</span><span class="w"> </span><span class="p">(</span><span class="nf">lst</span><span class="w"> </span><span class="nv">&amp;optional</span><span class="w"> </span><span class="p">(</span><span class="nf">i</span><span class="w"> </span><span class="p">(</span><span class="nf">make-num</span><span class="p">)))</span>
+<span class="w">  </span><span class="p">(</span><span class="nf">dolist</span><span class="w"> </span><span class="p">(</span><span class="nf">v</span><span class="w"> </span><span class="nv">lst</span><span class="w"> </span><span class="nv">i</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="nf">add</span><span class="w"> </span><span class="nv">i</span><span class="w"> </span><span class="nv">v</span><span class="p">)))</span>
+
+</pre></div>
     </div>
   </div>
   <div class='clearall'></div>

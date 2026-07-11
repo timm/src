@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta http-equiv="content-type" content="text/html;charset=utf-8">
-  <title>dist.scm</title>
+  <title>dist.lisp</title>
   <link rel="stylesheet" href="pycco.css">
 </head>
 <body>
@@ -17,7 +17,7 @@
 <img alt="language" src="https://img.shields.io/badge/language-common%20lisp-9558B2">
 <img alt="runs on" src="https://img.shields.io/badge/runs%20on-sbcl%20|%20clisp-EE4C2C">
 <a href="https://timm.fyi"><img alt="author" src="https://img.shields.io/badge/author-timm-blueviolet"></a>
-</p><p><a href="tiny-xai.html">tiny-xai</a> | <a href="macros.html">macros</a> | <a href="lib.html">lib</a> | <a href="rand.html">rand</a> | <a href="cols.html">cols</a> | <a href="query.html">query</a> | <a href="tbl.html">tbl</a> | <b>dist</b> | <a href="landscape.html">landscape</a> | <a href="bins.html">bins</a> | <a href="tree.html">tree</a> | <a href="stats.html">stats</a> | <a href="main.html">main</a> | <a href="dtlz.html">dtlz</a> | <a href="tiny-xai-eg.html">tests</a></p><p><a href="tbl.html">&lt; prev</a> | <a href="landscape.html">next &gt;</a></p><h1>dist.scm</h1></div>
+</p><p><a href="tiny-xai.html">tiny-xai</a> | <a href="macros.html">macros</a> | <a href="lib.html">lib</a> | <a href="rand.html">rand</a> | <a href="cols.html">cols</a> | <a href="query.html">query</a> | <a href="tbl.html">tbl</a> | <b>dist</b> | <a href="landscape.html">landscape</a> | <a href="bins.html">bins</a> | <a href="tree.html">tree</a> | <a href="stats.html">stats</a> | <a href="main.html">main</a> | <a href="dtlz.html">dtlz</a> | <a href="tiny-xai-eg.html">tests</a></p><p><a href="tbl.html">&lt; prev</a> | <a href="landscape.html">next &gt;</a></p><h1><a href="https://github.com/timm/src/blob/main/tiny-xai/dist.lisp">dist.lisp</a></h1></div>
   </div>
   <div class='clearall'>
   <div class='section' id='section-0'>
@@ -111,7 +111,11 @@ only <code>distx</code>, the distance over x columns.</p>
       <p>Distance between two rows over the x cols</p>
     </div>
     <div class='code'>
-      <div class="highlight"><pre></pre></div>
+      <div class="highlight"><pre><span class="p">(</span><span class="nf">defun</span><span class="w"> </span><span class="nv">distx</span><span class="w"> </span><span class="p">(</span><span class="nf">tbl</span><span class="w"> </span><span class="nv">r1</span><span class="w"> </span><span class="nv">r2</span><span class="p">)</span>
+<span class="w">  </span><span class="p">(</span><span class="nf">minkowski</span><span class="w"> </span><span class="nv">r1</span><span class="w"> </span><span class="p">(</span><span class="nf">?</span><span class="w"> </span><span class="nv">tbl</span><span class="w"> </span><span class="nv">cols</span><span class="w"> </span><span class="nv">x</span><span class="p">)</span>
+<span class="w">    </span><span class="p">(</span><span class="k">lambda</span><span class="w"> </span><span class="p">(</span><span class="nf">col</span><span class="w"> </span><span class="nv">u</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="nf">gap</span><span class="w"> </span><span class="nv">col</span><span class="w"> </span><span class="nv">u</span><span class="w"> </span><span class="p">(</span><span class="nf">elt</span><span class="w"> </span><span class="nv">r2</span><span class="w"> </span><span class="p">(</span><span class="nf">?</span><span class="w"> </span><span class="nv">col</span><span class="w"> </span><span class="nv">at</span><span class="p">))))))</span>
+
+</pre></div>
     </div>
   </div>
   <div class='clearall'></div>

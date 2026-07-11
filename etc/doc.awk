@@ -30,3 +30,4 @@ n {
     n = 0; print; next }
   buf[++n] = $0; next }
 { print }
+END { for (i = 1; i <= n; i++) print buf[i] }

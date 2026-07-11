@@ -63,4 +63,9 @@ if name in order:
   nav  = f"<p>{prev} | {nxt}</p>"
 top = BADGES + f"<p>{toc}</p>" + nav
 s = open(page).read()
+s = s.replace(f"<title>{name}.scm</title>",
+              f"<title>{name}.lisp</title>")
+s = s.replace(f"<h1>{name}.scm</h1>",
+              f'<h1><a href="{REPO}/blob/main/{PROJ}/'
+              f'{name}.lisp">{name}.lisp</a></h1>')
 open(page, "w").write(s.replace("<h1", top + "<h1", 1))

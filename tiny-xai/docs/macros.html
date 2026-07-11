@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta http-equiv="content-type" content="text/html;charset=utf-8">
-  <title>macros.scm</title>
+  <title>macros.lisp</title>
   <link rel="stylesheet" href="pycco.css">
 </head>
 <body>
@@ -17,7 +17,7 @@
 <img alt="language" src="https://img.shields.io/badge/language-common%20lisp-9558B2">
 <img alt="runs on" src="https://img.shields.io/badge/runs%20on-sbcl%20|%20clisp-EE4C2C">
 <a href="https://timm.fyi"><img alt="author" src="https://img.shields.io/badge/author-timm-blueviolet"></a>
-</p><p><a href="tiny-xai.html">tiny-xai</a> | <b>macros</b> | <a href="lib.html">lib</a> | <a href="rand.html">rand</a> | <a href="cols.html">cols</a> | <a href="query.html">query</a> | <a href="tbl.html">tbl</a> | <a href="dist.html">dist</a> | <a href="landscape.html">landscape</a> | <a href="bins.html">bins</a> | <a href="tree.html">tree</a> | <a href="stats.html">stats</a> | <a href="main.html">main</a> | <a href="dtlz.html">dtlz</a> | <a href="tiny-xai-eg.html">tests</a></p><p><a href="tiny-xai.html">&lt; prev</a> | <a href="lib.html">next &gt;</a></p><h1>macros.scm</h1></div>
+</p><p><a href="tiny-xai.html">tiny-xai</a> | <b>macros</b> | <a href="lib.html">lib</a> | <a href="rand.html">rand</a> | <a href="cols.html">cols</a> | <a href="query.html">query</a> | <a href="tbl.html">tbl</a> | <a href="dist.html">dist</a> | <a href="landscape.html">landscape</a> | <a href="bins.html">bins</a> | <a href="tree.html">tree</a> | <a href="stats.html">stats</a> | <a href="main.html">main</a> | <a href="dtlz.html">dtlz</a> | <a href="tiny-xai-eg.html">tests</a></p><p><a href="tiny-xai.html">&lt; prev</a> | <a href="lib.html">next &gt;</a></p><h1><a href="https://github.com/timm/src/blob/main/tiny-xai/macros.lisp">macros.lisp</a></h1></div>
   </div>
   <div class='clearall'>
   <div class='section' id='section-0'>
@@ -132,7 +132,12 @@ their code is read.</p>
       <p>Fresh equal hash-table, optionally primed with k v pairs</p>
     </div>
     <div class='code'>
-      <div class="highlight"><pre></pre></div>
+      <div class="highlight"><pre><span class="p">(</span><span class="nf">defun</span><span class="w"> </span><span class="nv">o</span><span class="w"> </span><span class="p">(</span><span class="nf">&amp;rest</span><span class="w"> </span><span class="nv">kvs</span><span class="p">)</span>
+<span class="w">  </span><span class="p">(</span><span class="k">let</span><span class="w"> </span><span class="p">((</span><span class="nf">h</span><span class="w"> </span><span class="p">(</span><span class="nb">make-hash-table</span><span class="w"> </span><span class="nv">:test</span><span class="w"> </span><span class="o">#</span><span class="ss">&#39;equal</span><span class="p">)))</span>
+<span class="w">    </span><span class="p">(</span><span class="nf">loop</span><span class="w"> </span><span class="nv">for</span><span class="w"> </span><span class="p">(</span><span class="nf">k</span><span class="w"> </span><span class="nv">v</span><span class="p">)</span><span class="w"> </span><span class="nv">on</span><span class="w"> </span><span class="nv">kvs</span><span class="w"> </span><span class="nv">by</span><span class="w"> </span><span class="o">#</span><span class="ss">&#39;cddr</span><span class="w"> </span><span class="k">do</span><span class="w"> </span><span class="p">(</span><span class="nf">setf</span><span class="w"> </span><span class="p">(</span><span class="nf">gethash</span><span class="w"> </span><span class="nv">k</span><span class="w"> </span><span class="nv">h</span><span class="p">)</span><span class="w"> </span><span class="nv">v</span><span class="p">))</span>
+<span class="w">    </span><span class="nv">h</span><span class="p">))</span>
+
+</pre></div>
     </div>
   </div>
   <div class='clearall'></div>
