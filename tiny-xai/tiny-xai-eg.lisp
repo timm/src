@@ -30,54 +30,33 @@ hand-copied.
 |#
 
 
-(defun says (rows)
-  "Print rows of cells, right-aligned per column"
-  (let* ((strs (mapcar
-                 (lambda (r) (mapcar (lambda (c)
-                                       (format nil "~a" c)) r))
-                 rows))
-         (w (apply #'mapcar
-                   (lambda (&rest col)
-                     (loop for s in col maximize (length s)))
-                   strs)))
-    (dolist (cells strs)
-      (format t "~&~{~a~}~%"
-              (mapcar (lambda (wi c) (format nil "  ~v@a" wi c))
-                      w cells)))))
-
-(defun view (data rows fun txt &optional (n 4))
-  "Sort rows by fun; table of first n, ellipsis, last n"
-  (let* ((rows (sort (copy-list rows) #'< :key fun))
-         (say  (lambda (r)
-                 (append (coerce r 'list)
-                         (list (format nil "~,3f"
-                                       (funcall fun r))))))
-         (head (append (coerce (? data cols names) 'list)
-                       (list txt))))
-    (says (append (list head)
-                  (mapcar say (subseq rows 0 n))
-                  (list (make-list (length head)
-                                   :initial-element "..."))
-                  (mapcar say (last rows n))))))
-
 #|
 ## The running example
 
-First, look at the data. The header names the columns; each
-later row is one car. Notice the header spellings -- they
-matter soon.
+First, look at the data (this sample, like every trace in
+this file, is pasted from a real run):
+
+    Clndrs  Volume  HpX  Model  origin  Lbs-  Acc+  Mpg+
+         8     304  193     70       1  4732  18.5    10
+         8     360  215     70       1  4615    14    10
+         8     307  200     70       1  4376    15    10
+         8     318  210     70       1  4382  13.5    10
+         ... plus 394 more rows
+
+The header names the columns; each later row is one car.
+Notice the header spellings -- they matter soon.
 |#
 
-(defun eg--rows (&aux rows)
-  "The running example: an aligned sample of the table"
-  (mapcsv (lambda (r) (push (coerce r 'list) rows))
+(defun eg--rows (&aux (n 0))
+  "The running example: header, then the first rows"
+  (mapcsv (lambda (row)
+            (when (< (incf n) 6) (print row))
+            (when (search "auto93" (? *my* --file))
+              (assert (= (length row) 8))))
           (? *my* --file))
-  (setf rows (nreverse rows))
-  (says (subseq rows 0 6))
-  (format t "... plus ~a more rows~%" (- (length rows) 6))
+  (format t "~&... plus ~a more rows~%" (- n 5))
   (when (search "auto93" (? *my* --file))
-    (assert (= (length rows) 399))
-    (assert (every (lambda (r) (= (length r) 8)) rows))))
+    (assert (= n 399))))
 
 
 #|
@@ -215,14 +194,32 @@ Acc+ and Mpg+ -- light, quick, thrifty cars win.
 #|
 ## Distance to heaven
 
-Now re-view the rows, twice. `disty` scores each row by its
-distance to the ideal goals (0 = heaven), reading only the
-y columns: sort by it and light thrifty cars float up while
-guzzlers sink. Then `distx`: sort the same rows by x-column
-distance from that best car, and its nearest neighbours are
-near-clones of it. Notice: the rig *scores* with y but
-*navigates* with x -- and the second table is why that
-works: rows close in x tend to be close in y too.
+Now re-view the rows, twice. `disty` scores each row by
+distance to the ideal goals (0 = heaven), reading only y
+columns. Sorting our table by disty:
+
+    Clndrs  Volume  HpX  Model  origin  Lbs-  Acc+  Mpg+  disty
+         4      90   48     78       2  1985  21.5    40  0.075
+         4      90   48     80       2  2085  21.7    40  0.087
+         4      85   65     81       3  1975  19.4    40  0.087
+       ...     ...  ...    ...     ...   ...   ...   ...    ...
+         8     454  220     70       1  4354     9    10  0.956
+         8     455  225     73       1  4951    11    10  0.956
+
+Light thrifty cars float up; guzzlers sink. Then `distx`,
+difference over x columns only: sorting the same rows by
+distx from that best car finds its near-clones:
+
+    Clndrs  Volume  HpX  Model  origin  Lbs-  Acc+  Mpg+  distx
+         4      90   48     78       2  1985  21.5    40  0.000
+         4      89   71     78       2  1990  14.9    30  0.001
+         4     121  115     78       2  2795  15.7    20  0.039
+       ...     ...  ...    ...     ...   ...   ...   ...    ...
+         8     455  225     70       1  4425    10    10  0.816
+
+Notice: the rig *scores* with y but *navigates* with x, and
+these tables are why that works -- rows close in x (top of
+table two) are also close in y.
 |#
 
 (defun eg--dists (&aux (i (make-data (? *my* --file))))
@@ -231,10 +228,16 @@ works: rows close in x tend to be close in y too.
                      :key (lambda (r) (disty i r))))
          (lo (first rows))
          (hi (car (last rows))))
-    (format t "~&sorted by disty (best up top):~%")
-    (view i rows (lambda (r) (disty i r)) "disty")
-    (format t "~%sorted by distx from that best row:~%")
-    (view i rows (lambda (r) (distx i lo r)) "distx")
+    (format t "~&best  (disty ~,3f):" (disty i lo))
+    (print lo)
+    (let ((near (argmin (lambda (r)
+                          (if (eq r lo) 1 (distx i lo r)))
+                        rows)))
+      (format t "~&nearest in x (distx ~,3f):"
+              (distx i lo near))
+      (print near))
+    (format t "~&worst (disty ~,3f):" (disty i hi))
+    (print hi)
     (assert (<= 0 (disty i lo) (disty i hi) 1))
     (assert (= 0 (distx i lo lo)))
     (assert (< (abs (- (distx i lo hi) (distx i hi lo)))
