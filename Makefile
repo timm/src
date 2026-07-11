@@ -16,8 +16,8 @@ Cols ?= 3         # pdf columns
 LPC  ?= 113       # lines per pdf column; packs sections
 
 %.pdf: ## project dir -> ~/tmp/src/NAME.pdf via a2ps (make tiny-xai.pdf)
-	@src=$$(ls $*/$*.lisp $*/$*.py $*/$*.lua 2>/dev/null | head -1); \
-	 test -n "$$src" || { echo "no $*/$*.(lisp|py|lua)"; exit 1; }; \
+	@src=$$(ls */$*.lisp */$*.py */$*.lua 2>/dev/null | head -1); \
+	 test -n "$$src" || { echo "no */$*.(lisp|py|lua)"; exit 1; }; \
 	 case $${src##*.} in lisp) lang=clisp;; py) lang=python;; \
 	   lua) lang=lua;; esac; \
 	 mkdir -p ~/tmp/src; \
