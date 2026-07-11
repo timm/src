@@ -44,12 +44,37 @@ n, the mean Mpg of those rows, then the branch condition;
 read any root-to-leaf path as a rule about our cars. Notice
 how few x columns the tree needs &ndash; most columns never
 mattered.</p>
-<p>| call | returns | what |
-|------|---------|------|
-| <code>(tree tbl rows y)</code> | node | recurse bins into a tree |
-| <code>(show tbl node)</code> | &ndash; | print the tree |
-| <code>(leaves node)</code> | list | all leaf nodes |
-| <code>(leaf tbl node row)</code> | value | route row to its leaf mid |</p>
+<table>
+<thead>
+<tr>
+<th>call</th>
+<th>returns</th>
+<th>what</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>(tree tbl rows y)</code></td>
+<td>node</td>
+<td>recurse bins into a tree</td>
+</tr>
+<tr>
+<td><code>(show tbl node)</code></td>
+<td>&ndash;</td>
+<td>print the tree</td>
+</tr>
+<tr>
+<td><code>(leaves node)</code></td>
+<td>list</td>
+<td>all leaf nodes</td>
+</tr>
+<tr>
+<td><code>(leaf tbl node row)</code></td>
+<td>value</td>
+<td>route row to its leaf mid</td>
+</tr>
+</tbody>
+</table>
     </div>
     <div class='code'>
       <div class="highlight"><pre></pre></div>

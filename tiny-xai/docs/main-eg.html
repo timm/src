@@ -45,9 +45,22 @@ median, negative = worse than median. All studies report on
 this scale, so results compare across datasets. Notice the
 worst row grades far below zero: picking badly is worse
 than not picking at all.</p>
-<p>| call | returns | what |
-|------|---------|------|
-| <code>(wins tbl)</code> | function | grader: row -&gt; [-100,100] |</p>
+<table>
+<thead>
+<tr>
+<th>call</th>
+<th>returns</th>
+<th>what</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>(wins tbl)</code></td>
+<td>function</td>
+<td>grader: row -&gt; [-100,100]</td>
+</tr>
+</tbody>
+</table>
     </div>
     <div class='code'>
       <div class="highlight"><pre></pre></div>
@@ -90,9 +103,22 @@ rows and keep the best. Notice the win: a few dozen labels
 found a near-best car among cars never seen in training.
 That is the whole toolkit, in one function you can now
 read.</p>
-<p>| call | returns | what |
-|------|---------|------|
-| <code>(holdout tbl)</code> | row | best check from unseen half |</p>
+<table>
+<thead>
+<tr>
+<th>call</th>
+<th>returns</th>
+<th>what</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>(holdout tbl)</code></td>
+<td>row</td>
+<td>best check from unseen half</td>
+</tr>
+</tbody>
+</table>
     </div>
     <div class='code'>
       <div class="highlight"><pre></pre></div>
@@ -132,9 +158,22 @@ scale, answering the research questions: how good is the
 rig (rq0), does more budget help (rq1), and does active
 beat random labelling (rq2). <code>deltas</code> prints 0 when <code>same</code>
 says two treatments tie, else the mean gap.</p>
-<p>| call | returns | what |
-|------|---------|------|
-| <code>(deltas tbl knob v1 v2)</code> | &ndash; | print 0 (tie) or gap |</p>
+<table>
+<thead>
+<tr>
+<th>call</th>
+<th>returns</th>
+<th>what</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>(deltas tbl knob v1 v2)</code></td>
+<td>&ndash;</td>
+<td>print 0 (tie) or gap</td>
+</tr>
+</tbody>
+</table>
     </div>
     <div class='code'>
       <div class="highlight"><pre></pre></div>

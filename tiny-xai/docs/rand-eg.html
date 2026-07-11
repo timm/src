@@ -45,11 +45,32 @@ clisp (Common Lisp&rsquo;s own <code>random</code> does not). The second
 check sums three uniforms 10,000 times (Irwin-Hall): mean
 lands on 0, sd on 1 &ndash; testing <code>rand</code>, <code>add</code>, and Welford
 in one shot.</p>
-<p>| call | returns | what |
-|------|---------|------|
-| <code>(rand n)</code> | float 0..n | next seeded random |
-| <code>(rint n)</code> | int 0..n-1 | random integer |
-| <code>(add i v)</code> | v | Welford-update num i |</p>
+<table>
+<thead>
+<tr>
+<th>call</th>
+<th>returns</th>
+<th>what</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>(rand n)</code></td>
+<td>float 0..n</td>
+<td>next seeded random</td>
+</tr>
+<tr>
+<td><code>(rint n)</code></td>
+<td>int 0..n-1</td>
+<td>random integer</td>
+</tr>
+<tr>
+<td><code>(add i v)</code></td>
+<td>v</td>
+<td>Welford-update num i</td>
+</tr>
+</tbody>
+</table>
     </div>
     <div class='code'>
       <div class="highlight"><pre></pre></div>

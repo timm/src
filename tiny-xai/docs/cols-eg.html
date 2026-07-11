@@ -43,11 +43,32 @@ things we can only count and compare. First a case tiny
 enough to check by eye, then the table&rsquo;s own origin column.
 Notice entropy: high when counts are even, low when one
 value dominates.</p>
-<p>| call | returns | what |
-|------|---------|------|
-| <code>(add i v)</code> | v | count v into sym i |
-| <code>(mid i)</code> | symbol | the mode |
-| <code>(spread i)</code> | float | entropy of the counts |</p>
+<table>
+<thead>
+<tr>
+<th>call</th>
+<th>returns</th>
+<th>what</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>(add i v)</code></td>
+<td>v</td>
+<td>count v into sym i</td>
+</tr>
+<tr>
+<td><code>(mid i)</code></td>
+<td>symbol</td>
+<td>the mode</td>
+</tr>
+<tr>
+<td><code>(spread i)</code></td>
+<td>float</td>
+<td>entropy of the counts</td>
+</tr>
+</tbody>
+</table>
     </div>
     <div class='code'>
       <div class="highlight"><pre></pre></div>

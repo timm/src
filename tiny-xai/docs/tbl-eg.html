@@ -43,11 +43,32 @@ column summary per header name (trailing <code>-</code> or <code>+</code> = goal
 to minimize or maximize; trailing <code>X</code> = ignore), and later
 rows update them. Notice the goals: minimize Lbs-, maximize
 Acc+ and Mpg+ &ndash; light, quick, thrifty cars win.</p>
-<p>| call | returns | what |
-|------|---------|------|
-| <code>(make-tbl src)</code> | tbl | src = file name or rows |
-| <code>(mid col)</code> | value | mean or mode |
-| <code>(spread col)</code> | float | sd or entropy |</p>
+<table>
+<thead>
+<tr>
+<th>call</th>
+<th>returns</th>
+<th>what</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>(make-tbl src)</code></td>
+<td>tbl</td>
+<td>src = file name or rows</td>
+</tr>
+<tr>
+<td><code>(mid col)</code></td>
+<td>value</td>
+<td>mean or mode</td>
+</tr>
+<tr>
+<td><code>(spread col)</code></td>
+<td>float</td>
+<td>sd or entropy</td>
+</tr>
+</tbody>
+</table>
     </div>
     <div class='code'>
       <div class="highlight"><pre></pre></div>

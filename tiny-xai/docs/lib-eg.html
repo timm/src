@@ -50,9 +50,22 @@ this file, is pasted from a real run):</p>
 </code></pre>
 <p>The header names the columns; each later row is one car.
 Notice the header spellings &ndash; they matter soon.</p>
-<p>| call | returns | what |
-|------|---------|------|
-| <code>(mapcsv fun file)</code> | nil | fun applied to each row |</p>
+<table>
+<thead>
+<tr>
+<th>call</th>
+<th>returns</th>
+<th>what</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>(mapcsv fun file)</code></td>
+<td>nil</td>
+<td>fun applied to each row</td>
+</tr>
+</tbody>
+</table>
     </div>
     <div class='code'>
       <div class="highlight"><pre></pre></div>
@@ -89,9 +102,22 @@ Notice the header spellings &ndash; they matter soon.</p>
 &rdquo; 23 &rdquo; becomes the number 23, &ldquo;?&rdquo; marks a missing value,
 anything else stays text. Notice &ldquo;-1e2&rdquo; becoming -100.0 &ndash;
 csv cells can hide exponents.</p>
-<p>| call | returns | what |
-|------|---------|------|
-| <code>(thing s)</code> | num, <code>?</code>, t, nil, text | coerce one csv cell |</p>
+<table>
+<thead>
+<tr>
+<th>call</th>
+<th>returns</th>
+<th>what</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>(thing s)</code></td>
+<td>num, <code>?</code>, t, nil, text</td>
+<td>coerce one csv cell</td>
+</tr>
+</tbody>
+</table>
     </div>
     <div class='code'>
       <div class="highlight"><pre></pre></div>

@@ -46,9 +46,22 @@ themselves, survive a 0.02 nudge, and differ after a +1
 shift. Notice how conservative this is &ndash; tiny changes are
 treated as noise, so later &ldquo;X beats Y&rdquo; claims mean
 something.</p>
-<p>| call | returns | what |
-|------|---------|------|
-| <code>(same xs ys)</code> | t or nil | t iff cohen+cliffs+ks agree |</p>
+<table>
+<thead>
+<tr>
+<th>call</th>
+<th>returns</th>
+<th>what</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>(same xs ys)</code></td>
+<td>t or nil</td>
+<td>t iff cohen+cliffs+ks agree</td>
+</tr>
+</tbody>
+</table>
     </div>
     <div class='code'>
       <div class="highlight"><pre></pre></div>

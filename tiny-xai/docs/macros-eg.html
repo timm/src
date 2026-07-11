@@ -43,12 +43,37 @@ three spellings.</p>
 and struct slots alike, <code>?</code> nests it, <code>ats!</code> fills a
 missing key on first touch, and <code>aif</code> remembers its test
 as <code>it</code>. Notice <code>?</code> walking two levels in one call.</p>
-<p>| call | returns | what |
-|------|---------|------|
-| <code>(ats x k)</code> | value | hash key or struct slot |
-| <code>(? x k1 k2 ..)</code> | value | nested ats |
-| <code>(ats! x k new)</code> | value | get, else stash fresh (new) |
-| <code>(aif test then else)</code> | &ndash; | <code>it</code> = the test value |</p>
+<table>
+<thead>
+<tr>
+<th>call</th>
+<th>returns</th>
+<th>what</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>(ats x k)</code></td>
+<td>value</td>
+<td>hash key or struct slot</td>
+</tr>
+<tr>
+<td><code>(? x k1 k2 ..)</code></td>
+<td>value</td>
+<td>nested ats</td>
+</tr>
+<tr>
+<td><code>(ats! x k new)</code></td>
+<td>value</td>
+<td>get, else stash fresh (new)</td>
+</tr>
+<tr>
+<td><code>(aif test then else)</code></td>
+<td>&ndash;</td>
+<td><code>it</code> = the test value</td>
+</tr>
+</tbody>
+</table>
     </div>
     <div class='code'>
       <div class="highlight"><pre></pre></div>

@@ -62,10 +62,27 @@ distx from that best car finds its near-clones:</p>
 <p>Notice: the rig <em>scores</em> with y but <em>navigates</em> with x, and
 these tables are why that works &ndash; rows close in x (top of
 table two) are also close in y.</p>
-<p>| call | returns | what |
-|------|---------|------|
-| <code>(disty tbl row)</code> | 0..1 | distance to ideal goals |
-| <code>(distx tbl r1 r2)</code> | 0..1 | difference over x cols |</p>
+<table>
+<thead>
+<tr>
+<th>call</th>
+<th>returns</th>
+<th>what</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>(disty tbl row)</code></td>
+<td>0..1</td>
+<td>distance to ideal goals</td>
+</tr>
+<tr>
+<td><code>(distx tbl r1 r2)</code></td>
+<td>0..1</td>
+<td>difference over x cols</td>
+</tr>
+</tbody>
+</table>
     </div>
     <div class='code'>
       <div class="highlight"><pre></pre></div>

@@ -22,12 +22,17 @@ doc: ## pycco html per tiny-xai .lisp (order: sh INSTALL.md list)
 	 for f in $$(sh INSTALL.md list); do \
 	   b=$${f%.lisp}; \
 	   awk -f ../etc/doc.awk $$f > docs/$$b.scm; \
-	   pycco -d docs docs/$$b.scm >/dev/null; \
+	   python3 ../etc/pyccot.py -d docs docs/$$b.scm >/dev/null; \
 	   rm -f docs/$$b.scm; \
 	   python3 ../etc/nav.py docs/$$b.html; \
 	 done; \
-	 grep -q '^p { text-align: right; }' docs/pycco.css || \
-	   echo 'p { text-align: right; }' >> docs/pycco.css; \
+	 grep -q 'timm extras' docs/pycco.css || printf '%s\n' \
+	   '/* timm extras */' \
+	   'p { text-align: right; }' \
+	   '.docs pre { font-size: .7em; line-height: 1.45; }' \
+	   '.docs table { border-collapse: collapse; margin: 1em 0 1em auto; }' \
+	   '.docs th, .docs td { border: 1px solid #ccc; padding: 2px 8px; font-size: .85em; }' \
+	   >> docs/pycco.css; \
 	 ls docs | grep -c '\.html$$'
 
 Font ?= 4.5       # pdf font size
