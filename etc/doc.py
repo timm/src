@@ -33,7 +33,7 @@ def intro(txt, ext):
     out = []
     for line in txt.splitlines():
       if line.startswith("#!") or "vim:" in line: continue
-      if not (line.startswith(CMNT[ext]) or not line.strip()): break
+      if not line.startswith(CMNT[ext]): break
       out += [re.sub(r"^[;#-]+ ?", "", line)]
     body = "\n".join(out).strip()
   return "```text\n" + body + "\n```"
@@ -86,6 +86,16 @@ def page(path):
   out = [f"# {os.path.basename(path)}", "", "{% raw %}",
          intro(txt, ext), ""]
   if bs: out += ["---", "", nav(-1), ""]
+  else:                     # no section markers: one code block
+    lines = txt.splitlines()
+    k = 0
+    while k < len(lines) and (lines[k].startswith("#!") or
+          "vim:" in lines[k] or lines[k].startswith(CMNT[ext])):
+      k += 1                # skip the contiguous file header
+    while k < len(lines) and not lines[k].strip():
+      k += 1
+    out += [f"```{LANG[ext]}",
+            "\n".join(lines[k:]).rstrip(), "```", ""]
   for i, (title, prose, code) in enumerate(bs):
     out += [f"## {title} {{#b{i+1}}}", "",
             f"<small>{nav(i)}</small>", "",
