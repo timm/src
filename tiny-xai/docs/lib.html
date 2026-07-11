@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html;charset=utf-8">
+  <title>lib.scm</title>
+  <link rel="stylesheet" href="pycco.css">
+</head>
+<body>
+<div id='container'>
+  <div id="background"></div>
+  <div class='section'>
+    <div class='docs'><p align="center">
+<a href="https://timm.github.io/src/"><img alt="home" src="https://img.shields.io/badge/🏠-home-gold"></a>
+<a href="https://github.com/timm/src/tree/main/tiny-xai"><img alt="src" src="https://img.shields.io/badge/src-tiny--xai-black"></a>
+<a href="https://github.com/timm/src/issues"><img alt="issues" src="https://img.shields.io/badge/issues-report-red"></a>
+<a href="https://github.com/timm/src/blob/main/LICENSE.md"><img alt="license" src="https://img.shields.io/badge/license-MIT-brightgreen"></a>
+<img alt="language" src="https://img.shields.io/badge/language-common%20lisp-9558B2">
+<img alt="runs on" src="https://img.shields.io/badge/runs%20on-sbcl%20|%20clisp-EE4C2C">
+<a href="https://timm.fyi"><img alt="author" src="https://img.shields.io/badge/author-timm-blueviolet"></a>
+</p><p><a href="tiny-xai.html">tiny-xai</a> | <a href="macros.html">macros</a> | <b>lib</b> | <a href="rand.html">rand</a> | <a href="cols.html">cols</a> | <a href="query.html">query</a> | <a href="tbl.html">tbl</a> | <a href="dist.html">dist</a> | <a href="landscape.html">landscape</a> | <a href="bins.html">bins</a> | <a href="tree.html">tree</a> | <a href="stats.html">stats</a> | <a href="main.html">main</a> | <a href="dtlz.html">dtlz</a> | <a href="tiny-xai-eg.html">tests</a></p><p><a href="macros.html">&lt; prev</a> | <a href="rand.html">next &gt;</a></p><h1>lib.scm</h1></div>
+  </div>
+  <div class='clearall'>
+  <div class='section' id='section-0'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-0'>#</a>
+      </div>
+      <p>Strings and files. <code>thing</code> and <code>things</code> coerce csv
+cells; <code>trim</code> strips whitespace; <code>mapcsv</code> streams a
+file, with <code>path</code> expanding a leading $MOOT (env via
+<code>getenv</code>, else HOME/gits/moot). <code>cat</code> glues printed
+forms.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span></span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-1'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-1'>#</a>
+      </div>
+      <p>Strip spaces, tabs, returns</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="p">(</span><span class="nf">defun</span><span class="w"> </span><span class="nv">trim</span><span class="w"> </span><span class="p">(</span><span class="nf">s</span><span class="p">)</span>
+<span class="w">  </span><span class="p">(</span><span class="nb">string-trim</span><span class="w"> </span><span class="o">&#39;</span><span class="p">(</span><span class="sc">#\space</span><span class="w"> </span><span class="sc">#\tab</span><span class="w"> </span><span class="sc">#\return</span><span class="p">)</span><span class="w"> </span><span class="nv">s</span><span class="p">))</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-2'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-2'>#</a>
+      </div>
+      <p>String -&gt; number | ? | t | nil | trimmed string</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="p">(</span><span class="nf">defun</span><span class="w"> </span><span class="nv">thing</span><span class="w"> </span><span class="p">(</span><span class="nf">s</span><span class="w"> </span><span class="nv">&amp;aux</span><span class="w"> </span><span class="p">(</span><span class="nf">opt</span><span class="w"> </span><span class="o">&#39;</span><span class="p">((</span><span class="s">&quot;?&quot;</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="nv">?</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="s">&quot;True&quot;</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="nv">t</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="s">&quot;False&quot;</span><span class="p">))))</span>
+<span class="w">  </span><span class="p">(</span><span class="k">let</span><span class="w"> </span><span class="p">((</span><span class="nf">s</span><span class="w"> </span><span class="p">(</span><span class="nf">trim</span><span class="w"> </span><span class="nv">s</span><span class="p">))</span>
+<span class="w">        </span><span class="p">(</span><span class="nf">*read-eval*</span><span class="p">))</span>
+<span class="w">    </span><span class="p">(</span><span class="nf">aif</span><span class="w"> </span><span class="p">(</span><span class="nb">assoc</span><span class="w"> </span><span class="nv">s</span><span class="w"> </span><span class="nv">opt</span><span class="w"> </span><span class="nv">:test</span><span class="w"> </span><span class="o">#</span><span class="ss">&#39;equal</span><span class="p">)</span>
+<span class="w">      </span><span class="p">(</span><span class="nb">cdr</span><span class="w"> </span><span class="nv">it</span><span class="p">)</span>
+<span class="w">      </span><span class="p">(</span><span class="k">let</span><span class="w"> </span><span class="p">((</span><span class="nf">x</span><span class="w"> </span><span class="p">(</span><span class="nf">ignore-errors</span><span class="w"> </span><span class="p">(</span><span class="nf">read-from-string</span><span class="w"> </span><span class="nv">s</span><span class="w"> </span><span class="nv">nil</span><span class="p">))))</span>
+<span class="w">        </span><span class="p">(</span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nf">numberp</span><span class="w"> </span><span class="nv">x</span><span class="p">)</span><span class="w"> </span><span class="nv">x</span><span class="w"> </span><span class="nv">s</span><span class="p">)))))</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-3'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-3'>#</a>
+      </div>
+      <p>Split s on ch; coerce each cell with thing</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="p">(</span><span class="nf">defun</span><span class="w"> </span><span class="nv">things</span><span class="w"> </span><span class="p">(</span><span class="nf">s</span><span class="w"> </span><span class="nv">&amp;optional</span><span class="w"> </span><span class="p">(</span><span class="nf">ch</span><span class="w"> </span><span class="o">#</span><span class="err">\</span><span class="o">,</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="nf">start</span><span class="w"> </span><span class="mi">0</span><span class="p">))</span>
+<span class="w">  </span><span class="p">(</span><span class="nf">aif</span><span class="w"> </span><span class="p">(</span><span class="nf">position</span><span class="w"> </span><span class="nv">ch</span><span class="w"> </span><span class="nv">s</span><span class="w"> </span><span class="nv">:start</span><span class="w"> </span><span class="nv">start</span><span class="p">)</span>
+<span class="w">    </span><span class="p">(</span><span class="nb">cons</span><span class="w"> </span><span class="p">(</span><span class="nf">thing</span><span class="w"> </span><span class="p">(</span><span class="nf">subseq</span><span class="w"> </span><span class="nv">s</span><span class="w"> </span><span class="nv">start</span><span class="w"> </span><span class="nv">it</span><span class="p">))</span><span class="w"> </span><span class="p">(</span><span class="nf">things</span><span class="w"> </span><span class="nv">s</span><span class="w"> </span><span class="nv">ch</span><span class="w"> </span><span class="p">(</span><span class="nb">1+</span><span class="w"> </span><span class="nv">it</span><span class="p">)))</span>
+<span class="w">    </span><span class="p">(</span><span class="nb">list</span><span class="w"> </span><span class="p">(</span><span class="nf">thing</span><span class="w"> </span><span class="p">(</span><span class="nf">subseq</span><span class="w"> </span><span class="nv">s</span><span class="w"> </span><span class="nv">start</span><span class="p">)))))</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-4'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-4'>#</a>
+      </div>
+      <p>Environment variable, or nil</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="p">(</span><span class="nf">defun</span><span class="w"> </span><span class="nb">getenv</span><span class="w"> </span><span class="p">(</span><span class="nf">s</span><span class="p">)</span>
+<span class="w">  </span><span class="o">#</span><span class="nv">+sbcl</span><span class="w">  </span><span class="p">(</span><span class="nf">sb-ext:posix-getenv</span><span class="w"> </span><span class="nv">s</span><span class="p">)</span>
+<span class="w">  </span><span class="o">#</span><span class="nv">+clisp</span><span class="w"> </span><span class="p">(</span><span class="nf">ext:getenv</span><span class="w"> </span><span class="nv">s</span><span class="p">))</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-5'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-5'>#</a>
+      </div>
+      <p>Expand a leading $MOOT (env, else HOME/gits/moot)</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="p">(</span><span class="nf">defun</span><span class="w"> </span><span class="nv">path</span><span class="w"> </span><span class="p">(</span><span class="nf">s</span><span class="p">)</span>
+<span class="w">  </span><span class="p">(</span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="k">and</span><span class="w"> </span><span class="p">(</span><span class="nb">&gt;</span><span class="w"> </span><span class="p">(</span><span class="nb">length</span><span class="w"> </span><span class="nv">s</span><span class="p">)</span><span class="w"> </span><span class="mi">5</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="nb">string=</span><span class="w"> </span><span class="s">&quot;$MOOT&quot;</span><span class="w"> </span><span class="nv">s</span><span class="w"> </span><span class="nv">:end2</span><span class="w"> </span><span class="mi">5</span><span class="p">))</span>
+<span class="w">      </span><span class="p">(</span><span class="nb">concatenate</span><span class="w"> </span><span class="ss">&#39;string</span>
+<span class="w">        </span><span class="p">(</span><span class="k">or</span><span class="w"> </span><span class="p">(</span><span class="nb">getenv</span><span class="w"> </span><span class="s">&quot;MOOT&quot;</span><span class="p">)</span>
+<span class="w">            </span><span class="p">(</span><span class="nb">concatenate</span><span class="w"> </span><span class="ss">&#39;string</span>
+<span class="w">              </span><span class="p">(</span><span class="nf">namestring</span><span class="w"> </span><span class="p">(</span><span class="nf">user-homedir-pathname</span><span class="p">))</span><span class="w"> </span><span class="s">&quot;gits/moot&quot;</span><span class="p">))</span>
+<span class="w">        </span><span class="p">(</span><span class="nf">subseq</span><span class="w"> </span><span class="nv">s</span><span class="w"> </span><span class="mi">5</span><span class="p">))</span>
+<span class="w">      </span><span class="nv">s</span><span class="p">))</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-6'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-6'>#</a>
+      </div>
+      <p>Call fun on each csv row (skipping blanks, # comments)</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="p">(</span><span class="nf">defun</span><span class="w"> </span><span class="nv">mapcsv</span><span class="w"> </span><span class="p">(</span><span class="nf">fun</span><span class="w"> </span><span class="nv">file</span><span class="p">)</span>
+<span class="w">  </span><span class="p">(</span><span class="nf">labels</span><span class="w"> </span><span class="p">((</span><span class="nf">line</span><span class="w"> </span><span class="p">(</span><span class="nf">s</span><span class="w"> </span><span class="nv">&amp;aux</span><span class="w"> </span><span class="p">(</span><span class="nf">s1</span><span class="w"> </span><span class="p">(</span><span class="nf">trim</span><span class="w"> </span><span class="nv">s</span><span class="p">)))</span>
+<span class="w">             </span><span class="p">(</span><span class="k">unless</span><span class="w"> </span><span class="p">(</span><span class="k">or</span><span class="w"> </span><span class="p">(</span><span class="nf">equal</span><span class="w"> </span><span class="nv">s1</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="nf">eql</span><span class="w"> </span><span class="p">(</span><span class="nf">char</span><span class="w"> </span><span class="nv">s1</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="o">#</span><span class="err">\</span><span class="o">#</span><span class="p">))</span>
+<span class="w">               </span><span class="p">(</span><span class="nf">funcall</span><span class="w"> </span><span class="nv">fun</span><span class="w"> </span><span class="p">(</span><span class="nf">coerce</span><span class="w"> </span><span class="p">(</span><span class="nf">things</span><span class="w"> </span><span class="nv">s1</span><span class="p">)</span><span class="w"> </span><span class="ss">&#39;vector</span><span class="p">)))))</span>
+<span class="w">    </span><span class="p">(</span><span class="nf">with-open-file</span><span class="w"> </span><span class="p">(</span><span class="nf">s</span><span class="w"> </span><span class="p">(</span><span class="nf">path</span><span class="w"> </span><span class="nv">file</span><span class="p">))</span>
+<span class="w">      </span><span class="p">(</span><span class="nf">loop</span><span class="w"> </span><span class="p">(</span><span class="nf">line</span><span class="w"> </span><span class="p">(</span><span class="k">or</span><span class="w"> </span><span class="p">(</span><span class="nf">read-line</span><span class="w"> </span><span class="nv">s</span><span class="w"> </span><span class="nv">nil</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="nf">return</span><span class="p">)))))))</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-7'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-7'>#</a>
+      </div>
+      <p>Concatenate the printed forms of xs</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+</div>
+</body>

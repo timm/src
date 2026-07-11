@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html;charset=utf-8">
+  <title>tbl.scm</title>
+  <link rel="stylesheet" href="pycco.css">
+</head>
+<body>
+<div id='container'>
+  <div id="background"></div>
+  <div class='section'>
+    <div class='docs'><p align="center">
+<a href="https://timm.github.io/src/"><img alt="home" src="https://img.shields.io/badge/🏠-home-gold"></a>
+<a href="https://github.com/timm/src/tree/main/tiny-xai"><img alt="src" src="https://img.shields.io/badge/src-tiny--xai-black"></a>
+<a href="https://github.com/timm/src/issues"><img alt="issues" src="https://img.shields.io/badge/issues-report-red"></a>
+<a href="https://github.com/timm/src/blob/main/LICENSE.md"><img alt="license" src="https://img.shields.io/badge/license-MIT-brightgreen"></a>
+<img alt="language" src="https://img.shields.io/badge/language-common%20lisp-9558B2">
+<img alt="runs on" src="https://img.shields.io/badge/runs%20on-sbcl%20|%20clisp-EE4C2C">
+<a href="https://timm.fyi"><img alt="author" src="https://img.shields.io/badge/author-timm-blueviolet"></a>
+</p><p><a href="tiny-xai.html">tiny-xai</a> | <a href="macros.html">macros</a> | <a href="lib.html">lib</a> | <a href="rand.html">rand</a> | <a href="cols.html">cols</a> | <a href="query.html">query</a> | <b>tbl</b> | <a href="dist.html">dist</a> | <a href="landscape.html">landscape</a> | <a href="bins.html">bins</a> | <a href="tree.html">tree</a> | <a href="stats.html">stats</a> | <a href="main.html">main</a> | <a href="dtlz.html">dtlz</a> | <a href="tiny-xai-eg.html">tests</a></p><p><a href="query.html">&lt; prev</a> | <a href="dist.html">next &gt;</a></p><h1>tbl.scm</h1></div>
+  </div>
+  <div class='clearall'>
+  <div class='section' id='section-0'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-0'>#</a>
+      </div>
+      <p>Construction. Tables are born here. <code>make-cols</code> reads
+roles from the header (uppercase = num; -,+,! = goals;
+X = skip); <code>make-tbl</code> streams rows from a csv file or
+a list, its <code>add</code> routing each cell to its column;
+<code>clone</code> reuses one table&rsquo;s header over other rows.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span></span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-1'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-1'>#</a>
+      </div>
+      <p>Columns from header names; fill all, x, y</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="p">(</span><span class="nf">defun</span><span class="w"> </span><span class="nv">make-cols</span><span class="w"> </span><span class="p">(</span><span class="nf">names</span><span class="w"> </span><span class="nv">&amp;optional</span><span class="w"> </span><span class="p">(</span><span class="nf">i</span><span class="w"> </span><span class="p">(</span><span class="nf">%make-cols</span><span class="w"> </span><span class="nv">:names</span><span class="w"> </span><span class="nv">names</span><span class="p">)))</span>
+<span class="w">  </span><span class="p">(</span><span class="nf">loop</span><span class="w"> </span><span class="nv">for</span><span class="w"> </span><span class="nv">s</span><span class="w"> </span><span class="nv">across</span><span class="w"> </span><span class="nv">names</span><span class="w"> </span><span class="nv">for</span><span class="w"> </span><span class="nv">at</span><span class="w"> </span><span class="nv">from</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="k">do</span>
+<span class="w">    </span><span class="p">(</span><span class="k">let*</span><span class="w"> </span><span class="p">((</span><span class="nf">a</span><span class="w"> </span><span class="p">(</span><span class="nf">char</span><span class="w"> </span><span class="nv">s</span><span class="w"> </span><span class="mi">0</span><span class="p">))</span>
+<span class="w">           </span><span class="p">(</span><span class="nf">z</span><span class="w"> </span><span class="p">(</span><span class="nf">char</span><span class="w"> </span><span class="nv">s</span><span class="w"> </span><span class="p">(</span><span class="nb">1-</span><span class="w"> </span><span class="p">(</span><span class="nb">length</span><span class="w"> </span><span class="nv">s</span><span class="p">))))</span>
+<span class="w">           </span><span class="p">(</span><span class="nf">col</span><span class="w"> </span><span class="p">(</span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nf">upper-case-p</span><span class="w"> </span><span class="nv">a</span><span class="p">)</span>
+<span class="w">                    </span><span class="p">(</span><span class="nf">make-num</span><span class="w"> </span><span class="nv">:at</span><span class="w"> </span><span class="nv">at</span><span class="w"> </span><span class="nv">:txt</span><span class="w"> </span><span class="nv">s</span><span class="p">)</span>
+<span class="w">                    </span><span class="p">(</span><span class="nf">make-sym</span><span class="w"> </span><span class="nv">:at</span><span class="w"> </span><span class="nv">at</span><span class="w"> </span><span class="nv">:txt</span><span class="w"> </span><span class="nv">s</span><span class="p">))))</span>
+<span class="w">      </span><span class="p">(</span><span class="nf">push</span><span class="w"> </span><span class="nv">col</span><span class="w"> </span><span class="nv">$all</span><span class="p">)</span>
+<span class="w">      </span><span class="p">(</span><span class="k">cond</span><span class="w"> </span><span class="p">((</span><span class="nb">find</span><span class="w"> </span><span class="nv">z</span><span class="w"> </span><span class="s">&quot;-+!&quot;</span><span class="p">)</span>
+<span class="w">             </span><span class="p">(</span><span class="k">when</span><span class="w"> </span><span class="p">(</span><span class="nf">eql</span><span class="w"> </span><span class="nv">z</span><span class="w"> </span><span class="sc">#\-</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="nf">setf</span><span class="w"> </span><span class="p">(</span><span class="nf">?</span><span class="w"> </span><span class="nv">col</span><span class="w"> </span><span class="nv">w</span><span class="p">)</span><span class="w"> </span><span class="mi">0</span><span class="p">))</span>
+<span class="w">             </span><span class="p">(</span><span class="nf">push</span><span class="w"> </span><span class="nv">col</span><span class="w"> </span><span class="nv">$y</span><span class="p">))</span>
+<span class="w">            </span><span class="p">((</span><span class="nb">not</span><span class="w"> </span><span class="p">(</span><span class="nf">eql</span><span class="w"> </span><span class="nv">z</span><span class="w"> </span><span class="sc">#\X</span><span class="p">))</span><span class="w"> </span><span class="p">(</span><span class="nf">push</span><span class="w"> </span><span class="nv">col</span><span class="w"> </span><span class="nv">$x</span><span class="p">)))))</span>
+<span class="w">  </span><span class="p">(</span><span class="nf">setf</span><span class="w"> </span><span class="nv">$all</span><span class="w"> </span><span class="p">(</span><span class="nf">nreverse</span><span class="w"> </span><span class="nv">$all</span><span class="p">)</span><span class="w"> </span><span class="nv">$x</span><span class="w"> </span><span class="p">(</span><span class="nf">nreverse</span><span class="w"> </span><span class="nv">$x</span><span class="p">)</span><span class="w"> </span><span class="nv">$y</span><span class="w"> </span><span class="p">(</span><span class="nf">nreverse</span><span class="w"> </span><span class="nv">$y</span><span class="p">))</span>
+<span class="w">  </span><span class="nv">i</span><span class="p">)</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-2'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-2'>#</a>
+      </div>
+      <p>Table from a csv file name or a list of rows</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="p">(</span><span class="nf">defun</span><span class="w"> </span><span class="nv">make-tbl</span><span class="w"> </span><span class="p">(</span><span class="nf">&amp;optional</span><span class="w"> </span><span class="nv">src</span><span class="w"> </span><span class="nv">&amp;aux</span><span class="w"> </span><span class="p">(</span><span class="nf">i</span><span class="w"> </span><span class="p">(</span><span class="nf">%make-tbl</span><span class="p">)))</span>
+<span class="w">  </span><span class="p">(</span><span class="nf">labels</span><span class="w"> </span><span class="p">((</span><span class="nf">inc</span><span class="w"> </span><span class="p">(</span><span class="nf">row</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="nf">add</span><span class="w"> </span><span class="nv">i</span><span class="w"> </span><span class="nv">row</span><span class="p">)))</span>
+<span class="w">    </span><span class="p">(</span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nf">stringp</span><span class="w"> </span><span class="nv">src</span><span class="p">)</span>
+<span class="w">        </span><span class="p">(</span><span class="nf">mapcsv</span><span class="w"> </span><span class="o">#</span><span class="ss">&#39;inc</span><span class="w"> </span><span class="nv">src</span><span class="p">)</span>
+<span class="w">        </span><span class="p">(</span><span class="nf">mapc</span><span class="w"> </span><span class="o">#</span><span class="ss">&#39;inc</span><span class="w"> </span><span class="nv">src</span><span class="p">))</span>
+<span class="w">    </span><span class="nv">i</span><span class="p">))</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-3'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-3'>#</a>
+      </div>
+      <p>Fresh tbl over a subset of rows</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="p">(</span><span class="nf">defun</span><span class="w"> </span><span class="nv">clone</span><span class="w"> </span><span class="p">(</span><span class="nf">tbl</span><span class="w"> </span><span class="nv">rows</span><span class="p">)</span>
+<span class="w">  </span><span class="p">(</span><span class="nf">make-tbl</span><span class="w"> </span><span class="p">(</span><span class="nb">cons</span><span class="w"> </span><span class="p">(</span><span class="nf">?</span><span class="w"> </span><span class="nv">tbl</span><span class="w"> </span><span class="nv">cols</span><span class="w"> </span><span class="nv">names</span><span class="p">)</span><span class="w"> </span><span class="nv">rows</span><span class="p">)))</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-4'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-4'>#</a>
+      </div>
+      <p>First row makes cols; later rows update them</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="p">(</span><span class="nf">defmethod</span><span class="w"> </span><span class="nv">add</span><span class="w"> </span><span class="p">((</span><span class="nf">i</span><span class="w"> </span><span class="nv">tbl</span><span class="p">)</span><span class="w"> </span><span class="nv">row</span><span class="w"> </span><span class="nv">&amp;optional</span><span class="w"> </span><span class="p">(</span><span class="nf">w</span><span class="w"> </span><span class="mi">1</span><span class="p">))</span>
+<span class="w">  </span><span class="p">(</span><span class="k">if</span><span class="w"> </span><span class="nv">$cols</span>
+<span class="w">      </span><span class="p">(</span><span class="nf">dolist</span><span class="w"> </span><span class="p">(</span><span class="nf">col</span><span class="w"> </span><span class="p">(</span><span class="nf">?</span><span class="w"> </span><span class="nv">$cols</span><span class="w"> </span><span class="nv">all</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="nf">push</span><span class="w"> </span><span class="nv">row</span><span class="w"> </span><span class="nv">$rows</span><span class="p">))</span>
+<span class="w">        </span><span class="p">(</span><span class="k">let</span><span class="w"> </span><span class="p">((</span><span class="nf">v</span><span class="w"> </span><span class="p">(</span><span class="nf">elt</span><span class="w"> </span><span class="nv">row</span><span class="w"> </span><span class="p">(</span><span class="nf">?</span><span class="w"> </span><span class="nv">col</span><span class="w"> </span><span class="nv">at</span><span class="p">))))</span>
+<span class="w">          </span><span class="p">(</span><span class="k">unless</span><span class="w"> </span><span class="p">(</span><span class="nf">eq</span><span class="w"> </span><span class="nv">v</span><span class="w"> </span><span class="ss">&#39;?</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="nf">add</span><span class="w"> </span><span class="nv">col</span><span class="w"> </span><span class="nv">v</span><span class="w"> </span><span class="nv">w</span><span class="p">))))</span>
+<span class="w">      </span><span class="p">(</span><span class="nf">setf</span><span class="w"> </span><span class="nv">$cols</span><span class="w"> </span><span class="p">(</span><span class="nf">make-cols</span><span class="w"> </span><span class="nv">row</span><span class="p">)))</span>
+<span class="w">  </span><span class="nv">row</span><span class="p">)</span>
+
+</pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+</div>
+</body>

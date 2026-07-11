@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html;charset=utf-8">
+  <title>dtlz.scm</title>
+  <link rel="stylesheet" href="pycco.css">
+</head>
+<body>
+<div id='container'>
+  <div id="background"></div>
+  <div class='section'>
+    <div class='docs'><p align="center">
+<a href="https://timm.github.io/src/"><img alt="home" src="https://img.shields.io/badge/🏠-home-gold"></a>
+<a href="https://github.com/timm/src/tree/main/tiny-xai"><img alt="src" src="https://img.shields.io/badge/src-tiny--xai-black"></a>
+<a href="https://github.com/timm/src/issues"><img alt="issues" src="https://img.shields.io/badge/issues-report-red"></a>
+<a href="https://github.com/timm/src/blob/main/LICENSE.md"><img alt="license" src="https://img.shields.io/badge/license-MIT-brightgreen"></a>
+<img alt="language" src="https://img.shields.io/badge/language-common%20lisp-9558B2">
+<img alt="runs on" src="https://img.shields.io/badge/runs%20on-sbcl%20|%20clisp-EE4C2C">
+<a href="https://timm.fyi"><img alt="author" src="https://img.shields.io/badge/author-timm-blueviolet"></a>
+</p><p><a href="tiny-xai.html">tiny-xai</a> | <a href="macros.html">macros</a> | <a href="lib.html">lib</a> | <a href="rand.html">rand</a> | <a href="cols.html">cols</a> | <a href="query.html">query</a> | <a href="tbl.html">tbl</a> | <a href="dist.html">dist</a> | <a href="landscape.html">landscape</a> | <a href="bins.html">bins</a> | <a href="tree.html">tree</a> | <a href="stats.html">stats</a> | <a href="main.html">main</a> | <b>dtlz</b> | <a href="tiny-xai-eg.html">tests</a></p><p><a href="main.html">&lt; prev</a> | <a href="tiny-xai-eg.html">next &gt;</a></p><h1>dtlz.scm</h1></div>
+  </div>
+  <div class='clearall'>
+  <div class='section' id='section-0'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-0'>#</a>
+      </div>
+      <p>Drive tiny-xai with an EXTERNAL MODEL instead of a CSV.
+The DTLZ1-7 benchmarks are live models: a row&rsquo;s x-values
+are decision variables; its goals are computed on demand
+via the <em>label</em> hook. This is how an outside user plugs
+their own (expensive) model into tiny-xai.</p>
+<p>sbcl &ndash;script dtlz.lisp              # dtlz2
+  sbcl &ndash;script dtlz.lisp &ndash;model dtlz7
+  sbcl &ndash;script dtlz.lisp &ndash;model all &ndash;M 3 &ndash;N 8
+Under ASDF, load the &ldquo;tiny-xai/dtlz&rdquo; system instead;
+the guard below skips the load; eval-when never fires.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span></span><span class="p">(</span><span class="k">unless</span><span class="w"> </span><span class="p">(</span><span class="nf">find-package</span><span class="w"> </span><span class="nv">:tiny-xai</span><span class="p">)</span>
+<span class="w">  </span><span class="p">(</span><span class="k">load</span><span class="w"> </span><span class="p">(</span><span class="nf">merge-pathnames</span><span class="w"> </span><span class="s">&quot;tiny-xai.lisp&quot;</span><span class="w"> </span><span class="nv">*load-truename*</span><span class="p">)))</span>
+<span class="p">(</span><span class="nf">in-package</span><span class="w"> </span><span class="nv">:tiny-xai</span><span class="p">)</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-1'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-1'>#</a>
+      </div>
+      <h2>The models</h2>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-2'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-2'>#</a>
+      </div>
+      <p>Each maps x in [0,1]^N to M objectives to MINIMIZE.
+The last N-M+1 x&rsquo;s form the &ldquo;distance&rdquo; group xm; the
+rest shape the front.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-3'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-3'>#</a>
+      </div>
+      <p>Multi-modal distance: many local optima</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="p">(</span><span class="nf">defun</span><span class="w"> </span><span class="nv">g1</span><span class="w"> </span><span class="p">(</span><span class="nf">xm</span><span class="p">)</span>
+<span class="w">  </span><span class="p">(</span><span class="nb">*</span><span class="w"> </span><span class="mi">100</span><span class="w"> </span><span class="p">(</span><span class="nb">+</span><span class="w"> </span><span class="p">(</span><span class="nb">length</span><span class="w"> </span><span class="nv">xm</span><span class="p">)</span>
+<span class="w">            </span><span class="p">(</span><span class="nf">loop</span><span class="w"> </span><span class="nv">for</span><span class="w"> </span><span class="nv">v</span><span class="w"> </span><span class="nv">in</span><span class="w"> </span><span class="nv">xm</span>
+<span class="w">                  </span><span class="nv">sum</span><span class="w"> </span><span class="p">(</span><span class="nb">-</span><span class="w"> </span><span class="p">(</span><span class="nb">expt</span><span class="w"> </span><span class="p">(</span><span class="nb">-</span><span class="w"> </span><span class="nv">v</span><span class="w"> </span><span class="mf">.5</span><span class="p">)</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span>
+<span class="w">                         </span><span class="p">(</span><span class="nb">cos</span><span class="w"> </span><span class="p">(</span><span class="nb">*</span><span class="w"> </span><span class="mi">20</span><span class="w"> </span><span class="nv">pi</span><span class="w"> </span><span class="p">(</span><span class="nb">-</span><span class="w"> </span><span class="nv">v</span><span class="w"> </span><span class="mf">.5</span><span class="p">))))))))</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-4'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-4'>#</a>
+      </div>
+      <p>Unimodal distance: sum of squares off 0.5</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="p">(</span><span class="nf">defun</span><span class="w"> </span><span class="nv">g2</span><span class="w"> </span><span class="p">(</span><span class="nf">xm</span><span class="p">)</span>
+<span class="w">  </span><span class="p">(</span><span class="nf">loop</span><span class="w"> </span><span class="nv">for</span><span class="w"> </span><span class="nv">v</span><span class="w"> </span><span class="nv">in</span><span class="w"> </span><span class="nv">xm</span><span class="w"> </span><span class="nv">sum</span><span class="w"> </span><span class="p">(</span><span class="nb">expt</span><span class="w"> </span><span class="p">(</span><span class="nb">-</span><span class="w"> </span><span class="nv">v</span><span class="w"> </span><span class="mf">.5</span><span class="p">)</span><span class="w"> </span><span class="mi">2</span><span class="p">)))</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-5'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-5'>#</a>
+      </div>
+      <p>Biased distance: tenth roots</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="p">(</span><span class="nf">defun</span><span class="w"> </span><span class="nv">g6</span><span class="w"> </span><span class="p">(</span><span class="nf">xm</span><span class="p">)</span>
+<span class="w">  </span><span class="p">(</span><span class="nf">loop</span><span class="w"> </span><span class="nv">for</span><span class="w"> </span><span class="nv">v</span><span class="w"> </span><span class="nv">in</span><span class="w"> </span><span class="nv">xm</span><span class="w"> </span><span class="nv">sum</span><span class="w"> </span><span class="p">(</span><span class="nb">expt</span><span class="w"> </span><span class="nv">v</span><span class="w"> </span><span class="mf">0.1</span><span class="p">)))</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-6'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-6'>#</a>
+      </div>
+      <p>Cos/sin product front shared by dtlz2-6</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="p">(</span><span class="nf">defun</span><span class="w"> </span><span class="nv">sphere</span><span class="w"> </span><span class="p">(</span><span class="nf">m</span><span class="w"> </span><span class="nv">g</span><span class="w"> </span><span class="nv">th</span><span class="p">)</span>
+<span class="w">  </span><span class="p">(</span><span class="nf">loop</span><span class="w"> </span><span class="nv">for</span><span class="w"> </span><span class="nv">i</span><span class="w"> </span><span class="nv">below</span><span class="w"> </span><span class="nv">m</span>
+<span class="w">        </span><span class="nv">collect</span><span class="w"> </span><span class="p">(</span><span class="k">let</span><span class="w"> </span><span class="p">((</span><span class="nf">v</span><span class="w"> </span><span class="p">(</span><span class="nb">+</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="nv">g</span><span class="p">)))</span>
+<span class="w">                  </span><span class="p">(</span><span class="nf">dotimes</span><span class="w"> </span><span class="p">(</span><span class="nf">j</span><span class="w"> </span><span class="p">(</span><span class="nb">-</span><span class="w"> </span><span class="nv">m</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="nv">i</span><span class="p">))</span>
+<span class="w">                    </span><span class="p">(</span><span class="nf">setf</span><span class="w"> </span><span class="nv">v</span><span class="w"> </span><span class="p">(</span><span class="nb">*</span><span class="w"> </span><span class="nv">v</span><span class="w"> </span><span class="p">(</span><span class="nb">cos</span><span class="w"> </span><span class="p">(</span><span class="nf">elt</span><span class="w"> </span><span class="nv">th</span><span class="w"> </span><span class="nv">j</span><span class="p">)))))</span>
+<span class="w">                  </span><span class="p">(</span><span class="k">when</span><span class="w"> </span><span class="p">(</span><span class="nf">plusp</span><span class="w"> </span><span class="nv">i</span><span class="p">)</span>
+<span class="w">                    </span><span class="p">(</span><span class="nf">setf</span><span class="w"> </span><span class="nv">v</span><span class="w"> </span><span class="p">(</span><span class="nb">*</span><span class="w"> </span><span class="nv">v</span><span class="w"> </span><span class="p">(</span><span class="nb">sin</span><span class="w"> </span><span class="p">(</span><span class="nf">elt</span><span class="w"> </span><span class="nv">th</span><span class="w"> </span><span class="p">(</span><span class="nb">-</span><span class="w"> </span><span class="nv">m</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="nv">i</span><span class="p">))))))</span>
+<span class="w">                  </span><span class="nv">v</span><span class="p">)))</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-7'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-7'>#</a>
+      </div>
+      <p>Linear front (sum fi = 0.5)</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="p">(</span><span class="nf">defun</span><span class="w"> </span><span class="nv">dtlz1</span><span class="w"> </span><span class="p">(</span><span class="nf">x</span><span class="w"> </span><span class="nv">m</span><span class="p">)</span>
+<span class="w">  </span><span class="p">(</span><span class="k">let</span><span class="w"> </span><span class="p">((</span><span class="nf">g</span><span class="w"> </span><span class="p">(</span><span class="nf">g1</span><span class="w"> </span><span class="p">(</span><span class="nf">nthcdr</span><span class="w"> </span><span class="p">(</span><span class="nb">1-</span><span class="w"> </span><span class="nv">m</span><span class="p">)</span><span class="w"> </span><span class="nv">x</span><span class="p">))))</span>
+<span class="w">    </span><span class="p">(</span><span class="nf">loop</span><span class="w"> </span><span class="nv">for</span><span class="w"> </span><span class="nv">i</span><span class="w"> </span><span class="nv">below</span><span class="w"> </span><span class="nv">m</span>
+<span class="w">          </span><span class="nv">collect</span><span class="w"> </span><span class="p">(</span><span class="k">let</span><span class="w"> </span><span class="p">((</span><span class="nf">v</span><span class="w"> </span><span class="p">(</span><span class="nb">*</span><span class="w"> </span><span class="mf">0.5</span><span class="w"> </span><span class="p">(</span><span class="nb">+</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="nv">g</span><span class="p">))))</span>
+<span class="w">                    </span><span class="p">(</span><span class="nf">dotimes</span><span class="w"> </span><span class="p">(</span><span class="nf">j</span><span class="w"> </span><span class="p">(</span><span class="nb">-</span><span class="w"> </span><span class="nv">m</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="nv">i</span><span class="p">))</span>
+<span class="w">                      </span><span class="p">(</span><span class="nf">setf</span><span class="w"> </span><span class="nv">v</span><span class="w"> </span><span class="p">(</span><span class="nb">*</span><span class="w"> </span><span class="nv">v</span><span class="w"> </span><span class="p">(</span><span class="nf">elt</span><span class="w"> </span><span class="nv">x</span><span class="w"> </span><span class="nv">j</span><span class="p">))))</span>
+<span class="w">                    </span><span class="p">(</span><span class="k">when</span><span class="w"> </span><span class="p">(</span><span class="nf">plusp</span><span class="w"> </span><span class="nv">i</span><span class="p">)</span>
+<span class="w">                      </span><span class="p">(</span><span class="nf">setf</span><span class="w"> </span><span class="nv">v</span><span class="w"> </span><span class="p">(</span><span class="nb">*</span><span class="w"> </span><span class="nv">v</span><span class="w"> </span><span class="p">(</span><span class="nb">-</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="p">(</span><span class="nf">elt</span><span class="w"> </span><span class="nv">x</span><span class="w"> </span><span class="p">(</span><span class="nb">-</span><span class="w"> </span><span class="nv">m</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="nv">i</span><span class="p">))))))</span>
+<span class="w">                    </span><span class="nv">v</span><span class="p">))))</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-8'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-8'>#</a>
+      </div>
+      <p>First m-1 x&rsquo;s scaled onto [0,pi/2], optionally biased</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="p">(</span><span class="nf">defun</span><span class="w"> </span><span class="nv">half-pi-thetas</span><span class="w"> </span><span class="p">(</span><span class="nf">x</span><span class="w"> </span><span class="nv">m</span><span class="w"> </span><span class="nv">&amp;optional</span><span class="w"> </span><span class="p">(</span><span class="nf">p</span><span class="w"> </span><span class="mi">1</span><span class="p">))</span>
+<span class="w">  </span><span class="p">(</span><span class="nf">loop</span><span class="w"> </span><span class="nv">for</span><span class="w"> </span><span class="nv">v</span><span class="w"> </span><span class="nv">in</span><span class="w"> </span><span class="p">(</span><span class="nf">subseq</span><span class="w"> </span><span class="nv">x</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="p">(</span><span class="nb">1-</span><span class="w"> </span><span class="nv">m</span><span class="p">))</span>
+<span class="w">        </span><span class="nv">collect</span><span class="w"> </span><span class="p">(</span><span class="nb">*</span><span class="w"> </span><span class="p">(</span><span class="nb">expt</span><span class="w"> </span><span class="nv">v</span><span class="w"> </span><span class="nv">p</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="nb">/</span><span class="w"> </span><span class="nv">pi</span><span class="w"> </span><span class="mi">2</span><span class="p">))))</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-9'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-9'>#</a>
+      </div>
+      <p>Spherical front</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="p">(</span><span class="nf">defun</span><span class="w"> </span><span class="nv">dtlz2</span><span class="w"> </span><span class="p">(</span><span class="nf">x</span><span class="w"> </span><span class="nv">m</span><span class="p">)</span>
+<span class="w">  </span><span class="p">(</span><span class="nf">sphere</span><span class="w"> </span><span class="nv">m</span><span class="w"> </span><span class="p">(</span><span class="nf">g2</span><span class="w"> </span><span class="p">(</span><span class="nf">nthcdr</span><span class="w"> </span><span class="p">(</span><span class="nb">1-</span><span class="w"> </span><span class="nv">m</span><span class="p">)</span><span class="w"> </span><span class="nv">x</span><span class="p">))</span><span class="w"> </span><span class="p">(</span><span class="nf">half-pi-thetas</span><span class="w"> </span><span class="nv">x</span><span class="w"> </span><span class="nv">m</span><span class="p">)))</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-10'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-10'>#</a>
+      </div>
+      <p>Spherical front, multi-modal distance</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="p">(</span><span class="nf">defun</span><span class="w"> </span><span class="nv">dtlz3</span><span class="w"> </span><span class="p">(</span><span class="nf">x</span><span class="w"> </span><span class="nv">m</span><span class="p">)</span>
+<span class="w">  </span><span class="p">(</span><span class="nf">sphere</span><span class="w"> </span><span class="nv">m</span><span class="w"> </span><span class="p">(</span><span class="nf">g1</span><span class="w"> </span><span class="p">(</span><span class="nf">nthcdr</span><span class="w"> </span><span class="p">(</span><span class="nb">1-</span><span class="w"> </span><span class="nv">m</span><span class="p">)</span><span class="w"> </span><span class="nv">x</span><span class="p">))</span><span class="w"> </span><span class="p">(</span><span class="nf">half-pi-thetas</span><span class="w"> </span><span class="nv">x</span><span class="w"> </span><span class="nv">m</span><span class="p">)))</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-11'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-11'>#</a>
+      </div>
+      <p>Spherical front, biased density</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="p">(</span><span class="nf">defun</span><span class="w"> </span><span class="nv">dtlz4</span><span class="w"> </span><span class="p">(</span><span class="nf">x</span><span class="w"> </span><span class="nv">m</span><span class="p">)</span>
+<span class="w">  </span><span class="p">(</span><span class="nf">sphere</span><span class="w"> </span><span class="nv">m</span><span class="w"> </span><span class="p">(</span><span class="nf">g2</span><span class="w"> </span><span class="p">(</span><span class="nf">nthcdr</span><span class="w"> </span><span class="p">(</span><span class="nb">1-</span><span class="w"> </span><span class="nv">m</span><span class="p">)</span><span class="w"> </span><span class="nv">x</span><span class="p">))</span><span class="w"> </span><span class="p">(</span><span class="nf">half-pi-thetas</span><span class="w"> </span><span class="nv">x</span><span class="w"> </span><span class="nv">m</span><span class="w"> </span><span class="mi">100</span><span class="p">)))</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-12'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-12'>#</a>
+      </div>
+      <p>Dtlz5/6 theta remap onto a degenerate curve</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="p">(</span><span class="nf">defun</span><span class="w"> </span><span class="nv">degen</span><span class="w"> </span><span class="p">(</span><span class="nf">x</span><span class="w"> </span><span class="nv">m</span><span class="w"> </span><span class="nv">g</span><span class="p">)</span>
+<span class="w">  </span><span class="p">(</span><span class="nf">sphere</span><span class="w"> </span><span class="nv">m</span><span class="w"> </span><span class="nv">g</span>
+<span class="w">          </span><span class="p">(</span><span class="nb">cons</span><span class="w"> </span><span class="p">(</span><span class="nb">*</span><span class="w"> </span><span class="p">(</span><span class="nb">first</span><span class="w"> </span><span class="nv">x</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="nb">/</span><span class="w"> </span><span class="nv">pi</span><span class="w"> </span><span class="mi">2</span><span class="p">))</span>
+<span class="w">                </span><span class="p">(</span><span class="nf">loop</span><span class="w"> </span><span class="nv">for</span><span class="w"> </span><span class="nv">i</span><span class="w"> </span><span class="nv">from</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="nv">below</span><span class="w"> </span><span class="p">(</span><span class="nb">1-</span><span class="w"> </span><span class="nv">m</span><span class="p">)</span>
+<span class="w">                      </span><span class="nv">collect</span><span class="w"> </span><span class="p">(</span><span class="nb">*</span><span class="w"> </span><span class="p">(</span><span class="nb">/</span><span class="w"> </span><span class="nv">pi</span><span class="w"> </span><span class="p">(</span><span class="nb">*</span><span class="w"> </span><span class="mi">4</span><span class="w"> </span><span class="p">(</span><span class="nb">+</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="nv">g</span><span class="p">)))</span>
+<span class="w">                                 </span><span class="p">(</span><span class="nb">+</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="p">(</span><span class="nb">*</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="nv">g</span><span class="w"> </span><span class="p">(</span><span class="nf">elt</span><span class="w"> </span><span class="nv">x</span><span class="w"> </span><span class="nv">i</span><span class="p">))))))))</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-13'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-13'>#</a>
+      </div>
+      <p>Degenerate curve front</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="p">(</span><span class="nf">defun</span><span class="w"> </span><span class="nv">dtlz5</span><span class="w"> </span><span class="p">(</span><span class="nf">x</span><span class="w"> </span><span class="nv">m</span><span class="p">)</span>
+<span class="w">  </span><span class="p">(</span><span class="nf">degen</span><span class="w"> </span><span class="nv">x</span><span class="w"> </span><span class="nv">m</span><span class="w"> </span><span class="p">(</span><span class="nf">g2</span><span class="w"> </span><span class="p">(</span><span class="nf">nthcdr</span><span class="w"> </span><span class="p">(</span><span class="nb">1-</span><span class="w"> </span><span class="nv">m</span><span class="p">)</span><span class="w"> </span><span class="nv">x</span><span class="p">))))</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-14'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-14'>#</a>
+      </div>
+      <p>Degenerate curve front, biased distance</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="p">(</span><span class="nf">defun</span><span class="w"> </span><span class="nv">dtlz6</span><span class="w"> </span><span class="p">(</span><span class="nf">x</span><span class="w"> </span><span class="nv">m</span><span class="p">)</span>
+<span class="w">  </span><span class="p">(</span><span class="nf">degen</span><span class="w"> </span><span class="nv">x</span><span class="w"> </span><span class="nv">m</span><span class="w"> </span><span class="p">(</span><span class="nf">g6</span><span class="w"> </span><span class="p">(</span><span class="nf">nthcdr</span><span class="w"> </span><span class="p">(</span><span class="nb">1-</span><span class="w"> </span><span class="nv">m</span><span class="p">)</span><span class="w"> </span><span class="nv">x</span><span class="p">))))</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-15'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-15'>#</a>
+      </div>
+      <p>Disconnected front</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="p">(</span><span class="nf">defun</span><span class="w"> </span><span class="nv">dtlz7</span><span class="w"> </span><span class="p">(</span><span class="nf">x</span><span class="w"> </span><span class="nv">m</span><span class="p">)</span>
+<span class="w">  </span><span class="p">(</span><span class="k">let*</span><span class="w"> </span><span class="p">((</span><span class="nf">k</span><span class="w"> </span><span class="p">(</span><span class="nb">-</span><span class="w"> </span><span class="p">(</span><span class="nb">length</span><span class="w"> </span><span class="nv">x</span><span class="p">)</span><span class="w"> </span><span class="nv">m</span><span class="w"> </span><span class="mi">-1</span><span class="p">))</span>
+<span class="w">         </span><span class="p">(</span><span class="nf">g</span><span class="w"> </span><span class="p">(</span><span class="nb">+</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="p">(</span><span class="nb">*</span><span class="w"> </span><span class="p">(</span><span class="nb">/</span><span class="w"> </span><span class="mi">9</span><span class="w"> </span><span class="nv">k</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="nf">loop</span><span class="w"> </span><span class="nv">for</span><span class="w"> </span><span class="nv">v</span><span class="w"> </span><span class="nv">in</span><span class="w"> </span><span class="p">(</span><span class="nf">nthcdr</span><span class="w"> </span><span class="p">(</span><span class="nb">1-</span><span class="w"> </span><span class="nv">m</span><span class="p">)</span><span class="w"> </span><span class="nv">x</span><span class="p">)</span>
+<span class="w">                                  </span><span class="nv">sum</span><span class="w"> </span><span class="nv">v</span><span class="p">))))</span>
+<span class="w">         </span><span class="p">(</span><span class="nf">f</span><span class="w"> </span><span class="p">(</span><span class="nf">subseq</span><span class="w"> </span><span class="nv">x</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="p">(</span><span class="nb">1-</span><span class="w"> </span><span class="nv">m</span><span class="p">)))</span>
+<span class="w">         </span><span class="p">(</span><span class="nf">h</span><span class="w"> </span><span class="p">(</span><span class="nb">-</span><span class="w"> </span><span class="nv">m</span><span class="w"> </span><span class="p">(</span><span class="nf">loop</span><span class="w"> </span><span class="nv">for</span><span class="w"> </span><span class="nv">fi</span><span class="w"> </span><span class="nv">in</span><span class="w"> </span><span class="nv">f</span>
+<span class="w">                       </span><span class="nv">sum</span><span class="w"> </span><span class="p">(</span><span class="nb">*</span><span class="w"> </span><span class="p">(</span><span class="nb">/</span><span class="w"> </span><span class="nv">fi</span><span class="w"> </span><span class="p">(</span><span class="nb">+</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="nv">g</span><span class="p">))</span>
+<span class="w">                              </span><span class="p">(</span><span class="nb">+</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="p">(</span><span class="nb">sin</span><span class="w"> </span><span class="p">(</span><span class="nb">*</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="nv">pi</span><span class="w"> </span><span class="nv">fi</span><span class="p">))))))))</span>
+<span class="w">    </span><span class="p">(</span><span class="nb">append</span><span class="w"> </span><span class="nv">f</span><span class="w"> </span><span class="p">(</span><span class="nb">list</span><span class="w"> </span><span class="p">(</span><span class="nb">*</span><span class="w"> </span><span class="p">(</span><span class="nb">+</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="nv">g</span><span class="p">)</span><span class="w"> </span><span class="nv">h</span><span class="p">)))))</span>
+
+<span class="p">(</span><span class="nf">defvar</span><span class="w"> </span><span class="nv">*models*</span><span class="w"> </span><span class="o">&#39;</span><span class="p">(</span><span class="nv">dtlz1</span><span class="w"> </span><span class="nv">dtlz2</span><span class="w"> </span><span class="nv">dtlz3</span><span class="w"> </span><span class="nv">dtlz4</span><span class="w"> </span><span class="nv">dtlz5</span><span class="w"> </span><span class="nv">dtlz6</span><span class="w"> </span><span class="nv">dtlz7</span><span class="p">))</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-16'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-16'>#</a>
+      </div>
+      <h2>The pool and the label seam</h2>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-17'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-17'>#</a>
+      </div>
+      <p>Value after <code>flag</code> on the command line, else default</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="p">(</span><span class="nf">defun</span><span class="w"> </span><span class="nv">opt</span><span class="w"> </span><span class="p">(</span><span class="nf">flag</span><span class="w"> </span><span class="nv">default</span><span class="p">)</span>
+<span class="w">  </span><span class="p">(</span><span class="nf">aif</span><span class="w"> </span><span class="p">(</span><span class="nb">member</span><span class="w"> </span><span class="nv">flag</span><span class="w"> </span><span class="p">(</span><span class="nf">args</span><span class="p">)</span><span class="w"> </span><span class="nv">:test</span><span class="w"> </span><span class="o">#</span><span class="ss">&#39;equal</span><span class="p">)</span>
+<span class="w">    </span><span class="p">(</span><span class="nf">thing</span><span class="w"> </span><span class="p">(</span><span class="nb">second</span><span class="w"> </span><span class="nv">it</span><span class="p">))</span>
+<span class="w">    </span><span class="nv">default</span><span class="p">))</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-18'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-18'>#</a>
+      </div>
+      <p>N rows: random decision vars, goals unknown</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="p">(</span><span class="nf">defun</span><span class="w"> </span><span class="nv">fresh-pool</span><span class="w"> </span><span class="p">(</span><span class="nf">n</span><span class="w"> </span><span class="nv">nn</span><span class="w"> </span><span class="nv">mm</span><span class="p">)</span>
+<span class="w">  </span><span class="p">(</span><span class="nf">loop</span><span class="w"> </span><span class="nv">repeat</span><span class="w"> </span><span class="nv">n</span>
+<span class="w">        </span><span class="nv">collect</span><span class="w"> </span><span class="p">(</span><span class="nf">coerce</span><span class="w"> </span><span class="p">(</span><span class="nb">append</span><span class="w"> </span><span class="p">(</span><span class="nf">loop</span><span class="w"> </span><span class="nv">repeat</span><span class="w"> </span><span class="nv">nn</span><span class="w"> </span><span class="nv">collect</span><span class="w"> </span><span class="p">(</span><span class="nf">rand</span><span class="p">))</span>
+<span class="w">                                </span><span class="p">(</span><span class="nb">make-list</span><span class="w"> </span><span class="nv">mm</span><span class="w"> </span><span class="nv">:initial-element</span>
+<span class="w">                                              </span><span class="ss">&#39;?</span><span class="p">))</span>
+<span class="w">                        </span><span class="ss">&#39;vector</span><span class="p">)))</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-19'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-19'>#</a>
+      </div>
+      <p>Closure for <em>label</em>: run the model, fold goals into cols</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="p">(</span><span class="nf">defun</span><span class="w"> </span><span class="nv">labeller</span><span class="w"> </span><span class="p">(</span><span class="nf">tbl</span><span class="w"> </span><span class="nv">model</span><span class="w"> </span><span class="nv">nn</span><span class="w"> </span><span class="nv">mm</span><span class="p">)</span>
+<span class="w">  </span><span class="p">(</span><span class="k">lambda</span><span class="w"> </span><span class="p">(</span><span class="nf">row</span><span class="p">)</span>
+<span class="w">    </span><span class="p">(</span><span class="k">when</span><span class="w"> </span><span class="p">(</span><span class="nb">find</span><span class="w"> </span><span class="ss">&#39;?</span><span class="w"> </span><span class="nv">row</span><span class="p">)</span>
+<span class="w">      </span><span class="p">(</span><span class="k">let</span><span class="w"> </span><span class="p">((</span><span class="nf">x</span><span class="w"> </span><span class="p">(</span><span class="nf">coerce</span><span class="w"> </span><span class="p">(</span><span class="nf">subseq</span><span class="w"> </span><span class="nv">row</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="nv">nn</span><span class="p">)</span><span class="w"> </span><span class="ss">&#39;list</span><span class="p">)))</span>
+<span class="w">        </span><span class="p">(</span><span class="nf">loop</span><span class="w"> </span><span class="nv">for</span><span class="w"> </span><span class="nv">v</span><span class="w"> </span><span class="nv">in</span><span class="w"> </span><span class="p">(</span><span class="nf">funcall</span><span class="w"> </span><span class="nv">model</span><span class="w"> </span><span class="nv">x</span><span class="w"> </span><span class="nv">mm</span><span class="p">)</span>
+<span class="w">              </span><span class="nv">for</span><span class="w"> </span><span class="nv">at</span><span class="w"> </span><span class="nv">from</span><span class="w"> </span><span class="nv">nn</span><span class="w"> </span><span class="k">do</span>
+<span class="w">          </span><span class="p">(</span><span class="nf">setf</span><span class="w"> </span><span class="p">(</span><span class="nf">elt</span><span class="w"> </span><span class="nv">row</span><span class="w"> </span><span class="nv">at</span><span class="p">)</span><span class="w"> </span><span class="nv">v</span><span class="p">)</span>
+<span class="w">          </span><span class="p">(</span><span class="nf">add</span><span class="w"> </span><span class="p">(</span><span class="nf">col-at</span><span class="w"> </span><span class="nv">tbl</span><span class="w"> </span><span class="nv">at</span><span class="p">)</span><span class="w"> </span><span class="nv">v</span><span class="p">))))</span>
+<span class="w">    </span><span class="nv">row</span><span class="p">))</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-20'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-20'>#</a>
+      </div>
+      <p>Print one row: decision vars, objectives, disty, win</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="p">(</span><span class="nf">defun</span><span class="w"> </span><span class="nv">instance</span><span class="w"> </span><span class="p">(</span><span class="nf">tbl</span><span class="w"> </span><span class="nv">row</span><span class="w"> </span><span class="nv">nn</span><span class="w"> </span><span class="nv">win</span><span class="p">)</span>
+<span class="w">  </span><span class="p">(</span><span class="nb">format</span><span class="w"> </span><span class="nv">t</span><span class="w"> </span><span class="s">&quot;  x ~{ ~5,2f~}~%&quot;</span><span class="w"> </span><span class="p">(</span><span class="nf">coerce</span><span class="w"> </span><span class="p">(</span><span class="nf">subseq</span><span class="w"> </span><span class="nv">row</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="nv">nn</span><span class="p">)</span>
+<span class="w">                                       </span><span class="ss">&#39;list</span><span class="p">))</span>
+<span class="w">  </span><span class="p">(</span><span class="nb">format</span><span class="w"> </span><span class="nv">t</span><span class="w"> </span><span class="s">&quot;  f ~{ ~6,3f~}   (disty ~,3f, win ~a; ~a)~%&quot;</span>
+<span class="w">          </span><span class="p">(</span><span class="nf">coerce</span><span class="w"> </span><span class="p">(</span><span class="nf">subseq</span><span class="w"> </span><span class="nv">row</span><span class="w"> </span><span class="nv">nn</span><span class="p">)</span><span class="w"> </span><span class="ss">&#39;list</span><span class="p">)</span>
+<span class="w">          </span><span class="p">(</span><span class="nf">disty</span><span class="w"> </span><span class="nv">tbl</span><span class="w"> </span><span class="nv">row</span><span class="p">)</span>
+<span class="w">          </span><span class="p">(</span><span class="nb">round</span><span class="w"> </span><span class="p">(</span><span class="nf">funcall</span><span class="w"> </span><span class="nv">win</span><span class="w"> </span><span class="nv">row</span><span class="p">))</span>
+<span class="w">          </span><span class="s">&quot;100=best 0=median&quot;</span><span class="p">))</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-21'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-21'>#</a>
+      </div>
+      <h2>Drive one model</h2>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-22'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-22'>#</a>
+      </div>
+      <p>Header: X1..Xn decision vars, F1-..Fm- minimize goals</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="p">(</span><span class="nf">defun</span><span class="w"> </span><span class="nv">names</span><span class="w"> </span><span class="p">(</span><span class="nf">nn</span><span class="w"> </span><span class="nv">mm</span><span class="p">)</span>
+<span class="w">  </span><span class="p">(</span><span class="nf">coerce</span><span class="w"> </span><span class="p">(</span><span class="nb">append</span><span class="w"> </span><span class="p">(</span><span class="nf">loop</span><span class="w"> </span><span class="nv">for</span><span class="w"> </span><span class="nv">i</span><span class="w"> </span><span class="nv">from</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="nv">to</span><span class="w"> </span><span class="nv">nn</span>
+<span class="w">                        </span><span class="nv">collect</span><span class="w"> </span><span class="p">(</span><span class="nb">format</span><span class="w"> </span><span class="nv">nil</span><span class="w"> </span><span class="s">&quot;X~a&quot;</span><span class="w"> </span><span class="nv">i</span><span class="p">))</span>
+<span class="w">                  </span><span class="p">(</span><span class="nf">loop</span><span class="w"> </span><span class="nv">for</span><span class="w"> </span><span class="nv">i</span><span class="w"> </span><span class="nv">from</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="nv">to</span><span class="w"> </span><span class="nv">mm</span>
+<span class="w">                        </span><span class="nv">collect</span><span class="w"> </span><span class="p">(</span><span class="nb">format</span><span class="w"> </span><span class="nv">nil</span><span class="w"> </span><span class="s">&quot;F~a-&quot;</span><span class="w"> </span><span class="nv">i</span><span class="p">)))</span>
+<span class="w">          </span><span class="ss">&#39;vector</span><span class="p">))</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-23'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-23'>#</a>
+      </div>
+      <p>Wins grader from a fresh, fully labelled pool</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="p">(</span><span class="nf">defun</span><span class="w"> </span><span class="nv">oracle</span><span class="w"> </span><span class="p">(</span><span class="nf">model</span><span class="w"> </span><span class="nv">nn</span><span class="w"> </span><span class="nv">mm</span><span class="p">)</span>
+<span class="w">  </span><span class="p">(</span><span class="nf">setf</span><span class="w"> </span><span class="nv">*seed*</span><span class="w"> </span><span class="p">(</span><span class="nf">?</span><span class="w"> </span><span class="nv">*my*</span><span class="w"> </span><span class="nv">--seed</span><span class="p">))</span>
+<span class="w">  </span><span class="p">(</span><span class="k">let*</span><span class="w"> </span><span class="p">((</span><span class="nf">tbl</span><span class="w"> </span><span class="p">(</span><span class="nf">make-tbl</span><span class="w"> </span><span class="p">(</span><span class="nb">cons</span><span class="w"> </span><span class="p">(</span><span class="nf">names</span><span class="w"> </span><span class="nv">nn</span><span class="w"> </span><span class="nv">mm</span><span class="p">)</span>
+<span class="w">                              </span><span class="p">(</span><span class="nf">fresh-pool</span><span class="w"> </span><span class="mi">1000</span><span class="w"> </span><span class="nv">nn</span><span class="w"> </span><span class="nv">mm</span><span class="p">))))</span>
+<span class="w">         </span><span class="p">(</span><span class="nf">*label*</span><span class="w"> </span><span class="p">(</span><span class="nf">labeller</span><span class="w"> </span><span class="nv">tbl</span><span class="w"> </span><span class="nv">model</span><span class="w"> </span><span class="nv">nn</span><span class="w"> </span><span class="nv">mm</span><span class="p">)))</span>
+<span class="w">    </span><span class="p">(</span><span class="nf">mapc</span><span class="w"> </span><span class="nv">*label*</span><span class="w"> </span><span class="p">(</span><span class="nf">?</span><span class="w"> </span><span class="nv">tbl</span><span class="w"> </span><span class="nv">rows</span><span class="p">))</span>
+<span class="w">    </span><span class="p">(</span><span class="nf">wins</span><span class="w"> </span><span class="nv">tbl</span><span class="p">)))</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-24'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-24'>#</a>
+      </div>
+      <p>Landscape + tree + holdout, goals computed on demand</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="p">(</span><span class="nf">defun</span><span class="w"> </span><span class="nv">run-model</span><span class="w"> </span><span class="p">(</span><span class="nf">name</span><span class="w"> </span><span class="nv">nn</span><span class="w"> </span><span class="nv">mm</span><span class="w"> </span><span class="nv">&amp;aux</span><span class="w"> </span><span class="p">(</span><span class="nf">model</span><span class="w"> </span><span class="p">(</span><span class="nf">symbol-function</span>
+<span class="w">                                           </span><span class="nv">name</span><span class="p">)))</span>
+<span class="w">  </span><span class="p">(</span><span class="nb">format</span><span class="w"> </span><span class="nv">t</span><span class="w"> </span><span class="s">&quot;~&amp;~%model ~(~a~)   N=~a x-vars   M=~a goals~%&quot;</span>
+<span class="w">          </span><span class="nv">name</span><span class="w"> </span><span class="nv">nn</span><span class="w"> </span><span class="nv">mm</span><span class="p">)</span>
+<span class="w">  </span><span class="p">(</span><span class="k">let</span><span class="w"> </span><span class="p">((</span><span class="nf">win</span><span class="w"> </span><span class="p">(</span><span class="nf">oracle</span><span class="w"> </span><span class="nv">model</span><span class="w"> </span><span class="nv">nn</span><span class="w"> </span><span class="nv">mm</span><span class="p">)))</span>
+<span class="w">    </span><span class="p">(</span><span class="nf">setf</span><span class="w"> </span><span class="nv">*seed*</span><span class="w"> </span><span class="p">(</span><span class="nf">?</span><span class="w"> </span><span class="nv">*my*</span><span class="w"> </span><span class="nv">--seed</span><span class="p">))</span>
+<span class="w">    </span><span class="p">(</span><span class="k">let*</span><span class="w"> </span><span class="p">((</span><span class="nf">tbl</span><span class="w"> </span><span class="p">(</span><span class="nf">make-tbl</span><span class="w"> </span><span class="p">(</span><span class="nb">cons</span><span class="w"> </span><span class="p">(</span><span class="nf">names</span><span class="w"> </span><span class="nv">nn</span><span class="w"> </span><span class="nv">mm</span><span class="p">)</span>
+<span class="w">                                </span><span class="p">(</span><span class="nf">fresh-pool</span><span class="w"> </span><span class="mi">1000</span><span class="w"> </span><span class="nv">nn</span><span class="w"> </span><span class="nv">mm</span><span class="p">))))</span>
+<span class="w">           </span><span class="p">(</span><span class="nf">*label*</span><span class="w"> </span><span class="p">(</span><span class="nf">labeller</span><span class="w"> </span><span class="nv">tbl</span><span class="w"> </span><span class="nv">model</span><span class="w"> </span><span class="nv">nn</span><span class="w"> </span><span class="nv">mm</span><span class="p">))</span>
+<span class="w">           </span><span class="p">(</span><span class="nf">got</span><span class="w"> </span><span class="p">(</span><span class="nf">landscape</span><span class="w"> </span><span class="nv">tbl</span><span class="p">)))</span>
+<span class="w">      </span><span class="p">(</span><span class="nb">format</span><span class="w"> </span><span class="nv">t</span><span class="w"> </span><span class="s">&quot;~&amp;best option found (one instance):~%&quot;</span><span class="p">)</span>
+<span class="w">      </span><span class="p">(</span><span class="nf">instance</span><span class="w"> </span><span class="nv">tbl</span><span class="w"> </span><span class="p">(</span><span class="nb">first</span><span class="w"> </span><span class="nv">got</span><span class="p">)</span><span class="w"> </span><span class="nv">nn</span><span class="w"> </span><span class="nv">win</span><span class="p">)</span>
+<span class="w">      </span><span class="p">(</span><span class="nb">format</span><span class="w"> </span><span class="nv">t</span><span class="w"> </span><span class="s">&quot;~&amp;why? which x-ranges reach good goals:~%&quot;</span><span class="p">)</span>
+<span class="w">      </span><span class="p">(</span><span class="nf">show</span><span class="w"> </span><span class="nv">tbl</span><span class="w"> </span><span class="p">(</span><span class="nf">tree</span><span class="w"> </span><span class="nv">tbl</span><span class="w"> </span><span class="nv">got</span>
+<span class="w">                      </span><span class="p">(</span><span class="k">lambda</span><span class="w"> </span><span class="p">(</span><span class="nf">r</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="nf">disty</span><span class="w"> </span><span class="nv">tbl</span><span class="w"> </span><span class="nv">r</span><span class="p">))))</span>
+<span class="w">      </span><span class="p">(</span><span class="nf">setf</span><span class="w"> </span><span class="nv">*seed*</span><span class="w"> </span><span class="p">(</span><span class="nf">?</span><span class="w"> </span><span class="nv">*my*</span><span class="w"> </span><span class="nv">--seed</span><span class="p">))</span>
+<span class="w">      </span><span class="p">(</span><span class="k">let*</span><span class="w"> </span><span class="p">((</span><span class="nf">tbl</span><span class="w"> </span><span class="p">(</span><span class="nf">make-tbl</span><span class="w"> </span><span class="p">(</span><span class="nb">cons</span><span class="w"> </span><span class="p">(</span><span class="nf">names</span><span class="w"> </span><span class="nv">nn</span><span class="w"> </span><span class="nv">mm</span><span class="p">)</span>
+<span class="w">                                  </span><span class="p">(</span><span class="nf">fresh-pool</span><span class="w"> </span><span class="mi">1000</span><span class="w"> </span><span class="nv">nn</span><span class="w"> </span><span class="nv">mm</span><span class="p">))))</span>
+<span class="w">             </span><span class="p">(</span><span class="nf">*label*</span><span class="w"> </span><span class="p">(</span><span class="nf">labeller</span><span class="w"> </span><span class="nv">tbl</span><span class="w"> </span><span class="nv">model</span><span class="w"> </span><span class="nv">nn</span><span class="w"> </span><span class="nv">mm</span><span class="p">)))</span>
+<span class="w">        </span><span class="p">(</span><span class="nb">format</span><span class="w"> </span><span class="nv">t</span><span class="w"> </span><span class="s">&quot;~&amp;does it generalize? best on unseen data:~%&quot;</span><span class="p">)</span>
+<span class="w">        </span><span class="p">(</span><span class="nf">instance</span><span class="w"> </span><span class="nv">tbl</span><span class="w"> </span><span class="p">(</span><span class="nf">holdout</span><span class="w"> </span><span class="nv">tbl</span><span class="p">)</span><span class="w"> </span><span class="nv">nn</span><span class="w"> </span><span class="nv">win</span><span class="p">)))))</span>
+
+<span class="p">(</span><span class="k">eval-when</span><span class="w"> </span><span class="p">(</span><span class="nf">:execute</span><span class="p">)</span>
+<span class="w">  </span><span class="p">(</span><span class="k">let</span><span class="w"> </span><span class="p">((</span><span class="nf">name</span><span class="w"> </span><span class="p">(</span><span class="nf">opt</span><span class="w"> </span><span class="s">&quot;--model&quot;</span><span class="w"> </span><span class="s">&quot;dtlz2&quot;</span><span class="p">))</span>
+<span class="w">        </span><span class="p">(</span><span class="nf">nn</span><span class="w">   </span><span class="p">(</span><span class="nf">opt</span><span class="w"> </span><span class="s">&quot;--N&quot;</span><span class="w"> </span><span class="mi">6</span><span class="p">))</span>
+<span class="w">        </span><span class="p">(</span><span class="nf">mm</span><span class="w">   </span><span class="p">(</span><span class="nf">opt</span><span class="w"> </span><span class="s">&quot;--M&quot;</span><span class="w"> </span><span class="mi">2</span><span class="p">)))</span>
+<span class="w">    </span><span class="p">(</span><span class="nf">setf</span><span class="w"> </span><span class="p">(</span><span class="nf">?</span><span class="w"> </span><span class="nv">*my*</span><span class="w"> </span><span class="nv">--budget</span><span class="p">)</span><span class="w"> </span><span class="mi">100</span><span class="p">)</span>
+<span class="w">    </span><span class="p">(</span><span class="nf">dolist</span><span class="w"> </span><span class="p">(</span><span class="nf">m</span><span class="w"> </span><span class="p">(</span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nf">equal</span><span class="w"> </span><span class="nv">name</span><span class="w"> </span><span class="s">&quot;all&quot;</span><span class="p">)</span>
+<span class="w">                   </span><span class="nv">*models*</span>
+<span class="w">                   </span><span class="p">(</span><span class="nb">list</span><span class="w"> </span><span class="p">(</span><span class="nf">intern</span><span class="w"> </span><span class="p">(</span><span class="nb">string-upcase</span><span class="w"> </span><span class="nv">name</span><span class="p">)</span>
+<span class="w">                                 </span><span class="nv">:tiny-xai</span><span class="p">))))</span>
+<span class="w">      </span><span class="p">(</span><span class="nf">run-model</span><span class="w"> </span><span class="nv">m</span><span class="w"> </span><span class="nv">nn</span><span class="w"> </span><span class="nv">mm</span><span class="p">))))</span>
+
+</pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+</div>
+</body>

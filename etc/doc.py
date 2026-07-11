@@ -126,6 +126,13 @@ def main(site="_site"):
         open(f"{site}/{d}/{base}", "w").write( # Liquid-escape
           "{% raw %}\n" + open(f).read() + "\n{% endraw %}")
         files += [f"- [{base}]({base})"]
+    if os.path.isdir(f"{d}/docs"):             # pycco html, verbatim
+      os.makedirs(f"{site}/{d}/docs", exist_ok=True)
+      for f in glob.glob(f"{d}/docs/*"):
+        base = os.path.basename(f)
+        open(f"{site}/{d}/docs/{base}", "w").write(open(f).read())
+        if base == f"{d}.html":
+          files = [f"- [annotated source](docs/{base})"] + files
     lead = open(f"{d}/README.md").read().splitlines()[2] \
            if os.path.exists(f"{d}/README.md") else ""
     open(f"{site}/{d}/index.md", "w").write(

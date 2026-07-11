@@ -1,28 +1,30 @@
-FILES="bins-eg.lisp
-       bins.lisp
-       cols-eg.lisp
-       cols.lisp
-       dist-eg.lisp
-       dist.lisp
-       dtlz.lisp
-       landscape-eg.lisp
-       landscape.lisp
-       lib-eg.lisp
-       lib.lisp
-       macros-eg.lisp
+FILES="tiny-xai.lisp
        macros.lisp
-       main-eg.lisp
-       main.lisp
-       query-eg.lisp
-       query.lisp
-       rand-eg.lisp
+       lib.lisp
        rand.lisp
-       stats-eg.lisp
-       stats.lisp
-       tbl-eg.lisp
+       cols.lisp
+       query.lisp
        tbl.lisp
+       dist.lisp
+       landscape.lisp
+       bins.lisp
+       tree.lisp
+       stats.lisp
+       main.lisp
+       dtlz.lisp
        tiny-xai-eg.lisp
-       tiny-xai.lisp"
+       lib-eg.lisp
+       macros-eg.lisp
+       cols-eg.lisp
+       query-eg.lisp
+       rand-eg.lisp
+       tbl-eg.lisp
+       dist-eg.lisp
+       stats-eg.lisp
+       landscape-eg.lisp
+       bins-eg.lisp
+       tree-eg.lisp
+       main-eg.lisp"
 : <<'DOCS'
 
 # tiny-xai
@@ -30,6 +32,10 @@ FILES="bins-eg.lisp
 Install:
 
     curl -fL https://raw.githubusercontent.com/timm/src/refs/heads/main/tiny-xai/INSTALL.md | sh
+
+List the files (reading order; also the doc page order):
+
+    sh INSTALL.md list
 
 DOCS
 BASE="https://raw.githubusercontent.com/timm/src/refs/heads/main/tiny-xai/"

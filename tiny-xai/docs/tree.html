@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html;charset=utf-8">
+  <title>tree.scm</title>
+  <link rel="stylesheet" href="pycco.css">
+</head>
+<body>
+<div id='container'>
+  <div id="background"></div>
+  <div class='section'>
+    <div class='docs'><p align="center">
+<a href="https://timm.github.io/src/"><img alt="home" src="https://img.shields.io/badge/🏠-home-gold"></a>
+<a href="https://github.com/timm/src/tree/main/tiny-xai"><img alt="src" src="https://img.shields.io/badge/src-tiny--xai-black"></a>
+<a href="https://github.com/timm/src/issues"><img alt="issues" src="https://img.shields.io/badge/issues-report-red"></a>
+<a href="https://github.com/timm/src/blob/main/LICENSE.md"><img alt="license" src="https://img.shields.io/badge/license-MIT-brightgreen"></a>
+<img alt="language" src="https://img.shields.io/badge/language-common%20lisp-9558B2">
+<img alt="runs on" src="https://img.shields.io/badge/runs%20on-sbcl%20|%20clisp-EE4C2C">
+<a href="https://timm.fyi"><img alt="author" src="https://img.shields.io/badge/author-timm-blueviolet"></a>
+</p><p><a href="tiny-xai.html">tiny-xai</a> | <a href="macros.html">macros</a> | <a href="lib.html">lib</a> | <a href="rand.html">rand</a> | <a href="cols.html">cols</a> | <a href="query.html">query</a> | <a href="tbl.html">tbl</a> | <a href="dist.html">dist</a> | <a href="landscape.html">landscape</a> | <a href="bins.html">bins</a> | <b>tree</b> | <a href="stats.html">stats</a> | <a href="main.html">main</a> | <a href="dtlz.html">dtlz</a> | <a href="tiny-xai-eg.html">tests</a></p><p><a href="bins.html">&lt; prev</a> | <a href="stats.html">next &gt;</a></p><h1>tree.scm</h1></div>
+  </div>
+  <div class='clearall'>
+  <div class='section' id='section-0'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-0'>#</a>
+      </div>
+      <p>Trees. <code>tree</code> recurses on the best bin while <code>grow-p</code>
+allows; leaves keep their rows and a <code>mid</code> prediction.
+<code>leaf</code> routes a new row down; <code>show</code> prints branch
+conditions as text. Passing a different accum
+(make-sym) turns the same code from regression into
+classification.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span></span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-1'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-1'>#</a>
+      </div>
+      <p>Recursively split rows on the min-cost bin</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="p">(</span><span class="nf">defun</span><span class="w"> </span><span class="nv">tree</span><span class="w"> </span><span class="p">(</span><span class="nf">tbl</span><span class="w"> </span><span class="nv">rows</span><span class="w"> </span><span class="nv">y</span><span class="w"> </span><span class="nv">&amp;optional</span><span class="w"> </span><span class="p">(</span><span class="nf">accum</span><span class="w"> </span><span class="o">#</span><span class="ss">&#39;make-num</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="nf">lvl</span><span class="w"> </span><span class="mi">0</span><span class="p">))</span>
+<span class="w">  </span><span class="p">(</span><span class="k">let</span><span class="w"> </span><span class="p">((</span><span class="nf">i</span><span class="w"> </span><span class="p">(</span><span class="nf">make-node</span><span class="w"> </span><span class="nv">:n</span><span class="w"> </span><span class="p">(</span><span class="nb">length</span><span class="w"> </span><span class="nv">rows</span><span class="p">)</span><span class="w"> </span><span class="nv">:rows</span><span class="w"> </span><span class="nv">rows</span>
+<span class="w">                      </span><span class="nv">:mid</span><span class="w"> </span><span class="p">(</span><span class="nf">mid</span><span class="w"> </span><span class="p">(</span><span class="nf">adds</span><span class="w"> </span><span class="p">(</span><span class="nf">mapcar</span><span class="w"> </span><span class="nv">y</span><span class="w"> </span><span class="nv">rows</span><span class="p">)</span>
+<span class="w">                                      </span><span class="p">(</span><span class="nf">funcall</span><span class="w"> </span><span class="nv">accum</span><span class="p">))))))</span>
+<span class="w">    </span><span class="p">(</span><span class="k">when</span><span class="w"> </span><span class="p">(</span><span class="nf">grow-p</span><span class="w"> </span><span class="nv">rows</span><span class="w"> </span><span class="nv">lvl</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="nf">branch</span><span class="w"> </span><span class="nv">tbl</span><span class="w"> </span><span class="nv">i</span><span class="w"> </span><span class="nv">rows</span><span class="w"> </span><span class="nv">y</span><span class="w"> </span><span class="nv">accum</span><span class="w"> </span><span class="nv">lvl</span><span class="p">))</span>
+<span class="w">    </span><span class="nv">i</span><span class="p">))</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-2'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-2'>#</a>
+      </div>
+      <p>Enough rows and shallow enough to split again?</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="p">(</span><span class="nf">defun</span><span class="w"> </span><span class="nv">grow-p</span><span class="w"> </span><span class="p">(</span><span class="nf">rows</span><span class="w"> </span><span class="nv">lvl</span><span class="p">)</span>
+<span class="w">  </span><span class="p">(</span><span class="k">and</span><span class="w"> </span><span class="p">(</span><span class="nb">&gt;=</span><span class="w"> </span><span class="p">(</span><span class="nb">length</span><span class="w"> </span><span class="nv">rows</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="nb">*</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="p">(</span><span class="nf">?</span><span class="w"> </span><span class="nv">*my*</span><span class="w"> </span><span class="nv">--leaf</span><span class="p">)))</span>
+<span class="w">       </span><span class="p">(</span><span class="nb">&lt;</span><span class="w"> </span><span class="nv">lvl</span><span class="w"> </span><span class="p">(</span><span class="nf">?</span><span class="w"> </span><span class="nv">*my*</span><span class="w"> </span><span class="nv">--depth</span><span class="p">))))</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-3'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-3'>#</a>
+      </div>
+      <p>If best bin divides rows, grow yes/no subtrees</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="p">(</span><span class="nf">defun</span><span class="w"> </span><span class="nv">branch</span><span class="w"> </span><span class="p">(</span><span class="nf">tbl</span><span class="w"> </span><span class="nv">i</span><span class="w"> </span><span class="nv">rows</span><span class="w"> </span><span class="nv">y</span><span class="w"> </span><span class="nv">accum</span><span class="w"> </span><span class="nv">lvl</span><span class="w"> </span><span class="nv">&amp;aux</span><span class="w"> </span><span class="nv">yes</span><span class="w"> </span><span class="nv">no</span><span class="p">)</span>
+<span class="w">  </span><span class="p">(</span><span class="nf">aif</span><span class="w"> </span><span class="p">(</span><span class="nf">split</span><span class="w"> </span><span class="nv">tbl</span><span class="w"> </span><span class="nv">rows</span><span class="w"> </span><span class="nv">y</span><span class="w"> </span><span class="nv">accum</span><span class="p">)</span>
+<span class="w">    </span><span class="p">(</span><span class="k">let</span><span class="w"> </span><span class="p">((</span><span class="nf">at</span><span class="w"> </span><span class="p">(</span><span class="nb">second</span><span class="w"> </span><span class="nv">it</span><span class="p">))</span><span class="w"> </span><span class="p">(</span><span class="nf">v</span><span class="w"> </span><span class="p">(</span><span class="nb">third</span><span class="w"> </span><span class="nv">it</span><span class="p">)))</span>
+<span class="w">      </span><span class="p">(</span><span class="nf">dolist</span><span class="w"> </span><span class="p">(</span><span class="nf">r</span><span class="w"> </span><span class="nv">rows</span><span class="p">)</span>
+<span class="w">        </span><span class="p">(</span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nf">has-p</span><span class="w"> </span><span class="p">(</span><span class="nf">col-at</span><span class="w"> </span><span class="nv">tbl</span><span class="w"> </span><span class="nv">at</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="nf">elt</span><span class="w"> </span><span class="nv">r</span><span class="w"> </span><span class="nv">at</span><span class="p">)</span><span class="w"> </span><span class="nv">v</span><span class="p">)</span>
+<span class="w">            </span><span class="p">(</span><span class="nf">push</span><span class="w"> </span><span class="nv">r</span><span class="w"> </span><span class="nv">yes</span><span class="p">)</span>
+<span class="w">            </span><span class="p">(</span><span class="nf">push</span><span class="w"> </span><span class="nv">r</span><span class="w"> </span><span class="nv">no</span><span class="p">)))</span>
+<span class="w">      </span><span class="p">(</span><span class="k">when</span><span class="w"> </span><span class="p">(</span><span class="k">and</span><span class="w"> </span><span class="nv">yes</span><span class="w"> </span><span class="nv">no</span><span class="p">)</span>
+<span class="w">        </span><span class="p">(</span><span class="nf">setf</span><span class="w"> </span><span class="nv">$at</span><span class="w">  </span><span class="nv">at</span>
+<span class="w">              </span><span class="nv">$v</span><span class="w">   </span><span class="nv">v</span>
+<span class="w">              </span><span class="nv">$yes</span><span class="w"> </span><span class="p">(</span><span class="nf">tree</span><span class="w"> </span><span class="nv">tbl</span><span class="w"> </span><span class="nv">yes</span><span class="w"> </span><span class="nv">y</span><span class="w"> </span><span class="nv">accum</span><span class="w"> </span><span class="p">(</span><span class="nb">1+</span><span class="w"> </span><span class="nv">lvl</span><span class="p">))</span>
+<span class="w">              </span><span class="nv">$no</span><span class="w">  </span><span class="p">(</span><span class="nf">tree</span><span class="w"> </span><span class="nv">tbl</span><span class="w"> </span><span class="nv">no</span><span class="w">  </span><span class="nv">y</span><span class="w"> </span><span class="nv">accum</span><span class="w"> </span><span class="p">(</span><span class="nb">1+</span><span class="w"> </span><span class="nv">lvl</span><span class="p">)))))))</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-4'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-4'>#</a>
+      </div>
+      <p>The column summary at index <code>at</code></p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="p">(</span><span class="nf">defun</span><span class="w"> </span><span class="nv">col-at</span><span class="w"> </span><span class="p">(</span><span class="nf">tbl</span><span class="w"> </span><span class="nv">at</span><span class="p">)</span>
+<span class="w">  </span><span class="p">(</span><span class="nf">elt</span><span class="w"> </span><span class="p">(</span><span class="nf">?</span><span class="w"> </span><span class="nv">tbl</span><span class="w"> </span><span class="nv">cols</span><span class="w"> </span><span class="nv">all</span><span class="p">)</span><span class="w"> </span><span class="nv">at</span><span class="p">))</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-5'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-5'>#</a>
+      </div>
+      <p>Walk row down the tree; return its leaf&rsquo;s mid</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="p">(</span><span class="nf">defun</span><span class="w"> </span><span class="nv">leaf</span><span class="w"> </span><span class="p">(</span><span class="nf">tbl</span><span class="w"> </span><span class="nv">i</span><span class="w"> </span><span class="nv">row</span><span class="p">)</span>
+<span class="w">  </span><span class="p">(</span><span class="k">if</span><span class="w"> </span><span class="nv">$at</span>
+<span class="w">      </span><span class="p">(</span><span class="nf">leaf</span><span class="w"> </span><span class="nv">tbl</span>
+<span class="w">            </span><span class="p">(</span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nf">has-p</span><span class="w"> </span><span class="p">(</span><span class="nf">col-at</span><span class="w"> </span><span class="nv">tbl</span><span class="w"> </span><span class="nv">$at</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="nf">elt</span><span class="w"> </span><span class="nv">row</span><span class="w"> </span><span class="nv">$at</span><span class="p">)</span><span class="w"> </span><span class="nv">$v</span><span class="p">)</span>
+<span class="w">                </span><span class="nv">$yes</span>
+<span class="w">                </span><span class="nv">$no</span><span class="p">)</span>
+<span class="w">            </span><span class="nv">row</span><span class="p">)</span>
+<span class="w">      </span><span class="nv">$mid</span><span class="p">))</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-6'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-6'>#</a>
+      </div>
+      <p>List of every leaf node</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="p">(</span><span class="nf">defun</span><span class="w"> </span><span class="nv">leaves</span><span class="w"> </span><span class="p">(</span><span class="nf">i</span><span class="p">)</span>
+<span class="w">  </span><span class="p">(</span><span class="k">if</span><span class="w"> </span><span class="nv">$at</span>
+<span class="w">      </span><span class="p">(</span><span class="nb">append</span><span class="w"> </span><span class="p">(</span><span class="nf">leaves</span><span class="w"> </span><span class="nv">$yes</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="nf">leaves</span><span class="w"> </span><span class="nv">$no</span><span class="p">))</span>
+<span class="w">      </span><span class="p">(</span><span class="nb">list</span><span class="w"> </span><span class="nv">i</span><span class="p">)))</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-7'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-7'>#</a>
+      </div>
+      <p>One branch test as text, e.g. |Volume &lt;= 183|</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="p">(</span><span class="nf">defun</span><span class="w"> </span><span class="nv">cond-txt</span><span class="w"> </span><span class="p">(</span><span class="nf">tbl</span><span class="w"> </span><span class="nv">i</span><span class="w"> </span><span class="nv">yes</span><span class="p">)</span>
+<span class="w">  </span><span class="p">(</span><span class="k">let</span><span class="w"> </span><span class="p">((</span><span class="nf">col</span><span class="w"> </span><span class="p">(</span><span class="nf">col-at</span><span class="w"> </span><span class="nv">tbl</span><span class="w"> </span><span class="nv">$at</span><span class="p">)))</span>
+<span class="w">    </span><span class="p">(</span><span class="nb">format</span><span class="w"> </span><span class="nv">nil</span><span class="w"> </span><span class="s">&quot;~a ~a ~a&quot;</span><span class="w"> </span><span class="p">(</span><span class="nf">?</span><span class="w"> </span><span class="nv">col</span><span class="w"> </span><span class="nv">txt</span><span class="p">)</span>
+<span class="w">            </span><span class="p">(</span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nf">sym-p</span><span class="w"> </span><span class="nv">col</span><span class="p">)</span>
+<span class="w">                </span><span class="p">(</span><span class="k">if</span><span class="w"> </span><span class="nv">yes</span><span class="w"> </span><span class="s">&quot;==&quot;</span><span class="w"> </span><span class="s">&quot;!=&quot;</span><span class="p">)</span>
+<span class="w">                </span><span class="p">(</span><span class="k">if</span><span class="w"> </span><span class="nv">yes</span><span class="w"> </span><span class="s">&quot;&lt;=&quot;</span><span class="w"> </span><span class="s">&quot;&gt;&quot;</span><span class="p">))</span>
+<span class="w">            </span><span class="nv">$v</span><span class="p">)))</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-8'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-8'>#</a>
+      </div>
+      <p>Print tree: n, mid, indented branch conditions</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="p">(</span><span class="nf">defun</span><span class="w"> </span><span class="nv">show</span><span class="w"> </span><span class="p">(</span><span class="nf">tbl</span><span class="w"> </span><span class="nv">i</span><span class="w"> </span><span class="nv">&amp;optional</span><span class="w"> </span><span class="p">(</span><span class="nf">pad</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="nf">edge</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="p">))</span>
+<span class="w">  </span><span class="p">(</span><span class="nb">format</span><span class="w"> </span><span class="nv">t</span><span class="w"> </span><span class="s">&quot;~&amp;~5d ~8,2f  ~a~a~%&quot;</span><span class="w"> </span><span class="nv">$n</span><span class="w"> </span><span class="nv">$mid</span><span class="w"> </span><span class="nv">pad</span><span class="w"> </span><span class="nv">edge</span><span class="p">)</span>
+<span class="w">  </span><span class="p">(</span><span class="k">when</span><span class="w"> </span><span class="nv">$at</span>
+<span class="w">    </span><span class="p">(</span><span class="k">let</span><span class="w"> </span><span class="p">((</span><span class="nf">pad2</span><span class="w"> </span><span class="p">(</span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nf">equal</span><span class="w"> </span><span class="nv">edge</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="p">)</span><span class="w"> </span><span class="nv">pad</span><span class="w"> </span><span class="p">(</span><span class="nf">cat</span><span class="w"> </span><span class="nv">pad</span><span class="w"> </span><span class="s">&quot;|  &quot;</span><span class="p">))))</span>
+<span class="w">      </span><span class="p">(</span><span class="nf">show</span><span class="w"> </span><span class="nv">tbl</span><span class="w"> </span><span class="nv">$yes</span><span class="w"> </span><span class="nv">pad2</span><span class="w"> </span><span class="p">(</span><span class="nf">cond-txt</span><span class="w"> </span><span class="nv">tbl</span><span class="w"> </span><span class="nv">i</span><span class="w"> </span><span class="nv">t</span><span class="p">))</span>
+<span class="w">      </span><span class="p">(</span><span class="nf">show</span><span class="w"> </span><span class="nv">tbl</span><span class="w"> </span><span class="nv">$no</span><span class="w">  </span><span class="nv">pad2</span><span class="w"> </span><span class="p">(</span><span class="nf">cond-txt</span><span class="w"> </span><span class="nv">tbl</span><span class="w"> </span><span class="nv">i</span><span class="w"> </span><span class="nv">nil</span><span class="p">)))))</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-9'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-9'>#</a>
+      </div>
+      <p>X col indexes tested anywhere in the tree</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="p">(</span><span class="nf">defun</span><span class="w"> </span><span class="nv">used</span><span class="w"> </span><span class="p">(</span><span class="nf">i</span><span class="p">)</span>
+<span class="w">  </span><span class="p">(</span><span class="k">when</span><span class="w"> </span><span class="nv">$at</span>
+<span class="w">    </span><span class="p">(</span><span class="nf">remove-duplicates</span>
+<span class="w">      </span><span class="p">(</span><span class="nb">cons</span><span class="w"> </span><span class="nv">$at</span><span class="w"> </span><span class="p">(</span><span class="nb">append</span><span class="w"> </span><span class="p">(</span><span class="nf">used</span><span class="w"> </span><span class="nv">$yes</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="nf">used</span><span class="w"> </span><span class="nv">$no</span><span class="p">))))))</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-10'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-10'>#</a>
+      </div>
+      <p>One line per tree: leaves, x cols used</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+</div>
+</body>

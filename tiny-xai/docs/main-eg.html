@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html;charset=utf-8">
+  <title>main-eg.scm</title>
+  <link rel="stylesheet" href="pycco.css">
+</head>
+<body>
+<div id='container'>
+  <div id="background"></div>
+  <div class='section'>
+    <div class='docs'><p align="center">
+<a href="https://timm.github.io/src/"><img alt="home" src="https://img.shields.io/badge/🏠-home-gold"></a>
+<a href="https://github.com/timm/src/tree/main/tiny-xai"><img alt="src" src="https://img.shields.io/badge/src-tiny--xai-black"></a>
+<a href="https://github.com/timm/src/issues"><img alt="issues" src="https://img.shields.io/badge/issues-report-red"></a>
+<a href="https://github.com/timm/src/blob/main/LICENSE.md"><img alt="license" src="https://img.shields.io/badge/license-MIT-brightgreen"></a>
+<img alt="language" src="https://img.shields.io/badge/language-common%20lisp-9558B2">
+<img alt="runs on" src="https://img.shields.io/badge/runs%20on-sbcl%20|%20clisp-EE4C2C">
+<a href="https://timm.fyi"><img alt="author" src="https://img.shields.io/badge/author-timm-blueviolet"></a>
+</p><p><a href="tiny-xai-eg.html">tiny-xai-eg</a> | <a href="lib-eg.html">lib-eg</a> | <a href="macros-eg.html">macros-eg</a> | <a href="cols-eg.html">cols-eg</a> | <a href="query-eg.html">query-eg</a> | <a href="rand-eg.html">rand-eg</a> | <a href="tbl-eg.html">tbl-eg</a> | <a href="dist-eg.html">dist-eg</a> | <a href="stats-eg.html">stats-eg</a> | <a href="landscape-eg.html">landscape-eg</a> | <a href="bins-eg.html">bins-eg</a> | <a href="tree-eg.html">tree-eg</a> | <b>main-eg</b> | <a href="tiny-xai.html">code</a></p><p><a href="tree-eg.html">&lt; prev</a> | next &gt;</p><h1>main-eg.scm</h1></div>
+  </div>
+  <div class='clearall'>
+  <div class='section' id='section-0'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-0'>#</a>
+      </div>
+      <p>Tutorial and tests for main.lisp: grading, the whole
+rig, and the Rq0-Rq2 studies.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span></span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-1'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-1'>#</a>
+      </div>
+      <h2>Grading</h2>
+<p>How good is a picked row? <code>wins</code> calibrates per table:
+100 = the pick equals the best row, 0 = no better than the
+median, negative = worse than median. All studies report on
+this scale, so results compare across datasets. Notice the
+worst row grades far below zero: picking badly is worse
+than not picking at all.</p>
+<p>| call | returns | what |
+|------|---------|------|
+| <code>(wins tbl)</code> | function | grader: row -&gt; [-100,100] |</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-2'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-2'>#</a>
+      </div>
+      <p>Wins grader: best row = 100, all in [-100,100]</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="p">(</span><span class="nf">defun</span><span class="w"> </span><span class="nv">eg--wins</span><span class="w"> </span><span class="p">(</span><span class="nf">&amp;aux</span><span class="w"> </span><span class="p">(</span><span class="nf">i</span><span class="w"> </span><span class="p">(</span><span class="nf">make-tbl</span><span class="w"> </span><span class="p">(</span><span class="nf">?</span><span class="w"> </span><span class="nv">*my*</span><span class="w"> </span><span class="nv">--file</span><span class="p">))))</span>
+<span class="w">  </span><span class="p">(</span><span class="k">let*</span><span class="w"> </span><span class="p">((</span><span class="nf">w</span><span class="w">    </span><span class="p">(</span><span class="nf">wins</span><span class="w"> </span><span class="nv">i</span><span class="p">))</span>
+<span class="w">         </span><span class="p">(</span><span class="nf">rows</span><span class="w"> </span><span class="p">(</span><span class="nf">?</span><span class="w"> </span><span class="nv">i</span><span class="w"> </span><span class="nv">rows</span><span class="p">))</span>
+<span class="w">         </span><span class="p">(</span><span class="nf">best</span><span class="w"> </span><span class="p">(</span><span class="nf">argmin</span><span class="w"> </span><span class="p">(</span><span class="k">lambda</span><span class="w"> </span><span class="p">(</span><span class="nf">r</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="nf">disty</span><span class="w"> </span><span class="nv">i</span><span class="w"> </span><span class="nv">r</span><span class="p">))</span><span class="w"> </span><span class="nv">rows</span><span class="p">)))</span>
+<span class="w">    </span><span class="p">(</span><span class="nb">format</span><span class="w"> </span><span class="nv">t</span><span class="w"> </span><span class="s">&quot;~&amp;win(best)= ~a win(worst)= ~a~%&quot;</span>
+<span class="w">            </span><span class="p">(</span><span class="nb">round</span><span class="w"> </span><span class="p">(</span><span class="nf">funcall</span><span class="w"> </span><span class="nv">w</span><span class="w"> </span><span class="nv">best</span><span class="p">))</span>
+<span class="w">            </span><span class="p">(</span><span class="nb">round</span><span class="w"> </span><span class="p">(</span><span class="nf">funcall</span><span class="w"> </span><span class="nv">w</span><span class="w"> </span><span class="p">(</span><span class="nf">argmax</span>
+<span class="w">                                </span><span class="p">(</span><span class="k">lambda</span><span class="w"> </span><span class="p">(</span><span class="nf">r</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="nf">disty</span><span class="w"> </span><span class="nv">i</span><span class="w"> </span><span class="nv">r</span><span class="p">))</span>
+<span class="w">                                </span><span class="nv">rows</span><span class="p">))))</span>
+<span class="w">    </span><span class="p">(</span><span class="nf">assert</span><span class="w"> </span><span class="p">(</span><span class="nb">=</span><span class="w"> </span><span class="mi">100</span><span class="w"> </span><span class="p">(</span><span class="nb">round</span><span class="w"> </span><span class="p">(</span><span class="nf">funcall</span><span class="w"> </span><span class="nv">w</span><span class="w"> </span><span class="nv">best</span><span class="p">))))</span>
+<span class="w">    </span><span class="p">(</span><span class="nf">dolist</span><span class="w"> </span><span class="p">(</span><span class="nf">r</span><span class="w"> </span><span class="p">(</span><span class="nf">few</span><span class="w"> </span><span class="nv">rows</span><span class="w"> </span><span class="mi">30</span><span class="p">))</span>
+<span class="w">      </span><span class="p">(</span><span class="nf">assert</span><span class="w"> </span><span class="p">(</span><span class="nb">&lt;=</span><span class="w"> </span><span class="mi">-100</span><span class="w"> </span><span class="p">(</span><span class="nf">funcall</span><span class="w"> </span><span class="nv">w</span><span class="w"> </span><span class="nv">r</span><span class="p">)</span><span class="w"> </span><span class="mi">100</span><span class="p">)))))</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-3'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-3'>#</a>
+      </div>
+      <h2>Someplace cool: the whole rig</h2>
+<p>Split the table 50:50. Landscape-label the train half under
+the budget; grow a tree from those few labels; let the tree
+rank the <em>unseen</em> test half; label only the top &ndash;check
+rows and keep the best. Notice the win: a few dozen labels
+found a near-best car among cars never seen in training.
+That is the whole toolkit, in one function you can now
+read.</p>
+<p>| call | returns | what |
+|------|---------|------|
+| <code>(holdout tbl)</code> | row | best check from unseen half |</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-4'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-4'>#</a>
+      </div>
+      <p>One holdout run: pick a good test row</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="p">(</span><span class="nf">defun</span><span class="w"> </span><span class="nv">eg--holdout</span><span class="w"> </span><span class="p">(</span><span class="nf">&amp;aux</span><span class="w"> </span><span class="p">(</span><span class="nf">i</span><span class="w"> </span><span class="p">(</span><span class="nf">make-tbl</span><span class="w"> </span><span class="p">(</span><span class="nf">?</span><span class="w"> </span><span class="nv">*my*</span><span class="w"> </span><span class="nv">--file</span><span class="p">))))</span>
+<span class="w">  </span><span class="p">(</span><span class="nf">setf</span><span class="w"> </span><span class="p">(</span><span class="nf">?</span><span class="w"> </span><span class="nv">i</span><span class="w"> </span><span class="nv">rows</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="nf">few</span><span class="w"> </span><span class="p">(</span><span class="nf">?</span><span class="w"> </span><span class="nv">i</span><span class="w"> </span><span class="nv">rows</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="nf">?</span><span class="w"> </span><span class="nv">*my*</span><span class="w"> </span><span class="nv">--cap</span><span class="p">)))</span>
+<span class="w">  </span><span class="p">(</span><span class="k">let*</span><span class="w"> </span><span class="p">((</span><span class="nf">got</span><span class="w"> </span><span class="p">(</span><span class="nf">holdout</span><span class="w"> </span><span class="nv">i</span><span class="p">))</span>
+<span class="w">         </span><span class="p">(</span><span class="nf">w</span><span class="w">   </span><span class="p">(</span><span class="nb">round</span><span class="w"> </span><span class="p">(</span><span class="nf">funcall</span><span class="w"> </span><span class="p">(</span><span class="nf">wins</span><span class="w"> </span><span class="nv">i</span><span class="p">)</span><span class="w"> </span><span class="nv">got</span><span class="p">))))</span>
+<span class="w">    </span><span class="p">(</span><span class="nb">format</span><span class="w"> </span><span class="nv">t</span><span class="w"> </span><span class="s">&quot;~&amp;picked ~s~%win= ~a disty= ~,3f~%&quot;</span>
+<span class="w">            </span><span class="nv">got</span><span class="w"> </span><span class="nv">w</span><span class="w"> </span><span class="p">(</span><span class="nf">disty</span><span class="w"> </span><span class="nv">i</span><span class="w"> </span><span class="nv">got</span><span class="p">))</span>
+<span class="w">    </span><span class="p">(</span><span class="nf">assert</span><span class="w"> </span><span class="p">(</span><span class="nf">vectorp</span><span class="w"> </span><span class="nv">got</span><span class="p">))</span>
+<span class="w">    </span><span class="p">(</span><span class="nf">assert</span><span class="w"> </span><span class="p">(</span><span class="nb">&lt;=</span><span class="w"> </span><span class="mi">-100</span><span class="w"> </span><span class="nv">w</span><span class="w"> </span><span class="mi">100</span><span class="p">))</span>
+<span class="w">    </span><span class="p">(</span><span class="k">when</span><span class="w"> </span><span class="p">(</span><span class="nf">search</span><span class="w"> </span><span class="s">&quot;auto93&quot;</span><span class="w"> </span><span class="p">(</span><span class="nf">?</span><span class="w"> </span><span class="nv">*my*</span><span class="w"> </span><span class="nv">--file</span><span class="p">))</span>
+<span class="w">      </span><span class="p">(</span><span class="nf">assert</span><span class="w"> </span><span class="p">(</span><span class="nb">&gt;</span><span class="w"> </span><span class="nv">w</span><span class="w"> </span><span class="mi">0</span><span class="p">)))))</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-5'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-5'>#</a>
+      </div>
+      <h2>Studies</h2>
+<p>Demos convince; studies measure. Each study&ndash; function
+repeats the holdout rig 20 times and reports on the wins
+scale, answering the research questions: how good is the
+rig (rq0), does more budget help (rq1), and does active
+beat random labelling (rq2). <code>deltas</code> prints 0 when <code>same</code>
+says two treatments tie, else the mean gap.</p>
+<p>| call | returns | what |
+|------|---------|------|
+| <code>(deltas tbl knob v1 v2)</code> | &ndash; | print 0 (tie) or gap |</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-6'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-6'>#</a>
+      </div>
+      <p>Rq0: mean win over 20 holdouts</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="p">(</span><span class="nf">defun</span><span class="w"> </span><span class="nv">study--holdouts</span><span class="w"> </span><span class="p">(</span><span class="nf">&amp;aux</span><span class="w"> </span><span class="p">(</span><span class="nf">i</span><span class="w"> </span><span class="p">(</span><span class="nf">make-tbl</span><span class="w"> </span><span class="p">(</span><span class="nf">?</span><span class="w"> </span><span class="nv">*my*</span><span class="w"> </span><span class="nv">--file</span><span class="p">)))</span>
+<span class="w">                          </span><span class="nv">w</span><span class="w"> </span><span class="p">(</span><span class="nf">n</span><span class="w"> </span><span class="p">(</span><span class="nf">make-num</span><span class="p">)))</span>
+<span class="w">  </span><span class="p">(</span><span class="nf">setf</span><span class="w"> </span><span class="p">(</span><span class="nf">?</span><span class="w"> </span><span class="nv">i</span><span class="w"> </span><span class="nv">rows</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="nf">few</span><span class="w"> </span><span class="p">(</span><span class="nf">?</span><span class="w"> </span><span class="nv">i</span><span class="w"> </span><span class="nv">rows</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="nf">?</span><span class="w"> </span><span class="nv">*my*</span><span class="w"> </span><span class="nv">--cap</span><span class="p">))</span>
+<span class="w">        </span><span class="nv">w</span><span class="w"> </span><span class="p">(</span><span class="nf">wins</span><span class="w"> </span><span class="nv">i</span><span class="p">))</span>
+<span class="w">  </span><span class="p">(</span><span class="nf">dotimes</span><span class="w"> </span><span class="p">(</span><span class="nf">k</span><span class="w"> </span><span class="mi">20</span><span class="p">)</span>
+<span class="w">    </span><span class="p">(</span><span class="nf">add</span><span class="w"> </span><span class="nv">n</span><span class="w"> </span><span class="p">(</span><span class="nf">funcall</span><span class="w"> </span><span class="nv">w</span><span class="w"> </span><span class="p">(</span><span class="nf">holdout</span><span class="w"> </span><span class="nv">i</span><span class="p">))))</span>
+<span class="w">  </span><span class="p">(</span><span class="nb">format</span><span class="w"> </span><span class="nv">t</span><span class="w"> </span><span class="s">&quot;~&amp;mu ~5,1f sd ~5,1f ~a~%&quot;</span>
+<span class="w">          </span><span class="p">(</span><span class="nf">mid</span><span class="w"> </span><span class="nv">n</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="nf">spread</span><span class="w"> </span><span class="nv">n</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="nf">?</span><span class="w"> </span><span class="nv">*my*</span><span class="w"> </span><span class="nv">--file</span><span class="p">))</span>
+<span class="w">  </span><span class="p">(</span><span class="nf">assert</span><span class="w"> </span><span class="p">(</span><span class="nb">&lt;=</span><span class="w"> </span><span class="mi">-100</span><span class="w"> </span><span class="p">(</span><span class="nf">mid</span><span class="w"> </span><span class="nv">n</span><span class="p">)</span><span class="w"> </span><span class="mi">100</span><span class="p">))</span>
+<span class="w">  </span><span class="p">(</span><span class="k">when</span><span class="w"> </span><span class="p">(</span><span class="nf">search</span><span class="w"> </span><span class="s">&quot;auto93&quot;</span><span class="w"> </span><span class="p">(</span><span class="nf">?</span><span class="w"> </span><span class="nv">*my*</span><span class="w"> </span><span class="nv">--file</span><span class="p">))</span>
+<span class="w">    </span><span class="p">(</span><span class="nf">assert</span><span class="w"> </span><span class="p">(</span><span class="nb">&gt;</span><span class="w"> </span><span class="p">(</span><span class="nf">mid</span><span class="w"> </span><span class="nv">n</span><span class="p">)</span><span class="w"> </span><span class="mi">50</span><span class="p">))))</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-7'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-7'>#</a>
+      </div>
+      <p>20 paired holdouts per knob value; 0 if same, else gap</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="p">(</span><span class="nf">defun</span><span class="w"> </span><span class="nv">deltas</span><span class="w"> </span><span class="p">(</span><span class="nf">i</span><span class="w"> </span><span class="nv">knob</span><span class="w"> </span><span class="nv">v1</span><span class="w"> </span><span class="nv">v2</span>
+<span class="w">               </span><span class="nv">&amp;aux</span><span class="w"> </span><span class="p">(</span><span class="nf">w</span><span class="w"> </span><span class="p">(</span><span class="nf">wins</span><span class="w"> </span><span class="nv">i</span><span class="p">))</span><span class="w"> </span><span class="p">(</span><span class="nf">v0</span><span class="w"> </span><span class="p">(</span><span class="nf">ats</span><span class="w"> </span><span class="nv">*my*</span><span class="w"> </span><span class="nv">knob</span><span class="p">)))</span>
+<span class="w">  </span><span class="p">(</span><span class="nf">labels</span><span class="w"> </span><span class="p">((</span><span class="nf">runs</span><span class="w"> </span><span class="p">(</span><span class="nf">v</span><span class="w"> </span><span class="nv">&amp;aux</span><span class="w"> </span><span class="nv">out</span><span class="p">)</span>
+<span class="w">             </span><span class="p">(</span><span class="nf">setf</span><span class="w"> </span><span class="p">(</span><span class="nf">ats</span><span class="w"> </span><span class="nv">*my*</span><span class="w"> </span><span class="nv">knob</span><span class="p">)</span><span class="w"> </span><span class="nv">v</span><span class="p">)</span>
+<span class="w">             </span><span class="p">(</span><span class="nf">dotimes</span><span class="w"> </span><span class="p">(</span><span class="nf">k</span><span class="w"> </span><span class="mi">20</span><span class="w"> </span><span class="nv">out</span><span class="p">)</span>
+<span class="w">               </span><span class="p">(</span><span class="nf">setf</span><span class="w"> </span><span class="nv">*seed*</span><span class="w"> </span><span class="p">(</span><span class="nb">+</span><span class="w"> </span><span class="p">(</span><span class="nf">?</span><span class="w"> </span><span class="nv">*my*</span><span class="w"> </span><span class="nv">--seed</span><span class="p">)</span><span class="w"> </span><span class="nv">k</span><span class="p">))</span>
+<span class="w">               </span><span class="p">(</span><span class="nf">push</span><span class="w"> </span><span class="p">(</span><span class="nf">funcall</span><span class="w"> </span><span class="nv">w</span><span class="w"> </span><span class="p">(</span><span class="nf">holdout</span><span class="w"> </span><span class="nv">i</span><span class="p">))</span><span class="w"> </span><span class="nv">out</span><span class="p">))))</span>
+<span class="w">    </span><span class="p">(</span><span class="k">let*</span><span class="w"> </span><span class="p">((</span><span class="nf">a</span><span class="w"> </span><span class="p">(</span><span class="nf">runs</span><span class="w"> </span><span class="nv">v1</span><span class="p">))</span>
+<span class="w">           </span><span class="p">(</span><span class="nf">b</span><span class="w"> </span><span class="p">(</span><span class="nf">runs</span><span class="w"> </span><span class="nv">v2</span><span class="p">))</span>
+<span class="w">           </span><span class="p">(</span><span class="nf">d</span><span class="w"> </span><span class="p">(</span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nf">same</span><span class="w"> </span><span class="nv">a</span><span class="w"> </span><span class="nv">b</span><span class="p">)</span>
+<span class="w">                  </span><span class="mi">0</span>
+<span class="w">                  </span><span class="p">(</span><span class="nb">-</span><span class="w"> </span><span class="p">(</span><span class="nf">mid</span><span class="w"> </span><span class="p">(</span><span class="nf">adds</span><span class="w"> </span><span class="nv">a</span><span class="p">))</span><span class="w"> </span><span class="p">(</span><span class="nf">mid</span><span class="w"> </span><span class="p">(</span><span class="nf">adds</span><span class="w"> </span><span class="nv">b</span><span class="p">))))))</span>
+<span class="w">      </span><span class="p">(</span><span class="nf">setf</span><span class="w"> </span><span class="p">(</span><span class="nf">ats</span><span class="w"> </span><span class="nv">*my*</span><span class="w"> </span><span class="nv">knob</span><span class="p">)</span><span class="w"> </span><span class="nv">v0</span><span class="p">)</span>
+<span class="w">      </span><span class="p">(</span><span class="nb">format</span><span class="w"> </span><span class="nv">t</span><span class="w"> </span><span class="s">&quot;~&amp;~6,1f ~a~%&quot;</span><span class="w"> </span><span class="nv">d</span><span class="w"> </span><span class="p">(</span><span class="nf">?</span><span class="w"> </span><span class="nv">*my*</span><span class="w"> </span><span class="nv">--file</span><span class="p">)))))</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-8'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-8'>#</a>
+      </div>
+      <p>Rq2: active vs random labelling, budget 50</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="p">(</span><span class="nf">defun</span><span class="w"> </span><span class="nv">study--delta</span><span class="w"> </span><span class="p">(</span><span class="nf">&amp;aux</span><span class="w"> </span><span class="p">(</span><span class="nf">i</span><span class="w"> </span><span class="p">(</span><span class="nf">make-tbl</span><span class="w"> </span><span class="p">(</span><span class="nf">?</span><span class="w"> </span><span class="nv">*my*</span><span class="w"> </span><span class="nv">--file</span><span class="p">))))</span>
+<span class="w">  </span><span class="p">(</span><span class="nf">setf</span><span class="w"> </span><span class="p">(</span><span class="nf">?</span><span class="w"> </span><span class="nv">i</span><span class="w"> </span><span class="nv">rows</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="nf">few</span><span class="w"> </span><span class="p">(</span><span class="nf">?</span><span class="w"> </span><span class="nv">i</span><span class="w"> </span><span class="nv">rows</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="nf">?</span><span class="w"> </span><span class="nv">*my*</span><span class="w"> </span><span class="nv">--cap</span><span class="p">)))</span>
+<span class="w">  </span><span class="p">(</span><span class="nf">deltas</span><span class="w"> </span><span class="nv">i</span><span class="w"> </span><span class="ss">&#39;--landscape</span><span class="w"> </span><span class="s">&quot;active&quot;</span><span class="w"> </span><span class="s">&quot;random&quot;</span><span class="p">))</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-9'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-9'>#</a>
+      </div>
+      <p>Rq1: budget 50 vs 20, both active</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="p">(</span><span class="nf">defun</span><span class="w"> </span><span class="nv">study--budgets</span><span class="w"> </span><span class="p">(</span><span class="nf">&amp;aux</span><span class="w"> </span><span class="p">(</span><span class="nf">i</span><span class="w"> </span><span class="p">(</span><span class="nf">make-tbl</span><span class="w"> </span><span class="p">(</span><span class="nf">?</span><span class="w"> </span><span class="nv">*my*</span><span class="w"> </span><span class="nv">--file</span><span class="p">))))</span>
+<span class="w">  </span><span class="p">(</span><span class="nf">setf</span><span class="w"> </span><span class="p">(</span><span class="nf">?</span><span class="w"> </span><span class="nv">i</span><span class="w"> </span><span class="nv">rows</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="nf">few</span><span class="w"> </span><span class="p">(</span><span class="nf">?</span><span class="w"> </span><span class="nv">i</span><span class="w"> </span><span class="nv">rows</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="nf">?</span><span class="w"> </span><span class="nv">*my*</span><span class="w"> </span><span class="nv">--cap</span><span class="p">)))</span>
+<span class="w">  </span><span class="p">(</span><span class="nf">deltas</span><span class="w"> </span><span class="nv">i</span><span class="w"> </span><span class="ss">&#39;--budget</span><span class="w"> </span><span class="mi">50</span><span class="w"> </span><span class="mi">20</span><span class="p">))</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-10'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-10'>#</a>
+      </div>
+      <p>Rq1 caveat: budget 200 vs 50 (sampler stops near 40)</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="p">(</span><span class="nf">defun</span><span class="w"> </span><span class="nv">study--saturate</span><span class="w"> </span><span class="p">(</span><span class="nf">&amp;aux</span><span class="w"> </span><span class="p">(</span><span class="nf">i</span><span class="w"> </span><span class="p">(</span><span class="nf">make-tbl</span><span class="w"> </span><span class="p">(</span><span class="nf">?</span><span class="w"> </span><span class="nv">*my*</span><span class="w"> </span><span class="nv">--file</span><span class="p">))))</span>
+<span class="w">  </span><span class="p">(</span><span class="nf">setf</span><span class="w"> </span><span class="p">(</span><span class="nf">?</span><span class="w"> </span><span class="nv">i</span><span class="w"> </span><span class="nv">rows</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="nf">few</span><span class="w"> </span><span class="p">(</span><span class="nf">?</span><span class="w"> </span><span class="nv">i</span><span class="w"> </span><span class="nv">rows</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="nf">?</span><span class="w"> </span><span class="nv">*my*</span><span class="w"> </span><span class="nv">--cap</span><span class="p">)))</span>
+<span class="w">  </span><span class="p">(</span><span class="nf">deltas</span><span class="w"> </span><span class="nv">i</span><span class="w"> </span><span class="ss">&#39;--budget</span><span class="w"> </span><span class="mi">200</span><span class="w"> </span><span class="mi">50</span><span class="p">))</span>
+
+</pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+</div>
+</body>

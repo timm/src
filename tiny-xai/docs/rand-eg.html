@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html;charset=utf-8">
+  <title>rand-eg.scm</title>
+  <link rel="stylesheet" href="pycco.css">
+</head>
+<body>
+<div id='container'>
+  <div id="background"></div>
+  <div class='section'>
+    <div class='docs'><p align="center">
+<a href="https://timm.github.io/src/"><img alt="home" src="https://img.shields.io/badge/🏠-home-gold"></a>
+<a href="https://github.com/timm/src/tree/main/tiny-xai"><img alt="src" src="https://img.shields.io/badge/src-tiny--xai-black"></a>
+<a href="https://github.com/timm/src/issues"><img alt="issues" src="https://img.shields.io/badge/issues-report-red"></a>
+<a href="https://github.com/timm/src/blob/main/LICENSE.md"><img alt="license" src="https://img.shields.io/badge/license-MIT-brightgreen"></a>
+<img alt="language" src="https://img.shields.io/badge/language-common%20lisp-9558B2">
+<img alt="runs on" src="https://img.shields.io/badge/runs%20on-sbcl%20|%20clisp-EE4C2C">
+<a href="https://timm.fyi"><img alt="author" src="https://img.shields.io/badge/author-timm-blueviolet"></a>
+</p><p><a href="tiny-xai-eg.html">tiny-xai-eg</a> | <a href="lib-eg.html">lib-eg</a> | <a href="macros-eg.html">macros-eg</a> | <a href="cols-eg.html">cols-eg</a> | <a href="query-eg.html">query-eg</a> | <b>rand-eg</b> | <a href="tbl-eg.html">tbl-eg</a> | <a href="dist-eg.html">dist-eg</a> | <a href="stats-eg.html">stats-eg</a> | <a href="landscape-eg.html">landscape-eg</a> | <a href="bins-eg.html">bins-eg</a> | <a href="tree-eg.html">tree-eg</a> | <a href="main-eg.html">main-eg</a> | <a href="tiny-xai.html">code</a></p><p><a href="query-eg.html">&lt; prev</a> | <a href="tbl-eg.html">next &gt;</a></p><h1>rand-eg.scm</h1></div>
+  </div>
+  <div class='clearall'>
+  <div class='section' id='section-0'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-0'>#</a>
+      </div>
+      <p>Tutorial and tests for rand.lisp: reproducible
+randomness.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span></span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-1'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-1'>#</a>
+      </div>
+      <h2>Reproducible randomness</h2>
+<p>Later demos shuffle and sample, so first: <code>rand</code>, a seeded
+16807 Lehmer generator that repeats exactly on sbcl and
+clisp (Common Lisp&rsquo;s own <code>random</code> does not). The second
+check sums three uniforms 10,000 times (Irwin-Hall): mean
+lands on 0, sd on 1 &ndash; testing <code>rand</code>, <code>add</code>, and Welford
+in one shot.</p>
+<p>| call | returns | what |
+|------|---------|------|
+| <code>(rand n)</code> | float 0..n | next seeded random |
+| <code>(rint n)</code> | int 0..n-1 | random integer |
+| <code>(add i v)</code> | v | Welford-update num i |</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-2'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-2'>#</a>
+      </div>
+      <p>Seeded rand repeats; 10k Irwin-Hall -&gt; mean 0, sd 1</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="p">(</span><span class="nf">defun</span><span class="w"> </span><span class="nv">eg--rand</span><span class="w"> </span><span class="p">(</span><span class="nf">&amp;aux</span><span class="w"> </span><span class="nv">a</span><span class="w"> </span><span class="nv">b</span><span class="w"> </span><span class="p">(</span><span class="nf">i</span><span class="w"> </span><span class="p">(</span><span class="nf">make-num</span><span class="p">)))</span>
+<span class="w">  </span><span class="p">(</span><span class="nf">setf</span><span class="w"> </span><span class="nv">*seed*</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="nv">a</span><span class="w"> </span><span class="p">(</span><span class="nf">rand</span><span class="p">)</span>
+<span class="w">        </span><span class="nv">*seed*</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="nv">b</span><span class="w"> </span><span class="p">(</span><span class="nf">rand</span><span class="p">))</span>
+<span class="w">  </span><span class="p">(</span><span class="nb">format</span><span class="w"> </span><span class="nv">t</span><span class="w"> </span><span class="s">&quot;~&amp;rand ~,3f ~,3f rint ~a~%&quot;</span><span class="w"> </span><span class="nv">a</span><span class="w"> </span><span class="nv">b</span><span class="w"> </span><span class="p">(</span><span class="nf">rint</span><span class="w"> </span><span class="mi">10</span><span class="p">))</span>
+<span class="w">  </span><span class="p">(</span><span class="nf">assert</span><span class="w"> </span><span class="p">(</span><span class="nb">=</span><span class="w"> </span><span class="nv">a</span><span class="w"> </span><span class="nv">b</span><span class="p">))</span>
+<span class="w">  </span><span class="p">(</span><span class="nf">assert</span><span class="w"> </span><span class="p">(</span><span class="nb">&lt;</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="nv">a</span><span class="w"> </span><span class="mi">1</span><span class="p">))</span>
+<span class="w">  </span><span class="p">(</span><span class="nf">dotimes</span><span class="w"> </span><span class="p">(</span><span class="nf">k</span><span class="w"> </span><span class="mi">10000</span><span class="p">)</span>
+<span class="w">    </span><span class="p">(</span><span class="nf">add</span><span class="w"> </span><span class="nv">i</span><span class="w"> </span><span class="p">(</span><span class="nb">/</span><span class="w"> </span><span class="p">(</span><span class="nb">-</span><span class="w"> </span><span class="p">(</span><span class="nb">+</span><span class="w"> </span><span class="p">(</span><span class="nf">rand</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="nf">rand</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="nf">rand</span><span class="p">))</span><span class="w"> </span><span class="mf">1.5</span><span class="p">)</span><span class="w"> </span><span class="mf">0.5</span><span class="p">)))</span>
+<span class="w">  </span><span class="p">(</span><span class="nb">format</span><span class="w"> </span><span class="nv">t</span><span class="w"> </span><span class="s">&quot;~&amp;irwin-hall mu ~,3f sd ~,3f~%&quot;</span>
+<span class="w">          </span><span class="p">(</span><span class="nf">mid</span><span class="w"> </span><span class="nv">i</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="nf">spread</span><span class="w"> </span><span class="nv">i</span><span class="p">))</span>
+<span class="w">  </span><span class="p">(</span><span class="nf">assert</span><span class="w"> </span><span class="p">(</span><span class="nb">&lt;</span><span class="w"> </span><span class="p">(</span><span class="nb">abs</span><span class="w"> </span><span class="p">(</span><span class="nf">mid</span><span class="w"> </span><span class="nv">i</span><span class="p">))</span><span class="w"> </span><span class="mf">0.05</span><span class="p">))</span>
+<span class="w">  </span><span class="p">(</span><span class="nf">assert</span><span class="w"> </span><span class="p">(</span><span class="nb">&lt;</span><span class="w"> </span><span class="p">(</span><span class="nb">abs</span><span class="w"> </span><span class="p">(</span><span class="nb">-</span><span class="w"> </span><span class="p">(</span><span class="nf">spread</span><span class="w"> </span><span class="nv">i</span><span class="p">)</span><span class="w"> </span><span class="mi">1</span><span class="p">))</span><span class="w"> </span><span class="mf">0.05</span><span class="p">)))</span>
+
+</pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+</div>
+</body>

@@ -17,6 +17,19 @@ eg: ## run every project's examples/tests
 	cd tiny-xai && sbcl --script tiny-xai-eg.lisp --all
 	cd luamine  && lua luamine-eg.lua --all
 
+doc: ## pycco html per tiny-xai .lisp (order: sh INSTALL.md list)
+	@cd tiny-xai && mkdir -p docs && \
+	 for f in $$(sh INSTALL.md list); do \
+	   b=$${f%.lisp}; \
+	   awk -f ../etc/doc.awk $$f > docs/$$b.scm; \
+	   pycco -d docs docs/$$b.scm >/dev/null; \
+	   rm -f docs/$$b.scm; \
+	   python3 ../etc/nav.py docs/$$b.html; \
+	 done; \
+	 grep -q '^p { text-align: right; }' docs/pycco.css || \
+	   echo 'p { text-align: right; }' >> docs/pycco.css; \
+	 ls docs | grep -c '\.html$$'
+
 Font ?= 4.5       # pdf font size
 Cols ?= 3         # pdf columns
 LPC  ?= 113       # lines per pdf column; packs sections
