@@ -1,1 +1,4 @@
-# tiny-xai\n\nSame landscape ideas in Common Lisp, tiny-function style; see REPORT.md in the old repo for the study.\nDocs: source-file header. Conventions: [../etc/style.md](../etc/style.md).\n
+# tiny-xai
+
+Same landscape ideas in Common Lisp, tiny-function style.
+Docs: source-file header. Conventions: [../etc/style.md](../etc/style.md).

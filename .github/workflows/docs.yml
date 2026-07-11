@@ -1,0 +1,22 @@
+name: docs
+on:
+  push:
+    branches: [main]
+permissions:
+  contents: write
+jobs:
+  docs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 etc/doc.py _site
+      - run: |
+          cd _site
+          git init -q -b gh-pages
+          git config user.name  "docs-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add -A
+          git commit -qm "docs: build ${GITHUB_SHA::7}"
+          git push -qf \
+            "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}" \
+            gh-pages
