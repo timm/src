@@ -58,10 +58,23 @@ def blocks(txt, ext):
         cur[2] += [line]
   if cur: yield cur
 
+def tutpage(path, txt, ext):
+  "Tutorial file: #| markdown |# stanzas alternate with code."
+  bits = re.split(r"\n#\|\n(.*?)\n\|#\n", txt, flags=re.S)
+  out = [f"# {os.path.basename(path)}", "", "{% raw %}"]
+  for i, b in enumerate(bits):
+    b = b.replace("\f", "").strip("\n")
+    if not b.strip(): continue
+    if i % 2: out += [b, ""]                   # markdown stanza
+    else: out += [f"```{LANG[ext]}", b, "```", ""]
+  return "\n".join(out + ["{% endraw %}"])
+
 def page(path):
   "Markdown page for one source file."
   ext = os.path.splitext(path)[1]
   txt = open(path).read()
+  if ext == ".lisp" and "\n#|\n" in txt:
+    return tutpage(path, txt, ext)
   bs  = list(blocks(txt, ext))
   nav = lambda j: " · ".join(
     f"[{t}](#b{i+1})" if i != j else f"**{t}**"
