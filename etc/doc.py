@@ -93,6 +93,11 @@ def main(site="_site"):
       base = os.path.basename(f)
       open(f"{site}/{d}/{base}.md", "w").write(page(f))
       files += [f"- [{base}]({base}.md)"]
+    for f in sorted(glob.glob(f"{d}/*.md")):   # hand-written docs
+      base = os.path.basename(f)
+      if base != "README.md":
+        open(f"{site}/{d}/{base}", "w").write(open(f).read())
+        files += [f"- [{base}]({base})"]
     lead = open(f"{d}/README.md").read().splitlines()[2] \
            if os.path.exists(f"{d}/README.md") else ""
     open(f"{site}/{d}/index.md", "w").write(
