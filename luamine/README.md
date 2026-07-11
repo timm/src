@@ -1,0 +1,1 @@
+# luamine\n\nAI primitives (Num, Sym, dist, tree) and apps (cluster, acquire, GA/DE/SA) in Lua.\nDocs: source-file header. Conventions: [../etc/style.md](../etc/style.md).\n
