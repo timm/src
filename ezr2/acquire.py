@@ -21,11 +21,11 @@ def acquire(data):
   x   = lambda r1, r2: distx(data, r1, r2)
   pool, lab = shuffle(data.rows), {}
   while len(lab) < cap and len(pool) >= 2*the.leaf:
-    here, grow = [], min(the.grow, cap - len(lab))
+    here, more = [], min(the.more, cap - len(lab))
     for r in pool:
       if   id(r) in lab         : here += [r]
-      elif (grow := grow-1) >= 0: here += [r]; lab[id(r)] = r
+      elif (more := more-1) >= 0: here += [r]; lab[id(r)] = r
     if len(lab) < cap:
-      more = int(max(1, the.keepf * len(pool)))
-      pool = sorted(pool, key=project(here, x, y))[:more]
+      less = int(max(1, the.keepf * len(pool)))
+      pool = sorted(pool, key=project(here, x, y))[:less]
   return sorted(lab.values(), key=y)
