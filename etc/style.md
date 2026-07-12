@@ -102,6 +102,16 @@ browsable, marked dead by location.
   that dir, so each dir gets its own live badge.
 - Every test prints a diagnostic line BEFORE asserting;
   data-specific numbers gate on the dataset name.
+- Long-form tutorials with REPL transcripts (tut.md style)
+  get a REPLAY CHECKER (exemplar: luamine/tutchk.lua):
+  re-execute every `[n]>` event in one session, diff each
+  output against the transcript (floats at 10 significant
+  digits — the grading rule), and run it as a step in that
+  dir's tests workflow, so transcript rot fails CI.
+  Environment-specific events (interpreter version,
+  absolute paths) still execute but skip the diff.
+  Transcripts are regenerated from real runs, never
+  hand-edited.
 
 ## daily driving
 

@@ -101,8 +101,12 @@ Stanza skeleton, every stanza:
     every pre-existing assert still present
     package manifest still loads (asdf/pip/luarocks)
     make doc; python3 etc/doc.py; check the pages render
-    TODO not yet built: output splicing -- run each eg--,
-    paste its output under the demo, CI-diff to verify
+    if the dir carries a REPL-transcript tutorial: port the
+    replay checker (exemplar: luamine/tutchk.lua) and add it
+    to the dir's tests workflow -- every [n]> event
+    re-executed, outputs diffed, env-specific events skipped
+    TODO not yet built: output splicing the other way --
+    run each demo, paste its output back under the stanza
 
 ## Voice calibration
 
