@@ -242,13 +242,13 @@ def landscape(tbl):
     return sorted(some(tbl.rows, cap), key=y)
   x   = lambda r1, r2: distx(tbl, r1, r2)
   pool, lab = shuffle(tbl.rows), {}
+  old = lambda r: id(r) in lab
   while len(lab) < cap and len(pool) >= 2*the.leaf:
-    for r in [r for r in pool if id(r) not in lab
-             ][:min(the.grow, cap - len(lab))]:
-      lab[id(r)] = r
-    here = [r for r in pool if id(r) in lab]  # labelled & pool
+    for r in [r for r in pool if not old(r)][:the.grow]:
+      if len(lab) < cap: lab[id(r)] = r
     if len(lab) < cap:
-      n = max(1, int((1-the.keepf)*len(pool)))
+      here = [r for r in pool if old(r)]  # labelled & pool
+      n    = max(1, int((1-the.keepf)*len(pool)))
       pool = sorted(pool, key=project(here, x, y))[n:]
   return sorted(lab.values(), key=y)
 
