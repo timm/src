@@ -244,24 +244,24 @@ def acquire(tbl):
   cap = the.budget - the.check
   if the.acquire == "random":
     return sorted(some(tbl.rows, cap), key=y)
-  return sorted(sway3(tbl, shuffle(tbl.rows), y, x, cap),
-                key=y)
-def sway3(tbl, pool, y, x, cap,
-          lab=None, east=None, west=None):
+  return sorted(sway3(shuffle(tbl.rows), y, x, cap), key=y)
+
+def sway3(rows, y, x, cap, lab=None, east=None, west=None):
+  b4  = rows[:]
   lab = lab or {}
-  while len(pool) >= 2*the.leaf:
+  while len(rows) >= 2*the.leaf:
     more = min(the.more, cap - len(lab))
-    less = int(max(1, the.keepf * len(pool)))
+    less = int(max(1, the.keepf * len(rows)))
     new  = []
-    for r in pool:
+    for r in rows:
       if   id(r) in lab         : new += [r]
       elif (more := more-1) >= 0: new += [r]; lab[id(r)]=r
     if len(lab) >= cap: return lab.values()  # budget spent
-    pool = sorted(pool,
+    rows = sorted(rows,
                   key=project(new, x, y, east, west))[:less]
-  if len(lab) < len(tbl.rows):               # redo: fresh pool,
+  if len(lab) < len(b4):                     # redo: reshuffle,
     seen = sorted(lab.values(), key=y)       # anchored at the
-    return sway3(tbl, shuffle(tbl.rows), y, x, cap,
+    return sway3(shuffle(b4), y, x, cap,
                  lab, seen[0], seen[-1])     # best+worst seen
   return lab.values()
 
