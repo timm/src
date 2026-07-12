@@ -15,6 +15,7 @@
   (load (merge-pathnames "tiny-xai.lisp" *load-truename*)))
 (in-package :tiny-xai)
 
+
 ;;; ## The models
 
 ;;;; Each maps x in [0,1]^N to M objectives to MINIMIZE.
@@ -103,6 +104,7 @@
 
 (defvar *models* '(dtlz1 dtlz2 dtlz3 dtlz4 dtlz5 dtlz6 dtlz7))
 
+
 ;;; ## The pool and the label seam
 
 (defun opt (flag default)
@@ -140,6 +142,7 @@
           (round (funcall win row))
           "100=best 0=median"))
 
+
 ;;; ## Drive one model
 
 (defun names (nn mm)

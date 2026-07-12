@@ -21,6 +21,7 @@ local b4={}; for k,_ in pairs(_G) do b4[k]=k end
 local l, the = {}, {}
 l.the, l.helpLib = the, help
 
+
 -- ## rand
 -- Portable Park-Miller PRNG: seeded runs match across
 -- languages (twin: rand.py in ezr2). Replaces Lua's stock
@@ -68,6 +69,7 @@ function l.pickDict(dct,    ks,s,r)
 function l.irwinHall()
   return 2*(l.rand()+l.rand()+l.rand()-1.5) end
 
+
 -- ## list
 -- Lists. Tiny functional helpers: sort/push/map/kap plus
 -- keysort (decorate-sort-undecorate), slicing, copying and
@@ -139,6 +141,7 @@ function l.tabulate(rows,just,gap,    w,line,s)
                               or (" "):rep(w[c]-#s)..s end
     print(table.concat(line,gap)) end end
 
+
 -- ## stats
 -- Stats. Welford accumulation, mode/entropy for counts,
 -- then the conservative equality tests: cliffsDelta + ks +
@@ -233,6 +236,7 @@ function l.topTier(dict,cmp,eps,cliffs,ksconf,
     out[names[i]] = (l.welfords(cand)) end
   return out end
 
+
 -- ## confuse
 -- Confuse. A confusion matrix: count (want,got) pairs, then
 -- per-klass tn/fn/fp/tp and the derived acc/pred/pf/pd.
@@ -284,6 +288,7 @@ function Confuse.show(i,    hdr,row)
 
 l.Confuse = Confuse
 
+
 -- ## str
 -- Strings and files. `thing` coerces csv cells; `o` pretty
 -- prints anything (sorted dict keys); `path` expands a
@@ -340,6 +345,7 @@ function l.csv(filename,    f)
       return u
     else f:close() end end end
 
+
 -- ## cli
 -- Cli. `section`/`flags`/`help` mine the help text; `run1`
 -- runs one eg with seed reset + pcall; `runAll` sweeps the

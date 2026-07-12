@@ -28,6 +28,7 @@ local l = require"lib"
 local the = l.the
 m.help = help
 
+
 -- ## cut
 -- Cuts. A `cut` is one test: op(row[at], val). `eq` and
 -- `le` are the two ops; `cut` packs one with its yes/no
@@ -81,6 +82,7 @@ function m.bestCut(cols,rows,y,Sumr,    best,score,s)
 
 m.Cut = Cut
 
+
 -- ## sym
 -- Sym. Summarizes one symbolic column: counts in has{}.
 -- `mid` = mode, `spread` = entropy; `cuts` emits one ==cut
@@ -116,6 +118,7 @@ function Sym.cuts(i,rows,    seen,cuts,x)
 
 m.Sym = Sym
 
+
 -- ## num
 -- Num. Summarizes one numeric column by Welford (n,mu,m2):
 -- `mid`/`spread` = mean/sd; `norm` squashes to 0..1 via a
@@ -167,6 +170,7 @@ function Num.cuts(i,rows,    vs,n,cuts,v,prev)
 
 m.Num = Num
 
+
 -- ## cols
 -- Cols. Types header names into columns: leading uppercase
 -- = `Num`; trailing -,+,! = y goals (! = klass); X = skip.
@@ -210,6 +214,7 @@ function Cols.mid(i)
 
 m.Cols = Cols
 
+
 -- ## data
 -- Data. Rows + `Cols`; the first row is the header.
 -- `clone` reuses a header over new rows. `dxdy` bakes p
@@ -263,6 +268,7 @@ function m.body(file,    iter)
 
 m.Data = Data
 
+
 -- ## dist
 -- Dist. `distx` = Minkowski over x cols (pessimistic on
 -- "?"); `disty` = distance to ideal y goals (0 = best);
@@ -310,6 +316,7 @@ function m.near(cols,query,rows,  p)
   return l.keysort(rows, function(r)
     return r==query and 2 or m.distx(cols,query,r,p) end) end
 
+
 -- ## bayes
 -- Bayes. `like` = P(v|col): m-estimate for Syms, gaussian
 -- pdf for Nums. `likes` = log-sum likelihood of one row
@@ -338,6 +345,7 @@ function m.likes(data,row,nRows,nKlasses,  prior,out,v)
       if v > 0 then out = out + log(v) end end end
   return out end
 
+
 -- ## mutate
 -- Mutate. Mutators for the optimizer apps: `pick` samples
 -- one column (Sym by frequency, Num by gauss +-3sd);
@@ -385,6 +393,7 @@ function m.extrapolate(cols,a,b,c,F,CR,
         out[col.at] = lo + (v - lo) % span end end end
   return out end
 
+
 -- ## tree
 -- Tree (build). `bitree` grows a greedy binary tree; its
 -- pick(rows) callback returns y,Sumr to keep splitting, or
@@ -437,6 +446,7 @@ function Data.ftree(i,leaf,p,cap,    d)
       y = function(r) return d.x(r,a) - d.x(r,b) end
       return y, m.Num.new end) end
 
+
 -- ## show
 -- Tree (use). `relevant` walks one row to its leaf's rows;
 -- `leafStats` folds leaves into a Num; `show` prints the

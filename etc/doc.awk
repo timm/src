@@ -14,6 +14,7 @@
 #  - col-0 "# " notes pass through (already pycco prose)
 #  - one-line docstrings lift ABOVE their def as comments
 BEGIN { n = 0 }
+/^\f/      { next }
 ext == "py" && /^#!/   { next }
 ext == "py" && /^"""$/ {
   if (!md) { md = 1; first = 1 }

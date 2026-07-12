@@ -13,16 +13,16 @@
   (load (merge-pathnames "tiny-xai.lisp" *load-truename*)))
 (in-package :tiny-xai)
 
-; One arm: 20 paired holdouts at one budget and mode
 (defun arm (tbl budget mode &aux out (w (wins tbl)))
+  "One arm: 20 paired holdouts at one budget and mode"
   (setf (? *my* --budget) budget
         (? *my* --acquire) mode)
   (dotimes (k 20 out)
     (setf *seed* (+ (? *my* --seed) k))
     (push (funcall w (holdout tbl)) out)))
 
-; Five arms on one csv -> one comma-separated line
 (defun report1 (file &aux (n (make-num)))
+  "Five arms on one csv -> one comma-separated line"
   (setf (? *my* --file) file
         *seed* (? *my* --seed))
   (let ((tbl (make-tbl file)))
@@ -40,8 +40,8 @@
                 (d a50 a20) (d a200 a50)
                 (d a50 r50) (d a50 r200))))))
 
-; Percent + stars histogram (one * = 3 datasets)
 (defun hist (vals lo hi width &optional ties)
+  "Percent + stars histogram (one * = 3 datasets)"
   (let ((n (length vals)))
     (labels ((row (label c)
                (format t "~a ~3d%~a~%" label
@@ -61,17 +61,18 @@
           (row (format nil "[~3d,~3d~a" b (+ b width)
                        (if last "]" ")")) c)
           (when (and ties (< b 0) (<= 0 (+ b width)))
-            (row "   ties=0 " (count-if (function zerop) vals))))))))
+            (row "   ties=0 "
+                 (count-if #'zerop vals))))))))
 
-; Wins/losses/ties line for one delta column
 (defun verdict (vals)
+  "Wins/losses/ties line for one delta column"
   (format t "wins ~a  losses ~a  ties ~a  max ~,1f  min ~,1f~%"
           (count-if #'plusp vals) (count-if #'minusp vals)
           (count-if #'zerop vals)
           (reduce #'max vals) (reduce #'min vals)))
 
-; Read the workers' csv; print every histogram
 (defun hists (file &aux rows)
+  "Read the workers' csv; print every histogram"
   (with-open-file (s file)
     (loop (aif (read-line s nil)
             (push (things it) rows)

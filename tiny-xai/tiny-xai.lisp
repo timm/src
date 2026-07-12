@@ -57,6 +57,7 @@ Every TEST and STUDY runs by its flag (e.g. --all --tree).")
 
 (defstruct node at v n mid rows yes no)
 
+
 ;;; ## Macros
 ;;; One accessor, three spellings. The function `ats` reads
 ;;; hash keys and struct slots alike; the macro `?` nests
@@ -77,32 +78,33 @@ Every TEST and STUDY runs by its flag (e.g. --all --tree).")
     (lambda (stream ch)
       (declare (ignore ch)) `(ats i ',(read stream t nil t)))))
 
-; Get k from a hash (default d) or a struct slot
 (defun ats (x k &optional d)
+  "Get k from a hash (default d) or a struct slot"
   (if (hash-table-p x) (gethash k x d) (slot-value x k)))
 
-; Set k in a hash or a struct slot
 (defun (setf ats) (v x k &optional d)
+  "Set k in a hash or a struct slot"
   (declare (ignore d))
   (if (hash-table-p x)
       (setf (gethash k x) v)
       (setf (slot-value x k) v)))
 
-; Get x's k, else stash and return a fresh (new)
 (defun ats! (x k new)
+  "Get x's k, else stash and return a fresh (new)"
   (or (ats x k) (setf (ats x k) (funcall new))))
 
-; Anaphoric if: `it` holds the test value
 (defmacro aif (test then &optional else)
+  "Anaphoric if: `it` holds the test value"
   `(let ((it ,test))
      (if it ,then ,else)))
 
-; Fresh equal hash-table, optionally primed with k v pairs
 (defun o (&rest kvs)
+  "Fresh equal hash-table, optionally primed with k v pairs"
   (let ((h (make-hash-table :test #'equal)))
     (loop for (k v) on kvs by #'cddr do (setf (gethash k h) v))
     h))
 
+
 ;;; ## Lib
 ;;; Strings and files. `thing` and `things` coerce csv
 ;;; cells; `trim` strips whitespace; `mapcsv` streams a
@@ -113,8 +115,8 @@ Every TEST and STUDY runs by its flag (e.g. --all --tree).")
 (defun trim (s)
   (string-trim '(#\space #\tab #\return) s))
 
-; String -> number | ? | t | nil | trimmed string
 (defun thing (s &aux (opt '(("?" . ?) ("True" . t) ("False"))))
+  "String -> number | ? | t | nil | trimmed string"
   (let ((s (trim s))
         (*read-eval*))
     (aif (assoc s opt :test #'equal)
@@ -122,19 +124,19 @@ Every TEST and STUDY runs by its flag (e.g. --all --tree).")
       (let ((x (ignore-errors (read-from-string s nil))))
         (if (numberp x) x s)))))
 
-; Split s on ch; coerce each cell with thing
 (defun things (s &optional (ch #\,) (start 0))
+  "Split s on ch; coerce each cell with thing"
   (aif (position ch s :start start)
     (cons (thing (subseq s start it)) (things s ch (1+ it)))
     (list (thing (subseq s start)))))
 
-; Environment variable, or nil
 (defun getenv (s)
+  "Environment variable, or nil"
   #+sbcl  (sb-ext:posix-getenv s)
   #+clisp (ext:getenv s))
 
-; Expand a leading $MOOT (env, else HOME/gits/moot)
 (defun path (s)
+  "Expand a leading $MOOT (env, else HOME/gits/moot)"
   (if (and (> (length s) 5) (string= "$MOOT" s :end2 5))
       (concatenate 'string
         (or (getenv "MOOT")
@@ -143,18 +145,19 @@ Every TEST and STUDY runs by its flag (e.g. --all --tree).")
         (subseq s 5))
       s))
 
-; Call fun on each csv row (skipping blanks, # comments)
 (defun mapcsv (fun file)
+  "Call fun on each csv row (skipping blanks, # comments)"
   (labels ((line (s &aux (s1 (trim s)))
              (unless (or (equal s1 "") (eql (char s1 0) #\#))
                (funcall fun (coerce (things s1) 'vector)))))
     (with-open-file (s (path file))
       (loop (line (or (read-line s nil) (return)))))))
 
-; Concatenate the printed forms of xs
 (defun cat (&rest xs)
+  "Concatenate the printed forms of xs"
   (format nil "~{~a~}" xs))
 
+
 ;;; ## Rand
 ;;; Random and picking. Ways to pick from a list: `shuffle`
 ;;; (Fisher-Yates) and `few` pick at random, driven by
@@ -164,37 +167,38 @@ Every TEST and STUDY runs by its flag (e.g. --all --tree).")
 
 (defvar *seed* 1234567891)
 
-; Next 0..n from a 16807 Lehmer generator
 (defun rand (&optional (n 1))
+  "Next 0..n from a 16807 Lehmer generator"
   (setf *seed* (mod (* 16807 *seed*) 2147483647))
   (* n (/ *seed* 2147483647.0)))
 
-; Random integer 0 <= i < n
 (defun rint (&optional (n 2))
+  "Random integer 0 <= i < n"
   (floor (rand n)))
 
-; Fisher-Yates, driven by the seeded rand
 (defun shuffle (lst &aux (v (coerce lst 'vector)))
+  "Fisher-Yates, driven by the seeded rand"
   (loop for i from (1- (length v)) downto 1 do
     (rotatef (elt v i) (elt v (rint (1+ i)))))
   (coerce v 'list))
 
-; K items picked at random
 (defun few (lst k)
+  "K items picked at random"
   (subseq (shuffle lst) 0 (min k (length lst))))
 
-; Element of lst minimizing (fun x)
 (defun argmin (fun lst &aux best (lo +big+))
+  "Element of lst minimizing (fun x)"
   (dolist (x lst best)
     (let ((v (funcall fun x)))
       (when (< v lo) (setf lo v best x)))))
 
-; Element of lst maximizing (fun x)
 (defun argmax (fun lst &aux best (hi (- +big+)))
+  "Element of lst maximizing (fun x)"
   (dolist (x lst best)
     (let ((v (funcall fun x)))
       (when (> v hi) (setf hi v best x)))))
 
+
 ;;; ## Cols
 ;;; Update. `add` grows a column summary by one value:
 ;;; `sym`s count, `num`s fold mu and m2 by Welford (w<0
@@ -206,8 +210,8 @@ Every TEST and STUDY runs by its flag (e.g. --all --tree).")
   (incf (ats $has v 0) w)
   v)
 
-; Fold v into mu,m2 by Welford (w<0 removes); return v
 (defmethod add ((i num) v &optional (w 1))
+  "Fold v into mu,m2 by Welford (w<0 removes); return v"
   (incf $n w)
   (when (>= $n 1)
     (let ((d (- v $mu)))
@@ -215,10 +219,11 @@ Every TEST and STUDY runs by its flag (e.g. --all --tree).")
       (incf $m2 (* w d (- v $mu)))))
   v)
 
-; Fold a list into a summary; return the summary
 (defun adds (lst &optional (i (make-num)))
+  "Fold a list into a summary; return the summary"
   (dolist (v lst i) (add i v)))
 
+
 ;;; ## Query
 ;;; Query. Questions for summaries. `mid` = central
 ;;; tendency (mean or mode); `spread` = dispersion (sd or
@@ -229,30 +234,30 @@ Every TEST and STUDY runs by its flag (e.g. --all --tree).")
 (defmethod mid ((i num))
   $mu)
 
-; Most common symbol
 (defmethod mid ((i sym) &aux best (most (- +big+)))
+  "Most common symbol"
   (labels ((most (k v) (when (> v most) (setf most v best k))))
     (maphash #'most $has)
     best))
 
-; Entropy of a sym's counts
 (defmethod spread ((i sym))
+  "Entropy of a sym's counts"
   (loop for v being the hash-values of $has
     sum (* (/ v $n) (log (/ $n v) 2))))
 
-; Standard deviation of a num
 (defmethod spread ((i num))
+  "Standard deviation of a num"
   (if (< $n 2)
       0
       (sqrt (/ (max 0 $m2) (1- $n)))))
 
-; Map v to 0..1 via a logistic over its z-score
 (defmethod norm ((i num) v)
+  "Map v to 0..1 via a logistic over its z-score"
   (let ((z (/ (- v $mu) (+ (spread i) +tiny+))))
     (/ 1 (+ 1 (exp (* -1.7 (max -3 (min 3 z))))))))
 
-; Num summarizing i's data without j's
 (defmethod minus ((i num) (j num) &aux (k (make-num)))
+  "Num summarizing i's data without j's"
   (let ((n (- $n (? j n)))
         (d (- (? j mu) $mu)))
     (when (plusp n)
@@ -262,14 +267,15 @@ Every TEST and STUDY runs by its flag (e.g. --all --tree).")
                                (/ (* d d $n (? j n)) n)))))
     k))
 
-; Sym summarizing i's data without j's
 (defmethod minus ((i sym) (j sym) &aux (k (make-sym)))
+  "Sym summarizing i's data without j's"
   (setf (? k n) (- $n (? j n)))
   (maphash (lambda (x c &aux (c1 (- c (ats (? j has) x 0))))
              (when (plusp c1) (setf (ats (? k has) x) c1)))
            $has)
   k)
 
+
 ;;; ## Tbl
 ;;; Construction. Tables are born here. `make-cols` reads
 ;;; roles from the header (uppercase = num; -,+,! = goals;
@@ -292,20 +298,20 @@ Every TEST and STUDY runs by its flag (e.g. --all --tree).")
   (setf $all (nreverse $all) $x (nreverse $x) $y (nreverse $y))
   i)
 
-; Table from a csv file name or a list of rows
 (defun make-tbl (&optional src &aux (i (%make-tbl)))
+  "Table from a csv file name or a list of rows"
   (labels ((inc (row) (add i row)))
     (if (stringp src)
         (mapcsv #'inc src)
         (mapc #'inc src))
     i))
 
-; Fresh tbl over a subset of rows
 (defun clone (tbl rows)
+  "Fresh tbl over a subset of rows"
   (make-tbl (cons (? tbl cols names) rows)))
 
-; First row makes cols; later rows update them
 (defmethod add ((i tbl) row &optional (w 1))
+  "First row makes cols; later rows update them"
   (if $cols
       (dolist (col (? $cols all) (push row $rows))
         (let ((v (elt row (? col at))))
@@ -313,6 +319,7 @@ Every TEST and STUDY runs by its flag (e.g. --all --tree).")
       (setf $cols (make-cols row)))
   row)
 
+
 ;;; ## Dist
 ;;; Distances. `minkowski` is the p-norm skeleton; missing
 ;;; cells are skipped. `disty` reads only y columns:
@@ -332,29 +339,30 @@ Every TEST and STUDY runs by its flag (e.g. --all --tree).")
 (defvar *label* #'identity
   "hook: label a row on demand (see dtlz.lisp)")
 
-; Row's distance to the best goals (0 = ideal)
 (defun disty (tbl row)
+  "Row's distance to the best goals (0 = ideal)"
   (let ((row (funcall *label* row)))
     (minkowski row (? tbl cols y)
       (lambda (col v) (abs (- (norm col v) (? col w)))))))
 
-; Distance between two sym values
 (defmethod gap ((i sym) u v)
+  "Distance between two sym values"
   (if (equal u v) 0 1))
 
-; Distance between two num values; missing v = far pole
 (defmethod gap ((i num) u v)
+  "Distance between two num values; missing v = far pole"
   (let* ((u (norm i u))
          (v (if (eq v '?)
                 (if (< u .5) 1 0)
                 (norm i v))))
     (abs (- u v))))
 
-; Distance between two rows over the x cols
 (defun distx (tbl r1 r2)
+  "Distance between two rows over the x cols"
   (minkowski r1 (? tbl cols x)
     (lambda (col u) (gap col u (elt r2 (? col at))))))
 
+
 ;;; ## Acquire
 ;;; Acquire labels. `sway3` is the active learner: label a
 ;;; few rows off the good end, project the pool onto the
@@ -376,14 +384,14 @@ Every TEST and STUDY runs by its flag (e.g. --all --tree).")
               (- (expt (funcall x west r) 2)))
            (* 2 c))))))
 
-; All labelled rows, as a list
 (defun labs (lab &aux out)
+  "All labelled rows, as a list"
   (maphash (lambda (k v) (declare (ignore k)) (push v out))
            lab)
   out)
 
-; Label <= budget-check rows, best first; --acquire picks how
 (defun acquire (tbl)
+  "Label <= budget-check rows, best first; --acquire picks how"
   (labels ((y (r)   (disty tbl r))
            (x (a b) (distx tbl a b)))
     (let ((cap (- (? *my* --budget) (? *my* --check))))
@@ -392,10 +400,10 @@ Every TEST and STUDY runs by its flag (e.g. --all --tree).")
                 (sway3 (shuffle (? tbl rows)) #'y #'x cap))
             #'< :key #'y))))
 
-; Grow a few labels; keep the keepf slice nearest the good
 ; pole; redo on a fresh shuffle when the pool runs dry
 (defun sway3 (rows y x cap &optional lab east west
               &aux (b4 (copy-list rows)))
+  "Grow a few labels; keep the keepf slice nearest the good"
   (setf lab (or lab (make-hash-table :test #'eq)))
   (loop while (>= (length rows) (* 2 (? *my* --leaf))) do
     (let ((more (min (? *my* --more)
@@ -420,6 +428,7 @@ Every TEST and STUDY runs by its flag (e.g. --all --tree).")
                (first seen) (car (last seen))))
       (labs lab)))
 
+
 ;;; ## Bins
 ;;; Bins. `split` finds the single cheapest bin over all x
 ;;; cols; cost is the size-weighted `spread` of the two
@@ -432,13 +441,13 @@ Every TEST and STUDY runs by its flag (e.g. --all --tree).")
 (defmethod has-p ((i sym) w v)
   (or (eq w '?) (equal w v)))
 
-; Row value w on the yes-side of bin v? (? = yes)
 (defmethod has-p ((i num) w v)
+  "Row value w on the yes-side of bin v? (? = yes)"
   (or (eq w '?) (<= w v)))
 
-; Best (cost at v) bin over all x cols
 (defun split (tbl rows y &optional (accum #'make-num)
                   (keeper (keep-best-bin)))
+  "Best (cost at v) bin over all x cols"
   (dolist (col (? tbl cols x) (funcall keeper))
     (let ((at  (? col at))
           (ys  (funcall accum))
@@ -452,8 +461,8 @@ Every TEST and STUDY runs by its flag (e.g. --all --tree).")
               (push (cons x (add ys (funcall y r))) xy))))
       (bins xs xy ys at accum keeper))))
 
-; Closure: offer (this ys at v); () returns cheapest bin
 (defun keep-best-bin (&aux (lo +big+) kept)
+  "Closure: offer (this ys at v); () returns cheapest bin"
   (labels
     ((big-p (m n)
        (<= (? *my* --leaf) m (- n (? *my* --leaf))))
@@ -466,20 +475,21 @@ Every TEST and STUDY runs by its flag (e.g. --all --tree).")
           (when (< c lo) (setf lo c kept (list c at v)))))
       kept)))
 
-; Offer each key's y-summary as a candidate bin
 (defmethod bins ((i sym) xy ys at accum keeper)
+  "Offer each key's y-summary as a candidate bin"
   (loop for k being the hash-keys of $has
         using (hash-value this) do
     (funcall keeper this ys at k)))
 
-; Offer a candidate bin at each change in sorted x
 (defmethod bins ((i num) xy ys at accum keeper
                  &aux (this (funcall accum)))
+  "Offer a candidate bin at each change in sorted x"
   (loop for ((x . y) . rest) on (sort xy #'< :key #'car) do
     (add this y)
     (when (and rest (not (eql x (caar rest))))
       (funcall keeper this ys at x))))
 
+
 ;;; ## Tree
 ;;; Trees. `tree` recurses on the best bin while `grow-p`
 ;;; allows; leaves keep their rows and a `mid` prediction.
@@ -495,13 +505,13 @@ Every TEST and STUDY runs by its flag (e.g. --all --tree).")
     (when (grow-p rows lvl) (branch tbl i rows y accum lvl))
     i))
 
-; Enough rows and shallow enough to split again?
 (defun grow-p (rows lvl)
+  "Enough rows and shallow enough to split again?"
   (and (>= (length rows) (* 2 (? *my* --leaf)))
        (< lvl (? *my* --depth))))
 
-; If best bin divides rows, grow yes/no subtrees
 (defun branch (tbl i rows y accum lvl &aux yes no)
+  "If best bin divides rows, grow yes/no subtrees"
   (aif (split tbl rows y accum)
     (let ((at (second it)) (v (third it)))
       (dolist (r rows)
@@ -514,12 +524,12 @@ Every TEST and STUDY runs by its flag (e.g. --all --tree).")
               $yes (tree tbl yes y accum (1+ lvl))
               $no  (tree tbl no  y accum (1+ lvl)))))))
 
-; The column summary at index `at`
 (defun col-at (tbl at)
+  "The column summary at index `at`"
   (elt (? tbl cols all) at))
 
-; Walk row down the tree; return its leaf's mid
 (defun leaf (tbl i row)
+  "Walk row down the tree; return its leaf's mid"
   (if $at
       (leaf tbl
             (if (has-p (col-at tbl $at) (elt row $at) $v)
@@ -528,14 +538,14 @@ Every TEST and STUDY runs by its flag (e.g. --all --tree).")
             row)
       $mid))
 
-; List of every leaf node
 (defun leaves (i)
+  "List of every leaf node"
   (if $at
       (append (leaves $yes) (leaves $no))
       (list i)))
 
-; One branch test as text, e.g. |Volume <= 183|
 (defun cond-txt (tbl i yes)
+  "One branch test as text, e.g. |Volume <= 183|"
   (let ((col (col-at tbl $at)))
     (format nil "~a ~a ~a" (? col txt)
             (if (sym-p col)
@@ -543,27 +553,28 @@ Every TEST and STUDY runs by its flag (e.g. --all --tree).")
                 (if yes "<=" ">"))
             $v)))
 
-; Print tree: n, mid, indented branch conditions
 (defun show (tbl i &optional (pad "") (edge ""))
+  "Print tree: n, mid, indented branch conditions"
   (format t "~&~5d ~8,2f  ~a~a~%" $n $mid pad edge)
   (when $at
     (let ((pad2 (if (equal edge "") pad (cat pad "|  "))))
       (show tbl $yes pad2 (cond-txt tbl i t))
       (show tbl $no  pad2 (cond-txt tbl i nil)))))
 
-; X col indexes tested anywhere in the tree
 (defun used (i)
+  "X col indexes tested anywhere in the tree"
   (when $at
     (remove-duplicates
       (cons $at (append (used $yes) (used $no))))))
 
-; One line per tree: leaves, x cols used
 (defun about (tbl i)
+  "One line per tree: leaves, x cols used"
   (format t "~&leaves= ~a, x= ~a of ~a~%"
           (length (leaves i))
           (length (used i))
           (length (? tbl cols x))))
 
+
 ;;; ## Stats
 ;;; Stats. `same` is a conservative equality: `cohen` AND
 ;;; `cliffs` AND `ks` must all agree before two result
@@ -578,16 +589,16 @@ Every TEST and STUDY runs by its flag (e.g. --all --tree).")
   (/ (abs (- gt lt))
      (+ (* (length xs) (length ys)) +tiny+)))
 
-; Kolmogorov-Smirnov: max gap between the two CDFs
 (defun ks (xs ys)
+  "Kolmogorov-Smirnov: max gap between the two CDFs"
   (labels ((cdf (v lst)
              (/ (count-if (lambda (z) (<= z v)) lst)
                 (length lst))))
     (loop for v in (append xs ys)
           maximize (abs (- (cdf v xs) (cdf v ys))))))
 
-; Small effect: |mean gap| <= eps * pooled sd
 (defun cohen (xs ys &optional (eps 0.35))
+  "Small effect: |mean gap| <= eps * pooled sd"
   (let* ((x (adds xs)) (y (adds ys))
          (n (? x n))   (m (? y n))
          (sd (sqrt (/ (+ (* (1- n) (expt (spread x) 2))
@@ -595,14 +606,15 @@ Every TEST and STUDY runs by its flag (e.g. --all --tree).")
                       (+ n m -2)))))
     (<= (abs (- (mid x) (mid y))) (* eps (+ sd +tiny+)))))
 
-; True if xs,ys are statistically indistinguishable
 (defun same (xs ys &optional (cliff 0.195) (conf 1.36))
+  "True if xs,ys are statistically indistinguishable"
   (and (cohen xs ys)
        (<= (cliffs xs ys) cliff)
        (let ((n (length xs)) (m (length ys)))
          (<= (ks xs ys)
              (* conf (sqrt (/ (+ n m) (* n m))))))))
 
+
 ;;; ## Main
 ;;; Main. `wins` grades any row: 100 = equals the best,
 ;;; 0 = no better than median. `holdout` is the evaluation
@@ -623,8 +635,8 @@ Every TEST and STUDY runs by its flag (e.g. --all --tree).")
         (- 1 (/ (- (disty tbl r) lo)
                 (+ (- b4 lo) +tiny+)))))))))
 
-; Budget rig: acquire train -> tree -> best test row
 (defun holdout (tbl)
+  "Budget rig: acquire train -> tree -> best test row"
   (labels ((y (r) (disty tbl r)))
     (let* ((rows  (shuffle (? tbl rows)))
            (half  (floor (length rows) 2))
@@ -637,16 +649,16 @@ Every TEST and STUDY runs by its flag (e.g. --all --tree).")
                             :key (lambda (r) (leaf tbl tr r)))
                       0 (? *my* --check))))))
 
-; Slot names of a struct instance or type
 (defun slot-names (x)
+  "Slot names of a struct instance or type"
   (mapcar #+sbcl  #'sb-mop:slot-definition-name
           #+clisp #'clos:slot-definition-name
           (#+sbcl  sb-mop:class-slots
            #+clisp clos:class-slots
            (find-class (if (symbolp x) x (type-of x))))))
 
-; Sorted fbound tiny-xai symbols starting with prefix
 (defun egs (prefix)
+  "Sorted fbound tiny-xai symbols starting with prefix"
   (sort (loop for s being the present-symbols
               of (find-package :tiny-xai)
               when (and (fboundp s)
@@ -655,13 +667,13 @@ Every TEST and STUDY runs by its flag (e.g. --all --tree).")
               collect s)
         #'string< :key #'string))
 
-; Command-line args after the script name
 (defun args ()
+  "Command-line args after the script name"
   #+sbcl  (cdr sb-ext:*posix-argv*)
   #+clisp ext:*args*)
 
-; Print options (with defaults), tests, studies
 (defun help ()
+  "Print options (with defaults), tests, studies"
   (format t "~a~%~%OPTIONS:~%" *help*)
   (dolist (s (slot-names *my*))
     (format t "  ~(~a~) ~a~%" s (ats *my* s)))
@@ -674,8 +686,8 @@ Every TEST and STUDY runs by its flag (e.g. --all --tree).")
     (format t "  ~(~a~)~26t~a~%" (subseq (string s) 5)
             (documentation s 'function))))
 
-; Set settings slots from flags, then run named tests
 (defun cli (*my*)
+  "Set settings slots from flags, then run named tests"
   (let ((args (args)))
     (loop for (f v) on args do
       (dolist (slot (slot-names *my*))

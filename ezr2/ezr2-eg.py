@@ -21,6 +21,7 @@ $MOOT), 398 cars, goals minimize Lbs-, maximize Acc+ and
 Mpg+.
 """
 
+
 #-- lib-eg ------------------------------------------------------
 """
 
@@ -41,6 +42,7 @@ def test_thing():
   print(got)
   assert got == [23, 3.14, -100.0, True, False, "?", "abc"]
 
+
 #-- rand-eg -----------------------------------------------------
 """
 
@@ -63,6 +65,7 @@ def test_rand():
   assert len(some(a, 5)) == 5
   assert len(some(a, 999)) == 20
 
+
 #-- cols-eg -----------------------------------------------------
 """
 
@@ -91,6 +94,7 @@ def test_cols():
   print("num mu %.3f sd %.3f" % (mid(n), var(n)))
   assert abs(mid(n)) < 0.05 and abs(var(n) - 1) < 0.05
 
+
 #-- tbl-eg -----------------------------------------------------
 """
 
@@ -119,6 +123,7 @@ def test_data():
     assert abs(mu_(mpg) - 23.84) < 0.1
     assert abs(sd(mpg) - 8.34) < 0.1
 
+
 #-- dist-eg -----------------------------------------------------
 """
 
@@ -160,6 +165,7 @@ def test_disty():
   for r in body[5:]: line(r)
   assert disty(tbl, rows[0]) <= disty(tbl, rows[-1])
 
+
 #-- stats-eg ----------------------------------------------------
 """
 
@@ -187,6 +193,7 @@ def test_same():
           cliffs(a,b), cohen(a,b)))
   assert same(a, a) and not same(a, shift(2))
 
+
 #-- acquire-eg --------------------------------------------------
 """
 
@@ -249,6 +256,7 @@ def test_acquires():
         sum(ds)/len(ds), n, the.file.split("/")[-1]))
   assert -100 <= sum(ws)/len(ws) <= 100
 
+
 #-- bins-eg -----------------------------------------------------
 """
 
@@ -273,6 +281,7 @@ def test_bins():
         (best[0], tbl.names[best[1]], best[2], var(tot)))
   assert best[0] < var(tot)
 
+
 #-- tree-eg -----------------------------------------------------
 """
 
@@ -302,6 +311,7 @@ def test_tree():
   tbl.rows = some(tbl.rows, the.cap)
   show(tbl, tree(tbl, acquire(tbl)))
 
+
 #-- show-eg -----------------------------------------------------
 """
 
@@ -329,6 +339,7 @@ def test_trees():
           (tag, len(rows), disty(tbl,best), W(best)))
     show(tbl, tree(tbl, rows))
 
+
 #-- main-eg -----------------------------------------------------
 """
 

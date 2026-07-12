@@ -113,6 +113,7 @@ function h.runRace(data, opts,    d)
 
 local eg = {}
 
+
 -- ## list-eg
 --[[
 ## Lists
@@ -145,6 +146,7 @@ eg["--tabulate"] = function()
               {"Bob","9","longer note here"}}, {"<",">","<"})
   return true end
 
+
 -- ## rand-eg
 --[[
 ## Reproducible randomness
@@ -171,6 +173,7 @@ eg["--rand"] = function(    d,c,k,n,mu,m2)
                {"irwin mu~0",mu,0,0.1},
                {"irwin sd~1",l.sd(n,m2),1,0.1}) end
 
+
 -- ## stats-eg
 local rand = math.random
 
@@ -217,6 +220,7 @@ eg["--sames"] = function(    mk,x,y,z,tier)
     {"tier a+b",tier.a~=nil and tier.b~=nil,true},
     {"tier no c",tier.c,nil}) end
 
+
 -- ## confuse-eg
 --[[
 ## Scoring a classifier
@@ -239,6 +243,7 @@ eg["--confuse"] = function(    cf)
   for _=1,40 do cf:add("no","no")   end
   cf:show(); return true end
 
+
 -- ## str-eg
 --[[
 ## Strings and files
@@ -270,6 +275,7 @@ eg["--csv"] = function(    tmp,f,rows)
   return l.chk({"#rows",#rows,2},
     {"head",rows[1][1],"a"}, {"cell",rows[2][3],3}) end
 
+
 -- ## cli-eg
 --[[
 ## The command line
@@ -293,6 +299,7 @@ eg["--cli"] = function(    txt,opts)
                 true},
                {"the seeded",the.seed ~= nil,true}) end
 
+
 -- ## cols-eg
 local Sym,Cols = m.Sym, m.Cols
 
@@ -329,6 +336,7 @@ eg["--cols"] = function(    sym,num,cols)
     {"goal+",cols.all[3].goal,1}, {"goal-",cols.all[4].goal,0},
     {"skipX",cols.all[5].goal,nil}) end
 
+
 -- ## data-eg
 local Data = m.Data
 
@@ -380,6 +388,7 @@ eg["--body"] = function(    tmp,f,n)
   n = 0; for _ in m.body(tmp) do n=n+1 end; os.remove(tmp)
   return l.chk({"body rows", n, 3}) end
 
+
 -- ## dist-eg
 local Data = m.Data
 
@@ -414,6 +423,7 @@ eg["--dist"] = function(    data,goals)
      true})
   end
 
+
 -- ## cut-eg
 local floor,rand = math.floor, math.random
 local Data = m.Data
@@ -453,6 +463,7 @@ eg["--cuts"] = function(    data,cuts,ls,rs,best,v,was)
   return l.chk({"cut val",cuts[1].val,3}, {"split",#ls+#rs,5},
     {"finds X1",best.txt,"X1"}, {"cut ~67",best.val,67,8}) end
 
+
 -- ## tree-eg
 local Sym = m.Sym
 
@@ -513,6 +524,7 @@ eg["--ftree"] = function(    data,p1,p2,root,count)
     {"#rows",count(root),#data.rows},
     {"is tree",root.at~=nil or root.leaf,true}) end
 
+
 -- ## bayes-eg
 local huge = math.huge
 local Sym,Num,Data = m.Sym, m.Num, m.Data
@@ -544,6 +556,7 @@ eg["--bayes"] = function(    s,n,data,got)
     {"num like>0",m.like(n,3,0.5) > 0,true},
     {"finite",got==got and got > -huge,true}) end
 
+
 -- ## mutate-eg
 local Data = m.Data
 
@@ -577,6 +590,7 @@ eg["--mutate"] = function(    data,n,row,out,kid)
     {"picks len",#out,#row}, {"y kept",out[3],row[3]},
     {"kid len",#kid,3}) end
 
+
 -- ## cluster-eg
 --[[
 ## Clustering
@@ -606,6 +620,7 @@ eg["--kpp"] = function(    data,cents)
   cents = a.kpp(data, 5, 64)
   return l.chk({"k cents", #cents, 5}) end
 
+
 -- ## classify-eg
 local Data = m.Data
 
@@ -636,6 +651,7 @@ eg["--classify"] = function(    data,cf,n)
     for _,c in pairs(gs) do n = n + c end end
   return l.chk({"cf nonempty", n > 0, true}) end
 
+
 -- ## acquire-eg
 --[[
 ## Active learning
@@ -658,6 +674,7 @@ eg["--acquire"] = function(    data,lab,was)
   the.start = was
   return l.chk({"labeled grew", #lab.rows > 10, true}) end
 
+
 -- ## sample-eg
 --[[
 ## Synthesis and anomalies
@@ -697,6 +714,7 @@ eg["--anomaly"] = function(    data,det,known,outlier)
                 det(known) > 0.1 and det(known) < 0.9, true},
                {"outlier tail", det(outlier) > 0.9, true}) end
 
+
 -- ## bob-eg
 local Num = m.Num
 
@@ -736,6 +754,7 @@ eg["--acq"] = function(    data,win,dy,best,d,ok,err)
                                      the.train, err)) end
   return true end
 
+
 -- ## ga-eg
 --[[
 ## Genetic algorithm
@@ -754,6 +773,7 @@ eg["--ga"] = function(    data)
   the.np, the.cr, the.gens = 50, 0.25, 50
   return h.runRace(data, {{"ga", a.ga(data, a.knn(data))}}) end
 
+
 -- ## de-eg
 --[[
 ## Differential evolution
@@ -771,6 +791,7 @@ eg["--de"] = function(    data)
   the.de_iter, the.np = 30, 20
   return h.runRace(data, {{"de", a.de(data)}}) end
 
+
 -- ## search-eg
 --[[
 ## (1+1) search
@@ -793,6 +814,7 @@ eg["--ls"] = function(    data)
   data = h.pickData()
   return h.runRace(data, {{"ls", a.ls(data)}}) end
 
+
 -- ## race-eg
 --[[
 ## Race them all

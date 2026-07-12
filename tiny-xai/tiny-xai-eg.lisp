@@ -49,6 +49,7 @@ it well.
   (format t "~&~s~%" *my*)
   (assert (settings-p *my*)))
 
+
 ;;; ## Lib egs
 ;;; Tutorial and tests for lib.lisp: the running example
 ;;; csv, and coercing its cells.
@@ -106,6 +107,7 @@ csv cells can hide exponents.
     (print got)
     (assert (equal got '(23 3.14 -100.0 ? t nil "abc")))))
 
+
 ;;; ## Macros egs
 ;;; Tutorial and tests for macros.lisp: one accessor,
 ;;; three spellings.
@@ -140,6 +142,7 @@ as `it`. Notice `?` walking two levels in one call.
   (assert (numberp (? *my* --seed)))
   (assert (eq 'yes (aif (+ 1 2) (and (= it 3) 'yes)))))
 
+
 ;;; ## Cols egs
 ;;; Tutorial and tests for cols.lisp: symbolic columns.
 
@@ -174,6 +177,7 @@ value dominates.
       (format t "origin: mid ~a ent ~,3f~%"
               (mid origin) (spread origin)))))
 
+
 ;;; ## Query egs
 ;;; Tutorial and tests for query.lisp: numeric columns.
 
@@ -202,6 +206,7 @@ column's mean and standard deviation. Notice: the average
       (assert (< (abs (- (mid mpg) 23.84)) 0.1))
       (assert (< (abs (- (spread mpg) 8.34)) 0.1)))))
 
+
 ;;; ## Rand egs
 ;;; Tutorial and tests for rand.lisp: reproducible
 ;;; randomness.
@@ -237,6 +242,7 @@ in one shot.
   (assert (< (abs (mid i)) 0.05))
   (assert (< (abs (- (spread i) 1)) 0.05)))
 
+
 ;;; ## Tbl egs
 ;;; Tutorial and tests for tbl.lisp: the whole table.
 
@@ -274,6 +280,7 @@ Acc+ and Mpg+ -- light, quick, thrifty cars win.
       (assert (< (abs (- (mid mpg) 23.84)) 0.1))
       (assert (< (abs (- (spread mpg) 8.34)) 0.1)))))
 
+
 ;;; ## Dist egs
 ;;; Tutorial and tests for dist.lisp: distance to heaven.
 
@@ -335,6 +342,7 @@ table two) are also close in y.
                1e-6))
     (assert (<= 0 (distx i lo hi) 1))))
 
+
 ;;; ## Stats egs
 ;;; Tutorial and tests for stats.lisp: when do two results
 ;;; differ?
@@ -368,6 +376,7 @@ something.
     (assert (same xs ys))
     (assert (not (same xs zs)))))
 
+
 ;;; ## Acquire egs
 ;;; Tutorial and tests for acquire.lisp: the active
 ;;; learner.
@@ -401,6 +410,7 @@ scored all 398.
     (assert (equal ys (sort (copy-list ys) #'<)))
     (assert (< (first ys) 0.4))))
 
+
 ;;; ## Bins egs
 ;;; Tutorial and tests for bins.lisp: explaining, one bin.
 
@@ -433,6 +443,7 @@ mechanic would say: small engines differ from big ones.
     (when (search "auto93" (? *my* --file))
       (assert (eql (third best) 183)))))
 
+
 ;;; ## Tree egs
 ;;; Tutorial and tests for tree.lisp: explaining, a whole
 ;;; tree.
@@ -472,6 +483,7 @@ mattered.
                   (length (? i cols x))))
       (assert (numberp (leaf i tr (first rows)))))))
 
+
 ;;; ## Main egs
 ;;; Tutorial and tests for main.lisp: grading, the whole
 ;;; rig, and the Rq0-Rq2 studies.

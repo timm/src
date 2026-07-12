@@ -46,10 +46,14 @@ recreate them.
 ## comments: three altitudes, never mixed
 
     ;;;; / """ / --[[   file header: what this file is for
-    ; / # / --          one-line note ABOVE each definition
-                        (capitalized, no trailing period)
-    docstrings          tests/demos ONLY: -h help text and
-                        test-op read them at runtime
+    docstrings          one line per function, where the
+                        language has them (python, lisp);
+                        lua uses a `-- note` line above.
+                        One-liner defs (python) keep a
+                        `# note` above instead.
+    ## sections         a formfeed (^L) line precedes every
+                        section marker, so make xx.pdf
+                        paginates per section
 
 No figlet banners. No form feeds. Section markers
 (`-- ##` etc) divide the library file into topics.

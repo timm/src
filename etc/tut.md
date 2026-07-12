@@ -8,11 +8,11 @@ and rationale: style.md.
 ## The three layers (never mix altitudes)
 
     file header   ;;;;-style prose: what this file is for
-    function note one-line comment ABOVE each definition
-                  (contract facts the name can't carry:
-                  "w<0 removes", "? = yes"); tests keep
-                  these as DOCSTRINGS instead (-h and
-                  test-op read them at runtime)
+    docstring     one line per function (python, lisp):
+                  contract facts the name can't carry
+                  ("w<0 removes", "? = yes"); lua uses a
+                  -- note line above; -h and test-op read
+                  test docstrings at runtime
     eg stanza     motivation + story, paragraphs + tables,
                   in block-comment markdown
 

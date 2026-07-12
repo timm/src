@@ -37,6 +37,7 @@ local m = require"luamine"
 local the = l.the
 a.help, a.Data = help, m.Data
 
+
 -- ## cluster
 -- Cluster. `kmeans` = k clusters around centroids, errs
 -- per iteration; `kpp` = kmeans++ seeding, d^2-weighted
@@ -83,6 +84,7 @@ function a.kpp(data,k,few,    rows,out,t,ws,d,mn)
     out[1+#out] = t[l.pickDict(ws)] end
   return out end
 
+
 -- ## classify
 -- Classify. Incremental naive bayes, test-then-train:
 -- predict each row's klass from the models so far, score
@@ -108,6 +110,7 @@ function a.classify(data,wait,    h,cf,nKl,want,best,bs,s)
     h[want]:add(row) end
   return cf end
 
+
 -- ## acquire
 -- Acquire. Active learning: label the top-scored unlabeled
 -- row, re-cap best, repeat to budget. Two acquisition
@@ -166,6 +169,7 @@ function a.acquire(data,score,budget,start,
     capBest(best, rest, lab) end
   return lab end
 
+
 -- ## sample
 -- Sample / anomaly. `sample` invents N synthetic rows by
 -- DE-blending 3 rows per ftree leaf; `anomalyDetector`
@@ -208,6 +212,7 @@ function a.anomalyDetector(data,    tree,dn,d1)
   for _,row in ipairs(data.rows) do dn:add(d1(row)) end
   return function(row) return dn:norm(d1(row)) end end
 
+
 -- ## bob
 -- Bob. The whole pipeline: split, acquire labels on the
 -- train half, tree the labels, rank the unseen test half
@@ -235,6 +240,7 @@ function a.bob(data,score,
   best = l.keysort(l.slice(sorted, 1, the.check), d.y)[1]
   return best, d end
 
+
 -- ## race
 -- Race. Oracles and Pareto predicates for the optimizers,
 -- plus the harness: `track` drives one stepper, snapping
@@ -311,6 +317,7 @@ function a.report(data, lob,    ys,rows,row,dists,mu)
   l.tabulate(rows, {"<"}, "  ")
   return dists end
 
+
 -- ## ga
 -- Ga. Genetic algorithm stepper: mutate, tournament
 -- select, crossover; one call = one generation; nil when
@@ -355,6 +362,7 @@ function a.ga(data, better,
       pop = crossOver(#pop, selects(l.map(pop,mutate)))
       return gen, pop, ref end end end
 
+
 -- ## de
 -- De. Differential evolution, DE/rand/1 stepper: blend
 -- three distinct rows per parent; the kid replaces its
@@ -378,6 +386,7 @@ function a.de(data,oracle,    y,pop,es,gen)
       if d < es[i] then pop[i],es[i] = kid,d end end
     return gen, kids end end
 
+
 -- ## search
 -- Search, (1+1) style. `oneplus1` is the shared stepper:
 -- mutate s, accept(e,d,h,b), restart on stagnation, nil
