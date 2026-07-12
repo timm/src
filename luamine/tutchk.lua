@@ -8,6 +8,11 @@ local file, verbose = "tut.md", false
 for _,x in ipairs(arg) do
   if x=="-v" then verbose=true else file=x end end
 
+-- events whose OUTPUT is environment-specific (lua version,
+-- absolute paths): still executed (must not error), but the
+-- transcript diff is skipped
+local SKIP = { "_VERSION", "l%.path" }
+
 local events = {}          -- {n=, code=, want={}, line=}
 do
   local fence, cur = false, nil
@@ -78,8 +83,11 @@ for _,e in ipairs(events) do
         then return false end
       elseif gt[i] ~= wt[i] then return false end end
     return true end
-  local ok = res[1] and #buf == #want
-  if ok then
+  local skip = false
+  for _,pat in ipairs(SKIP) do
+    if e.code:find(pat) then skip = true end end
+  local ok = res[1] and (skip or #buf == #want)
+  if ok and not skip then
     for i=1,#want do
       if not sameLine(buf[i] or "", want[i]) then
         ok=false end end end

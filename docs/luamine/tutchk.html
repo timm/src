@@ -37,7 +37,21 @@ each output against the transcript. Run from this dir:
     <div class='code'>
       <div class="highlight"><pre><span></span><span class="kd">local</span><span class="w"> </span><span class="nv">file</span><span class="p">,</span><span class="w"> </span><span class="nv">verbose</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;tut.md&quot;</span><span class="p">,</span><span class="w"> </span><span class="kc">false</span>
 <span class="kr">for</span><span class="w"> </span><span class="nv">_</span><span class="p">,</span><span class="nv">x</span><span class="w"> </span><span class="kr">in</span><span class="w"> </span><span class="nb">ipairs</span><span class="p">(</span><span class="nv">arg</span><span class="p">)</span><span class="w"> </span><span class="kr">do</span>
-<span class="w">  </span><span class="kr">if</span><span class="w"> </span><span class="nv">x</span><span class="o">==</span><span class="s2">&quot;-v&quot;</span><span class="w"> </span><span class="kr">then</span><span class="w"> </span><span class="nv">verbose</span><span class="o">=</span><span class="kc">true</span><span class="w"> </span><span class="kr">else</span><span class="w"> </span><span class="nv">file</span><span class="o">=</span><span class="nv">x</span><span class="w"> </span><span class="kr">end</span><span class="w"> </span><span class="kr">end</span>
+<span class="w">  </span><span class="kr">if</span><span class="w"> </span><span class="nv">x</span><span class="o">==</span><span class="s2">&quot;-v&quot;</span><span class="w"> </span><span class="kr">then</span><span class="w"> </span><span class="nv">verbose</span><span class="o">=</span><span class="kc">true</span><span class="w"> </span><span class="kr">else</span><span class="w"> </span><span class="nv">file</span><span class="o">=</span><span class="nv">x</span><span class="w"> </span><span class="kr">end</span><span class="w"> </span><span class="kr">end</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-1'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-1'>#</a>
+      </div>
+      <p>events whose OUTPUT is environment-specific (lua version,
+absolute paths): still executed (must not error), but the
+transcript diff is skipped</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="kd">local</span><span class="w"> </span><span class="nv">SKIP</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="s2">&quot;_VERSION&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;l%.path&quot;</span><span class="w"> </span><span class="p">}</span>
 
 <span class="kd">local</span><span class="w"> </span><span class="nv">events</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{}</span><span class="w">          </span><span class="c1">-- {n=, code=, want={}, line=}</span>
 <span class="kr">do</span>
@@ -57,10 +71,10 @@ each output against the transcript. Run from this dir:
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-1'>
+  <div class='section' id='section-2'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-1'>#</a>
+        <a class='octothorpe' href='#section-2'>#</a>
       </div>
       <p>capture print/io.write into a buffer, REPL-style</p>
     </div>
@@ -76,10 +90,10 @@ each output against the transcript. Run from this dir:
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-2'>
+  <div class='section' id='section-3'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-2'>#</a>
+        <a class='octothorpe' href='#section-3'>#</a>
       </div>
       <p>io.write appends to the current (last) buffered line</p>
     </div>
@@ -115,10 +129,10 @@ each output against the transcript. Run from this dir:
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-3'>
+  <div class='section' id='section-4'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-3'>#</a>
+        <a class='octothorpe' href='#section-4'>#</a>
       </div>
       <p>two lines match if equal token-by-token, numbers
 compared at 10 significant digits (the course&rsquo;s rule)</p>
@@ -138,8 +152,11 @@ compared at 10 significant digits (the course&rsquo;s rule)</p>
 <span class="w">        </span><span class="kr">then</span><span class="w"> </span><span class="kr">return</span><span class="w"> </span><span class="kc">false</span><span class="w"> </span><span class="kr">end</span>
 <span class="w">      </span><span class="kr">elseif</span><span class="w"> </span><span class="nv">gt</span><span class="p">[</span><span class="nv">i</span><span class="p">]</span><span class="w"> </span><span class="o">~=</span><span class="w"> </span><span class="nv">wt</span><span class="p">[</span><span class="nv">i</span><span class="p">]</span><span class="w"> </span><span class="kr">then</span><span class="w"> </span><span class="kr">return</span><span class="w"> </span><span class="kc">false</span><span class="w"> </span><span class="kr">end</span><span class="w"> </span><span class="kr">end</span>
 <span class="w">    </span><span class="kr">return</span><span class="w"> </span><span class="kc">true</span><span class="w"> </span><span class="kr">end</span>
-<span class="w">  </span><span class="kd">local</span><span class="w"> </span><span class="nv">ok</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">res</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="o">#</span><span class="nv">buf</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="o">#</span><span class="nv">want</span>
-<span class="w">  </span><span class="kr">if</span><span class="w"> </span><span class="nv">ok</span><span class="w"> </span><span class="kr">then</span>
+<span class="w">  </span><span class="kd">local</span><span class="w"> </span><span class="nv">skip</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">false</span>
+<span class="w">  </span><span class="kr">for</span><span class="w"> </span><span class="nv">_</span><span class="p">,</span><span class="nv">pat</span><span class="w"> </span><span class="kr">in</span><span class="w"> </span><span class="nb">ipairs</span><span class="p">(</span><span class="nv">SKIP</span><span class="p">)</span><span class="w"> </span><span class="kr">do</span>
+<span class="w">    </span><span class="kr">if</span><span class="w"> </span><span class="nv">e</span><span class="p">.</span><span class="py">code</span><span class="p">:</span><span class="nf">find</span><span class="p">(</span><span class="nv">pat</span><span class="p">)</span><span class="w"> </span><span class="kr">then</span><span class="w"> </span><span class="nv">skip</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">true</span><span class="w"> </span><span class="kr">end</span><span class="w"> </span><span class="kr">end</span>
+<span class="w">  </span><span class="kd">local</span><span class="w"> </span><span class="nv">ok</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">res</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="p">(</span><span class="nv">skip</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="o">#</span><span class="nv">buf</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="o">#</span><span class="nv">want</span><span class="p">)</span>
+<span class="w">  </span><span class="kr">if</span><span class="w"> </span><span class="nv">ok</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="nv">skip</span><span class="w"> </span><span class="kr">then</span>
 <span class="w">    </span><span class="kr">for</span><span class="w"> </span><span class="nv">i</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="o">#</span><span class="nv">want</span><span class="w"> </span><span class="kr">do</span>
 <span class="w">      </span><span class="kr">if</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="nf">sameLine</span><span class="p">(</span><span class="nv">buf</span><span class="p">[</span><span class="nv">i</span><span class="p">]</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="p">,</span><span class="w"> </span><span class="nv">want</span><span class="p">[</span><span class="nv">i</span><span class="p">])</span><span class="w"> </span><span class="kr">then</span>
 <span class="w">        </span><span class="nv">ok</span><span class="o">=</span><span class="kc">false</span><span class="w"> </span><span class="kr">end</span><span class="w"> </span><span class="kr">end</span><span class="w"> </span><span class="kr">end</span>
