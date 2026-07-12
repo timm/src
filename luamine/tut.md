@@ -47,21 +47,28 @@ the lectures: by the end of week k, your program must
 reproduce every REPL prompt through that lecture's last
 event (the ranges in the table below — roughly 20-25 events
 a week). The course RNG is a portable 10-line generator
-(see `l.rand` in lib.lua), so a correct port produces the
+(see `l.rand` in rand.lua), so a correct port produces the
 SAME numbers shown here: grading is diff. Where outputs are
 tables, match the content; where they are floats, match to
 ten significant digits.
 
 **Setup** (lecture 1 walks through this):
 
-    git clone https://github.com/aiez/luamine luamine
+    git clone https://github.com/timm/src
     git clone http://github.com/timm/moot ~/gits/moot
-    cd luamine && lua -i
+    cd src/luamine && lua -i
 
-Source files: [lib.lua](https://github.com/aiez/luamine/blob/main/lib.lua) (helpers),
-[luamine.lua](https://github.com/aiez/luamine/blob/main/luamine.lua) (AI primitives),
-[lapps.lua](https://github.com/aiez/luamine/blob/main/lapps.lua) (applications) —
-each a few hundred lines. Words in SMALL CAPS like
+Source files: three modules, each a thin loader assembling
+page-sized topic files:
+[lib.lua](https://github.com/timm/src/blob/main/luamine/lib.lua)
+(helpers: rand, list, stats, confuse, str, cli),
+[luamine.lua](https://github.com/timm/src/blob/main/luamine/luamine.lua)
+(AI primitives: cut, sym, num, cols, data, dist, bayes,
+mutate, tree, show), and
+[lapps.lua](https://github.com/timm/src/blob/main/luamine/lapps.lua)
+(applications: cluster, classify, acquire, sample, bob,
+race, ga, de, search). Annotated pages:
+[timm.github.io/src/luamine](https://timm.github.io/src/luamine/). Words in SMALL CAPS like
 [ACQ](#glossary) are defined in the [glossary](#glossary),
 cited in full in the [references](#refs); new to Lua? start
 with the [Lua 101 appendix](#appendix); test yourself
@@ -102,9 +109,9 @@ minutes.
 
 You need three things: Lua 5.x, this repo, and the data repo.
 
-    git clone https://github.com/aiez/luamine luamine
+    git clone https://github.com/timm/src
     git clone http://github.com/timm/moot ~/gits/moot
-    cd luamine
+    cd src/luamine
 
 **Where this bites.** A real product-line table in tonight's
 data repo (SS-X) has 86,000 rows of configurations over 88
@@ -186,10 +193,14 @@ Lua 5.5
 ```
 
 If `require"lib"` fails, you are not in the luamine directory.
-Fix that before reading on.
+Fix that before reading on. (Each of those three files is a
+thin loader: it assembles its module from the page-sized
+topic files sitting beside it -- rand.lua, list.lua, sym.lua
+and friends -- so requiring needs the whole directory, not
+one downloaded file; `sh INSTALL.md` fetches the lot.)
 
-**Check:** what does `require` return? (Hint: each file ends
-with `return m`.)
+**Check:** what does `require` return? (Hint: each loader ends
+by returning its module table.)
 
 ## 1.2 One table of settings
 
@@ -214,8 +225,8 @@ that loading luamine and lapps added their options (`bins`, `np`,
 
 > **CONF — one config struct.** All knobs in one table, parsed
 > from the help text, overridable from the command line
-> (`lua lapps.lua --seed 42 ...`). No scattered constants, no
-> separate config file to rot. See `l.boot` in lib.lua.
+> (`lua luamine-eg.lua --seed 42 ...`). No scattered constants, no
+> separate config file to rot. See `l.boot` in cli.lua.
 > The help text is the single source of truth (SSOT);
 > everything else derives from it.
 
@@ -342,7 +353,7 @@ your first question is now: what was the seed?
 > deliberately (and only deliberately). luamine reseeds before
 > every test action so each runs independent of the others.
 
-**Check:** why does `lua luamine.lua --all` reseed before every
+**Check:** why does `lua luamine-eg.lua --all` reseed before every
 test, rather than once at startup?
 
 One final discipline runs at every exit. In Lua, any
@@ -356,7 +367,7 @@ run.
 > cleanliness rule (no global leaks); make the program
 > AUDIT the rule on every run and name violators. A
 > convention checked by machinery survives; one checked by
-> code review decays. See `b4` and `m.main` in lib.lua.
+> code review decays. See `b4` (top of each loader) and `l.main` in cli.lua.
 
 ## 1.6 Preview: the whole movie
 
@@ -365,7 +376,7 @@ lists, statistics, tables, distance. Worth doing properly,
 but you signed up for AI. So here is where this road goes,
 run from your shell right now, zero understanding required:
 
-    $ lua luamine.lua --tree
+    $ lua luamine-eg.lua --tree
         n     Lbs-   Acc+   Mpg+  disty  tree                
        32  2906.16  15.83  26.25   0.53  .                   
        16  2233.31  17.34  33.75   0.34  Volume <= 120       
@@ -383,7 +394,7 @@ run from your shell right now, zero understanding required:
 A decision tree that found the good cars (`+`) and the bad
 ones (`-`) from 32 labels — built by lecture 6's code. And:
 
-    $ lua lapps.lua --race
+    $ lua luamine-eg.lua --race
     who      eval  gen  disty     Lbs-   Acc+   Mpg+
     average     -    -   0.50  2970.42  15.57  23.84
     ga          1    1   0.15     2035  22.20     30
@@ -413,7 +424,7 @@ coerce and pretty-print values, stream a self-describing CSV
 
 1. Rerun `[15]`-`[16]` on a different file from
    `$MOOT/optimize/`. Which columns are goals?
-2. From the shell: `lua lapps.lua --seed 7 --kpp`. Run it
+2. From the shell: `lua luamine-eg.lua --seed 7 --kpp`. Run it
    twice. Same output? Now drop the `--seed 7`. Explain.
 3. Write a five-line REPL loop that counts the `?` cells in
    auto93.csv. (Hint: `[17]` plus an inner loop.)
@@ -624,7 +635,7 @@ slice/shuffle. Numbers get mean and sd incrementally
 ([WEL](#glossary)); symbols get mode and entropy
 ([ENT](#glossary)); bisect ranks values in sorted lists.
 
-**Coming attraction:** `lua lapps.lua --kmeans` — lecture 5
+**Coming attraction:** `lua luamine-eg.lua --kmeans` — lecture 5
 clusters cars using nothing but this lecture's sort, shuffle,
 and Welford.
 
@@ -852,8 +863,8 @@ schema ([CSV](#glossary)); Data is rows + Cols, built in one
 pass; clone copies structure without data.
 
 **Coming attraction:** the Num and Sym you just built are the
-entire data layer: `lua luamine.lua --bayes` (lecture 5) and
-`lua luamine.lua --tree` (lecture 6) run on nothing else.
+entire data layer: `lua luamine-eg.lua --bayes` (lecture 5) and
+`lua luamine-eg.lua --tree` (lecture 6) run on nothing else.
 
 **Exercises.**
 
@@ -1100,7 +1111,7 @@ scale; distx measures row-to-row over x cols
 ([ZIT](#glossary)).
 
 **Coming attraction:** distance is the last foundation. From
-here every lecture is AI: `lua lapps.lua --acquire` already
+here every lecture is AI: `lua luamine-eg.lua --acquire` already
 runs on what you now know.
 
 **Exercises.**
@@ -2792,7 +2803,7 @@ runs into an honest leaderboard ([TIER](#glossary)).
 5. Sweep `the.budget` in {10, 20, 40, 80} for `a.bob`, 20
    repeats each. Plot mean win vs labels spent. Where is
    the knee?
-6. Run `lua lapps.lua --acq` on five different optimize/
+6. Run `lua luamine-eg.lua --acq` on five different optimize/
    CSVs from $MOOT. Which datasets resist budgeted
    optimization, and what do they have in common?
 7. Capstone: race ga/de/sa/ls on 20 seeds, collect final
@@ -2804,7 +2815,7 @@ runs into an honest leaderboard ([TIER](#glossary)).
    each axis into small/med/hi. Which data shapes are
    over-represented? That sampling bias bounds every claim
    in this course — say so in your capstone write-up.
-9. Field trip: `lua lapps.lua -t
+9. Field trip: `lua luamine-eg.lua -t
    $MOOT/optimize/config/SS-A.csv --acq` — the one-line
    budget-aware optimizer report. Then the same for two more
    config tables. Stable win scores?
@@ -2949,7 +2960,7 @@ nil
 4	40
 ```
 
-`t[#t+1] = v` is the idiomatic append — lib.lua wraps it as
+`t[#t+1] = v` is the idiomatic append — list.lua wraps it as
 `l.push`. `ipairs` walks the array part in order; its sibling
 `pairs` walks every key but in NO guaranteed order, which is
 why luamine sorts keys before printing ([SEED](#glossary)ed runs
@@ -2991,7 +3002,7 @@ Functions are ordinary values: store them, pass them, return
 them. A function returning a function captures the enclosing
 locals — a closure. This is luamine's main structuring tool:
 `l.lt(2)` builds comparators, `d:dxdy()` builds distance
-views, every optimizer in lapps.lua is a closure ("stepper")
+views, every optimizer app (ga.lua, de.lua, search.lua) is a closure ("stepper")
 remembering its own population.
 
 ```
@@ -3080,13 +3091,13 @@ true
 
 `acc:add(50)` is sugar for `acc.add(acc, 50)` — the colon
 passes the receiver as a first argument that the sources
-conventionally call `i`. Now read lib.lua's entire object
-system: `function m.new(mt,t) mt.__index=mt; return
+conventionally call `i`. Now read list.lua's entire object
+system: `function l.new(mt,t) mt.__index=mt; return
 setmetatable(t,mt) end` — `[1034]`+`[1035]` in one line. Every
 Num, Sym, Cols, Data, Cut in the course is exactly an
 `[1037]`.
 
-**Check:** in `Sym.cuts(i,rows)` (luamine.lua), which call
+**Check:** in `Sym.cuts(i,rows)` (sym.lua), which call
 syntax reaches it — dot or colon — and what is `i` there?
 
 ## A.7 Errors, load, modules
