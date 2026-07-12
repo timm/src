@@ -230,9 +230,10 @@ def distx(tbl, r1, r2, **kw):
                     for at in tbl.x), **kw)
 
 #-- acquire -----------------------------------------------------
-def project(rows, x, y):
+def project(rows, x, y, east=None, west=None):
   far  = lambda r: max(rows, key=lambda z: x(z, r))
-  east = far(rows[0]); west = far(east)
+  east = far(rows[0]) if east is None else east
+  west = far(east)    if west is None else west
   if y(east) > y(west): east, west = west, east
   c = x(east, west) + TINY
   return lambda r: (x(east,r)**2 + c*c - x(west,r)**2)/(2*c)
@@ -242,18 +243,27 @@ def acquire(tbl):
   cap = the.budget - the.check
   if the.acquire == "random":
     return sorted(some(tbl.rows, cap), key=y)
+  return sorted(sway3(tbl, shuffle(tbl.rows), y, cap), key=y)
+
+def sway3(tbl, pool, y, cap):
   x   = lambda r1, r2: distx(tbl, r1, r2)
-  pool, lab = shuffle(tbl.rows), {}
-  while len(lab) < cap and len(pool) >= 2*the.leaf:
-    more = min(the.more, cap - len(lab))
-    less = int(max(1, the.keepf * len(pool)))
-    new  = [] 
-    for r in pool:
-      if   id(r) in lab         : new += [r]
-      elif (more := more-1) >= 0: new += [r]; lab[id(r)]=r
-    if len(lab) < cap:
-      pool = sorted(pool, key=project(new, x, y))[:less]
-  return sorted(lab.values(), key=y)
+  lab, east, west = {}, None, None
+  while True:
+    while len(pool) >= 2*the.leaf:
+      more = min(the.more, cap - len(lab))
+      less = int(max(1, the.keepf * len(pool)))
+      new  = []
+      for r in pool:
+        if   id(r) in lab         : new += [r]
+        elif (more := more-1) >= 0: new += [r]; lab[id(r)]=r
+      if len(lab) >= cap: return lab.values()  # budget spent
+      pool = sorted(pool,
+                    key=project(new, x, y, east, west))[:less]
+    if len(lab) >= len(tbl.rows): return lab.values()
+    pool = shuffle(tbl.rows)          # redo: fresh pool,
+    seen = sorted(lab.values(), key=y)         # poles = best and
+    east, west = seen[0], seen[-1]             # worst labelled
+
 
 #-- bins --------------------------------------------------------
 def score(here, there):
