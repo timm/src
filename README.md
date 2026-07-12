@@ -1,8 +1,8 @@
 # timm/src
 
-One repo, one flat dir per idea: many page-sized source
-files plus one `-eg` tutorial/test twin each, fetched by
-`curl <dir>/INSTALL.md | sh`. Data lives in
+One repo, one flat dir per idea: one sectioned library
+file plus one `-eg` tutorial/test file (and demos), fetched
+by `curl <dir>/INSTALL.md | sh`. Data lives in
 [timm/moot](https://github.com/timm/moot) (`$MOOT`, default
 `~/gits/moot`). Design rationale: [etc/style.md](etc/style.md).
 

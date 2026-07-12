@@ -1,9 +1,9 @@
 # tut.md -- recipe: restructure an idea dir into house style
 
 Meta-prompt. Give an agent this file plus a target project
-dir; it should reproduce what tiny-xai got on 2026-07-11.
-Worked exemplar: the tiny-xai/ dir (27 files). Shape and
-rationale: style.md.
+dir; it should reproduce what ezr2/tiny-xai/luamine got in
+2026-07. Worked exemplars: ezr2/ezr2.py + ezr2-eg.py. Shape
+and rationale: style.md.
 
 ## The three layers (never mix altitudes)
 
@@ -16,41 +16,21 @@ rationale: style.md.
     eg stanza     motivation + story, paragraphs + tables,
                   in block-comment markdown
 
-## 1. Split the library into page-sized files
+## 1. The library file (xx.py / xx.lisp / xx.lua)
 
-Each engine file = ONE topic, sized to a printed page
-column (~60 lines, 65 chars wide). One `<topic>-eg` twin
-per engine file. Typical topics, in reading order (this
-order answers a reader's questions in sequence):
+ONE file, sectioned by markers (`#-- name ----`,
+`;;; ## name`, `-- ## name`); each section is one topic,
+sized to a printed page column (~60 lines, 65 chars wide).
+Canonical section order (a reader's questions in sequence):
+lib (strings, csv, $MOOT paths) -> rand -> cols/query/tbl
+(construct / update / query) -> the domain story (dist,
+acquire, bins, tree, ...) -> stats -> main. A helper sits
+beside its only caller. Reorder mechanically: move toplevel
+forms, never retype; pinned test asserts make the refactor
+a provable no-op. (We tried one-file-per-topic and
+reverted; markers beat file sprawl.)
 
-    xx.*        loader: package, constants, help text,
-                settings, structs; loads all other engine
-                files, macros first, each exactly once
-    macros      accessors, reader macros (compile-time
-                constraint: must load first)
-    lib         strings, csv, $MOOT path expansion
-    rand        seeded randomness (reproducible everywhere)
-    cols/query/tbl   construct / update / query the data
-    <domain>    what the idea actually DOES (dist, acquire,
-                bins, tree, ...)
-    stats       how results are judged
-    main        cli, help, top-level rigs
-
-Rules:
-
-- Loading is centralized: no per-file package lines, no
-  load guards. Only the loader loads.
-- A helper sits beside its only caller. Files need not be
-  equal-sized; they must not exceed a page column.
-- Reorder mechanically: move toplevel forms, assert every
-  form placed exactly once. Never retype code. Pinned test
-  asserts make the refactor a provable no-op.
-- INSTALL.md: FILES lists every file, reading order first
-  (engine, then -eg files in tutorial order). Everything
-  keys off `sh INSTALL.md list`: doc page order, prev/next,
-  README toc, badge counts.
-
-## 2. The tutorial files (<topic>-eg.*)
+## 2. The tutorial file (xx-eg.*)
 
 A tutorial is made of DEMONSTRATIONS, not explanations.
 Prose only says "now watch this" and "notice that".

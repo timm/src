@@ -13,18 +13,12 @@ portable to both.
 - **Lots of small functions.** One job each, ~10 lines.
   Helpers earn a name on second use; single-caller
   helpers get folded back in.
-- **Small files.** Each engine file is one topic sized to
-  fit a printed page column (`make tiny-xai.pdf` at the
-  repo root prints any one file).
-- **Loading is centralized.** `tiny-xai.lisp` owns the
-  package, settings and structs and loads every other
-  engine file exactly once, macros first (so the `$`
-  reader macro is live before later files are read). No
-  per-file `in-package`, no load guards; `load` binds
-  `*package*` around each file it loads. The .asd's one
-  component is that loader. New engine file = add it to
-  the loader's list, its `-eg` twin to
-  `tiny-xai-eg.lisp`, and both to INSTALL.md's FILES.
+- **One library file**, sectioned by `;;; ## Name` markers,
+  one topic per section, each sized to a printed page
+  column (`make tiny-xai.pdf` at the repo root prints it).
+  New topic = new marker section + its egs in
+  tiny-xai-eg.lisp + nothing else (INSTALL.md lists whole
+  files, not sections).
 - **cols = lists** (dolist, push + nreverse);
   **rows = list** (pushed, newest first);
   **each row = a vector** (O(1) `elt` by column index).
@@ -92,34 +86,17 @@ portable to both.
 
 ## Files
 
-    tiny-xai.lisp     package, constants, help, settings,
-                      structs; the one load point for all
-                      other engine files, macros first
-    macros.lisp       ?, aif, $ reader, ats/o accessors
-    lib.lisp          strings, csv, $MOOT paths
-    rand.lisp         seeded rand, shuffle, few, argmin
-    cols.lisp         add: sym counts, num Welford
-    query.lisp        mid, spread, norm, minus
-    tbl.lisp          make-cols, make-tbl, clone
-    dist.lisp         minkowski, disty, distx, *label*
-    acquire.lisp      active sampling under a budget
-    bins.lisp         cheapest single x split
-    tree.lisp         grow, walk, print trees
-    stats.lisp        cliffs, ks, cohen, same
-    main.lisp         wins, holdout, cli, help
-    tiny-xai-eg.lisp  tutorial + test loader, runners,
-                      script entry (eval-when :execute)
-    NAME-eg.lisp      tutorial + tests, one per engine file
+    tiny-xai.lisp     the engine: package, settings, structs,
+                      then one ;;; ## section per topic
+    tiny-xai-eg.lisp  tutorial + tests + script entry
     dtlz.lisp         external-model demo (*label* hook)
+    report.lisp       rebuilds REPORT.md (worker + --hist)
     tiny-xai.asd      systems: tiny-xai, /eg, /dtlz
-    INSTALL.md        curl installer; FILES lists every
-                      .lisp file in the project
-    REPORT.md         the RQ0-RQ2 study write-up
+    INSTALL.md        curl installer; FILES = reading order
+    REPORT.md         the RQ0-RQ2b study write-up
 
 **TL;DR for claude: after any code change run
-`sbcl --script tiny-xai-eg.lisp --all`; after any
-algorithm change rerun the studies and refresh REPORT.md;
-keep function notes (engine) and test docstrings (-eg)
-one-line, capitalized, and truthful, because -h prints
-them; new engine file = loader list + NAME-eg.lisp +
-INSTALL.md FILES.**
+`sbcl --script tiny-xai-eg.lisp --all` (and clisp before
+committing); after any algorithm change rerun report.lisp
+and refresh REPORT.md; keep function notes (engine) and
+test docstrings (eg) one-line, capitalized, truthful.**

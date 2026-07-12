@@ -1,7 +1,7 @@
 # style.md -- how timm/src is organized, and why
 
-Decisions from the 2026-07 repo consolidation, revised after
-the tiny-xai many-small-files split (2026-07-11). Read this
+Decisions from the 2026-07 repo consolidation (including
+trying, then reverting, many-tiny-files). Read this
 before adding or restructuring anything. Recipe for
 converting a dir to this shape: tut.md.
 
@@ -19,33 +19,25 @@ Data is NEVER copied into src. Code reaches it via a leading
 Copies of moot data in other repos were a mistake; do not
 recreate them.
 
-## one flat dir per idea, many small files
+## one flat dir per idea, few files
 
     xx/
-      xx.*           the loader: settings, structs, help
-                     text; loads every other engine file,
-                     macros first, each exactly once
-      <topic>.*      engine files, ONE topic each, sized to
-                     one printed page column (~60 lines);
-                     lines fit 65 chars
-      <topic>-eg.*   tutorial + tests twin, one per engine
-                     file (prose in block-comment markdown
-                     stanzas; every demo asserts)
-      xx-eg.*        test loader + CLI entry; loads the -eg
-                     files in tutorial order
-      INSTALL.md     curl installer; its FILES list IS the
-                     reading order (`sh INSTALL.md list`)
+      xx.*           the library: ONE file, sectioned by
+                     `-- ##` / `;;; ##` / `#--` markers,
+                     one topic per section
+      xx-eg.*        tutorial + tests: markdown stanzas +
+                     demos, one section per library section
+      dtlz.* etc     demos; report.* rebuilds REPORT.md
+      INSTALL.md     curl installer; FILES = reading order
       README.md      intro + generated doc-toc block
       pyproject.toml | xx.asd | *.rockspec  ~10-line pointer
-                     (points at the loader; loader fans out)
 
 - Install promise: `curl <raw>/xx/INSTALL.md | sh` fetches
-  the whole idea. (This replaces the old one-wget-able-file
-  rule: page-sized files beat one big file for reading,
-  printing (`make xx.pdf`), and doc pages.)
-- Loading is centralized: only the loader loads files; no
-  per-file package lines, no load guards. New engine file =
-  loader list + its -eg twin + INSTALL.md FILES.
+  the whole idea (a handful of files).
+- We tried many tiny files (2026-07-11/12) and reverted:
+  section markers give the same reading units without the
+  file sprawl; the doc pipeline renders markers as
+  headings either way.
 - `-eg` files are executable transcripts: running them IS
   the tutorial; their asserts ARE the tests.
 - No subdirs inside an idea dir. Uniform shape keeps all
@@ -59,8 +51,8 @@ recreate them.
     docstrings          tests/demos ONLY: -h help text and
                         test-op read them at runtime
 
-No figlet banners. No form feeds. The file split replaced
-section markers: one file = one section.
+No figlet banners. No form feeds. Section markers
+(`-- ##` etc) divide the library file into topics.
 
 ## versions: tags, never dirs
 
