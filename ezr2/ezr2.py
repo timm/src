@@ -16,13 +16,13 @@ OPTIONS: (defaults below are parsed into `the`):
   --check  rows labelled by tree = 5
   --keepf  keep frac             = 0.66
   --round  decimals shown        = 3
-  --landscape  active | random   = active
+  --acquire  active | random   = active
   -h       print this help
 
 TESTS: (run with their bare name):
   disty       rows by disty: top 5 / bottom 5
-  landscape   20 shuffles; best disty per run
-  landscapes  one mean-win line (the sweep)
+  acquire   20 shuffles; best disty per run
+  acquires  one mean-win line (the sweep)
   tree      build+show a tree on acquired rows
   holdout  50:50 split; tree picks best test row
   holdouts holdout x20; land vs random verdict

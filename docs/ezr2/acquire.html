@@ -29,7 +29,7 @@
         <a class='octothorpe' href='#section-0'>#</a>
       </div>
       <p>Acquire labels. The active learner. <code>project</code> maps rows
-onto the line joining two far labelled poles; <code>landscape</code>
+onto the line joining two far labelled poles; <code>acquire</code>
 labels a few, culls the third nearest the bad pole,
 repeats &ndash; spending at most budget-check labels, returned
 best first.</p>
@@ -61,13 +61,13 @@ best first.</p>
       <div class='octowrap'>
         <a class='octothorpe' href='#section-2'>#</a>
       </div>
-      <p>Label &lt;=budget-check rows, best first; &ndash;landscape picks how</p>
+      <p>Label &lt;=budget-check rows, best first; &ndash;acquire picks how</p>
     </div>
     <div class='code'>
-      <div class="highlight"><pre><span class="k">def</span><span class="w"> </span><span class="nf">landscape</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+      <div class="highlight"><pre><span class="k">def</span><span class="w"> </span><span class="nf">acquire</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
   <span class="n">y</span>   <span class="o">=</span> <span class="k">lambda</span> <span class="n">r</span><span class="p">:</span> <span class="n">disty</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">r</span><span class="p">)</span>
   <span class="n">cap</span> <span class="o">=</span> <span class="n">the</span><span class="o">.</span><span class="n">budget</span> <span class="o">-</span> <span class="n">the</span><span class="o">.</span><span class="n">check</span>
-  <span class="k">if</span> <span class="n">the</span><span class="o">.</span><span class="n">landscape</span> <span class="o">==</span> <span class="s2">&quot;random&quot;</span><span class="p">:</span>
+  <span class="k">if</span> <span class="n">the</span><span class="o">.</span><span class="n">acquire</span> <span class="o">==</span> <span class="s2">&quot;random&quot;</span><span class="p">:</span>
     <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">some</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">rows</span><span class="p">,</span> <span class="n">cap</span><span class="p">),</span> <span class="n">key</span><span class="o">=</span><span class="n">y</span><span class="p">)</span>
   <span class="n">x</span>   <span class="o">=</span> <span class="k">lambda</span> <span class="n">r1</span><span class="p">,</span> <span class="n">r2</span><span class="p">:</span> <span class="n">distx</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">r1</span><span class="p">,</span> <span class="n">r2</span><span class="p">)</span>
   <span class="n">pool</span><span class="p">,</span> <span class="n">lab</span> <span class="o">=</span> <span class="n">shuffle</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">rows</span><span class="p">),</span> <span class="p">{}</span>

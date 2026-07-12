@@ -29,7 +29,7 @@
         <a class='octothorpe' href='#section-0'>#</a>
       </div>
       <h2>Someplace cool: the whole rig</h2>
-<p>Split the table 50:50; landscape-label the train half; grow
+<p>Split the table 50:50; acquire-label the train half; grow
 a tree from those labels; let it rank the <em>unseen</em> test
 half; label only the top <code>check</code> rows and keep the best.
 Notice the win: a few dozen labels find a near-best car
@@ -123,10 +123,10 @@ labelled row.</p>
       <div class="highlight"><pre><span class="k">def</span><span class="w"> </span><span class="nf">vs</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">pick</span><span class="p">):</span>
   <span class="n">W</span><span class="p">,</span> <span class="n">out</span> <span class="o">=</span> <span class="n">wins</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="p">{}</span>
   <span class="k">for</span> <span class="n">mode</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;active&quot;</span><span class="p">,</span> <span class="s2">&quot;random&quot;</span><span class="p">):</span>
-    <span class="n">the</span><span class="o">.</span><span class="n">landscape</span> <span class="o">=</span> <span class="n">mode</span><span class="p">;</span> <span class="n">out</span><span class="p">[</span><span class="n">mode</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">the</span><span class="o">.</span><span class="n">acquire</span> <span class="o">=</span> <span class="n">mode</span><span class="p">;</span> <span class="n">out</span><span class="p">[</span><span class="n">mode</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">20</span><span class="p">):</span>
       <span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="n">the</span><span class="o">.</span><span class="n">seed</span> <span class="o">+</span> <span class="n">i</span><span class="p">);</span> <span class="n">out</span><span class="p">[</span><span class="n">mode</span><span class="p">]</span> <span class="o">+=</span> <span class="p">[</span><span class="n">W</span><span class="p">(</span><span class="n">pick</span><span class="p">(</span><span class="n">data</span><span class="p">))]</span>
-  <span class="n">the</span><span class="o">.</span><span class="n">landscape</span> <span class="o">=</span> <span class="s2">&quot;active&quot;</span>
+  <span class="n">the</span><span class="o">.</span><span class="n">acquire</span> <span class="o">=</span> <span class="s2">&quot;active&quot;</span>
   <span class="n">L</span><span class="p">,</span> <span class="n">R</span> <span class="o">=</span> <span class="n">out</span><span class="p">[</span><span class="s2">&quot;active&quot;</span><span class="p">],</span> <span class="n">out</span><span class="p">[</span><span class="s2">&quot;random&quot;</span><span class="p">]</span>
   <span class="n">ml</span><span class="p">,</span> <span class="n">mr</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">L</span><span class="p">)</span><span class="o">/</span><span class="mi">20</span><span class="p">,</span> <span class="nb">sum</span><span class="p">(</span><span class="n">R</span><span class="p">)</span><span class="o">/</span><span class="mi">20</span>
   <span class="n">v</span> <span class="o">=</span> <span class="s2">&quot;tie&quot;</span> <span class="k">if</span> <span class="n">same</span><span class="p">(</span><span class="n">L</span><span class="p">,</span> <span class="n">R</span><span class="p">)</span> <span class="k">else</span> <span class="p">(</span><span class="s2">&quot;land&quot;</span> <span class="k">if</span> <span class="n">ml</span> <span class="o">&gt;</span> <span class="n">mr</span> <span class="k">else</span> <span class="s2">&quot;rand&quot;</span><span class="p">)</span>
@@ -140,7 +140,7 @@ labelled row.</p>
       <div class='octowrap'>
         <a class='octothorpe' href='#section-4'>#</a>
       </div>
-      <p>active vs random landscape, through the holdout pipeline.</p>
+      <p>active vs random acquire, through the holdout pipeline.</p>
     </div>
     <div class='code'>
       <div class="highlight"><pre><span class="k">def</span><span class="w"> </span><span class="nf">test_holdouts</span><span class="p">():</span>
@@ -155,13 +155,13 @@ labelled row.</p>
       <div class='octowrap'>
         <a class='octothorpe' href='#section-5'>#</a>
       </div>
-      <p>active vs random landscape; best labelled row, no tree.</p>
+      <p>active vs random acquire; best labelled row, no tree.</p>
     </div>
     <div class='code'>
       <div class="highlight"><pre><span class="k">def</span><span class="w"> </span><span class="nf">test_pure</span><span class="p">():</span>
   <span class="n">data</span> <span class="o">=</span> <span class="n">Data</span><span class="p">(</span><span class="n">csv</span><span class="p">(</span><span class="n">the</span><span class="o">.</span><span class="n">file</span><span class="p">))</span>
   <span class="n">data</span><span class="o">.</span><span class="n">rows</span> <span class="o">=</span> <span class="n">some</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">rows</span><span class="p">,</span> <span class="n">the</span><span class="o">.</span><span class="n">cap</span><span class="p">)</span>
-  <span class="n">vs</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">d</span><span class="p">:</span> <span class="n">landscape</span><span class="p">(</span><span class="n">d</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+  <span class="n">vs</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">d</span><span class="p">:</span> <span class="n">acquire</span><span class="p">(</span><span class="n">d</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
 
 </pre></div>
     </div>

@@ -1,7 +1,7 @@
 """
 ## The active learner
 
-`landscape` spends the label budget (default 50): label a
+`acquire` spends the label budget (default 50): label a
 few rows, project the rest onto the line joining two far
 labelled poles, cull the third nearest the bad pole,
 repeat. Two studies: per-run active vs random deltas on a
@@ -9,10 +9,10 @@ bigger table, then one mean-win summary line.
 
 | call | returns | what |
 |------|---------|------|
-| `landscape(data)` | rows | labelled few, best first |
+| `acquire(data)` | rows | labelled few, best first |
 """
 
-def test_landscape():
+def test_acquire():
   "20 shuffles; active vs random, sorted by significant delta."
   f0 = the.file
   the.file = "$MOOT/optimize/binary_config/billing10k.csv"
@@ -22,11 +22,11 @@ def test_landscape():
   for i in range(20):
     random.seed(the.seed + i)
     data.rows = shuffle(data.rows)
-    the.landscape = "active"
-    A += [disty(data, landscape(data)[0])]
-    the.landscape = "random"
-    R += [disty(data, landscape(data)[0])]
-  the.landscape = "active"
+    the.acquire = "active"
+    A += [disty(data, acquire(data)[0])]
+    the.acquire = "random"
+    R += [disty(data, acquire(data)[0])]
+  the.acquire = "active"
   sd_ = lambda z: (sum((v - sum(z)/len(z))**2
                        for v in z) / (len(z)-1)) ** 0.5
   pooled = (((len(A)-1)*sd_(A)**2 + (len(R)-1)*sd_(R)**2)
@@ -46,7 +46,7 @@ def test_landscape():
   the.file = f0
   assert win > loss  # size of wins beats size of losses
 
-def test_landscapes():
+def test_acquires():
   "One summary line: mean win/disty over 20 runs."
   data = Data(csv(the.file))
   data.rows = some(data.rows, the.cap)
@@ -54,7 +54,7 @@ def test_landscapes():
   for i in range(20):
     random.seed(the.seed + i)
     data.rows = shuffle(data.rows)
-    got = landscape(data)
+    got = acquire(data)
     ds += [disty(data,got[0])]; ws += [W(got[0])]; n = len(got)
   print("%6.1f %7.3f %4d  %s" % (sum(ws)/len(ws),
         sum(ds)/len(ds), n, the.file.split("/")[-1]))

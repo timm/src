@@ -29,7 +29,7 @@
         <a class='octothorpe' href='#section-0'>#</a>
       </div>
       <h2>Label a few, explain with a tree</h2>
-<p><code>landscape</code> spends the label budget; <code>tree</code> then recurses
+<p><code>acquire</code> spends the label budget; <code>tree</code> then recurses
 min-cost bins over just those labelled rows, and <code>show</code>
 prints it &ndash; win (100=best, 0=median), n, per-goal means,
 then the branch conditions:</p>
@@ -72,14 +72,14 @@ small engine, early model.</p>
       <div class='octowrap'>
         <a class='octothorpe' href='#section-1'>#</a>
       </div>
-      <p>Build a tree over landscape&rsquo;s rows and print it.</p>
+      <p>Build a tree over acquire&rsquo;s rows and print it.</p>
     </div>
     <div class='code'>
       <div class="highlight"><pre><span class="k">def</span><span class="w"> </span><span class="nf">test_tree</span><span class="p">():</span>
   <span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="n">the</span><span class="o">.</span><span class="n">seed</span><span class="p">)</span>
   <span class="n">data</span> <span class="o">=</span> <span class="n">Data</span><span class="p">(</span><span class="n">csv</span><span class="p">(</span><span class="n">the</span><span class="o">.</span><span class="n">file</span><span class="p">))</span>
   <span class="n">data</span><span class="o">.</span><span class="n">rows</span> <span class="o">=</span> <span class="n">some</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">rows</span><span class="p">,</span> <span class="n">the</span><span class="o">.</span><span class="n">cap</span><span class="p">)</span>
-  <span class="n">show</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">tree</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">landscape</span><span class="p">(</span><span class="n">data</span><span class="p">)))</span>
+  <span class="n">show</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">tree</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">acquire</span><span class="p">(</span><span class="n">data</span><span class="p">)))</span>
 
 </pre></div>
     </div>

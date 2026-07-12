@@ -16,13 +16,13 @@ OPTIONS: (defaults below are parsed into `the`):
   --check  rows labelled by tree = 5
   --keepf  keep frac             = 0.66
   --round  decimals shown        = 3
-  --landscape  active | random   = active
+  --acquire  active | random   = active
   -h       print this help
 
 TESTS: (run with their bare name):
   disty       rows by disty: top 5 / bottom 5
-  landscape   20 shuffles; best disty per run
-  landscapes  one mean-win line (the sweep)
+  acquire   20 shuffles; best disty per run
+  acquires  one mean-win line (the sweep)
   tree      build+show a tree on acquired rows
   holdout  50:50 split; tree picks best test row
   holdouts holdout x20; land vs random verdict
@@ -113,7 +113,7 @@ def m2_(num) : return num[2]
 
 def is_sym(i): return isinstance(i, dict)  # Sym = dict of counts
 
-def size(c): return sum(c.values()) if is_sym(c) else n_(c)
+def size(i): return sum(i.values()) if is_sym(i) else n_(i)
 
 def mid(i): return max(i,key=i.get) if is_sym(i) else mu_(i)
 def var(i): return entropy(i)       if is_sym(i) else sd(i)
@@ -237,25 +237,24 @@ def project(rows, x, y):
   c = x(east, west) + TINY
   return lambda r: (x(east,r)**2 + c*c - x(west,r)**2)/(2*c)
 
-def landscape(tbl):
+def acquire(tbl):
   y   = lambda r: disty(tbl, r)
   cap = the.budget - the.check
-  if the.landscape == "random":
+  if the.acquire == "random":
     return sorted(some(tbl.rows, cap), key=y)
   x   = lambda r1, r2: distx(tbl, r1, r2)
   pool, lab = shuffle(tbl.rows), {}
-  old = lambda r: id(r) in lab
+  known = lambda r: id(r) in lab
   while len(lab) < cap and len(pool) >= 2*the.leaf:
-    for r in [r for r in pool if not old(r)][:the.grow]:
+    for r in [r for r in pool if not known(r)][:the.grow]:
       if len(lab) < cap: lab[id(r)] = r
     if len(lab) < cap:
-      here = [r for r in pool if old(r)]  # labelled & pool
+      new  = [r for r in pool if known(r)]  # labelled & pool
       n    = max(1, int((1-the.keepf)*len(pool)))
-      pool = sorted(pool, key=project(here, x, y))[n:]
+      pool = sorted(pool, key=project(new, x, y))[n:]
   return sorted(lab.values(), key=y)
 
 #-- bins --------------------------------------------------------
-
 def score(here, there):
   a, b = size(here), size(there)
   return (var(here)*a + var(there)*b) / (a + b + 1e-32)
@@ -373,7 +372,7 @@ def holdout(tbl):
   rows  = shuffle(tbl.rows)
   half  = len(rows)//2
   train, test = rows[:half], rows[half:]
-  got   = landscape(clone(tbl, train))
+  got   = acquire(clone(tbl, train))
   t     = tree(tbl, got)
   top   = sorted(test, key=lambda r: leaf(tbl,t,r))[:the.check]
   return min(top, key=lambda r: disty(tbl,r))

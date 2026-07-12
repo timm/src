@@ -29,7 +29,7 @@
         <a class='octothorpe' href='#section-0'>#</a>
       </div>
       <h2>The active learner</h2>
-<p><code>landscape</code> spends the label budget (default 50): label a
+<p><code>acquire</code> spends the label budget (default 50): label a
 few rows, project the rest onto the line joining two far
 labelled poles, cull the third nearest the bad pole,
 repeat. Two studies: per-run active vs random deltas on a
@@ -44,7 +44,7 @@ bigger table, then one mean-win summary line.</p>
 </thead>
 <tbody>
 <tr>
-<td><code>landscape(data)</code></td>
+<td><code>acquire(data)</code></td>
 <td>rows</td>
 <td>labelled few, best first</td>
 </tr>
@@ -64,7 +64,7 @@ bigger table, then one mean-win summary line.</p>
       <p>20 shuffles; active vs random, sorted by significant delta.</p>
     </div>
     <div class='code'>
-      <div class="highlight"><pre><span class="k">def</span><span class="w"> </span><span class="nf">test_landscape</span><span class="p">():</span>
+      <div class="highlight"><pre><span class="k">def</span><span class="w"> </span><span class="nf">test_acquire</span><span class="p">():</span>
   <span class="n">f0</span> <span class="o">=</span> <span class="n">the</span><span class="o">.</span><span class="n">file</span>
   <span class="n">the</span><span class="o">.</span><span class="n">file</span> <span class="o">=</span> <span class="s2">&quot;$MOOT/optimize/binary_config/billing10k.csv&quot;</span>
   <span class="n">data</span> <span class="o">=</span> <span class="n">Data</span><span class="p">(</span><span class="n">csv</span><span class="p">(</span><span class="n">the</span><span class="o">.</span><span class="n">file</span><span class="p">))</span>
@@ -73,11 +73,11 @@ bigger table, then one mean-win summary line.</p>
   <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">20</span><span class="p">):</span>
     <span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="n">the</span><span class="o">.</span><span class="n">seed</span> <span class="o">+</span> <span class="n">i</span><span class="p">)</span>
     <span class="n">data</span><span class="o">.</span><span class="n">rows</span> <span class="o">=</span> <span class="n">shuffle</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">rows</span><span class="p">)</span>
-    <span class="n">the</span><span class="o">.</span><span class="n">landscape</span> <span class="o">=</span> <span class="s2">&quot;active&quot;</span>
-    <span class="n">A</span> <span class="o">+=</span> <span class="p">[</span><span class="n">disty</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">landscape</span><span class="p">(</span><span class="n">data</span><span class="p">)[</span><span class="mi">0</span><span class="p">])]</span>
-    <span class="n">the</span><span class="o">.</span><span class="n">landscape</span> <span class="o">=</span> <span class="s2">&quot;random&quot;</span>
-    <span class="n">R</span> <span class="o">+=</span> <span class="p">[</span><span class="n">disty</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">landscape</span><span class="p">(</span><span class="n">data</span><span class="p">)[</span><span class="mi">0</span><span class="p">])]</span>
-  <span class="n">the</span><span class="o">.</span><span class="n">landscape</span> <span class="o">=</span> <span class="s2">&quot;active&quot;</span>
+    <span class="n">the</span><span class="o">.</span><span class="n">acquire</span> <span class="o">=</span> <span class="s2">&quot;active&quot;</span>
+    <span class="n">A</span> <span class="o">+=</span> <span class="p">[</span><span class="n">disty</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">acquire</span><span class="p">(</span><span class="n">data</span><span class="p">)[</span><span class="mi">0</span><span class="p">])]</span>
+    <span class="n">the</span><span class="o">.</span><span class="n">acquire</span> <span class="o">=</span> <span class="s2">&quot;random&quot;</span>
+    <span class="n">R</span> <span class="o">+=</span> <span class="p">[</span><span class="n">disty</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">acquire</span><span class="p">(</span><span class="n">data</span><span class="p">)[</span><span class="mi">0</span><span class="p">])]</span>
+  <span class="n">the</span><span class="o">.</span><span class="n">acquire</span> <span class="o">=</span> <span class="s2">&quot;active&quot;</span>
   <span class="n">sd_</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">z</span><span class="p">:</span> <span class="p">(</span><span class="nb">sum</span><span class="p">((</span><span class="n">v</span> <span class="o">-</span> <span class="nb">sum</span><span class="p">(</span><span class="n">z</span><span class="p">)</span><span class="o">/</span><span class="nb">len</span><span class="p">(</span><span class="n">z</span><span class="p">))</span><span class="o">**</span><span class="mi">2</span>
                        <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">z</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">z</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span> <span class="o">**</span> <span class="mf">0.5</span>
   <span class="n">pooled</span> <span class="o">=</span> <span class="p">(((</span><span class="nb">len</span><span class="p">(</span><span class="n">A</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">sd_</span><span class="p">(</span><span class="n">A</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">R</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">sd_</span><span class="p">(</span><span class="n">R</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
@@ -107,14 +107,14 @@ bigger table, then one mean-win summary line.</p>
       <p>One summary line: mean win/disty over 20 runs.</p>
     </div>
     <div class='code'>
-      <div class="highlight"><pre><span class="k">def</span><span class="w"> </span><span class="nf">test_landscapes</span><span class="p">():</span>
+      <div class="highlight"><pre><span class="k">def</span><span class="w"> </span><span class="nf">test_acquires</span><span class="p">():</span>
   <span class="n">data</span> <span class="o">=</span> <span class="n">Data</span><span class="p">(</span><span class="n">csv</span><span class="p">(</span><span class="n">the</span><span class="o">.</span><span class="n">file</span><span class="p">))</span>
   <span class="n">data</span><span class="o">.</span><span class="n">rows</span> <span class="o">=</span> <span class="n">some</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">rows</span><span class="p">,</span> <span class="n">the</span><span class="o">.</span><span class="n">cap</span><span class="p">)</span>
   <span class="n">W</span><span class="p">,</span> <span class="n">ds</span><span class="p">,</span> <span class="n">ws</span><span class="p">,</span> <span class="n">n</span> <span class="o">=</span> <span class="n">wins</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="p">[],</span> <span class="p">[],</span> <span class="mi">0</span>
   <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">20</span><span class="p">):</span>
     <span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="n">the</span><span class="o">.</span><span class="n">seed</span> <span class="o">+</span> <span class="n">i</span><span class="p">)</span>
     <span class="n">data</span><span class="o">.</span><span class="n">rows</span> <span class="o">=</span> <span class="n">shuffle</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">rows</span><span class="p">)</span>
-    <span class="n">got</span> <span class="o">=</span> <span class="n">landscape</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+    <span class="n">got</span> <span class="o">=</span> <span class="n">acquire</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
     <span class="n">ds</span> <span class="o">+=</span> <span class="p">[</span><span class="n">disty</span><span class="p">(</span><span class="n">data</span><span class="p">,</span><span class="n">got</span><span class="p">[</span><span class="mi">0</span><span class="p">])];</span> <span class="n">ws</span> <span class="o">+=</span> <span class="p">[</span><span class="n">W</span><span class="p">(</span><span class="n">got</span><span class="p">[</span><span class="mi">0</span><span class="p">])];</span> <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">got</span><span class="p">)</span>
   <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%6.1f</span><span class="s2"> </span><span class="si">%7.3f</span><span class="s2"> </span><span class="si">%4d</span><span class="s2">  </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="n">ws</span><span class="p">)</span><span class="o">/</span><span class="nb">len</span><span class="p">(</span><span class="n">ws</span><span class="p">),</span>
         <span class="nb">sum</span><span class="p">(</span><span class="n">ds</span><span class="p">)</span><span class="o">/</span><span class="nb">len</span><span class="p">(</span><span class="n">ds</span><span class="p">),</span> <span class="n">n</span><span class="p">,</span> <span class="n">the</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span>

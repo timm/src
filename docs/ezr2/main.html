@@ -29,7 +29,7 @@
         <a class='octothorpe' href='#section-0'>#</a>
       </div>
       <p>Main. <code>holdout</code> is the evaluation rig: label half the
-data via <code>landscape</code>, grow a tree, let it rank the unseen
+data via <code>acquire</code>, grow a tree, let it rank the unseen
 half, check only the top few rows, return the best found.
 <code>main</code> maps &ndash;key=val flags onto <code>the</code>, then runs any
 test_* named on the command line (from the caller&rsquo;s
@@ -45,14 +45,14 @@ globals &ndash; the eg files register nothing).</p>
       <div class='octowrap'>
         <a class='octothorpe' href='#section-1'>#</a>
       </div>
-      <p>Budget rig: landscape train -&gt; tree -&gt; pick best test row</p>
+      <p>Budget rig: acquire train -&gt; tree -&gt; pick best test row</p>
     </div>
     <div class='code'>
       <div class="highlight"><pre><span class="k">def</span><span class="w"> </span><span class="nf">holdout</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
   <span class="n">rows</span>  <span class="o">=</span> <span class="n">shuffle</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">rows</span><span class="p">)</span>
   <span class="n">half</span>  <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">rows</span><span class="p">)</span><span class="o">//</span><span class="mi">2</span>
   <span class="n">train</span><span class="p">,</span> <span class="n">test</span> <span class="o">=</span> <span class="n">rows</span><span class="p">[:</span><span class="n">half</span><span class="p">],</span> <span class="n">rows</span><span class="p">[</span><span class="n">half</span><span class="p">:]</span>
-  <span class="n">got</span>   <span class="o">=</span> <span class="n">landscape</span><span class="p">(</span><span class="n">clone</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">train</span><span class="p">))</span>
+  <span class="n">got</span>   <span class="o">=</span> <span class="n">acquire</span><span class="p">(</span><span class="n">clone</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">train</span><span class="p">))</span>
   <span class="n">t</span>     <span class="o">=</span> <span class="n">tree</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">got</span><span class="p">)</span>
   <span class="n">top</span>   <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">test</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">r</span><span class="p">:</span> <span class="n">leaf</span><span class="p">(</span><span class="n">data</span><span class="p">,</span><span class="n">t</span><span class="p">,</span><span class="n">r</span><span class="p">))[:</span><span class="n">the</span><span class="o">.</span><span class="n">check</span><span class="p">]</span>
   <span class="k">return</span> <span class="nb">min</span><span class="p">(</span><span class="n">top</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">r</span><span class="p">:</span> <span class="n">disty</span><span class="p">(</span><span class="n">data</span><span class="p">,</span><span class="n">r</span><span class="p">))</span></pre></div>

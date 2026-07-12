@@ -1,16 +1,16 @@
 # Main. `holdout` is the evaluation rig: label half the
-# data via `landscape`, grow a tree, let it rank the unseen
+# data via `acquire`, grow a tree, let it rank the unseen
 # half, check only the top few rows, return the best found.
 # `main` maps --key=val flags onto `the`, then runs any
 # test_* named on the command line (from the caller's
 # globals -- the eg files register nothing).
 
-# Budget rig: landscape train -> tree -> pick best test row
+# Budget rig: acquire train -> tree -> pick best test row
 def holdout(data):
   rows  = shuffle(data.rows)
   half  = len(rows)//2
   train, test = rows[:half], rows[half:]
-  got   = landscape(clone(data, train))
+  got   = acquire(clone(data, train))
   t     = tree(data, got)
   top   = sorted(test, key=lambda r: leaf(data,t,r))[:the.check]
   return min(top, key=lambda r: disty(data,r))

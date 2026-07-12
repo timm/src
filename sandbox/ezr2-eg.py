@@ -190,7 +190,7 @@ def test_same():
 #-- acquire-eg --------------------------------------------------
 """
 
-`landscape` spends the label budget (default 50): label a
+`acquire` spends the label budget (default 50): label a
 few rows, project the rest onto the line joining two far
 labelled poles, cull the third nearest the bad pole,
 repeat. Two studies: per-run active vs random deltas on a
@@ -198,10 +198,10 @@ bigger table, then one mean-win summary line.
 
 | call | returns | what |
 |------|---------|------|
-| `landscape(tbl)` | rows | labelled few, best first |
+| `acquire(tbl)` | rows | labelled few, best first |
 """
 
-def test_landscape():
+def test_acquire():
   "20 shuffles; active vs random, sorted by significant delta."
   f0 = the.file
   the.file = "$MOOT/optimize/binary_config/billing10k.csv"
@@ -211,11 +211,11 @@ def test_landscape():
   for i in range(20):
     random.seed(the.seed + i)
     tbl.rows = shuffle(tbl.rows)
-    the.landscape = "active"
-    A += [disty(tbl, landscape(tbl)[0])]
-    the.landscape = "random"
-    R += [disty(tbl, landscape(tbl)[0])]
-  the.landscape = "active"
+    the.acquire = "active"
+    A += [disty(tbl, acquire(tbl)[0])]
+    the.acquire = "random"
+    R += [disty(tbl, acquire(tbl)[0])]
+  the.acquire = "active"
   sd_ = lambda z: (sum((v - sum(z)/len(z))**2
                        for v in z) / (len(z)-1)) ** 0.5
   pooled = (((len(A)-1)*sd_(A)**2 + (len(R)-1)*sd_(R)**2)
@@ -235,7 +235,7 @@ def test_landscape():
   the.file = f0
   assert win > loss  # size of wins beats size of losses
 
-def test_landscapes():
+def test_acquires():
   "One summary line: mean win/disty over 20 runs."
   tbl = Tbl(csv(the.file))
   tbl.rows = some(tbl.rows, the.cap)
@@ -243,7 +243,7 @@ def test_landscapes():
   for i in range(20):
     random.seed(the.seed + i)
     tbl.rows = shuffle(tbl.rows)
-    got = landscape(tbl)
+    got = acquire(tbl)
     ds += [disty(tbl,got[0])]; ws += [W(got[0])]; n = len(got)
   print("%6.1f %7.3f %4d  %s" % (sum(ws)/len(ws),
         sum(ds)/len(ds), n, the.file.split("/")[-1]))
@@ -276,7 +276,7 @@ def test_bins():
 #-- tree-eg -----------------------------------------------------
 """
 
-`landscape` spends the label budget; `tree` then recurses
+`acquire` spends the label budget; `tree` then recurses
 min-cost bins over just those labelled rows, and `show`
 prints it -- win (100=best, 0=median), n, per-goal means,
 then the branch conditions:
@@ -296,11 +296,11 @@ small engine, early model.
 """
 
 def test_tree():
-  "Build a tree over landscape's rows and print it."
+  "Build a tree over acquire's rows and print it."
   random.seed(the.seed)
   tbl = Tbl(csv(the.file))
   tbl.rows = some(tbl.rows, the.cap)
-  show(tbl, tree(tbl, landscape(tbl)))
+  show(tbl, tree(tbl, acquire(tbl)))
 
 #-- show-eg -----------------------------------------------------
 """
@@ -308,7 +308,7 @@ def test_tree():
 `show` renders any tree: win, n, per-goal means, branch
 conditions, best leaf marked ▲ and worst ▼. Same budget,
 two teachers: a tree trained on random rows vs one trained
-on landscape's rows.
+on acquire's rows.
 
 | call | returns | what |
 |------|---------|------|
@@ -316,14 +316,14 @@ on landscape's rows.
 """
 
 def test_trees():
-  "Same budget: random-trained vs landscape-trained tree."
+  "Same budget: random-trained vs acquire-trained tree."
   random.seed(the.seed)
   tbl = Tbl(csv(the.file))
   tbl.rows = some(tbl.rows, the.cap)
-  land = landscape(tbl)
+  land = acquire(tbl)
   rand = some(tbl.rows, len(land))
   W = wins(tbl)
-  for tag, rows in [("random", rand), ("landscape", land)]:
+  for tag, rows in [("random", rand), ("acquire", land)]:
     best = min(rows, key=lambda r: disty(tbl,r))
     print("\n== %s  n=%d  best disty=%.3f  win=%.1f ==" %
           (tag, len(rows), disty(tbl,best), W(best)))
@@ -332,7 +332,7 @@ def test_trees():
 #-- main-eg -----------------------------------------------------
 """
 
-Split the table 50:50; landscape-label the train half; grow
+Split the table 50:50; acquire-label the train half; grow
 a tree from those labels; let it rank the *unseen* test
 half; label only the top `check` rows and keep the best.
 Notice the win: a few dozen labels find a near-best car
@@ -370,10 +370,10 @@ def vs(tbl, pick):
   "active vs random over 20 runs of pick(); verdict line."
   W, out = wins(tbl), {}
   for mode in ("active", "random"):
-    the.landscape = mode; out[mode] = []
+    the.acquire = mode; out[mode] = []
     for i in range(20):
       random.seed(the.seed + i); out[mode] += [W(pick(tbl))]
-  the.landscape = "active"
+  the.acquire = "active"
   L, R = out["active"], out["random"]
   ml, mr = sum(L)/20, sum(R)/20
   v = "tie" if same(L, R) else ("land" if ml > mr else "rand")
@@ -381,16 +381,16 @@ def vs(tbl, pick):
         the.file.split("/")[-1]))
 
 def test_holdouts():
-  "active vs random landscape, through the holdout pipeline."
+  "active vs random acquire, through the holdout pipeline."
   tbl = Tbl(csv(the.file))
   tbl.rows = some(tbl.rows, the.cap)
   vs(tbl, holdout)
 
 def test_pure():
-  "active vs random landscape; best labelled row, no tree."
+  "active vs random acquire; best labelled row, no tree."
   tbl = Tbl(csv(the.file))
   tbl.rows = some(tbl.rows, the.cap)
-  vs(tbl, lambda d: landscape(d)[0])
+  vs(tbl, lambda d: acquire(d)[0])
 
 """
 ## Runner

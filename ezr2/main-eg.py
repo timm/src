@@ -1,7 +1,7 @@
 """
 ## Someplace cool: the whole rig
 
-Split the table 50:50; landscape-label the train half; grow
+Split the table 50:50; acquire-label the train half; grow
 a tree from those labels; let it rank the *unseen* test
 half; label only the top `check` rows and keep the best.
 Notice the win: a few dozen labels find a near-best car
@@ -40,10 +40,10 @@ def vs(data, pick):
   "active vs random over 20 runs of pick(); verdict line."
   W, out = wins(data), {}
   for mode in ("active", "random"):
-    the.landscape = mode; out[mode] = []
+    the.acquire = mode; out[mode] = []
     for i in range(20):
       random.seed(the.seed + i); out[mode] += [W(pick(data))]
-  the.landscape = "active"
+  the.acquire = "active"
   L, R = out["active"], out["random"]
   ml, mr = sum(L)/20, sum(R)/20
   v = "tie" if same(L, R) else ("land" if ml > mr else "rand")
@@ -51,13 +51,13 @@ def vs(data, pick):
         the.file.split("/")[-1]))
 
 def test_holdouts():
-  "active vs random landscape, through the holdout pipeline."
+  "active vs random acquire, through the holdout pipeline."
   data = Data(csv(the.file))
   data.rows = some(data.rows, the.cap)
   vs(data, holdout)
 
 def test_pure():
-  "active vs random landscape; best labelled row, no tree."
+  "active vs random acquire; best labelled row, no tree."
   data = Data(csv(the.file))
   data.rows = some(data.rows, the.cap)
-  vs(data, lambda d: landscape(d)[0])
+  vs(data, lambda d: acquire(d)[0])

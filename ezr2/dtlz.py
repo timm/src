@@ -86,9 +86,9 @@ def instance(row):
 print("model %s   N=%d x-vars   M=%d objectives" % (NAME, N, M))
 ezr2.the.budget = 30
 
-# (1) pure: landscape ranks the whole pool, no train/test split
+# (1) pure: acquire ranks the whole pool, no train/test split
 random.seed(1); data = ezr2.Data([names] + fresh_pool())
-got = ezr2.landscape(data)
+got = ezr2.acquire(data)
 print("\nthe best option found (one instance):")
 instance(got[0])
 

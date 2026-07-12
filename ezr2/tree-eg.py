@@ -1,7 +1,7 @@
 """
 ## Label a few, explain with a tree
 
-`landscape` spends the label budget; `tree` then recurses
+`acquire` spends the label budget; `tree` then recurses
 min-cost bins over just those labelled rows, and `show`
 prints it -- win (100=best, 0=median), n, per-goal means,
 then the branch conditions:
@@ -21,8 +21,8 @@ small engine, early model.
 """
 
 def test_tree():
-  "Build a tree over landscape's rows and print it."
+  "Build a tree over acquire's rows and print it."
   random.seed(the.seed)
   data = Data(csv(the.file))
   data.rows = some(data.rows, the.cap)
-  show(data, tree(data, landscape(data)))
+  show(data, tree(data, acquire(data)))
