@@ -10,7 +10,9 @@ to 20; budgets past ~50 are unspendable; a full 20-repeat,
 (RQ1). How simple? Random labelling ties active on 60% of
 datasets, but where they differ active wins 2.4:1 - and
 that edge depends on one bookkeeping detail: projection
-anchors must be labels still in the pool (RQ2).
+anchors must be labels still in the pool (RQ2). Given 4x
+the labels, though, random wins 62:10 - active learning
+pays only when the label budget is a hard wall (RQ2b).
 
 ## Why active learning?
 
@@ -204,6 +206,43 @@ is thinner in count but heavier per loss (mean -7.4, worst
 remains a strong, far simpler baseline - but the
 FASTMAP-style sampler wins where it matters and rarely
 loses.
+
+## RQ2b: what if random gets a bigger budget?
+
+RQ2 compared equals: 50 labels each. But random can spend
+budgets this sampler cannot (RQ1): its 200-label arm really
+inspects 195 rows, while active self-terminates near 45.
+So the fairer street fight: smart-and-few vs dumb-and-many.
+
+`mu(win(active@50)) - mu(win(random@200))`, 20 repeats,
+127 datasets:
+
+```
+[-30,-25)   1%
+[-25,-20)   0%
+[-20,-15)   6% **
+[-15,-10)   9% ****
+[-10, -5)  12% *****
+[ -5,  0)  20% ********
+   ties=0   43% ******************
+[  0,  5)   4% **
+[  5, 10)   2% *
+[ 10, 15)   2% *
+[ 15, 20)   0%
+[ 20, 25)   0%
+[ 25, 30]   1%
+```
+
+**Answer:** brute labels win. Given 4x the budget, random
+beats active on 62 datasets to 10 (ties 55); the losses
+average -8.5 and run to -39.2 (`Health-ClosedPRs0006`);
+the rare wins (mean +8.3, best +30.0 on
+`Medical_Data_and_Hospital_Readmissions`) show a few
+landscapes where smart labelling survives any budget. So
+active learning here is a story about label COST: if a
+label costs the same at n=200 as at n=50, just buy more
+labels; active earns its keep only when the budget is a
+hard wall.
 
 ## Aside: which projection anchors?
 

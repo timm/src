@@ -9,8 +9,9 @@ USAGE (from the ezr2 dir):
   python3 report.py auto93     # only files matching substring
 
 Per dataset: 20 paired repeats (repeat k reseeds with
-seed+k) of four arms -- active@50, active@20, active@200,
-random@50 -- through the holdout rig, graded by wins().
+seed+k) of five arms -- active@50, active@20, active@200,
+random@50, random@200 -- through the holdout rig, graded
+by wins().
 Deltas are 0 when same() says the two win-distributions are
 indistinguishable. Results go to report.jsonl; the
 histograms used in REPORT.md print at the end.
@@ -40,12 +41,14 @@ def dataset(file):
     data.rows = some(data.rows, the.cap)
     a50, a20  = arm(data, 50, "active"), arm(data, 20, "active")
     a200, r50 = arm(data, 200, "active"), arm(data, 50, "random")
+    r200      = arm(data, 200, "random")
     d = lambda xs,ys: (0.0 if same(xs,ys)
                        else sum(xs)/len(xs) - sum(ys)/len(ys))
     return dict(file=os.path.basename(file),
                 rows=len(data.rows),
                 mu=sum(a50)/len(a50), d50v20=d(a50,a20),
                 d200v50=d(a200,a50), dAvR=d(a50,r50),
+                dAvR200=d(a50,r200),
                 secs=time.perf_counter()-t0)
   except Exception as e:
     return dict(file=os.path.basename(file),
@@ -95,7 +98,7 @@ if __name__ == "__main__":
     for r in out: f.write(json.dumps(r) + "\n")
   for r in bad: print("ERROR", r["file"], r["error"])
   print("\n%d datasets, %.1fs wall, mean %.2fs/dataset "
-        "(4 arms x %d repeats)"
+        "(5 arms x %d repeats)"
         % (len(ok), time.perf_counter()-t0,
            sum(r["secs"] for r in ok)/len(ok), REPEATS))
   print("\nRQ0: mu(win), active, budget 50")
@@ -111,3 +114,6 @@ if __name__ == "__main__":
   print("\nRQ2: mu(win(active)) - mu(win(random)), budget 50")
   hist([r["dAvR"] for r in ok], -15, 30, 5, ties=True)
   verdicts("RQ2", "dAvR", ok)
+  print("\nRQ2b: mu(win(active@50)) - mu(win(random@200))")
+  hist([r["dAvR200"] for r in ok], -30, 30, 5, ties=True)
+  verdicts("RQ2b", "dAvR200", ok)
