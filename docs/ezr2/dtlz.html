@@ -12,15 +12,15 @@
     <div class='docs'><p align="center">
 <a href="https://timm.github.io/src/"><img alt="home" src="https://img.shields.io/badge/🏠-home-gold"></a>
 <a href="https://github.com/timm/src/tree/main/ezr2"><img alt="src" src="https://img.shields.io/badge/src-ezr2-black"></a>
-<a href="ezr2.html"><img alt="code" src="https://img.shields.io/badge/code-14%20files-2ea44f"></a>
-<a href="ezr2-eg.html"><img alt="tests" src="https://img.shields.io/badge/tests-12%20files-06b6d4"></a>
+<a href="ezr2.html"><img alt="code" src="https://img.shields.io/badge/code-3%20files-2ea44f"></a>
+<a href="ezr2-eg.html"><img alt="tests" src="https://img.shields.io/badge/tests-1%20files-06b6d4"></a>
 <a href="https://github.com/timm/src/actions/workflows/tests-ezr2.yml"><img alt="ci" src="https://github.com/timm/src/actions/workflows/tests-ezr2.yml/badge.svg"></a>
 <a href="https://github.com/timm/src/issues"><img alt="issues" src="https://img.shields.io/badge/issues-report-red"></a>
 <a href="https://github.com/timm/src/blob/main/LICENSE.md"><img alt="license" src="https://img.shields.io/badge/license-MIT-brightgreen"></a>
 <img alt="language" src="https://img.shields.io/badge/language-python-9558B2">
 <img alt="runs on" src="https://img.shields.io/badge/runs%20on-python3-EE4C2C">
 <a href="https://timm.fyi"><img alt="author" src="https://img.shields.io/badge/author-timm-blueviolet"></a>
-</p><p><a href="ezr2.html">ezr2</a> | <a href="lib.html">lib</a> | <a href="rand.html">rand</a> | <a href="cols.html">cols</a> | <a href="data.html">data</a> | <a href="dist.html">dist</a> | <a href="acquire.html">acquire</a> | <a href="bins.html">bins</a> | <a href="tree.html">tree</a> | <a href="stats.html">stats</a> | <a href="show.html">show</a> | <a href="main.html">main</a> | <a href="report.html">report</a> | <b>dtlz</b></p><p><a href="report.html">&lt; prev</a> | <a href="ezr2-eg.html">next &gt;</a></p><h1><a href="https://github.com/timm/src/blob/main/ezr2/dtlz.py">dtlz.py</a></h1></div>
+</p><p><a href="ezr2.html">ezr2</a> | <b>dtlz</b> | <a href="report.html">report</a></p><p><a href="ezr2-eg.html">&lt; prev</a> | <a href="report.html">next &gt;</a></p><h1><a href="https://github.com/timm/src/blob/main/ezr2/dtlz.py">dtlz.py</a></h1></div>
   </div>
   <div class='clearall'>
   <div class='section' id='section-0'>
@@ -250,15 +250,15 @@ x&rsquo;s form the &ldquo;distance&rdquo; group xm; the rest shape the front.</p
         <a class='octothorpe' href='#section-15'>#</a>
       </div>
       <p>ezr2&rsquo;s seam: goals come from the model, folded into
-data.cols so disty can normalize objectives as they arrive</p>
+tbl.cols so disty can normalize objectives as they arrive</p>
     </div>
     <div class='code'>
       <div class="highlight"><pre><span class="k">def</span><span class="w"> </span><span class="nf">labelled</span><span class="p">(</span><span class="n">row</span><span class="p">):</span>
   <span class="k">if</span> <span class="s2">&quot;?&quot;</span> <span class="ow">in</span> <span class="n">row</span><span class="p">[</span><span class="n">N</span><span class="p">:]:</span>
     <span class="n">row</span><span class="p">[</span><span class="n">N</span><span class="p">:]</span> <span class="o">=</span> <span class="n">MODEL</span><span class="p">(</span><span class="n">row</span><span class="p">[:</span><span class="n">N</span><span class="p">],</span> <span class="n">M</span><span class="p">)</span>
-    <span class="k">for</span> <span class="n">at</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">y</span><span class="p">:</span> <span class="n">data</span><span class="o">.</span><span class="n">cols</span><span class="p">[</span><span class="n">at</span><span class="p">]</span> <span class="o">=</span> <span class="n">ezr2</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">cols</span><span class="p">[</span><span class="n">at</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="n">at</span><span class="p">])</span>
+    <span class="k">for</span> <span class="n">at</span> <span class="ow">in</span> <span class="n">tbl</span><span class="o">.</span><span class="n">y</span><span class="p">:</span> <span class="n">tbl</span><span class="o">.</span><span class="n">cols</span><span class="p">[</span><span class="n">at</span><span class="p">]</span> <span class="o">=</span> <span class="n">ezr2</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">tbl</span><span class="o">.</span><span class="n">cols</span><span class="p">[</span><span class="n">at</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="n">at</span><span class="p">])</span>
   <span class="k">return</span> <span class="n">row</span>
-<span class="n">ezr2</span><span class="o">.</span><span class="n">labelled</span> <span class="o">=</span> <span class="n">labelled</span>            <span class="c1"># labelled() reads the global `data`</span></pre></div>
+<span class="n">ezr2</span><span class="o">.</span><span class="n">labelled</span> <span class="o">=</span> <span class="n">labelled</span>            <span class="c1"># labelled() reads the global `tbl`</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -273,7 +273,7 @@ data.cols so disty can normalize objectives as they arrive</p>
       <div class="highlight"><pre><span class="k">def</span><span class="w"> </span><span class="nf">instance</span><span class="p">(</span><span class="n">row</span><span class="p">):</span>
   <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  x  &quot;</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%.2f</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">v</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">row</span><span class="p">[:</span><span class="n">N</span><span class="p">]))</span>
   <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  f  &quot;</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%.3f</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">v</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">row</span><span class="p">[</span><span class="n">N</span><span class="p">:])</span> <span class="o">+</span>
-        <span class="s2">&quot;   (disty </span><span class="si">%.3f</span><span class="s2">, lower=better)&quot;</span> <span class="o">%</span> <span class="n">ezr2</span><span class="o">.</span><span class="n">disty</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">row</span><span class="p">))</span>
+        <span class="s2">&quot;   (disty </span><span class="si">%.3f</span><span class="s2">, lower=better)&quot;</span> <span class="o">%</span> <span class="n">ezr2</span><span class="o">.</span><span class="n">disty</span><span class="p">(</span><span class="n">tbl</span><span class="p">,</span> <span class="n">row</span><span class="p">))</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;model </span><span class="si">%s</span><span class="s2">   N=</span><span class="si">%d</span><span class="s2"> x-vars   M=</span><span class="si">%d</span><span class="s2"> objectives&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">NAME</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="n">M</span><span class="p">))</span>
 <span class="n">ezr2</span><span class="o">.</span><span class="n">the</span><span class="o">.</span><span class="n">budget</span> <span class="o">=</span> <span class="mi">30</span></pre></div>
@@ -288,8 +288,8 @@ data.cols so disty can normalize objectives as they arrive</p>
       <p>(1) pure: acquire ranks the whole pool, no train/test split</p>
     </div>
     <div class='code'>
-      <div class="highlight"><pre><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span> <span class="n">data</span> <span class="o">=</span> <span class="n">ezr2</span><span class="o">.</span><span class="n">Data</span><span class="p">([</span><span class="n">names</span><span class="p">]</span> <span class="o">+</span> <span class="n">fresh_pool</span><span class="p">())</span>
-<span class="n">got</span> <span class="o">=</span> <span class="n">ezr2</span><span class="o">.</span><span class="n">acquire</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+      <div class="highlight"><pre><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span> <span class="n">tbl</span> <span class="o">=</span> <span class="n">ezr2</span><span class="o">.</span><span class="n">Tbl</span><span class="p">([</span><span class="n">names</span><span class="p">]</span> <span class="o">+</span> <span class="n">fresh_pool</span><span class="p">())</span>
+<span class="n">got</span> <span class="o">=</span> <span class="n">ezr2</span><span class="o">.</span><span class="n">acquire</span><span class="p">(</span><span class="n">tbl</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">the best option found (one instance):&quot;</span><span class="p">)</span>
 <span class="n">instance</span><span class="p">(</span><span class="n">got</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span></pre></div>
     </div>
@@ -304,7 +304,7 @@ data.cols so disty can normalize objectives as they arrive</p>
     </div>
     <div class='code'>
       <div class="highlight"><pre><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">why? an explanatory model -- which x-ranges reach good goals:&quot;</span><span class="p">)</span>
-<span class="n">ezr2</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">ezr2</span><span class="o">.</span><span class="n">tree</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">got</span><span class="p">))</span></pre></div>
+<span class="n">ezr2</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">tbl</span><span class="p">,</span> <span class="n">ezr2</span><span class="o">.</span><span class="n">tree</span><span class="p">(</span><span class="n">tbl</span><span class="p">,</span> <span class="n">got</span><span class="p">))</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -316,9 +316,9 @@ data.cols so disty can normalize objectives as they arrive</p>
       <p>(3) test the model on new data: train/test split via holdout</p>
     </div>
     <div class='code'>
-      <div class="highlight"><pre><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span> <span class="n">data</span> <span class="o">=</span> <span class="n">ezr2</span><span class="o">.</span><span class="n">Data</span><span class="p">([</span><span class="n">names</span><span class="p">]</span> <span class="o">+</span> <span class="n">fresh_pool</span><span class="p">())</span>
+      <div class="highlight"><pre><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span> <span class="n">tbl</span> <span class="o">=</span> <span class="n">ezr2</span><span class="o">.</span><span class="n">Tbl</span><span class="p">([</span><span class="n">names</span><span class="p">]</span> <span class="o">+</span> <span class="n">fresh_pool</span><span class="p">())</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">does that model generalize? best pick on unseen test data:&quot;</span><span class="p">)</span>
-<span class="n">instance</span><span class="p">(</span><span class="n">ezr2</span><span class="o">.</span><span class="n">holdout</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
+<span class="n">instance</span><span class="p">(</span><span class="n">ezr2</span><span class="o">.</span><span class="n">holdout</span><span class="p">(</span><span class="n">tbl</span><span class="p">))</span>
 
 </pre></div>
     </div>

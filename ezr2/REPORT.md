@@ -265,7 +265,7 @@ active@50 earns its keep when the budget is a hard wall.
 ## Aside: which projection anchors?
 
 This code is the reference for that bookkeeping. In
-`sway3` (acquire.py) labelled rows stay in the pool, new
+`sway3` (ezr2.py) labelled rows stay in the pool, new
 labels come from the pool walk, and only in-pool labels
 anchor the projection - so a culled label stops steering
 (until a redo pass deliberately re-anchors at the best and

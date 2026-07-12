@@ -1,29 +1,7 @@
 FILES="ezr2.py
-       lib.py
-       rand.py
-       cols.py
-       tbl.py
-       dist.py
-       acquire.py
-       bins.py
-       tree.py
-       stats.py
-       show.py
-       main.py
-       report.py
-       dtlz.py
        ezr2-eg.py
-       lib-eg.py
-       rand-eg.py
-       cols-eg.py
-       tbl-eg.py
-       dist-eg.py
-       stats-eg.py
-       acquire-eg.py
-       bins-eg.py
-       tree-eg.py
-       show-eg.py
-       main-eg.py"
+       dtlz.py
+       report.py"
 : <<'DOCS'
 
 # ezr2
