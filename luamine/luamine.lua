@@ -15,7 +15,6 @@ local help = [[
   --leaf=3     stop recursion when #rows < leaf
   --p=2        default Minkowski exponent for dist
   --cap=2048   ftree row-sample size before build
-  --budget=32  label budget for active acquire loop
   --k=1        Bayes Laplace/Lidstone smoothing
   --m=2        Bayes m-estimate prior weight
   --F=0.5      DE extrapolate scale

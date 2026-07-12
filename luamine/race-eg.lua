@@ -16,7 +16,6 @@ the story: who found what, when, and how good.
 
 eg["--race"] = function(    data)
   data = h.pickData()
-  the.budget = 512
   the.np, the.cr, the.gens, the.de_iter = 50, 0.25, 50, 30
   return h.runRace(data, {
     {"ga", a.ga(data, a.knn(data))},

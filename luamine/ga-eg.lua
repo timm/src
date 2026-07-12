@@ -15,6 +15,5 @@ best.
 
 eg["--ga"] = function(    data)
   data = h.pickData()
-  the.budget = 512
   the.np, the.cr, the.gens = 50, 0.25, 50
   return h.runRace(data, {{"ga", a.ga(data, a.knn(data))}}) end

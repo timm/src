@@ -22,10 +22,9 @@ a row back to its leaf's rows.
 ]]
 
 eg["--tree"] = function(    data,root,y,count,ls)
-  the.budget = 32     -- label budget (lapps resets it to 512)
   data = h.egData()
   data = data:clone(l.slice(l.shuffle(l.copy(data.rows)),
-                            1, the.budget))
+                            1, the.labels))
   y = function(r) return r[#r] end
   root = data:tree(y, Sym.new, the.leaf)
   m.show(root, data.cols)

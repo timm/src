@@ -34,7 +34,7 @@ function a.ga(data, better,
     return u end
   l.shuffle(data.rows)
   pop = l.slice(data.rows, 1, the.np)
-  ref = l.slice(data.rows, the.np+1, the.budget - the.np)
+  ref = l.slice(data.rows, the.np+1, the.pool - the.np)
   return function()
     gen = (gen or 0) + 1
     if gen <= the.gens then

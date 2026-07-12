@@ -18,6 +18,7 @@ local help = [[
 ## options
   -t  --train=$MOOT/optimize/misc/auto93.csv  train CSV
       --seed=1     RNG seed
+      --labels=32  tree demo: rows sampled before build
 ## egs
   --lists     sort/list/slice/copy/shuffle/keysort/argmin
   --tabulate  aligned table demo
