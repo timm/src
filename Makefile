@@ -39,6 +39,7 @@ doc: ## pycco html into docs/<proj>/ for each project with an INSTALL.md
 	   grep -q 'timm extras' docs/$$p/pycco.css || printf '%s\n' \
 	     '/* timm extras */' \
 	     'p { text-align: right; }' \
+	     '#section-0 p, #section-1 p { text-align: left; }' \
 	     '.docs pre { font-size: .7em; line-height: 1.45; }' \
 	     '.docs table { border-collapse: collapse; margin: 1em 0 1em auto; }' \
 	     '.docs th, .docs td { border: 1px solid #ccc; padding: 2px 8px; font-size: .85em; }' \

@@ -8,13 +8,21 @@
 #  - "; text" col 0     -> plain comment (function notes)
 #  - one-line docstrings lift ABOVE their defun as comments
 # py (emit .py):
-#  - bare `"""` lines toggle markdown prose blocks
+#  - bare `"""` lines toggle markdown prose blocks; a block
+#    NOT opening with a markdown heading is help text and
+#    gets fenced verbatim (line structure survives)
 #  - col-0 "# " notes pass through (already pycco prose)
 #  - one-line docstrings lift ABOVE their def as comments
 BEGIN { n = 0 }
 ext == "py" && /^#!/   { next }
-ext == "py" && /^"""$/ { md = !md; next }
-ext == "py" && md      { print "# " $0; next }
+ext == "py" && /^"""$/ {
+  if (!md) { md = 1; first = 1 }
+  else     { md = 0; if (fenced) print "# ```"; fenced = 0 }
+  next }
+ext == "py" && md      {
+  if (first) { first = 0
+    if ($0 !~ /^#/) { fenced = 1; print "# ```text" } }
+  print "# " $0; next }
 ext == "py" && pd {
   if ($0 ~ /^  ".*"$/) {
     doc = $0; gsub(/^  "|"$/, "", doc)
