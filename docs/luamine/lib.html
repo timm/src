@@ -12,15 +12,15 @@
     <div class='docs'><p align="center">
 <a href="https://timm.github.io/src/"><img alt="home" src="https://img.shields.io/badge/🏠-home-gold"></a>
 <a href="https://github.com/timm/src/tree/main/luamine"><img alt="src" src="https://img.shields.io/badge/src-luamine-black"></a>
-<a href="lib.html"><img alt="code" src="https://img.shields.io/badge/code-29%20files-2ea44f"></a>
-<a href="luamine-eg.html"><img alt="tests" src="https://img.shields.io/badge/tests-23%20files-06b6d4"></a>
+<a href="lib.html"><img alt="code" src="https://img.shields.io/badge/code-4%20files-2ea44f"></a>
+<a href="luamine-eg.html"><img alt="tests" src="https://img.shields.io/badge/tests-1%20files-06b6d4"></a>
 <a href="https://github.com/timm/src/actions/workflows/tests-luamine.yml"><img alt="ci" src="https://github.com/timm/src/actions/workflows/tests-luamine.yml/badge.svg"></a>
 <a href="https://github.com/timm/src/issues"><img alt="issues" src="https://img.shields.io/badge/issues-report-red"></a>
 <a href="https://github.com/timm/src/blob/main/LICENSE.md"><img alt="license" src="https://img.shields.io/badge/license-MIT-brightgreen"></a>
 <img alt="language" src="https://img.shields.io/badge/language-lua-9558B2">
 <img alt="runs on" src="https://img.shields.io/badge/runs%20on-lua5.4-EE4C2C">
 <a href="https://timm.fyi"><img alt="author" src="https://img.shields.io/badge/author-timm-blueviolet"></a>
-</p><p><b>lib</b> | <a href="rand.html">rand</a> | <a href="list.html">list</a> | <a href="stats.html">stats</a> | <a href="confuse.html">confuse</a> | <a href="str.html">str</a> | <a href="cli.html">cli</a> | <a href="luamine.html">luamine</a> | <a href="cut.html">cut</a> | <a href="sym.html">sym</a> | <a href="num.html">num</a> | <a href="cols.html">cols</a> | <a href="data.html">data</a> | <a href="dist.html">dist</a> | <a href="bayes.html">bayes</a> | <a href="mutate.html">mutate</a> | <a href="tree.html">tree</a> | <a href="show.html">show</a> | <a href="lapps.html">lapps</a> | <a href="cluster.html">cluster</a> | <a href="classify.html">classify</a> | <a href="acquire.html">acquire</a> | <a href="sample.html">sample</a> | <a href="bob.html">bob</a> | <a href="race.html">race</a> | <a href="ga.html">ga</a> | <a href="de.html">de</a> | <a href="search.html">search</a> | <a href="tutchk.html">tutchk</a></p><p>&lt; prev | <a href="rand.html">next &gt;</a></p><h1><a href="https://github.com/timm/src/blob/main/luamine/lib.lua">lib.lua</a></h1></div>
+</p><p><b>lib</b> | <a href="luamine.html">luamine</a> | <a href="lapps.html">lapps</a> | <a href="tutchk.html">tutchk</a></p><p>&lt; prev | <a href="luamine.html">next &gt;</a></p><h1><a href="https://github.com/timm/src/blob/main/luamine/lib.lua">lib.lua</a></h1></div>
   </div>
   <div class='clearall'>
   <div class='section' id='section-0'>
@@ -35,12 +35,189 @@ a portable Park-Miller twin), then seeds <code>the</code> from the
 help options. require&rdquo;lib&rdquo; returns the assembled module.</p>
     </div>
     <div class='code'>
-      <div class="highlight"><pre><span></span><span class="kd">local</span><span class="w"> </span><span class="nv">help</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[[</span>
-<span class="o">#</span><span class="w"> </span><span class="nv">library</span><span class="w"> </span><span class="nv">of</span><span class="w"> </span><span class="nv">useful</span><span class="w"> </span><span class="nv">lua</span><span class="w"> </span><span class="nf">functions</span>
-<span class="p">(</span><span class="nv">c</span><span class="p">)</span><span class="w"> </span><span class="mi">2026</span><span class="w"> </span><span class="nv">Tim</span><span class="w"> </span><span class="nv">Menzies</span><span class="w"> </span><span class="o">&lt;</span><span class="nv">timm</span><span class="err">@</span><span class="nv">ieee</span><span class="p">.</span><span class="py">org</span><span class="o">&gt;</span><span class="w"> </span><span class="nv">MIT</span><span class="w"> </span><span class="nv">license</span>
-<span class="o">##</span><span class="w"> </span><span class="nv">options</span>
-<span class="w">  </span><span class="o">-</span><span class="nv">t</span><span class="w">  </span><span class="c1">--train=$MOOT/optimize/misc/auto93.csv  train CSV</span>
-<span class="w">  </span><span class="o">-</span><span class="nv">T</span><span class="w">  </span><span class="c1">--test=$MOOT/optimize/misc/auto93.csv   test CSV</span></pre></div>
+      <div class="highlight"><pre><span></span><span class="kd">local</span><span class="w"> </span><span class="nv">help</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">[[</span>
+<span class="s"># library of useful lua functions</span>
+<span class="s">(c) 2026 Tim Menzies &lt;timm@ieee.org&gt; MIT license</span>
+<span class="s">## options</span>
+<span class="s">  -t  --train=$MOOT/optimize/misc/auto93.csv  train CSV</span>
+<span class="s">  -T  --test=$MOOT/optimize/misc/auto93.csv   test CSV</span>
+<span class="s">--DIVIDER</span>
+<span class="s">## egs</span>
+<span class="s">  (see luamine-eg.lua)</span>
+<span class="s">local b4={}; for k,_ in pairs(_G) do b4[k]=k end</span>
+<span class="s">local l, the = {}, {}</span>
+<span class="s">l.the, l.helpLib = the, help</span>
+<span class="s">--DIVIDER</span>
+
+
+<span class="s">local floor = math.floor</span>
+<span class="s">local Seed = 1</span>
+<span class="s">--DIVIDER</span>
+<span class="s">function l.srand(n)</span>
+<span class="s">  Seed = (n or 1) % 2147483647</span>
+<span class="s">  if Seed == 0 then Seed = 1 end end</span>
+<span class="s">--DIVIDER</span>
+<span class="s">function l.rand(n,    r)</span>
+<span class="s">  Seed = (16807 * Seed) % 2147483647</span>
+<span class="s">  r = Seed / 2147483647</span>
+<span class="s">  return n and floor(r * n) + 1 or r end</span>
+
+<span class="s">math.random, math.randomseed = l.rand, l.srand</span>
+<span class="s">--DIVIDER</span>
+<span class="s">function l.any(t) return t[l.rand(#t)] end</span>
+<span class="s">--DIVIDER</span>
+<span class="s">function l.anys(t,n,    u)</span>
+<span class="s">  u={}; for _=1,n do u[1+#u]=l.any(t) end; return u end</span>
+<span class="s">--DIVIDER</span>
+<span class="s">function l.shuffle(t,    j)</span>
+<span class="s">  for i=#t,2,-1 do j=l.rand(i); t[i],t[j] = t[j],t[i] end</span>
+<span class="s">  return t end</span>
+<span class="s">--DIVIDER</span>
+<span class="s">function l.pickDict(dct,    ks,s,r)</span>
+<span class="s">  ks = l.sort(l.kap(dct, function(k,_) return k end))</span>
+<span class="s">  s = 0; for _,k in ipairs(ks) do s = s + dct[k] end</span>
+<span class="s">  r = s * l.rand()</span>
+<span class="s">  for _,k in ipairs(ks) do</span>
+<span class="s">    r = r - dct[k]; if r &lt;= 0 then return k end end end</span>
+<span class="s">--DIVIDER</span>
+<span class="s">function l.irwinHall()</span>
+<span class="s">  return 2*(l.rand()+l.rand()+l.rand()-1.5) end</span>
+<span class="s">--DIVIDER</span>
+
+
+<span class="s">local max = math.max</span>
+<span class="s">--DIVIDER</span>
+<span class="s">function l.new(mt,t) mt.__index=mt; return setmetatable(t,mt) end</span>
+<span class="s">--DIVIDER</span>
+<span class="s">function l.sort(t,fn) table.sort(t,fn); return t end</span>
+<span class="s">--DIVIDER</span>
+<span class="s">function l.push(t,x) t[1+#t]=x; return x end</span>
+<span class="s">--DIVIDER</span>
+<span class="s">function l.nth(n) return function(t) return t[n] end end</span>
+<span class="s">--DIVIDER</span>
+<span class="s">function l.lt(n) return function(a,b) return a[n] &lt; b[n] end end</span>
+<span class="s">--DIVIDER</span>
+<span class="s">function l.gt(n) return function(a,b) return a[n] &gt; b[n] end end</span>
+<span class="s">--DIVIDER</span>
+<span class="s">function l.map(t,fn,    u)</span>
+<span class="s">  u={}; for _,v in ipairs(t) do u[1+#u]=fn(v) end; return u end</span>
+<span class="s">--DIVIDER</span>
+<span class="s">function l.kap(t,fn,    u)</span>
+<span class="s">  u={}; for k,v in pairs(t) do u[1+#u]=fn(k,v) end; return u end</span>
+<span class="s">--DIVIDER</span>
+<span class="s">function l.list(t,    u)</span>
+<span class="s">  u={}; for _,v in pairs(t) do u[1+#u]=v end; return u end</span>
+<span class="s">--DIVIDER</span>
+<span class="s">function l.keysort(t,fn,cmp,    d)</span>
+<span class="s">  d = function(x) return {fn(x),x} end</span>
+<span class="s">  return l.map(l.sort(l.map(t,d),(cmp or l.lt)(1)),l.nth(2)) end</span>
+<span class="s">--DIVIDER</span>
+<span class="s">function l.copy(t,    u)</span>
+<span class="s">  u={}; for i,v in ipairs(t) do u[i]=v end; return u end</span>
+<span class="s">--DIVIDER</span>
+<span class="s">function l.slice(t,lo,hi,    u,n)</span>
+<span class="s">  n  = #t</span>
+<span class="s">  lo = lo or 1; if lo &lt; 0 then lo = n + 1 + lo end</span>
+<span class="s">  hi = hi or n; if hi &lt; 0 then hi = n + 1 + hi end</span>
+<span class="s">  if hi &gt; n then hi = n end</span>
+<span class="s">  u={}; for i=lo,hi do u[1+#u]=t[i] end</span>
+<span class="s">  return u end</span>
+<span class="s">--DIVIDER</span>
+<span class="s">function l.argmin(t,fn,cmp,    best,bv,v)</span>
+<span class="s">  cmp = cmp or function(a,b) return a &lt; b end</span>
+<span class="s">  best, bv = 1, fn(t[1])</span>
+<span class="s">  for i=2,#t do</span>
+<span class="s">    v = fn(t[i]); if cmp(v,bv) then best,bv = i,v end end</span>
+<span class="s">  return best end</span>
+<span class="s">--DIVIDER</span>
+<span class="s">function l.tabulate(rows,just,gap,    w,line,s)</span>
+<span class="s">  gap, w = gap or &quot; &quot;, {}</span>
+<span class="s">  for _,row in ipairs(rows) do</span>
+<span class="s">    for c,cell in ipairs(row) do</span>
+<span class="s">      w[c] = max(w[c] or 0, #tostring(cell)) end end</span>
+<span class="s">  for _,row in ipairs(rows) do line={}</span>
+<span class="s">    for c,cell in ipairs(row) do s = tostring(cell)</span>
+<span class="s">      line[c] = just[c]==&quot;&lt;&quot; and s..(&quot; &quot;):rep(w[c]-#s)</span>
+<span class="s">                              or (&quot; &quot;):rep(w[c]-#s)..s end</span>
+<span class="s">    print(table.concat(line,gap)) end end</span>
+<span class="s">--DIVIDER</span>
+
+
+<span class="s">local abs,log,max = math.abs, math.log, math.max</span>
+<span class="s">--DIVIDER</span>
+<span class="s">function l.sd(n,m2) return n&lt;2 and 0 or (m2/(n-1))^0.5 end</span>
+<span class="s">--DIVIDER</span>
+<span class="s">function l.welford(v,n,mu,m2,w,    d)</span>
+<span class="s">  w = w or 1</span>
+<span class="s">  n=n+w; d=v-mu; mu=mu+w*d/n; return n,mu, m2+w*d*(v-mu) end</span>
+<span class="s">--DIVIDER</span>
+<span class="s">function l.welfords(xs,    n,mu,m2)</span>
+<span class="s">  n,mu,m2=0,0,0</span>
+<span class="s">  for _,v in ipairs(xs) do n,mu,m2=l.welford(v,n,mu,m2) end</span>
+<span class="s">  return mu, l.sd(n,m2) end</span>
+<span class="s">--DIVIDER</span>
+<span class="s">function l.mode(t,    ks,out,N)</span>
+<span class="s">  ks = l.sort(l.kap(t, function(k,_) return k end))</span>
+<span class="s">  N = -1</span>
+<span class="s">  for _,k in ipairs(ks) do</span>
+<span class="s">    if t[k] &gt; N then out,N = k,t[k] end end</span>
+<span class="s">  return out end</span>
+<span class="s">--DIVIDER</span>
+<span class="s">function l.ent(t,    e,N)</span>
+<span class="s">  e,N=0,0</span>
+<span class="s">  for _,n in pairs(t) do N=N+n end</span>
+<span class="s">  for _,n in pairs(t) do e=e - n/N * log(n/N,2) end</span>
+<span class="s">  return e end</span>
+<span class="s">--DIVIDER</span>
+<span class="s">function l.bisect(t,x,strict,    lo,hi,mid,go)</span>
+<span class="s">  lo,hi = 1,#t</span>
+<span class="s">  while lo&lt;=hi do mid=(lo+hi)//2</span>
+<span class="s">    go = strict and t[mid]&lt;x or (not strict) and t[mid]&lt;=x</span>
+<span class="s">    if go then lo=mid+1 else hi=mid-1 end end</span>
+<span class="s">  return lo-1 end</span>
+<span class="s">--DIVIDER</span>
+<span class="s">function l.pooledSd(xs,ys,    nx,sx,ny,sy)</span>
+<span class="s">  nx,sx = #xs, (select(2, l.welfords(xs)))</span>
+<span class="s">  ny,sy = #ys, (select(2, l.welfords(ys)))</span>
+<span class="s">  return (((nx-1)*sx*sx + (ny-1)*sy*sy)/(nx+ny-2))^0.5 end</span>
+<span class="s">--DIVIDER</span>
+<span class="s">function l.cliffsDelta(xs,ys,    n,p,ngt,nlt)</span>
+<span class="s">  n,p,ngt,nlt = #xs,#ys,0,0</span>
+<span class="s">  for _,v in ipairs(xs) do</span>
+<span class="s">    ngt = ngt + l.bisect(ys,v,true)</span>
+<span class="s">    nlt = nlt + (p - l.bisect(ys,v)) end</span>
+<span class="s">  return abs(ngt-nlt)/(n*p) end</span>
+<span class="s">--DIVIDER</span>
+<span class="s">function l.ks(xs,ys,    n,p,d,gap)</span>
+<span class="s">  n,p,d = #xs,#ys,0</span>
+<span class="s">  gap = function(v)</span>
+<span class="s">    return abs(l.bisect(xs,v)/n - l.bisect(ys,v)/p) end</span>
+<span class="s">  for _,v in ipairs(xs) do d=max(d,gap(v)) end</span>
+<span class="s">  for _,v in ipairs(ys) do d=max(d,gap(v)) end</span>
+<span class="s">  return d end</span>
+<span class="s">--DIVIDER</span>
+<span class="s">function l.same(xs,ys,eps,cliffs,ksconf,    n,p,a,b)</span>
+<span class="s">  eps, cliffs, ksconf = eps or 0, cliffs or 0.195, ksconf or 1.36</span>
+<span class="s">  a,b = l.sort({table.unpack(xs)}), l.sort({table.unpack(ys)})</span>
+<span class="s">  n,p = #a,#b</span>
+<span class="s">  if abs(a[n//2+1]-b[p//2+1])&lt;=eps then return true end</span>
+<span class="s">  if l.cliffsDelta(a,b)&gt;cliffs then return false end</span>
+<span class="s">  return l.ks(a,b) &lt;= ksconf*((n+p)/(n*p))^0.5 end</span>
+<span class="s">--DIVIDER</span>
+<span class="s">function l.topTier(dict,cmp,eps,cliffs,ksconf,</span>
+<span class="s">                   out,names,best,cand,th)</span>
+<span class="s">  out={}</span>
+<span class="s">  names = l.keysort(l.kap(dict,function(k,_) return k end),</span>
+<span class="s">                    function(k) return (l.welfords(dict[k])) end,</span>
+<span class="s">                    cmp)</span>
+<span class="s">  best = dict[names[1]]</span>
+<span class="w">  </span><span class="nv">out</span><span class="p">[</span><span class="nv">names</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="nv">l</span><span class="p">.</span><span class="nf">welfords</span><span class="p">(</span><span class="nv">best</span><span class="p">))</span>
+<span class="w">  </span><span class="kr">for</span><span class="w"> </span><span class="nv">i</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span><span class="o">#</span><span class="nv">names</span><span class="w"> </span><span class="kr">do</span>
+<span class="w">    </span><span class="nv">cand</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">dict</span><span class="p">[</span><span class="nv">names</span><span class="p">[</span><span class="nv">i</span><span class="p">]]</span>
+<span class="w">    </span><span class="nv">th</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="nv">eps</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="nv">l</span><span class="p">.</span><span class="nf">pooledSd</span><span class="p">(</span><span class="nv">best</span><span class="p">,</span><span class="w"> </span><span class="nv">cand</span><span class="p">)</span>
+<span class="w">    </span><span class="kr">if</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="nv">l</span><span class="p">.</span><span class="nf">same</span><span class="p">(</span><span class="nv">best</span><span class="p">,</span><span class="w"> </span><span class="nv">cand</span><span class="p">,</span><span class="w"> </span><span class="nv">th</span><span class="p">,</span><span class="w"> </span><span class="nv">cliffs</span><span class="p">,</span><span class="w"> </span><span class="nv">ksconf</span><span class="p">)</span><span class="w"> </span><span class="kr">then</span><span class="w"> </span><span class="kr">break</span><span class="w"> </span><span class="kr">end</span>
+<span class="w">    </span><span class="nv">out</span><span class="p">[</span><span class="nv">names</span><span class="p">[</span><span class="nv">i</span><span class="p">]]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="nv">l</span><span class="p">.</span><span class="nf">welfords</span><span class="p">(</span><span class="nv">cand</span><span class="p">))</span><span class="w"> </span><span class="kr">end</span>
+<span class="w">  </span><span class="kr">return</span><span class="w"> </span><span class="nv">out</span><span class="w"> </span><span class="kr">end</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -55,22 +232,841 @@ eps=0.35       Cohen&rsquo;s threshold (x sd)
 ksconf=1.36    KS test threshold</p>
     </div>
     <div class='code'>
-      <div class="highlight"><pre><span class="o">##</span><span class="w"> </span><span class="nf">egs</span>
-<span class="w">  </span><span class="p">(</span><span class="nv">see</span><span class="w"> </span><span class="nv">luamine</span><span class="o">-</span><span class="nv">eg</span><span class="p">.</span><span class="py">lua</span><span class="p">)</span>
-<span class="kd">local</span><span class="w"> </span><span class="nv">b4</span><span class="o">=</span><span class="p">{};</span><span class="w"> </span><span class="kr">for</span><span class="w"> </span><span class="nv">k</span><span class="p">,</span><span class="nv">_</span><span class="w"> </span><span class="kr">in</span><span class="w"> </span><span class="nb">pairs</span><span class="p">(</span><span class="nb">_G</span><span class="p">)</span><span class="w"> </span><span class="kr">do</span><span class="w"> </span><span class="nv">b4</span><span class="p">[</span><span class="nv">k</span><span class="p">]</span><span class="o">=</span><span class="nv">k</span><span class="w"> </span><span class="kr">end</span>
-<span class="kd">local</span><span class="w"> </span><span class="nv">m</span><span class="p">,</span><span class="w"> </span><span class="nv">the</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{},</span><span class="w"> </span><span class="p">{}</span>
-<span class="nv">m</span><span class="p">.</span><span class="py">the</span><span class="p">,</span><span class="w"> </span><span class="nv">m</span><span class="p">.</span><span class="py">helpLib</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">the</span><span class="p">,</span><span class="w"> </span><span class="nv">help</span>
+      <div class="highlight"><pre><span class="kd">local</span><span class="w"> </span><span class="nv">Confuse</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{}</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-2'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-2'>#</a>
+      </div>
+      <h2>rand</h2>
+<p>Portable Park-Miller PRNG: seeded runs match across
+languages (twin: rand.py in ezr2). Replaces Lua&rsquo;s stock
+RNG (math.random/math.randomseed) so every later file
+that localizes math.random gets the portable one.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="kr">function</span><span class="w"> </span><span class="nc">Confuse</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="nv">file</span><span class="p">)</span>
+<span class="w">  </span><span class="kr">return</span><span class="w"> </span><span class="nv">l</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="nv">Confuse</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="nv">t</span><span class="o">=</span><span class="p">{},</span><span class="w"> </span><span class="nv">klasses</span><span class="o">=</span><span class="p">{},</span><span class="w"> </span><span class="nv">file</span><span class="o">=</span><span class="nv">file</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="p">})</span><span class="w"> </span><span class="kr">end</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-3'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-3'>#</a>
+      </div>
+      <p>set the random seed (any integer)</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="kr">function</span><span class="w"> </span><span class="nc">Confuse</span><span class="p">.</span><span class="nf">add</span><span class="p">(</span><span class="nv">i</span><span class="p">,</span><span class="nv">want</span><span class="p">,</span><span class="nv">got</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">i</span><span class="p">.</span><span class="py">t</span><span class="p">[</span><span class="nv">want</span><span class="p">]</span><span class="w">       </span><span class="o">=</span><span class="w"> </span><span class="nv">i</span><span class="p">.</span><span class="py">t</span><span class="p">[</span><span class="nv">want</span><span class="p">]</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="p">{}</span>
+<span class="w">  </span><span class="nv">i</span><span class="p">.</span><span class="py">t</span><span class="p">[</span><span class="nv">want</span><span class="p">][</span><span class="nv">got</span><span class="p">]</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="nv">i</span><span class="p">.</span><span class="py">t</span><span class="p">[</span><span class="nv">want</span><span class="p">][</span><span class="nv">got</span><span class="p">]</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span>
+<span class="w">  </span><span class="nv">i</span><span class="p">.</span><span class="py">klasses</span><span class="p">[</span><span class="nv">want</span><span class="p">],</span><span class="w"> </span><span class="nv">i</span><span class="p">.</span><span class="py">klasses</span><span class="p">[</span><span class="nv">got</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w"> </span><span class="kc">true</span><span class="w"> </span><span class="kr">end</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-4'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-4'>#</a>
+      </div>
+      <p>rand() -&gt; float in [0,1); rand(n) -&gt; integer in 1..n</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="kr">function</span><span class="w"> </span><span class="nc">Confuse</span><span class="p">.</span><span class="nf">scores</span><span class="p">(</span><span class="nv">i</span><span class="p">,</span><span class="w">    </span><span class="nv">out</span><span class="p">,</span><span class="nv">tn</span><span class="p">,</span><span class="nv">fn</span><span class="p">,</span><span class="nv">fp</span><span class="p">,</span><span class="nv">tp</span><span class="p">,</span><span class="nv">n</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">out</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{}</span>
+<span class="w">  </span><span class="kr">for</span><span class="w"> </span><span class="nv">_</span><span class="p">,</span><span class="nv">klass</span><span class="w"> </span><span class="kr">in</span><span class="w"> </span><span class="nb">ipairs</span><span class="p">(</span>
+<span class="w">      </span><span class="nv">l</span><span class="p">.</span><span class="nf">sort</span><span class="p">(</span><span class="nv">l</span><span class="p">.</span><span class="nf">kap</span><span class="p">(</span><span class="nv">i</span><span class="p">.</span><span class="py">klasses</span><span class="p">,</span>
+<span class="w">                   </span><span class="kr">function</span><span class="p">(</span><span class="nv">k</span><span class="p">,</span><span class="nv">_</span><span class="p">)</span><span class="w"> </span><span class="kr">return</span><span class="w"> </span><span class="nv">k</span><span class="w"> </span><span class="kr">end</span><span class="p">)))</span><span class="w"> </span><span class="kr">do</span>
+<span class="w">    </span><span class="nv">tn</span><span class="p">,</span><span class="nv">fn</span><span class="p">,</span><span class="nv">fp</span><span class="p">,</span><span class="nv">tp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span>
+<span class="w">    </span><span class="kr">for</span><span class="w"> </span><span class="nv">want</span><span class="p">,</span><span class="nv">gots</span><span class="w"> </span><span class="kr">in</span><span class="w"> </span><span class="nb">pairs</span><span class="p">(</span><span class="nv">i</span><span class="p">.</span><span class="py">t</span><span class="p">)</span><span class="w"> </span><span class="kr">do</span>
+<span class="w">      </span><span class="kr">for</span><span class="w"> </span><span class="nv">got</span><span class="p">,</span><span class="nv">cnt</span><span class="w"> </span><span class="kr">in</span><span class="w"> </span><span class="nb">pairs</span><span class="p">(</span><span class="nv">gots</span><span class="p">)</span><span class="w"> </span><span class="kr">do</span>
+<span class="w">        </span><span class="kr">if</span><span class="w">     </span><span class="nv">want</span><span class="o">==</span><span class="nv">klass</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="nv">got</span><span class="o">==</span><span class="nv">klass</span><span class="w"> </span><span class="kr">then</span><span class="w"> </span><span class="nv">tp</span><span class="o">=</span><span class="nv">tp</span><span class="o">+</span><span class="nv">cnt</span>
+<span class="w">        </span><span class="kr">elseif</span><span class="w"> </span><span class="nv">want</span><span class="o">==</span><span class="nv">klass</span><span class="w">                </span><span class="kr">then</span><span class="w"> </span><span class="nv">fn</span><span class="o">=</span><span class="nv">fn</span><span class="o">+</span><span class="nv">cnt</span>
+<span class="w">        </span><span class="kr">elseif</span><span class="w"> </span><span class="nv">got</span><span class="o">==</span><span class="nv">klass</span><span class="w">                 </span><span class="kr">then</span><span class="w"> </span><span class="nv">fp</span><span class="o">=</span><span class="nv">fp</span><span class="o">+</span><span class="nv">cnt</span>
+<span class="w">        </span><span class="kr">else</span><span class="w">   </span><span class="nv">tn</span><span class="o">=</span><span class="nv">tn</span><span class="o">+</span><span class="nv">cnt</span><span class="w"> </span><span class="kr">end</span><span class="w"> </span><span class="kr">end</span><span class="w"> </span><span class="kr">end</span>
+<span class="w">    </span><span class="nv">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">tn</span><span class="o">+</span><span class="nv">fn</span><span class="o">+</span><span class="nv">fp</span><span class="o">+</span><span class="nv">tp</span>
+<span class="w">    </span><span class="nv">out</span><span class="p">[</span><span class="mi">1</span><span class="o">+#</span><span class="nv">out</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="nv">klass</span><span class="o">=</span><span class="nv">klass</span><span class="p">,</span><span class="w"> </span><span class="nv">tn</span><span class="o">=</span><span class="nv">tn</span><span class="p">,</span><span class="w"> </span><span class="nv">fn</span><span class="o">=</span><span class="nv">fn</span><span class="p">,</span><span class="w"> </span><span class="nv">fp</span><span class="o">=</span><span class="nv">fp</span><span class="p">,</span><span class="w"> </span><span class="nv">tp</span><span class="o">=</span><span class="nv">tp</span><span class="p">,</span>
+<span class="w">      </span><span class="nv">n</span><span class="o">=</span><span class="nv">n</span><span class="p">,</span><span class="w"> </span><span class="nv">file</span><span class="o">=</span><span class="nv">i</span><span class="p">.</span><span class="py">file</span><span class="p">,</span>
+<span class="w">      </span><span class="nv">acc</span><span class="w"> </span><span class="o">=</span><span class="mi">100</span><span class="o">*</span><span class="p">(</span><span class="nv">tp</span><span class="o">+</span><span class="nv">tn</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="nv">n</span><span class="o">+</span><span class="mf">1e-32</span><span class="p">),</span>
+<span class="w">      </span><span class="nv">pred</span><span class="o">=</span><span class="mi">100</span><span class="o">*</span><span class="nv">tp</span><span class="o">/</span><span class="p">(</span><span class="nv">tp</span><span class="o">+</span><span class="nv">fp</span><span class="o">+</span><span class="mf">1e-32</span><span class="p">),</span>
+<span class="w">      </span><span class="nv">pf</span><span class="w">  </span><span class="o">=</span><span class="mi">100</span><span class="o">*</span><span class="nv">fp</span><span class="o">/</span><span class="p">(</span><span class="nv">fp</span><span class="o">+</span><span class="nv">tn</span><span class="o">+</span><span class="mf">1e-32</span><span class="p">),</span>
+<span class="w">      </span><span class="nv">pd</span><span class="w">  </span><span class="o">=</span><span class="mi">100</span><span class="o">*</span><span class="nv">tp</span><span class="o">/</span><span class="p">(</span><span class="nv">tp</span><span class="o">+</span><span class="nv">fn</span><span class="o">+</span><span class="mf">1e-32</span><span class="p">)}</span><span class="w"> </span><span class="kr">end</span>
+<span class="w">  </span><span class="kr">return</span><span class="w"> </span><span class="nv">out</span><span class="w"> </span><span class="kr">end</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-5'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-5'>#</a>
+      </div>
+      <p>one random item of t</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="kr">function</span><span class="w"> </span><span class="nc">Confuse</span><span class="p">.</span><span class="nf">show</span><span class="p">(</span><span class="nv">i</span><span class="p">,</span><span class="w">    </span><span class="nv">hdr</span><span class="p">,</span><span class="nv">row</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">hdr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;%5s %5s %5s %5s %5s %5s %5s %5s %5s %-8s %s&quot;</span>
+<span class="w">  </span><span class="nv">row</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;%5d %5d %5d %5d %5.0f %5.0f %5.0f %5.0f %5d %-8s %s&quot;</span>
+<span class="w">  </span><span class="nb">print</span><span class="p">(</span><span class="nv">hdr</span><span class="p">:</span><span class="nf">format</span><span class="p">(</span><span class="s2">&quot;tn&quot;</span><span class="p">,</span><span class="s2">&quot;fn&quot;</span><span class="p">,</span><span class="s2">&quot;fp&quot;</span><span class="p">,</span><span class="s2">&quot;tp&quot;</span><span class="p">,</span><span class="s2">&quot;acc&quot;</span><span class="p">,</span><span class="s2">&quot;pred&quot;</span><span class="p">,</span><span class="s2">&quot;pf&quot;</span><span class="p">,</span><span class="s2">&quot;pd&quot;</span><span class="p">,</span>
+<span class="w">                   </span><span class="s2">&quot;n&quot;</span><span class="p">,</span><span class="s2">&quot;file&quot;</span><span class="p">,</span><span class="s2">&quot;filename&quot;</span><span class="p">))</span>
+<span class="w">  </span><span class="kr">for</span><span class="w"> </span><span class="nv">_</span><span class="p">,</span><span class="nv">r</span><span class="w"> </span><span class="kr">in</span><span class="w"> </span><span class="nb">ipairs</span><span class="p">(</span><span class="nv">i</span><span class="p">:</span><span class="nf">scores</span><span class="p">())</span><span class="w"> </span><span class="kr">do</span>
+<span class="w">    </span><span class="nb">print</span><span class="p">(</span><span class="nv">row</span><span class="p">:</span><span class="nf">format</span><span class="p">(</span><span class="nv">r</span><span class="p">.</span><span class="py">tn</span><span class="p">,</span><span class="w"> </span><span class="nv">r</span><span class="p">.</span><span class="py">fn</span><span class="p">,</span><span class="w"> </span><span class="nv">r</span><span class="p">.</span><span class="py">fp</span><span class="p">,</span><span class="w"> </span><span class="nv">r</span><span class="p">.</span><span class="py">tp</span><span class="p">,</span>
+<span class="w">      </span><span class="nv">r</span><span class="p">.</span><span class="py">acc</span><span class="p">,</span><span class="w"> </span><span class="nv">r</span><span class="p">.</span><span class="py">pred</span><span class="p">,</span><span class="w"> </span><span class="nv">r</span><span class="p">.</span><span class="py">pf</span><span class="p">,</span><span class="w"> </span><span class="nv">r</span><span class="p">.</span><span class="py">pd</span><span class="p">,</span><span class="w"> </span><span class="nv">r</span><span class="p">.</span><span class="py">n</span><span class="p">,</span><span class="w"> </span><span class="nv">r</span><span class="p">.</span><span class="py">klass</span><span class="p">,</span><span class="w"> </span><span class="nv">r</span><span class="p">.</span><span class="py">file</span><span class="p">))</span><span class="w"> </span><span class="kr">end</span><span class="w"> </span><span class="kr">end</span>
 
-<span class="kd">local</span><span class="w"> </span><span class="nv">here</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">debug.getinfo</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="s2">&quot;S&quot;</span><span class="p">).</span><span class="nv">source</span>
-<span class="w">             </span><span class="p">:</span><span class="py">match</span><span class="s2">&quot;^@(.-)[^/</span><span class="se">\\</span><span class="s2">]*$&quot;</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="s2">&quot;&quot;</span>
-<span class="kr">for</span><span class="w"> </span><span class="nv">_</span><span class="p">,</span><span class="nv">f</span><span class="w"> </span><span class="kr">in</span><span class="w"> </span><span class="nb">ipairs</span><span class="p">{</span><span class="s2">&quot;rand&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;list&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;stats&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;confuse&quot;</span><span class="p">,</span>
-<span class="w">                  </span><span class="s2">&quot;str&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;cli&quot;</span><span class="p">}</span><span class="w"> </span><span class="kr">do</span>
-<span class="w">  </span><span class="nb">assert</span><span class="p">(</span><span class="nb">loadfile</span><span class="p">(</span><span class="nv">here</span><span class="o">..</span><span class="nv">f</span><span class="o">..</span><span class="s2">&quot;.lua&quot;</span><span class="p">))(</span><span class="nv">m</span><span class="p">,</span><span class="w"> </span><span class="nv">the</span><span class="p">)</span><span class="w"> </span><span class="kr">end</span>
+<span class="nv">l</span><span class="p">.</span><span class="py">Confuse</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">Confuse</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-6'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-6'>#</a>
+      </div>
+      <p>n random items (with replacement)</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="kd">local</span><span class="w"> </span><span class="nv">abs</span><span class="p">,</span><span class="nv">floor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">math.abs</span><span class="p">,</span><span class="w"> </span><span class="nb">math.floor</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-7'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-7'>#</a>
+      </div>
+      <p>Fisher-Yates shuffle, in place; return t</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="kr">function</span><span class="w"> </span><span class="nc">l</span><span class="p">.</span><span class="nf">thing</span><span class="p">(</span><span class="nv">s</span><span class="p">)</span>
+<span class="w">  </span><span class="kr">return</span><span class="w"> </span><span class="nv">s</span><span class="o">==</span><span class="s2">&quot;true&quot;</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="p">(</span><span class="nv">s</span><span class="o">~=</span><span class="s2">&quot;false&quot;</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="p">(</span><span class="nb">tonumber</span><span class="p">(</span><span class="nv">s</span><span class="p">)</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="nv">s</span><span class="p">))</span><span class="w"> </span><span class="kr">end</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-8'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-8'>#</a>
+      </div>
+      <p>weighted random key from dict; sorted keys (determinism)</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="kr">function</span><span class="w"> </span><span class="nc">l</span><span class="p">.</span><span class="nf">o</span><span class="p">(</span><span class="nv">x</span><span class="p">,</span><span class="w">    </span><span class="nv">u</span><span class="p">,</span><span class="nv">kv</span><span class="p">)</span>
+<span class="w">  </span><span class="kr">if</span><span class="w"> </span><span class="nb">type</span><span class="p">(</span><span class="nv">x</span><span class="p">)</span><span class="o">==</span><span class="s2">&quot;number&quot;</span><span class="w"> </span><span class="kr">then</span>
+<span class="w">    </span><span class="kr">return</span><span class="w"> </span><span class="nf">floor</span><span class="p">(</span><span class="nv">x</span><span class="p">)</span><span class="o">==</span><span class="nv">x</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="nf">floor</span><span class="p">(</span><span class="nv">x</span><span class="p">)</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="p">(</span><span class="s2">&quot;%.2f&quot;</span><span class="p">):</span><span class="nf">format</span><span class="p">(</span><span class="nv">x</span><span class="p">)</span><span class="w"> </span><span class="kr">end</span>
+<span class="w">  </span><span class="kr">if</span><span class="w"> </span><span class="nb">type</span><span class="p">(</span><span class="nv">x</span><span class="p">)</span><span class="o">~=</span><span class="s2">&quot;table&quot;</span><span class="w"> </span><span class="kr">then</span><span class="w"> </span><span class="kr">return</span><span class="w"> </span><span class="nb">tostring</span><span class="p">(</span><span class="nv">x</span><span class="p">)</span><span class="w"> </span><span class="kr">end</span>
+<span class="w">  </span><span class="nv">kv</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">function</span><span class="p">(</span><span class="nv">k</span><span class="p">,</span><span class="nv">v</span><span class="p">)</span><span class="w"> </span><span class="kr">return</span><span class="w"> </span><span class="nv">k</span><span class="o">..</span><span class="s2">&quot;=&quot;</span><span class="o">..</span><span class="nv">l</span><span class="p">.</span><span class="nf">o</span><span class="p">(</span><span class="nv">v</span><span class="p">)</span><span class="w"> </span><span class="kr">end</span>
+<span class="w">  </span><span class="nv">u</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">#</span><span class="nv">x</span><span class="o">&gt;</span><span class="mi">0</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="nv">l</span><span class="p">.</span><span class="nf">map</span><span class="p">(</span><span class="nv">x</span><span class="p">,</span><span class="nv">l</span><span class="p">.</span><span class="py">o</span><span class="p">)</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="nv">l</span><span class="p">.</span><span class="nf">sort</span><span class="p">(</span><span class="nv">l</span><span class="p">.</span><span class="nf">kap</span><span class="p">(</span><span class="nv">x</span><span class="p">,</span><span class="nv">kv</span><span class="p">))</span>
+<span class="w">  </span><span class="kr">return</span><span class="w"> </span><span class="s2">&quot;{&quot;</span><span class="o">..</span><span class="nb">table.concat</span><span class="p">(</span><span class="nv">u</span><span class="p">,</span><span class="s2">&quot;, &quot;</span><span class="p">)..</span><span class="s2">&quot;}&quot;</span><span class="w"> </span><span class="kr">end</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-9'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-9'>#</a>
+      </div>
+      <p>Irwin-Hall(3): ~normal sample, mean 0, sd 1</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="kr">function</span><span class="w"> </span><span class="nc">l</span><span class="p">.</span><span class="nf">o2</span><span class="p">(</span><span class="nv">s</span><span class="p">,</span><span class="nv">x</span><span class="p">)</span><span class="w"> </span><span class="nb">print</span><span class="p">(</span><span class="nv">s</span><span class="o">..</span><span class="s2">&quot; =&quot;</span><span class="p">,</span><span class="w"> </span><span class="nv">l</span><span class="p">.</span><span class="nf">o</span><span class="p">(</span><span class="nv">x</span><span class="p">));</span><span class="w"> </span><span class="kr">return</span><span class="w"> </span><span class="nv">x</span><span class="w"> </span><span class="kr">end</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-10'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-10'>#</a>
+      </div>
+      <h2>list</h2>
+<p>Lists. Tiny functional helpers: sort/push/map/kap plus
+keysort (decorate-sort-undecorate), slicing, copying and
+an aligned-table printer.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="kr">function</span><span class="w"> </span><span class="nc">l</span><span class="p">.</span><span class="nf">say</span><span class="p">(</span><span class="nv">s</span><span class="p">)</span><span class="w"> </span><span class="nb">io.stderr</span><span class="p">:</span><span class="nf">write</span><span class="p">(</span><span class="nv">s</span><span class="p">);</span><span class="w"> </span><span class="nb">io.stderr</span><span class="p">:</span><span class="nf">flush</span><span class="p">()</span><span class="w"> </span><span class="kr">end</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-11'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-11'>#</a>
+      </div>
+      <p>bind metatable mt to t (mt.__index=mt); return t</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="kr">function</span><span class="w"> </span><span class="nc">l</span><span class="p">.</span><span class="nf">trim</span><span class="p">(</span><span class="nv">s</span><span class="p">)</span><span class="w"> </span><span class="kr">return</span><span class="w"> </span><span class="nv">s</span><span class="p">:</span><span class="py">match</span><span class="s2">&quot;^%s*(.-)%s*$&quot;</span><span class="w"> </span><span class="kr">end</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-12'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-12'>#</a>
+      </div>
+      <p>sort t in place; return t</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="kr">function</span><span class="w"> </span><span class="nc">l</span><span class="p">.</span><span class="nf">path</span><span class="p">(</span><span class="nv">s</span><span class="p">,</span><span class="w">    </span><span class="nv">home</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">home</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">os.getenv</span><span class="s2">&quot;HOME&quot;</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="s2">&quot;~&quot;</span>
+<span class="w">  </span><span class="nv">s</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">s</span><span class="p">:</span><span class="nf">gsub</span><span class="p">(</span><span class="s2">&quot;^%$MOOT&quot;</span><span class="p">,</span>
+<span class="w">             </span><span class="nb">os.getenv</span><span class="s2">&quot;MOOT&quot;</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="nv">home</span><span class="o">..</span><span class="s2">&quot;/gits/moot&quot;</span><span class="p">)</span>
+<span class="w">  </span><span class="kr">return</span><span class="w"> </span><span class="p">(</span><span class="nv">s</span><span class="p">:</span><span class="nf">gsub</span><span class="p">(</span><span class="s2">&quot;^~&quot;</span><span class="p">,</span><span class="nv">home</span><span class="p">))</span><span class="w"> </span><span class="kr">end</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-13'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-13'>#</a>
+      </div>
+      <p>append x to t; return x</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="kr">function</span><span class="w"> </span><span class="nc">l</span><span class="p">.</span><span class="nf">chk</span><span class="p">(...)</span>
+<span class="w">  </span><span class="kr">for</span><span class="w"> </span><span class="nv">_</span><span class="p">,</span><span class="nv">c</span><span class="w"> </span><span class="kr">in</span><span class="w"> </span><span class="nb">ipairs</span><span class="p">{...}</span><span class="w"> </span><span class="kr">do</span>
+<span class="w">    </span><span class="nv">l</span><span class="p">.</span><span class="nf">o2</span><span class="p">(</span><span class="nv">c</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="w"> </span><span class="nv">c</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+<span class="w">    </span><span class="kr">if</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="p">(</span><span class="nv">c</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="nf">abs</span><span class="p">(</span><span class="nv">c</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">-</span><span class="nv">c</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span><span class="o">&lt;=</span><span class="nv">c</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="nv">c</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">==</span><span class="nv">c</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span><span class="w"> </span><span class="kr">then</span>
+<span class="w">      </span><span class="kr">return</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w"> </span><span class="nv">c</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="kr">end</span><span class="w"> </span><span class="kr">end</span>
+<span class="w">  </span><span class="kr">return</span><span class="w"> </span><span class="kc">true</span><span class="w"> </span><span class="kr">end</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-14'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-14'>#</a>
+      </div>
+      <p>closure: nth field of a row</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="kr">function</span><span class="w"> </span><span class="nc">l</span><span class="p">.</span><span class="nf">csv</span><span class="p">(</span><span class="nv">filename</span><span class="p">,</span><span class="w">    </span><span class="nv">f</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">filename</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">l</span><span class="p">.</span><span class="nf">path</span><span class="p">(</span><span class="nv">filename</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">f</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">io.open</span><span class="p">(</span><span class="nv">filename</span><span class="p">);</span><span class="w"> </span><span class="nb">assert</span><span class="p">(</span><span class="nv">f</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;cannot open: &quot;</span><span class="o">..</span><span class="nv">filename</span><span class="p">)</span>
+<span class="w">  </span><span class="kr">return</span><span class="w"> </span><span class="kr">function</span><span class="p">(</span><span class="w">    </span><span class="nv">s</span><span class="p">,</span><span class="nv">u</span><span class="p">)</span>
+<span class="w">    </span><span class="nv">s</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">f</span><span class="p">:</span><span class="nf">read</span><span class="p">()</span>
+<span class="w">    </span><span class="kr">if</span><span class="w"> </span><span class="nv">s</span><span class="w"> </span><span class="kr">then</span>
+<span class="w">      </span><span class="nv">u</span><span class="o">=</span><span class="p">{};</span><span class="w"> </span><span class="kr">for</span><span class="w"> </span><span class="nv">x</span><span class="w"> </span><span class="kr">in</span><span class="w"> </span><span class="nv">s</span><span class="p">:</span><span class="py">gmatch</span><span class="s2">&quot;[^,]+&quot;</span><span class="w"> </span><span class="kr">do</span>
+<span class="w">              </span><span class="nv">u</span><span class="p">[</span><span class="mi">1</span><span class="o">+#</span><span class="nv">u</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">l</span><span class="p">.</span><span class="nf">thing</span><span class="p">(</span><span class="nv">l</span><span class="p">.</span><span class="nf">trim</span><span class="p">(</span><span class="nv">x</span><span class="p">))</span><span class="w"> </span><span class="kr">end</span>
+<span class="w">      </span><span class="kr">return</span><span class="w"> </span><span class="nv">u</span>
+<span class="w">    </span><span class="kr">else</span><span class="w"> </span><span class="nv">f</span><span class="p">:</span><span class="nf">close</span><span class="p">()</span><span class="w"> </span><span class="kr">end</span><span class="w"> </span><span class="kr">end</span><span class="w"> </span><span class="kr">end</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-15'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-15'>#</a>
+      </div>
+      <p>closure: less-than on field n</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-16'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-16'>#</a>
+      </div>
+      <p>closure: greater-than on field n</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="kr">function</span><span class="w"> </span><span class="nc">l</span><span class="p">.</span><span class="nf">section</span><span class="p">(</span><span class="nv">text</span><span class="p">,</span><span class="nv">name</span><span class="p">,</span><span class="w">    </span><span class="nv">pat</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">pat</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">##%s+&quot;</span><span class="o">..</span><span class="nv">name</span><span class="p">:</span><span class="nf">gsub</span><span class="p">(</span><span class="s2">&quot;%W&quot;</span><span class="p">,</span><span class="s2">&quot;%%%1&quot;</span><span class="p">)..</span><span class="s2">&quot;%s-</span><span class="se">\n</span><span class="s2">(.-)</span><span class="se">\n</span><span class="s2">##%s&quot;</span>
+<span class="w">  </span><span class="kr">return</span><span class="w"> </span><span class="p">((</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">..</span><span class="nv">text</span><span class="o">..</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">## &quot;</span><span class="p">):</span><span class="nf">match</span><span class="p">(</span><span class="nv">pat</span><span class="p">))</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="w"> </span><span class="kr">end</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-17'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-17'>#</a>
+      </div>
+      <p>apply fn to each item -&gt; new list</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="kr">function</span><span class="w"> </span><span class="nc">l</span><span class="p">.</span><span class="nf">flags</span><span class="p">(</span><span class="nv">text</span><span class="p">,</span><span class="nv">name</span><span class="p">)</span>
+<span class="w">  </span><span class="kr">for</span><span class="w"> </span><span class="nv">line</span><span class="w"> </span><span class="kr">in</span><span class="w"> </span><span class="p">(</span><span class="nv">l</span><span class="p">.</span><span class="nf">section</span><span class="p">(</span><span class="nv">text</span><span class="p">,</span><span class="nv">name</span><span class="p">)..</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">):</span><span class="nv">gmatch</span><span class="s2">&quot;(.-)</span><span class="se">\n</span><span class="s2">&quot;</span><span class="w"> </span><span class="kr">do</span>
+<span class="w">    </span><span class="kr">if</span><span class="w"> </span><span class="nv">line</span><span class="p">:</span><span class="py">match</span><span class="s2">&quot;^%s*%-&quot;</span><span class="w"> </span><span class="kr">then</span><span class="w"> </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  &quot;</span><span class="o">..</span><span class="nv">line</span><span class="p">)</span><span class="w"> </span><span class="kr">end</span><span class="w"> </span><span class="kr">end</span><span class="w"> </span><span class="kr">end</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-18'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-18'>#</a>
+      </div>
+      <p>apply fn(k,v) over dict -&gt; new list</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="kr">function</span><span class="w"> </span><span class="nc">l</span><span class="p">.</span><span class="nf">help</span><span class="p">(</span><span class="nv">name</span><span class="p">,</span><span class="nv">help</span><span class="p">,</span><span class="w">    </span><span class="nv">title</span><span class="p">,</span><span class="nv">cr</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">..</span><span class="nv">help</span><span class="p">):</span><span class="nv">match</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2"># ([^</span><span class="se">\n</span><span class="s2">]+)&quot;</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="s2">&quot;&quot;</span>
+<span class="w">  </span><span class="nv">cr</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">..</span><span class="nv">help</span><span class="p">):</span><span class="nv">match</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">(%(c%)[^</span><span class="se">\n</span><span class="s2">]+)&quot;</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="s2">&quot;&quot;</span>
+<span class="w">  </span><span class="nb">print</span><span class="p">(</span><span class="nv">name</span><span class="o">..</span><span class="s2">&quot;.lua: &quot;</span><span class="o">..</span><span class="nv">title</span><span class="p">)</span>
+<span class="w">  </span><span class="kr">if</span><span class="w"> </span><span class="nv">cr</span><span class="o">~=</span><span class="s2">&quot;&quot;</span><span class="w"> </span><span class="kr">then</span><span class="w"> </span><span class="nb">print</span><span class="p">(</span><span class="nv">cr</span><span class="p">)</span><span class="w"> </span><span class="kr">end</span>
+<span class="w">  </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">OPTIONS&quot;</span><span class="p">);</span><span class="w"> </span><span class="nv">l</span><span class="p">.</span><span class="nf">flags</span><span class="p">(</span><span class="nv">help</span><span class="p">,</span><span class="s2">&quot;options&quot;</span><span class="p">)</span>
+<span class="w">  </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">ACTIONS&quot;</span><span class="p">);</span><span class="w"> </span><span class="nv">l</span><span class="p">.</span><span class="nf">flags</span><span class="p">(</span><span class="nv">help</span><span class="p">,</span><span class="s2">&quot;egs&quot;</span><span class="p">)</span><span class="w"> </span><span class="kr">end</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-19'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-19'>#</a>
+      </div>
+      <p>dict values -&gt; new list</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="kr">function</span><span class="w"> </span><span class="nc">l</span><span class="p">.</span><span class="nf">run1</span><span class="p">(</span><span class="nv">eg</span><span class="p">,</span><span class="nv">the</span><span class="p">,</span><span class="w">    </span><span class="nv">ok</span><span class="p">,</span><span class="nv">flag</span><span class="p">,</span><span class="nv">msg</span><span class="p">)</span>
+<span class="w">  </span><span class="nb">math.randomseed</span><span class="p">(</span><span class="nv">the</span><span class="p">.</span><span class="py">seed</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">ok</span><span class="p">,</span><span class="w"> </span><span class="nv">flag</span><span class="p">,</span><span class="w"> </span><span class="nv">msg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">pcall</span><span class="p">(</span><span class="nv">eg</span><span class="p">)</span>
+<span class="w">  </span><span class="kr">if</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="nv">ok</span><span class="w">      </span><span class="kr">then</span><span class="w"> </span><span class="kr">return</span><span class="w"> </span><span class="s2">&quot;ERR &quot;</span><span class="o">..</span><span class="nb">tostring</span><span class="p">(</span><span class="nv">flag</span><span class="p">)</span><span class="w"> </span><span class="kr">end</span>
+<span class="w">  </span><span class="kr">if</span><span class="w"> </span><span class="nv">flag</span><span class="o">==</span><span class="kc">false</span><span class="w"> </span><span class="kr">then</span><span class="w"> </span><span class="kr">return</span><span class="w"> </span><span class="nb">tostring</span><span class="p">(</span><span class="nv">msg</span><span class="p">)</span><span class="w"> </span><span class="kr">end</span><span class="w"> </span><span class="kr">end</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-20'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-20'>#</a>
+      </div>
+      <p>sort by fn-derived key (decorate-sort-undecorate)</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="kr">function</span><span class="w"> </span><span class="nc">l</span><span class="p">.</span><span class="nf">runAll</span><span class="p">(</span><span class="nv">eg</span><span class="p">,</span><span class="nv">the</span><span class="p">,</span><span class="w">    </span><span class="nv">ks</span><span class="p">,</span><span class="nv">fails</span><span class="p">,</span><span class="nv">err</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">ks</span><span class="p">,</span><span class="nv">fails</span><span class="o">=</span><span class="p">{},{}</span>
+<span class="w">  </span><span class="nv">l</span><span class="p">.</span><span class="nf">o2</span><span class="p">(</span><span class="s2">&quot;the&quot;</span><span class="p">,</span><span class="w"> </span><span class="nv">the</span><span class="p">);</span><span class="w"> </span><span class="nv">l</span><span class="p">.</span><span class="nf">o2</span><span class="p">(</span><span class="s2">&quot;date&quot;</span><span class="p">,</span><span class="w"> </span><span class="nb">os.date</span><span class="p">());</span><span class="w"> </span><span class="nb">print</span><span class="p">()</span>
+<span class="w">  </span><span class="kr">for</span><span class="w"> </span><span class="nv">k</span><span class="w"> </span><span class="kr">in</span><span class="w"> </span><span class="nb">pairs</span><span class="p">(</span><span class="nv">eg</span><span class="p">)</span><span class="w"> </span><span class="kr">do</span><span class="w"> </span><span class="nv">ks</span><span class="p">[</span><span class="mi">1</span><span class="o">+#</span><span class="nv">ks</span><span class="p">]</span><span class="o">=</span><span class="nv">k</span><span class="w"> </span><span class="kr">end</span>
+<span class="w">  </span><span class="kr">for</span><span class="w"> </span><span class="nv">_</span><span class="p">,</span><span class="nv">k</span><span class="w"> </span><span class="kr">in</span><span class="w"> </span><span class="nb">ipairs</span><span class="p">(</span><span class="nv">l</span><span class="p">.</span><span class="nf">sort</span><span class="p">(</span><span class="nv">ks</span><span class="p">))</span><span class="w"> </span><span class="kr">do</span>
+<span class="w">    </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;--&quot;</span><span class="p">,</span><span class="nv">k</span><span class="p">)</span>
+<span class="w">    </span><span class="nv">err</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">l</span><span class="p">.</span><span class="nf">run1</span><span class="p">(</span><span class="nv">eg</span><span class="p">[</span><span class="nv">k</span><span class="p">],</span><span class="w"> </span><span class="nv">the</span><span class="p">)</span>
+<span class="w">    </span><span class="kr">if</span><span class="w"> </span><span class="nv">err</span><span class="w"> </span><span class="kr">then</span><span class="w"> </span><span class="nv">fails</span><span class="p">[</span><span class="mi">1</span><span class="o">+#</span><span class="nv">fails</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">k</span><span class="o">..</span><span class="s2">&quot;: &quot;</span><span class="o">..</span><span class="nv">err</span><span class="w"> </span><span class="kr">end</span><span class="w"> </span><span class="kr">end</span>
+<span class="w">  </span><span class="kr">for</span><span class="w"> </span><span class="nv">_</span><span class="p">,</span><span class="nv">f</span><span class="w"> </span><span class="kr">in</span><span class="w"> </span><span class="nb">ipairs</span><span class="p">(</span><span class="nv">fails</span><span class="p">)</span><span class="w"> </span><span class="kr">do</span><span class="w"> </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;FAIL&quot;</span><span class="p">,</span><span class="w"> </span><span class="nv">f</span><span class="p">)</span><span class="w"> </span><span class="kr">end</span>
+<span class="w">  </span><span class="nb">print</span><span class="p">(</span><span class="o">#</span><span class="nv">fails</span><span class="o">==</span><span class="mi">0</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="s2">&quot;all pass&quot;</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="p">(</span><span class="o">#</span><span class="nv">fails</span><span class="o">..</span><span class="s2">&quot; failed&quot;</span><span class="p">))</span><span class="w"> </span><span class="kr">end</span>
 
-<span class="nv">m</span><span class="p">.</span><span class="nf">boot</span><span class="p">({},</span><span class="w"> </span><span class="nv">b4</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;lib&quot;</span><span class="p">,</span><span class="w"> </span><span class="nv">help</span><span class="p">)</span>
-<span class="kr">return</span><span class="w"> </span><span class="nv">m</span>
+<span class="kd">local</span><span class="w"> </span><span class="nv">SHORTS</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="nv">t</span><span class="o">=</span><span class="s2">&quot;train&quot;</span><span class="p">,</span><span class="w"> </span><span class="nv">T</span><span class="o">=</span><span class="s2">&quot;test&quot;</span><span class="p">}</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-21'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-21'>#</a>
+      </div>
+      <p>shallow copy of list part of t</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="kd">local</span><span class="w"> </span><span class="kr">function</span><span class="w"> </span><span class="nf">syncTest</span><span class="p">(</span><span class="nv">key</span><span class="p">,</span><span class="nv">tSet</span><span class="p">)</span>
+<span class="w">  </span><span class="kr">if</span><span class="w"> </span><span class="nv">key</span><span class="o">==</span><span class="s2">&quot;test&quot;</span><span class="w">  </span><span class="kr">then</span><span class="w"> </span><span class="kr">return</span><span class="w"> </span><span class="kc">true</span><span class="w"> </span><span class="kr">end</span>
+<span class="w">  </span><span class="kr">if</span><span class="w"> </span><span class="nv">key</span><span class="o">==</span><span class="s2">&quot;train&quot;</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="nv">tSet</span><span class="w"> </span><span class="kr">then</span><span class="w"> </span><span class="nv">the</span><span class="p">.</span><span class="py">test</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">the</span><span class="p">.</span><span class="py">train</span><span class="w"> </span><span class="kr">end</span>
+<span class="w">  </span><span class="kr">return</span><span class="w"> </span><span class="nv">tSet</span><span class="w"> </span><span class="kr">end</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-22'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-22'>#</a>
+      </div>
+      <p>t[lo..hi] inclusive; negatives count from end</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="kr">function</span><span class="w"> </span><span class="nc">l</span><span class="p">.</span><span class="nf">main</span><span class="p">(</span><span class="nv">eg</span><span class="p">,</span><span class="nv">b4</span><span class="p">,</span><span class="nv">name</span><span class="p">,</span><span class="nv">help</span><span class="p">,</span><span class="w">    </span><span class="nv">a</span><span class="p">,</span><span class="nv">n</span><span class="p">,</span><span class="nv">txt</span><span class="p">,</span><span class="nv">key</span><span class="p">,</span><span class="nv">err</span><span class="p">,</span><span class="nv">tSet</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">a</span><span class="p">,</span><span class="nv">n</span><span class="p">,</span><span class="nv">tSet</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">_G</span><span class="p">.</span><span class="nv">arg</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="kc">false</span>
+<span class="w">  </span><span class="kr">while</span><span class="w"> </span><span class="nv">n</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="o">#</span><span class="nv">a</span><span class="w"> </span><span class="kr">do</span><span class="w"> </span><span class="nv">txt</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">a</span><span class="p">[</span><span class="nv">n</span><span class="p">]</span>
+<span class="w">    </span><span class="kr">if</span><span class="w">     </span><span class="nv">txt</span><span class="o">==</span><span class="s2">&quot;-h&quot;</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="nv">txt</span><span class="o">==</span><span class="s2">&quot;--help&quot;</span>
+<span class="w">    </span><span class="kr">then</span><span class="w">   </span><span class="nv">l</span><span class="p">.</span><span class="nf">help</span><span class="p">(</span><span class="nv">name</span><span class="p">,</span><span class="nv">help</span><span class="p">);</span><span class="w"> </span><span class="kr">return</span>
+<span class="w">    </span><span class="kr">elseif</span><span class="w"> </span><span class="nv">txt</span><span class="o">==</span><span class="s2">&quot;--the&quot;</span><span class="w"> </span><span class="kr">then</span><span class="w"> </span><span class="nv">l</span><span class="p">.</span><span class="nf">o2</span><span class="p">(</span><span class="s2">&quot;the&quot;</span><span class="p">,</span><span class="nv">the</span><span class="p">);</span><span class="w"> </span><span class="nv">n</span><span class="o">=</span><span class="nv">n</span><span class="o">+</span><span class="mi">1</span>
+<span class="w">    </span><span class="kr">elseif</span><span class="w"> </span><span class="nv">txt</span><span class="o">==</span><span class="s2">&quot;--all&quot;</span><span class="w"> </span><span class="kr">then</span><span class="w"> </span><span class="nv">l</span><span class="p">.</span><span class="nf">runAll</span><span class="p">(</span><span class="nv">eg</span><span class="p">,</span><span class="nv">the</span><span class="p">);</span><span class="w"> </span><span class="nv">n</span><span class="o">=</span><span class="nv">n</span><span class="o">+</span><span class="mi">1</span>
+<span class="w">    </span><span class="kr">elseif</span><span class="w"> </span><span class="nv">eg</span><span class="p">[</span><span class="nv">txt</span><span class="p">]</span><span class="w"> </span><span class="kr">then</span>
+<span class="w">      </span><span class="nv">err</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">l</span><span class="p">.</span><span class="nf">run1</span><span class="p">(</span><span class="nv">eg</span><span class="p">[</span><span class="nv">txt</span><span class="p">],</span><span class="w"> </span><span class="nv">the</span><span class="p">)</span>
+<span class="w">      </span><span class="kr">if</span><span class="w"> </span><span class="nv">err</span><span class="w"> </span><span class="kr">then</span><span class="w"> </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;FAIL &quot;</span><span class="o">..</span><span class="nv">txt</span><span class="o">..</span><span class="s2">&quot;: &quot;</span><span class="o">..</span><span class="nv">err</span><span class="p">)</span><span class="w"> </span><span class="kr">end</span>
+<span class="w">      </span><span class="nv">n</span><span class="o">=</span><span class="nv">n</span><span class="o">+</span><span class="mi">1</span>
+<span class="w">    </span><span class="kr">elseif</span><span class="w"> </span><span class="nv">txt</span><span class="p">:</span><span class="nf">sub</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span><span class="o">==</span><span class="s2">&quot;--&quot;</span><span class="w"> </span><span class="kr">then</span>
+<span class="w">      </span><span class="nv">key</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">txt</span><span class="p">:</span><span class="nf">sub</span><span class="p">(</span><span class="mi">3</span><span class="p">);</span><span class="w"> </span><span class="nb">assert</span><span class="p">(</span><span class="nv">the</span><span class="p">[</span><span class="nv">key</span><span class="p">]</span><span class="o">~=</span><span class="kc">nil</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;bad flag: &quot;</span><span class="o">..</span><span class="nv">txt</span><span class="p">)</span>
+<span class="w">      </span><span class="nv">the</span><span class="p">[</span><span class="nv">key</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">l</span><span class="p">.</span><span class="nf">thing</span><span class="p">(</span><span class="nv">a</span><span class="p">[</span><span class="nv">n</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+<span class="w">      </span><span class="nv">tSet</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">syncTest</span><span class="p">(</span><span class="nv">key</span><span class="p">,</span><span class="nv">tSet</span><span class="p">);</span><span class="w"> </span><span class="nv">n</span><span class="o">=</span><span class="nv">n</span><span class="o">+</span><span class="mi">2</span>
+<span class="w">    </span><span class="kr">elseif</span><span class="w"> </span><span class="nv">txt</span><span class="p">:</span><span class="nf">sub</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span><span class="o">==</span><span class="s2">&quot;-&quot;</span><span class="w"> </span><span class="kr">then</span>
+<span class="w">      </span><span class="nv">key</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">SHORTS</span><span class="p">[</span><span class="nv">txt</span><span class="p">:</span><span class="nf">sub</span><span class="p">(</span><span class="mi">2</span><span class="p">)]</span>
+<span class="w">      </span><span class="nb">assert</span><span class="p">(</span><span class="nv">key</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="o">#</span><span class="nv">txt</span><span class="o">==</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;bad flag: &quot;</span><span class="o">..</span><span class="nv">txt</span><span class="p">)</span>
+<span class="w">      </span><span class="nv">the</span><span class="p">[</span><span class="nv">key</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">l</span><span class="p">.</span><span class="nf">thing</span><span class="p">(</span><span class="nv">a</span><span class="p">[</span><span class="nv">n</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+<span class="w">      </span><span class="nv">tSet</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">syncTest</span><span class="p">(</span><span class="nv">key</span><span class="p">,</span><span class="nv">tSet</span><span class="p">);</span><span class="w"> </span><span class="nv">n</span><span class="o">=</span><span class="nv">n</span><span class="o">+</span><span class="mi">2</span>
+<span class="w">    </span><span class="kr">else</span><span class="w"> </span><span class="nv">n</span><span class="o">=</span><span class="nv">n</span><span class="o">+</span><span class="mi">1</span><span class="w"> </span><span class="kr">end</span><span class="w"> </span><span class="kr">end</span>
+<span class="w">  </span><span class="kr">for</span><span class="w"> </span><span class="nv">k</span><span class="w"> </span><span class="kr">in</span><span class="w"> </span><span class="nb">pairs</span><span class="p">(</span><span class="nb">_G</span><span class="p">)</span><span class="w"> </span><span class="kr">do</span>
+<span class="w">    </span><span class="kr">if</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="nv">b4</span><span class="p">[</span><span class="nv">k</span><span class="p">]</span><span class="w"> </span><span class="kr">then</span><span class="w"> </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;rogue?&quot;</span><span class="p">,</span><span class="nv">k</span><span class="p">)</span><span class="w"> </span><span class="kr">end</span><span class="w"> </span><span class="kr">end</span><span class="w"> </span><span class="kr">end</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-23'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-23'>#</a>
+      </div>
+      <p>index of min-by-fn item (cmp=l.gt for max)</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="kr">function</span><span class="w"> </span><span class="nc">l</span><span class="p">.</span><span class="nf">boot</span><span class="p">(</span><span class="nv">eg</span><span class="p">,</span><span class="nv">b4</span><span class="p">,</span><span class="nv">name</span><span class="p">,</span><span class="nv">help</span><span class="p">)</span>
+<span class="w">  </span><span class="kr">for</span><span class="w"> </span><span class="nv">k</span><span class="p">,</span><span class="nv">v</span><span class="w"> </span><span class="kr">in</span><span class="w"> </span><span class="nv">l</span><span class="p">.</span><span class="nf">section</span><span class="p">(</span><span class="nv">help</span><span class="p">,</span><span class="s2">&quot;options&quot;</span><span class="p">):</span><span class="nv">gmatch</span><span class="s2">&quot;%-%-(%w+)=(%S+)&quot;</span><span class="w"> </span><span class="kr">do</span>
+<span class="w">    </span><span class="nv">the</span><span class="p">[</span><span class="nv">k</span><span class="p">]</span><span class="o">=</span><span class="nv">l</span><span class="p">.</span><span class="nf">thing</span><span class="p">(</span><span class="nv">v</span><span class="p">)</span><span class="w"> </span><span class="kr">end</span>
+<span class="w">  </span><span class="nb">math.randomseed</span><span class="p">(</span><span class="nv">the</span><span class="p">.</span><span class="py">seed</span><span class="p">)</span>
+<span class="w">  </span><span class="kr">if</span><span class="w"> </span><span class="p">(</span><span class="nv">arg</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="p">):</span><span class="nf">find</span><span class="p">(</span><span class="nv">name</span><span class="o">..</span><span class="s2">&quot;%.lua$&quot;</span><span class="p">)</span><span class="w"> </span><span class="kr">then</span>
+<span class="w">    </span><span class="nv">l</span><span class="p">.</span><span class="nf">main</span><span class="p">(</span><span class="nv">eg</span><span class="p">,</span><span class="nv">b4</span><span class="p">,</span><span class="nv">name</span><span class="p">,</span><span class="nv">help</span><span class="p">)</span><span class="w"> </span><span class="kr">end</span><span class="w"> </span><span class="kr">end</span>
+<span class="nv">l</span><span class="p">.</span><span class="nf">boot</span><span class="p">({},</span><span class="w"> </span><span class="nv">b4</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;lib&quot;</span><span class="p">,</span><span class="w"> </span><span class="nv">help</span><span class="p">)</span>
+<span class="kr">return</span><span class="w"> </span><span class="nv">l</span>
 
 </pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-24'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-24'>#</a>
+      </div>
+      <p>print rows as aligned table; just[c]=&rdquo;&lt;&rdquo; left-pads</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-25'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-25'>#</a>
+      </div>
+      <h2>stats</h2>
+<p>Stats. Welford accumulation, mode/entropy for counts,
+then the conservative equality tests: cliffsDelta + ks +
+a median-gap check feed <code>same</code>; <code>topTier</code> keeps every
+treatment statistically level with the best.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-26'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-26'>#</a>
+      </div>
+      <p>stdev from welford state n,m2</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-27'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-27'>#</a>
+      </div>
+      <p>online update of n,mu,m2 for one value v</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-28'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-28'>#</a>
+      </div>
+      <p>batch mu,sd of a list, via welford</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-29'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-29'>#</a>
+      </div>
+      <p>highest-count key of dict; sorted scan (stable ties)</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-30'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-30'>#</a>
+      </div>
+      <p>shannon entropy (bits) of dict counts</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-31'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-31'>#</a>
+      </div>
+      <p>count of t[i]&lt;=x (or &lt;x if strict) in sorted t</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-32'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-32'>#</a>
+      </div>
+      <p>pooled stdev of two raw samples</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-33'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-33'>#</a>
+      </div>
+      <p>Cliff&rsquo;s delta effect size; ys pre-sorted</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-34'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-34'>#</a>
+      </div>
+      <p>Kolmogorov-Smirnov max CDF gap; both pre-sorted</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-35'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-35'>#</a>
+      </div>
+      <p>xs,ys same? all of: mid gap&lt;=eps, cliffs, ks</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-36'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-36'>#</a>
+      </div>
+      <p>dict[k]=nums -&gt; all keys stats-same as best mu</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-37'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-37'>#</a>
+      </div>
+      <h2>confuse</h2>
+<p>Confuse. A confusion matrix: count (want,got) pairs, then
+per-klass tn/fn/fp/tp and the derived acc/pred/pf/pd.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-38'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-38'>#</a>
+      </div>
+      <p>ctor: confusion matrix counts + klass set</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-39'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-39'>#</a>
+      </div>
+      <p>bump count for (want,got) pair</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-40'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-40'>#</a>
+      </div>
+      <p>per-klass {tn,fn,fp,tp,acc,pred,pf,pd,&hellip;}</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-41'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-41'>#</a>
+      </div>
+      <p>print confusion stats as formatted table</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-42'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-42'>#</a>
+      </div>
+      <h2>str</h2>
+<p>Strings and files. <code>thing</code> coerces csv cells; <code>o</code> pretty
+prints anything (sorted dict keys); <code>path</code> expands a
+leading $MOOT (env, else ~/gits/moot); <code>csv</code> streams
+typed rows; <code>chk</code> runs {tag,got,want[,tol]} test cases.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-43'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-43'>#</a>
+      </div>
+      <p>coerce str -&gt; bool | num | str</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-44'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-44'>#</a>
+      </div>
+      <p>pretty-print any value -&gt; str (sorted dict keys)</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-45'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-45'>#</a>
+      </div>
+      <p>print &ldquo;tag = o(x)&rdquo;; return x</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-46'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-46'>#</a>
+      </div>
+      <p>write s to stderr now; no newline</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-47'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-47'>#</a>
+      </div>
+      <p>strip leading/trailing whitespace</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-48'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-48'>#</a>
+      </div>
+      <p>expand leading $MOOT (env or ~/gits/moot) and ~</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-49'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-49'>#</a>
+      </div>
+      <p>cases {tag,got,want[,tol]}; print each; ok,fail</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-50'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-50'>#</a>
+      </div>
+      <p>iter csv rows; cells coerced via thing</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-51'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-51'>#</a>
+      </div>
+      <h2>cli</h2>
+<p>Cli. <code>section</code>/<code>flags</code>/<code>help</code> mine the help text; <code>run1</code>
+runs one eg with seed reset + pcall; <code>runAll</code> sweeps the
+lot; <code>main</code> parses argv (&ndash;flag val sets <code>the</code>; &ndash;name
+runs an eg); <code>boot</code> seeds <code>the</code> from a help text&rsquo;s
+options and dispatches only when run as main.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-52'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-52'>#</a>
+      </div>
+      <p>body of &ldquo;## name&rdquo; section of text</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-53'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-53'>#</a>
+      </div>
+      <p>print indented flag lines of a help section</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-54'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-54'>#</a>
+      </div>
+      <p>print title, (c), OPTIONS, ACTIONS from help text</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-55'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-55'>#</a>
+      </div>
+      <p>run one eg with seed reset + pcall; err|nil</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-56'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-56'>#</a>
+      </div>
+      <p>run every eg; print failures + summary</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-57'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-57'>#</a>
+      </div>
+      <p>mirror train-&gt;test unless -T explicitly set</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-58'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-58'>#</a>
+      </div>
+      <p>parse argv: &ndash;flag val sets the; &ndash;name runs eg</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-59'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-59'>#</a>
+      </div>
+      <p>seed the from help options; dispatch if main</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
     </div>
   </div>
   <div class='clearall'></div>

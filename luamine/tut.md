@@ -47,7 +47,7 @@ the lectures: by the end of week k, your program must
 reproduce every REPL prompt through that lecture's last
 event (the ranges in the table below — roughly 20-25 events
 a week). The course RNG is a portable 10-line generator
-(see `l.rand` in rand.lua), so a correct port produces the
+(see `l.rand` in lib.lua), so a correct port produces the
 SAME numbers shown here: grading is diff. Where outputs are
 tables, match the content; where they are floats, match to
 ten significant digits.
@@ -58,16 +58,14 @@ ten significant digits.
     git clone http://github.com/timm/moot ~/gits/moot
     cd src/luamine && lua -i
 
-Source files: three modules, each a thin loader assembling
-page-sized topic files:
+Source files:
 [lib.lua](https://github.com/timm/src/blob/main/luamine/lib.lua)
-(helpers: rand, list, stats, confuse, str, cli),
+(helpers),
 [luamine.lua](https://github.com/timm/src/blob/main/luamine/luamine.lua)
-(AI primitives: cut, sym, num, cols, data, dist, bayes,
-mutate, tree, show), and
+(AI primitives), and
 [lapps.lua](https://github.com/timm/src/blob/main/luamine/lapps.lua)
-(applications: cluster, classify, acquire, sample, bob,
-race, ga, de, search). Annotated pages:
+(applications) -- each a few hundred lines, sectioned by
+`-- ##` markers. Annotated pages:
 [timm.github.io/src/luamine](https://timm.github.io/src/luamine/). Words in SMALL CAPS like
 [ACQ](#glossary) are defined in the [glossary](#glossary),
 cited in full in the [references](#refs); new to Lua? start
@@ -193,14 +191,11 @@ Lua 5.5
 ```
 
 If `require"lib"` fails, you are not in the luamine directory.
-Fix that before reading on. (Each of those three files is a
-thin loader: it assembles its module from the page-sized
-topic files sitting beside it -- rand.lua, list.lua, sym.lua
-and friends -- so requiring needs the whole directory, not
-one downloaded file; `sh INSTALL.md` fetches the lot.)
+Fix that before reading on. (`sh INSTALL.md` fetches all
+the course files in one go.)
 
-**Check:** what does `require` return? (Hint: each loader ends
-by returning its module table.)
+**Check:** what does `require` return? (Hint: each module file
+ends by returning its table.)
 
 ## 1.2 One table of settings
 
@@ -226,7 +221,7 @@ that loading luamine and lapps added their options (`bins`, `np`,
 > **CONF — one config struct.** All knobs in one table, parsed
 > from the help text, overridable from the command line
 > (`lua luamine-eg.lua --seed 42 ...`). No scattered constants, no
-> separate config file to rot. See `l.boot` in cli.lua.
+> separate config file to rot. See `l.boot` in lib.lua.
 > The help text is the single source of truth (SSOT);
 > everything else derives from it.
 
@@ -367,7 +362,7 @@ run.
 > cleanliness rule (no global leaks); make the program
 > AUDIT the rule on every run and name violators. A
 > convention checked by machinery survives; one checked by
-> code review decays. See `b4` (top of each loader) and `l.main` in cli.lua.
+> code review decays. See `b4` and `l.main` in lib.lua.
 
 ## 1.6 Preview: the whole movie
 
@@ -2960,7 +2955,7 @@ nil
 4	40
 ```
 
-`t[#t+1] = v` is the idiomatic append — list.lua wraps it as
+`t[#t+1] = v` is the idiomatic append — lib.lua wraps it as
 `l.push`. `ipairs` walks the array part in order; its sibling
 `pairs` walks every key but in NO guaranteed order, which is
 why luamine sorts keys before printing ([SEED](#glossary)ed runs
@@ -3002,7 +2997,7 @@ Functions are ordinary values: store them, pass them, return
 them. A function returning a function captures the enclosing
 locals — a closure. This is luamine's main structuring tool:
 `l.lt(2)` builds comparators, `d:dxdy()` builds distance
-views, every optimizer app (ga.lua, de.lua, search.lua) is a closure ("stepper")
+views, every optimizer in lapps.lua is a closure ("stepper")
 remembering its own population.
 
 ```
@@ -3091,13 +3086,13 @@ true
 
 `acc:add(50)` is sugar for `acc.add(acc, 50)` — the colon
 passes the receiver as a first argument that the sources
-conventionally call `i`. Now read list.lua's entire object
+conventionally call `i`. Now read lib.lua's entire object
 system: `function l.new(mt,t) mt.__index=mt; return
 setmetatable(t,mt) end` — `[1034]`+`[1035]` in one line. Every
 Num, Sym, Cols, Data, Cut in the course is exactly an
 `[1037]`.
 
-**Check:** in `Sym.cuts(i,rows)` (sym.lua), which call
+**Check:** in `Sym.cuts(i,rows)` (luamine.lua), which call
 syntax reaches it — dot or colon — and what is `i` there?
 
 ## A.7 Errors, load, modules

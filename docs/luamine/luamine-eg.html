@@ -12,15 +12,15 @@
     <div class='docs'><p align="center">
 <a href="https://timm.github.io/src/"><img alt="home" src="https://img.shields.io/badge/🏠-home-gold"></a>
 <a href="https://github.com/timm/src/tree/main/luamine"><img alt="src" src="https://img.shields.io/badge/src-luamine-black"></a>
-<a href="lib.html"><img alt="code" src="https://img.shields.io/badge/code-29%20files-2ea44f"></a>
-<a href="luamine-eg.html"><img alt="tests" src="https://img.shields.io/badge/tests-23%20files-06b6d4"></a>
+<a href="lib.html"><img alt="code" src="https://img.shields.io/badge/code-4%20files-2ea44f"></a>
+<a href="luamine-eg.html"><img alt="tests" src="https://img.shields.io/badge/tests-1%20files-06b6d4"></a>
 <a href="https://github.com/timm/src/actions/workflows/tests-luamine.yml"><img alt="ci" src="https://github.com/timm/src/actions/workflows/tests-luamine.yml/badge.svg"></a>
 <a href="https://github.com/timm/src/issues"><img alt="issues" src="https://img.shields.io/badge/issues-report-red"></a>
 <a href="https://github.com/timm/src/blob/main/LICENSE.md"><img alt="license" src="https://img.shields.io/badge/license-MIT-brightgreen"></a>
 <img alt="language" src="https://img.shields.io/badge/language-lua-9558B2">
 <img alt="runs on" src="https://img.shields.io/badge/runs%20on-lua5.4-EE4C2C">
 <a href="https://timm.fyi"><img alt="author" src="https://img.shields.io/badge/author-timm-blueviolet"></a>
-</p><p><b>luamine-eg</b> | <a href="list-eg.html">list-eg</a> | <a href="rand-eg.html">rand-eg</a> | <a href="stats-eg.html">stats-eg</a> | <a href="confuse-eg.html">confuse-eg</a> | <a href="str-eg.html">str-eg</a> | <a href="cli-eg.html">cli-eg</a> | <a href="cols-eg.html">cols-eg</a> | <a href="data-eg.html">data-eg</a> | <a href="dist-eg.html">dist-eg</a> | <a href="cut-eg.html">cut-eg</a> | <a href="tree-eg.html">tree-eg</a> | <a href="bayes-eg.html">bayes-eg</a> | <a href="mutate-eg.html">mutate-eg</a> | <a href="cluster-eg.html">cluster-eg</a> | <a href="classify-eg.html">classify-eg</a> | <a href="acquire-eg.html">acquire-eg</a> | <a href="sample-eg.html">sample-eg</a> | <a href="bob-eg.html">bob-eg</a> | <a href="ga-eg.html">ga-eg</a> | <a href="de-eg.html">de-eg</a> | <a href="search-eg.html">search-eg</a> | <a href="race-eg.html">race-eg</a></p><p><a href="tutchk.html">&lt; prev</a> | <a href="list-eg.html">next &gt;</a></p><h1><a href="https://github.com/timm/src/blob/main/luamine/luamine-eg.lua">luamine-eg.lua</a></h1></div>
+</p><p><b>luamine-eg</b></p><p><a href="lapps.html">&lt; prev</a> | <a href="tutchk.html">next &gt;</a></p><h1><a href="https://github.com/timm/src/blob/main/luamine/luamine-eg.lua">luamine-eg.lua</a></h1></div>
   </div>
   <div class='clearall'>
   <div class='section' id='section-0'>
@@ -222,7 +222,9 @@ race      race ga+de+sa+ls -&gt; merged best-trace table</p>
       <div class="highlight"><pre><span class="kr">function</span><span class="w"> </span><span class="nc">h</span><span class="p">.</span><span class="nf">runRace</span><span class="p">(</span><span class="nv">data</span><span class="p">,</span><span class="w"> </span><span class="nv">opts</span><span class="p">,</span><span class="w">    </span><span class="nv">d</span><span class="p">)</span>
 <span class="w">  </span><span class="nv">d</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">a</span><span class="p">.</span><span class="nf">report</span><span class="p">(</span><span class="nv">data</span><span class="p">,</span><span class="w"> </span><span class="nv">a</span><span class="p">.</span><span class="nf">race</span><span class="p">(</span><span class="nv">data</span><span class="p">,</span><span class="w"> </span><span class="nv">opts</span><span class="p">))</span>
 <span class="w">  </span><span class="kr">return</span><span class="w"> </span><span class="nv">l</span><span class="p">.</span><span class="nf">chk</span><span class="p">({</span><span class="s2">&quot;some rows&quot;</span><span class="p">,</span><span class="o">#</span><span class="nv">d</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="kc">true</span><span class="p">},</span>
-<span class="w">               </span><span class="p">{</span><span class="s2">&quot;improved&quot;</span><span class="p">,</span><span class="o">#</span><span class="nv">d</span><span class="o">&gt;</span><span class="mi">0</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="nv">d</span><span class="p">[</span><span class="o">#</span><span class="nv">d</span><span class="p">]</span><span class="o">&lt;=</span><span class="nv">d</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="kc">true</span><span class="p">})</span><span class="w"> </span><span class="kr">end</span></pre></div>
+<span class="w">               </span><span class="p">{</span><span class="s2">&quot;improved&quot;</span><span class="p">,</span><span class="o">#</span><span class="nv">d</span><span class="o">&gt;</span><span class="mi">0</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="nv">d</span><span class="p">[</span><span class="o">#</span><span class="nv">d</span><span class="p">]</span><span class="o">&lt;=</span><span class="nv">d</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="kc">true</span><span class="p">})</span><span class="w"> </span><span class="kr">end</span>
+
+<span class="kd">local</span><span class="w"> </span><span class="nv">eg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{}</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -231,20 +233,55 @@ race      race ga+de+sa+ls -&gt; merged best-trace table</p>
       <div class='octowrap'>
         <a class='octothorpe' href='#section-10'>#</a>
       </div>
-      <p>The tutorial, one -eg file per engine file, reading order</p>
+      <h2>list-eg</h2>
+<h2>Lists</h2>
+<p>Tiny functional helpers underneath everything else: sort,
+slice, copy, shuffle, keysort (decorate-sort-undecorate),
+argmin, and an aligned-table printer. Notice keysort: one
+call turns &ldquo;sort by any feature&rdquo; into a one-liner.</p>
+<table>
+<thead>
+<tr>
+<th>call</th>
+<th>returns</th>
+<th>what</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>l.keysort(t,fn)</code></td>
+<td>list</td>
+<td>sorted by fn-derived key</td>
+</tr>
+<tr>
+<td><code>l.slice(t,lo,hi)</code></td>
+<td>list</td>
+<td>negatives count from end</td>
+</tr>
+<tr>
+<td><code>l.argmin(t,fn)</code></td>
+<td>index</td>
+<td>min-by-fn item</td>
+</tr>
+</tbody>
+</table>
     </div>
     <div class='code'>
-      <div class="highlight"><pre><span class="kd">local</span><span class="w"> </span><span class="nv">eg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{}</span>
-<span class="kd">local</span><span class="w"> </span><span class="nv">here</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">debug.getinfo</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="s2">&quot;S&quot;</span><span class="p">).</span><span class="nv">source</span>
-<span class="w">             </span><span class="p">:</span><span class="py">match</span><span class="s2">&quot;^@(.-)[^/</span><span class="se">\\</span><span class="s2">]*$&quot;</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="s2">&quot;&quot;</span>
-<span class="kr">for</span><span class="w"> </span><span class="nv">_</span><span class="p">,</span><span class="nv">f</span><span class="w"> </span><span class="kr">in</span><span class="w"> </span><span class="nb">ipairs</span><span class="p">{</span><span class="s2">&quot;list-eg&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;rand-eg&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;stats-eg&quot;</span><span class="p">,</span>
-<span class="w">                  </span><span class="s2">&quot;confuse-eg&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;str-eg&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;cli-eg&quot;</span><span class="p">,</span>
-<span class="w">                  </span><span class="s2">&quot;cols-eg&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;data-eg&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;dist-eg&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;cut-eg&quot;</span><span class="p">,</span>
-<span class="w">                  </span><span class="s2">&quot;tree-eg&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;bayes-eg&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;mutate-eg&quot;</span><span class="p">,</span>
-<span class="w">                  </span><span class="s2">&quot;cluster-eg&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;classify-eg&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;acquire-eg&quot;</span><span class="p">,</span>
-<span class="w">                  </span><span class="s2">&quot;sample-eg&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;bob-eg&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;ga-eg&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;de-eg&quot;</span><span class="p">,</span>
-<span class="w">                  </span><span class="s2">&quot;search-eg&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;race-eg&quot;</span><span class="p">}</span><span class="w"> </span><span class="kr">do</span>
-<span class="w">  </span><span class="nb">assert</span><span class="p">(</span><span class="nb">loadfile</span><span class="p">(</span><span class="nv">here</span><span class="o">..</span><span class="nv">f</span><span class="o">..</span><span class="s2">&quot;.lua&quot;</span><span class="p">))(</span><span class="nv">eg</span><span class="p">,</span><span class="w"> </span><span class="nv">h</span><span class="p">,</span><span class="w"> </span><span class="nv">a</span><span class="p">,</span><span class="w"> </span><span class="nv">m</span><span class="p">,</span><span class="w"> </span><span class="nv">l</span><span class="p">,</span><span class="w"> </span><span class="nv">the</span><span class="p">)</span><span class="w"> </span><span class="kr">end</span></pre></div>
+      <div class="highlight"><pre><span class="nv">eg</span><span class="p">[</span><span class="s2">&quot;--lists&quot;</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">function</span><span class="p">(</span><span class="w">    </span><span class="nv">t</span><span class="p">,</span><span class="nv">u</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">t</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">l</span><span class="p">.</span><span class="py">shuffle</span><span class="p">{</span><span class="mi">3</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">4</span><span class="p">}</span>
+<span class="w">  </span><span class="nv">u</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">l</span><span class="p">.</span><span class="nf">sort</span><span class="p">(</span><span class="nv">l</span><span class="p">.</span><span class="py">list</span><span class="p">{</span><span class="nv">a</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="nv">b</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span><span class="nv">c</span><span class="o">=</span><span class="mi">3</span><span class="p">})</span>
+<span class="w">  </span><span class="kr">return</span><span class="w"> </span><span class="nv">l</span><span class="p">.</span><span class="nf">chk</span><span class="p">({</span><span class="s2">&quot;shuffle&quot;</span><span class="p">,</span><span class="o">#</span><span class="nv">t</span><span class="p">,</span><span class="mi">5</span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span><span class="s2">&quot;sort&quot;</span><span class="p">,</span><span class="nv">l</span><span class="p">.</span><span class="nf">sort</span><span class="p">(</span><span class="nv">l</span><span class="p">.</span><span class="nf">copy</span><span class="p">(</span><span class="nv">t</span><span class="p">))[</span><span class="mi">1</span><span class="p">],</span><span class="mi">1</span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span><span class="s2">&quot;list&quot;</span><span class="p">,</span><span class="nv">u</span><span class="p">[</span><span class="mi">1</span><span class="p">]..</span><span class="s2">&quot;,&quot;</span><span class="o">..</span><span class="nv">u</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span><span class="s2">&quot;1,3&quot;</span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span><span class="s2">&quot;slice&quot;</span><span class="p">,</span><span class="nv">l</span><span class="p">.</span><span class="nf">slice</span><span class="p">({</span><span class="mi">10</span><span class="p">,</span><span class="mi">20</span><span class="p">,</span><span class="mi">30</span><span class="p">,</span><span class="mi">40</span><span class="p">,</span><span class="mi">50</span><span class="p">},</span><span class="mi">2</span><span class="p">,</span><span class="o">-</span><span class="mi">2</span><span class="p">)[</span><span class="mi">3</span><span class="p">],</span><span class="mi">40</span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span><span class="s2">&quot;keysort&quot;</span><span class="p">,</span><span class="nv">l</span><span class="p">.</span><span class="nf">keysort</span><span class="p">({{</span><span class="mi">1</span><span class="p">},{</span><span class="mi">0</span><span class="p">},{</span><span class="mi">2</span><span class="p">}},</span><span class="nv">l</span><span class="p">.</span><span class="nf">nth</span><span class="p">(</span><span class="mi">1</span><span class="p">))[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span><span class="mi">0</span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span><span class="s2">&quot;argmin&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nv">l</span><span class="p">.</span><span class="nf">argmin</span><span class="p">({</span><span class="mi">30</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">50</span><span class="p">},</span><span class="kr">function</span><span class="p">(</span><span class="nv">x</span><span class="p">)</span><span class="w"> </span><span class="kr">return</span><span class="w"> </span><span class="nv">x</span><span class="w"> </span><span class="kr">end</span><span class="p">),</span><span class="mi">2</span><span class="p">})</span><span class="w"> </span><span class="kr">end</span>
+
+<span class="nv">eg</span><span class="p">[</span><span class="s2">&quot;--tabulate&quot;</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">function</span><span class="p">()</span>
+<span class="w">  </span><span class="nv">l</span><span class="p">.</span><span class="nf">tabulate</span><span class="p">({{</span><span class="s2">&quot;name&quot;</span><span class="p">,</span><span class="s2">&quot;age&quot;</span><span class="p">,</span><span class="s2">&quot;note&quot;</span><span class="p">},</span><span class="w"> </span><span class="p">{</span><span class="s2">&quot;Alice&quot;</span><span class="p">,</span><span class="s2">&quot;30&quot;</span><span class="p">,</span><span class="s2">&quot;short&quot;</span><span class="p">},</span>
+<span class="w">              </span><span class="p">{</span><span class="s2">&quot;Bob&quot;</span><span class="p">,</span><span class="s2">&quot;9&quot;</span><span class="p">,</span><span class="s2">&quot;longer note here&quot;</span><span class="p">}},</span><span class="w"> </span><span class="p">{</span><span class="s2">&quot;&lt;&quot;</span><span class="p">,</span><span class="s2">&quot;&gt;&quot;</span><span class="p">,</span><span class="s2">&quot;&lt;&quot;</span><span class="p">})</span>
+<span class="w">  </span><span class="kr">return</span><span class="w"> </span><span class="kc">true</span><span class="w"> </span><span class="kr">end</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -252,6 +289,1286 @@ race      race ga+de+sa+ls -&gt; merged best-trace table</p>
     <div class='docs'>
       <div class='octowrap'>
         <a class='octothorpe' href='#section-11'>#</a>
+      </div>
+      <h2>rand-eg</h2>
+<h2>Reproducible randomness</h2>
+<p>A portable Park-Miller generator replaces Lua&rsquo;s stock RNG,
+so seeded runs match across machines (and across languages:
+ezr2 carries a python twin). <code>pickDict</code> rolls a weighted
+roulette wheel; <code>irwinHall</code> fakes a normal sample from
+three uniforms.</p>
+<table>
+<thead>
+<tr>
+<th>call</th>
+<th>returns</th>
+<th>what</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>l.rand(n)</code></td>
+<td>0..1 or 1..n</td>
+<td>seeded random</td>
+</tr>
+<tr>
+<td><code>l.pickDict(d)</code></td>
+<td>key</td>
+<td>weighted by d&rsquo;s counts</td>
+</tr>
+<tr>
+<td><code>l.irwinHall()</code></td>
+<td>float</td>
+<td>~normal, mean 0, sd 1</td>
+</tr>
+</tbody>
+</table>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="nv">eg</span><span class="p">[</span><span class="s2">&quot;--rand&quot;</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">function</span><span class="p">(</span><span class="w">    </span><span class="nv">d</span><span class="p">,</span><span class="nv">c</span><span class="p">,</span><span class="nv">k</span><span class="p">,</span><span class="nv">n</span><span class="p">,</span><span class="nv">mu</span><span class="p">,</span><span class="nv">m2</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">d</span><span class="p">,</span><span class="nv">c</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="nv">a</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="nv">b</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span><span class="nv">c</span><span class="o">=</span><span class="mi">100</span><span class="p">},</span><span class="w"> </span><span class="p">{</span><span class="nv">a</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="nv">b</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="nv">c</span><span class="o">=</span><span class="mi">0</span><span class="p">}</span>
+<span class="w">  </span><span class="kr">for</span><span class="w"> </span><span class="nv">_</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="mi">1000</span><span class="w"> </span><span class="kr">do</span><span class="w"> </span><span class="nv">k</span><span class="o">=</span><span class="nv">l</span><span class="p">.</span><span class="nf">pickDict</span><span class="p">(</span><span class="nv">d</span><span class="p">);</span><span class="w"> </span><span class="nv">c</span><span class="p">[</span><span class="nv">k</span><span class="p">]</span><span class="o">=</span><span class="nv">c</span><span class="p">[</span><span class="nv">k</span><span class="p">]</span><span class="o">+</span><span class="mi">1</span><span class="w"> </span><span class="kr">end</span>
+<span class="w">  </span><span class="nv">n</span><span class="p">,</span><span class="nv">mu</span><span class="p">,</span><span class="nv">m2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span>
+<span class="w">  </span><span class="kr">for</span><span class="w"> </span><span class="nv">_</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="mi">2000</span><span class="w"> </span><span class="kr">do</span><span class="w"> </span><span class="nv">n</span><span class="p">,</span><span class="nv">mu</span><span class="p">,</span><span class="nv">m2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">l</span><span class="p">.</span><span class="nf">welford</span><span class="p">(</span><span class="nv">l</span><span class="p">.</span><span class="nf">irwinHall</span><span class="p">(),</span><span class="nv">n</span><span class="p">,</span><span class="nv">mu</span><span class="p">,</span><span class="nv">m2</span><span class="p">)</span><span class="w"> </span><span class="kr">end</span>
+<span class="w">  </span><span class="kr">return</span><span class="w"> </span><span class="nv">l</span><span class="p">.</span><span class="nf">chk</span><span class="p">({</span><span class="s2">&quot;pickDict&quot;</span><span class="p">,</span><span class="nv">c</span><span class="p">.</span><span class="py">c</span><span class="o">&gt;</span><span class="nv">c</span><span class="p">.</span><span class="py">b</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="nv">c</span><span class="p">.</span><span class="py">b</span><span class="o">&gt;</span><span class="nv">c</span><span class="p">.</span><span class="py">a</span><span class="p">,</span><span class="kc">true</span><span class="p">},</span>
+<span class="w">               </span><span class="p">{</span><span class="s2">&quot;irwin mu~0&quot;</span><span class="p">,</span><span class="nv">mu</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mf">0.1</span><span class="p">},</span>
+<span class="w">               </span><span class="p">{</span><span class="s2">&quot;irwin sd~1&quot;</span><span class="p">,</span><span class="nv">l</span><span class="p">.</span><span class="nf">sd</span><span class="p">(</span><span class="nv">n</span><span class="p">,</span><span class="nv">m2</span><span class="p">),</span><span class="mi">1</span><span class="p">,</span><span class="mf">0.1</span><span class="p">})</span><span class="w"> </span><span class="kr">end</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-12'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-12'>#</a>
+      </div>
+      <h2>stats-eg</h2>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="kd">local</span><span class="w"> </span><span class="nv">rand</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">math.random</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-13'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-13'>#</a>
+      </div>
+      <h2>Stats, and when do two results differ?</h2>
+<p>Welford folds values one at a time (no list kept); mode and
+entropy summarize counts. Then the conservative equality:
+<code>same</code> needs median-gap AND cliffs AND ks to agree, and
+<code>topTier</code> keeps every treatment statistically level with
+the best. Notice the demo: two same-distribution samples
+tier together; the shifted one drops out.</p>
+<table>
+<thead>
+<tr>
+<th>call</th>
+<th>returns</th>
+<th>what</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>l.welford(v,n,mu,m2)</code></td>
+<td>n,mu,m2</td>
+<td>online update</td>
+</tr>
+<tr>
+<td><code>l.same(xs,ys,...)</code></td>
+<td>bool</td>
+<td>all three tests agree</td>
+</tr>
+<tr>
+<td><code>l.topTier(dict)</code></td>
+<td>dict</td>
+<td>keys level with the best</td>
+</tr>
+</tbody>
+</table>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="nv">eg</span><span class="p">[</span><span class="s2">&quot;--stats&quot;</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">function</span><span class="p">(</span><span class="w">    </span><span class="nv">n</span><span class="p">,</span><span class="nv">mu</span><span class="p">,</span><span class="nv">m2</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">n</span><span class="p">,</span><span class="nv">mu</span><span class="p">,</span><span class="nv">m2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span>
+<span class="w">  </span><span class="kr">for</span><span class="w"> </span><span class="nv">_</span><span class="p">,</span><span class="nv">v</span><span class="w"> </span><span class="kr">in</span><span class="w"> </span><span class="nb">ipairs</span><span class="p">{</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">}</span><span class="w"> </span><span class="kr">do</span>
+<span class="w">    </span><span class="nv">n</span><span class="p">,</span><span class="nv">mu</span><span class="p">,</span><span class="nv">m2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">l</span><span class="p">.</span><span class="nf">welford</span><span class="p">(</span><span class="nv">v</span><span class="p">,</span><span class="nv">n</span><span class="p">,</span><span class="nv">mu</span><span class="p">,</span><span class="nv">m2</span><span class="p">)</span><span class="w"> </span><span class="kr">end</span>
+<span class="w">  </span><span class="kr">return</span><span class="w"> </span><span class="nv">l</span><span class="p">.</span><span class="nf">chk</span><span class="p">({</span><span class="s2">&quot;mu&quot;</span><span class="p">,</span><span class="nv">mu</span><span class="p">,</span><span class="mi">3</span><span class="p">},</span><span class="w"> </span><span class="p">{</span><span class="s2">&quot;sd&quot;</span><span class="p">,</span><span class="nv">l</span><span class="p">.</span><span class="nf">sd</span><span class="p">(</span><span class="nv">n</span><span class="p">,</span><span class="nv">m2</span><span class="p">),</span><span class="mf">1.5811</span><span class="p">,</span><span class="mf">1E-3</span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span><span class="s2">&quot;mode&quot;</span><span class="p">,</span><span class="nv">l</span><span class="p">.</span><span class="py">mode</span><span class="p">{</span><span class="nv">a</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="nv">b</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span><span class="nv">c</span><span class="o">=</span><span class="mi">2</span><span class="p">},</span><span class="s2">&quot;b&quot;</span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span><span class="s2">&quot;ent&quot;</span><span class="p">,</span><span class="nv">l</span><span class="p">.</span><span class="py">ent</span><span class="p">{</span><span class="nv">a</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="nv">b</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="nv">c</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="nv">d</span><span class="o">=</span><span class="mi">1</span><span class="p">},</span><span class="mi">2</span><span class="p">,</span><span class="mf">1E-9</span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span><span class="s2">&quot;bisect&quot;</span><span class="p">,</span><span class="nv">l</span><span class="p">.</span><span class="nf">bisect</span><span class="p">({</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">8</span><span class="p">},</span><span class="mi">2</span><span class="p">),</span><span class="mi">3</span><span class="p">})</span><span class="w"> </span><span class="kr">end</span>
+
+<span class="nv">eg</span><span class="p">[</span><span class="s2">&quot;--sames&quot;</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">function</span><span class="p">(</span><span class="w">    </span><span class="nv">mk</span><span class="p">,</span><span class="nv">x</span><span class="p">,</span><span class="nv">y</span><span class="p">,</span><span class="nv">z</span><span class="p">,</span><span class="nv">tier</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">mk</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">function</span><span class="p">(</span><span class="nv">off</span><span class="p">,</span><span class="w">    </span><span class="nv">u</span><span class="p">)</span><span class="w"> </span><span class="nv">u</span><span class="o">=</span><span class="p">{}</span>
+<span class="w">    </span><span class="kr">for</span><span class="w"> </span><span class="nv">_</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="mi">50</span><span class="w"> </span><span class="kr">do</span><span class="w"> </span><span class="nv">u</span><span class="p">[</span><span class="mi">1</span><span class="o">+#</span><span class="nv">u</span><span class="p">]</span><span class="o">=</span><span class="nf">rand</span><span class="p">()</span><span class="o">+</span><span class="nv">off</span><span class="w"> </span><span class="kr">end</span><span class="p">;</span><span class="w"> </span><span class="kr">return</span><span class="w"> </span><span class="nv">u</span><span class="w"> </span><span class="kr">end</span>
+<span class="w">  </span><span class="nv">x</span><span class="p">,</span><span class="nv">y</span><span class="p">,</span><span class="nv">z</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">mk</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span><span class="w"> </span><span class="nf">mk</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span><span class="w"> </span><span class="nf">mk</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">tier</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">l</span><span class="p">.</span><span class="nf">topTier</span><span class="p">({</span><span class="nv">a</span><span class="o">=</span><span class="nv">x</span><span class="p">,</span><span class="nv">b</span><span class="o">=</span><span class="nv">y</span><span class="p">,</span><span class="nv">c</span><span class="o">=</span><span class="nv">z</span><span class="p">},</span><span class="w"> </span><span class="kc">nil</span><span class="p">,</span>
+<span class="w">                   </span><span class="nv">the</span><span class="p">.</span><span class="py">eps</span><span class="p">,</span><span class="w"> </span><span class="nv">the</span><span class="p">.</span><span class="py">cliffs</span><span class="p">,</span><span class="w"> </span><span class="nv">the</span><span class="p">.</span><span class="py">ksconf</span><span class="p">)</span>
+<span class="w">  </span><span class="kr">return</span><span class="w"> </span><span class="nv">l</span><span class="p">.</span><span class="nf">chk</span><span class="p">(</span>
+<span class="w">    </span><span class="p">{</span><span class="s2">&quot;cliffs&quot;</span><span class="p">,</span><span class="nv">l</span><span class="p">.</span><span class="nf">cliffsDelta</span><span class="p">({</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">},{</span><span class="mi">10</span><span class="p">,</span><span class="mi">11</span><span class="p">,</span><span class="mi">12</span><span class="p">}),</span><span class="mi">1</span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span><span class="s2">&quot;ks&quot;</span><span class="p">,</span><span class="nv">l</span><span class="p">.</span><span class="nf">ks</span><span class="p">({</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">},{</span><span class="mi">10</span><span class="p">,</span><span class="mi">11</span><span class="p">,</span><span class="mi">12</span><span class="p">}),</span><span class="mi">1</span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span><span class="s2">&quot;pooledSd&quot;</span><span class="p">,</span><span class="nv">l</span><span class="p">.</span><span class="nf">pooledSd</span><span class="p">({</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">},{</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">}),</span><span class="mf">1.5811</span><span class="p">,</span><span class="mf">1E-3</span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span><span class="s2">&quot;same&quot;</span><span class="p">,</span><span class="nv">l</span><span class="p">.</span><span class="nf">same</span><span class="p">(</span><span class="nv">x</span><span class="p">,</span><span class="nv">y</span><span class="p">,</span><span class="nv">the</span><span class="p">.</span><span class="py">eps</span><span class="o">*</span><span class="nv">l</span><span class="p">.</span><span class="nf">pooledSd</span><span class="p">(</span><span class="nv">x</span><span class="p">,</span><span class="nv">y</span><span class="p">),</span>
+<span class="w">                   </span><span class="nv">the</span><span class="p">.</span><span class="py">cliffs</span><span class="p">,</span><span class="nv">the</span><span class="p">.</span><span class="py">ksconf</span><span class="p">),</span><span class="kc">true</span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span><span class="s2">&quot;diff&quot;</span><span class="p">,</span><span class="nv">l</span><span class="p">.</span><span class="nf">same</span><span class="p">(</span><span class="nv">x</span><span class="p">,</span><span class="nv">z</span><span class="p">,</span><span class="nv">the</span><span class="p">.</span><span class="py">eps</span><span class="o">*</span><span class="nv">l</span><span class="p">.</span><span class="nf">pooledSd</span><span class="p">(</span><span class="nv">x</span><span class="p">,</span><span class="nv">z</span><span class="p">),</span>
+<span class="w">                   </span><span class="nv">the</span><span class="p">.</span><span class="py">cliffs</span><span class="p">,</span><span class="nv">the</span><span class="p">.</span><span class="py">ksconf</span><span class="p">),</span><span class="kc">false</span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span><span class="s2">&quot;tier a+b&quot;</span><span class="p">,</span><span class="nv">tier</span><span class="p">.</span><span class="py">a</span><span class="o">~=</span><span class="kc">nil</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="nv">tier</span><span class="p">.</span><span class="py">b</span><span class="o">~=</span><span class="kc">nil</span><span class="p">,</span><span class="kc">true</span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span><span class="s2">&quot;tier no c&quot;</span><span class="p">,</span><span class="nv">tier</span><span class="p">.</span><span class="py">c</span><span class="p">,</span><span class="kc">nil</span><span class="p">})</span><span class="w"> </span><span class="kr">end</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-14'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-14'>#</a>
+      </div>
+      <h2>confuse-eg</h2>
+<h2>Scoring a classifier</h2>
+<p>Count (want,got) pairs into a confusion matrix; read back
+per-klass accuracy, precision, false alarm and recall.</p>
+<table>
+<thead>
+<tr>
+<th>call</th>
+<th>returns</th>
+<th>what</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Confuse.new(file)</code></td>
+<td>cf</td>
+<td>empty matrix</td>
+</tr>
+<tr>
+<td><code>cf:add(want,got)</code></td>
+<td>&ndash;</td>
+<td>count one prediction</td>
+</tr>
+<tr>
+<td><code>cf:show()</code></td>
+<td>&ndash;</td>
+<td>tn/fn/fp/tp + derived stats</td>
+</tr>
+</tbody>
+</table>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="nv">eg</span><span class="p">[</span><span class="s2">&quot;--confuse&quot;</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">function</span><span class="p">(</span><span class="w">    </span><span class="nv">cf</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">cf</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">l</span><span class="p">.</span><span class="py">Confuse</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="s2">&quot;data.csv&quot;</span><span class="p">)</span>
+<span class="w">  </span><span class="kr">for</span><span class="w"> </span><span class="nv">_</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="mi">50</span><span class="w"> </span><span class="kr">do</span><span class="w"> </span><span class="nv">cf</span><span class="p">:</span><span class="nf">add</span><span class="p">(</span><span class="s2">&quot;yes&quot;</span><span class="p">,</span><span class="s2">&quot;yes&quot;</span><span class="p">)</span><span class="w"> </span><span class="kr">end</span>
+<span class="w">  </span><span class="kr">for</span><span class="w"> </span><span class="nv">_</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="w"> </span><span class="kr">do</span><span class="w"> </span><span class="nv">cf</span><span class="p">:</span><span class="nf">add</span><span class="p">(</span><span class="s2">&quot;yes&quot;</span><span class="p">,</span><span class="s2">&quot;no&quot;</span><span class="p">)</span><span class="w">  </span><span class="kr">end</span>
+<span class="w">  </span><span class="kr">for</span><span class="w"> </span><span class="nv">_</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="kr">do</span><span class="w"> </span><span class="nv">cf</span><span class="p">:</span><span class="nf">add</span><span class="p">(</span><span class="s2">&quot;no&quot;</span><span class="p">,</span><span class="s2">&quot;yes&quot;</span><span class="p">)</span><span class="w">  </span><span class="kr">end</span>
+<span class="w">  </span><span class="kr">for</span><span class="w"> </span><span class="nv">_</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="mi">40</span><span class="w"> </span><span class="kr">do</span><span class="w"> </span><span class="nv">cf</span><span class="p">:</span><span class="nf">add</span><span class="p">(</span><span class="s2">&quot;no&quot;</span><span class="p">,</span><span class="s2">&quot;no&quot;</span><span class="p">)</span><span class="w">   </span><span class="kr">end</span>
+<span class="w">  </span><span class="nv">cf</span><span class="p">:</span><span class="nf">show</span><span class="p">();</span><span class="w"> </span><span class="kr">return</span><span class="w"> </span><span class="kc">true</span><span class="w"> </span><span class="kr">end</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-15'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-15'>#</a>
+      </div>
+      <h2>str-eg</h2>
+<h2>Strings and files</h2>
+<p><code>thing</code> coerces csv cells (bool, number, else string); <code>o</code>
+pretty-prints anything with sorted dict keys; <code>csv</code> streams
+typed rows from a file, <code>path</code> expanding a leading $MOOT.</p>
+<table>
+<thead>
+<tr>
+<th>call</th>
+<th>returns</th>
+<th>what</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>l.thing(s)</code></td>
+<td>bool,num,str</td>
+<td>coerce one cell</td>
+</tr>
+<tr>
+<td><code>l.o(x)</code></td>
+<td>str</td>
+<td>pretty print</td>
+</tr>
+<tr>
+<td><code>l.csv(file)</code></td>
+<td>iterator</td>
+<td>typed rows</td>
+</tr>
+</tbody>
+</table>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="nv">eg</span><span class="p">[</span><span class="s2">&quot;--str&quot;</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">function</span><span class="p">()</span>
+<span class="w">  </span><span class="kr">return</span><span class="w"> </span><span class="nv">l</span><span class="p">.</span><span class="nf">chk</span><span class="p">(</span>
+<span class="w">    </span><span class="p">{</span><span class="s2">&quot;int&quot;</span><span class="p">,</span><span class="nv">l</span><span class="p">.</span><span class="py">thing</span><span class="s2">&quot;42&quot;</span><span class="p">,</span><span class="mi">42</span><span class="p">},</span><span class="w">   </span><span class="p">{</span><span class="s2">&quot;bool&quot;</span><span class="p">,</span><span class="nv">l</span><span class="p">.</span><span class="py">thing</span><span class="s2">&quot;true&quot;</span><span class="p">,</span><span class="kc">true</span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span><span class="s2">&quot;str&quot;</span><span class="p">,</span><span class="nv">l</span><span class="p">.</span><span class="py">thing</span><span class="s2">&quot;hi&quot;</span><span class="p">,</span><span class="s2">&quot;hi&quot;</span><span class="p">},</span><span class="w"> </span><span class="p">{</span><span class="s2">&quot;float&quot;</span><span class="p">,</span><span class="nv">l</span><span class="p">.</span><span class="nf">o</span><span class="p">(</span><span class="mf">1.5</span><span class="p">),</span><span class="s2">&quot;1.50&quot;</span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span><span class="s2">&quot;dict&quot;</span><span class="p">,</span><span class="nv">l</span><span class="p">.</span><span class="py">o</span><span class="p">{</span><span class="nv">a</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="nv">b</span><span class="o">=</span><span class="mi">2</span><span class="p">},</span><span class="s2">&quot;{a=1, b=2}&quot;</span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span><span class="s2">&quot;list&quot;</span><span class="p">,</span><span class="nv">l</span><span class="p">.</span><span class="py">o</span><span class="p">{</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">},</span><span class="s2">&quot;{1, 2, 3}&quot;</span><span class="p">})</span><span class="w"> </span><span class="kr">end</span>
+
+<span class="nv">eg</span><span class="p">[</span><span class="s2">&quot;--csv&quot;</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">function</span><span class="p">(</span><span class="w">    </span><span class="nv">tmp</span><span class="p">,</span><span class="nv">f</span><span class="p">,</span><span class="nv">rows</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">tmp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">os.tmpname</span><span class="p">()</span>
+<span class="w">  </span><span class="nv">f</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">io.open</span><span class="p">(</span><span class="nv">tmp</span><span class="p">,</span><span class="s2">&quot;w&quot;</span><span class="p">);</span><span class="w"> </span><span class="nv">f</span><span class="p">:</span><span class="nf">write</span><span class="p">(</span><span class="s2">&quot;a,b,c</span><span class="se">\n</span><span class="s2">1,2,3</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">);</span><span class="w"> </span><span class="nv">f</span><span class="p">:</span><span class="nf">close</span><span class="p">()</span>
+<span class="w">  </span><span class="nv">rows</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{}</span>
+<span class="w">  </span><span class="kr">for</span><span class="w"> </span><span class="nv">r</span><span class="w"> </span><span class="kr">in</span><span class="w"> </span><span class="nv">l</span><span class="p">.</span><span class="nf">csv</span><span class="p">(</span><span class="nv">tmp</span><span class="p">)</span><span class="w"> </span><span class="kr">do</span><span class="w"> </span><span class="nv">rows</span><span class="p">[</span><span class="mi">1</span><span class="o">+#</span><span class="nv">rows</span><span class="p">]</span><span class="o">=</span><span class="nv">r</span><span class="w"> </span><span class="kr">end</span>
+<span class="w">  </span><span class="nb">os.remove</span><span class="p">(</span><span class="nv">tmp</span><span class="p">)</span>
+<span class="w">  </span><span class="kr">return</span><span class="w"> </span><span class="nv">l</span><span class="p">.</span><span class="nf">chk</span><span class="p">({</span><span class="s2">&quot;#rows&quot;</span><span class="p">,</span><span class="o">#</span><span class="nv">rows</span><span class="p">,</span><span class="mi">2</span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span><span class="s2">&quot;head&quot;</span><span class="p">,</span><span class="nv">rows</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span><span class="s2">&quot;a&quot;</span><span class="p">},</span><span class="w"> </span><span class="p">{</span><span class="s2">&quot;cell&quot;</span><span class="p">,</span><span class="nv">rows</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">3</span><span class="p">],</span><span class="mi">3</span><span class="p">})</span><span class="w"> </span><span class="kr">end</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-16'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-16'>#</a>
+      </div>
+      <h2>cli-eg</h2>
+<h2>The command line</h2>
+<p>Help text is the single source of truth: <code>section</code> pulls a
+&ldquo;## name&rdquo; block out of it; <code>boot</code> seeds <code>the</code> from the
+options found there; <code>main</code> maps &ndash;flag val onto <code>the</code> and
+runs egs by name.</p>
+<table>
+<thead>
+<tr>
+<th>call</th>
+<th>returns</th>
+<th>what</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>l.section(text,name)</code></td>
+<td>str</td>
+<td>body of &ldquo;## name&rdquo;</td>
+</tr>
+<tr>
+<td><code>l.boot(eg,b4,name,help)</code></td>
+<td>&ndash;</td>
+<td>seed the; maybe CLI</td>
+</tr>
+</tbody>
+</table>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="nv">eg</span><span class="p">[</span><span class="s2">&quot;--cli&quot;</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">function</span><span class="p">(</span><span class="w">    </span><span class="nv">txt</span><span class="p">,</span><span class="nv">opts</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">txt</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;# t</span><span class="se">\n</span><span class="s2">## options</span><span class="se">\n</span><span class="s2">  --zz=23  a knob</span><span class="se">\n</span><span class="s2">## egs</span><span class="se">\n</span><span class="s2">  --x  y&quot;</span>
+<span class="w">  </span><span class="nv">opts</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">l</span><span class="p">.</span><span class="nf">section</span><span class="p">(</span><span class="nv">txt</span><span class="p">,</span><span class="s2">&quot;options&quot;</span><span class="p">)</span>
+<span class="w">  </span><span class="kr">return</span><span class="w"> </span><span class="nv">l</span><span class="p">.</span><span class="nf">chk</span><span class="p">({</span><span class="s2">&quot;section&quot;</span><span class="p">,</span><span class="nv">opts</span><span class="p">:</span><span class="py">find</span><span class="s2">&quot;zz&quot;</span><span class="w"> </span><span class="o">~=</span><span class="w"> </span><span class="kc">nil</span><span class="p">,</span><span class="kc">true</span><span class="p">},</span>
+<span class="w">               </span><span class="p">{</span><span class="s2">&quot;egs&quot;</span><span class="p">,</span><span class="nv">l</span><span class="p">.</span><span class="nf">section</span><span class="p">(</span><span class="nv">txt</span><span class="p">,</span><span class="s2">&quot;egs&quot;</span><span class="p">):</span><span class="nv">find</span><span class="s2">&quot;%-%-x&quot;</span><span class="w"> </span><span class="o">~=</span><span class="w"> </span><span class="kc">nil</span><span class="p">,</span>
+<span class="w">                </span><span class="kc">true</span><span class="p">},</span>
+<span class="w">               </span><span class="p">{</span><span class="s2">&quot;the seeded&quot;</span><span class="p">,</span><span class="nv">the</span><span class="p">.</span><span class="py">seed</span><span class="w"> </span><span class="o">~=</span><span class="w"> </span><span class="kc">nil</span><span class="p">,</span><span class="kc">true</span><span class="p">})</span><span class="w"> </span><span class="kr">end</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-17'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-17'>#</a>
+      </div>
+      <h2>cols-eg</h2>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="kd">local</span><span class="w"> </span><span class="nv">Sym</span><span class="p">,</span><span class="nv">Cols</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">m</span><span class="p">.</span><span class="py">Sym</span><span class="p">,</span><span class="w"> </span><span class="nv">m</span><span class="p">.</span><span class="py">Cols</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-18'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-18'>#</a>
+      </div>
+      <h2>Columns: the atoms</h2>
+<p>In any table of data there are columns of numbers and
+columns of symbols: numbers we can add and average; symbols
+we can only count and compare. Fold &ldquo;a a b a c&rdquo; into a
+<code>Sym</code>: mode a. Fold 1..5 into a <code>Num</code>: mean 3, sd 1.58.
+Then parse a header: uppercase leads make Nums, trailing
++/- mark goals, trailing X is ignored. Notice &ldquo;?&rdquo; cells
+pass through untouched.</p>
+<table>
+<thead>
+<tr>
+<th>call</th>
+<th>returns</th>
+<th>what</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Sym.new(s,at)</code></td>
+<td>sym</td>
+<td>counts in has{}</td>
+</tr>
+<tr>
+<td><code>Num.new(s,at)</code></td>
+<td>num</td>
+<td>Welford n,mu,m2</td>
+</tr>
+<tr>
+<td><code>i:add(v)</code></td>
+<td>v</td>
+<td>fold one value in</td>
+</tr>
+<tr>
+<td><code>i:mid()</code>, <code>i:spread()</code></td>
+<td>value</td>
+<td>mode/mean, ent/sd</td>
+</tr>
+<tr>
+<td><code>Cols.new(names)</code></td>
+<td>cols</td>
+<td>typed columns from header</td>
+</tr>
+</tbody>
+</table>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="nv">eg</span><span class="p">[</span><span class="s2">&quot;--cols&quot;</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">function</span><span class="p">(</span><span class="w">    </span><span class="nv">sym</span><span class="p">,</span><span class="nv">num</span><span class="p">,</span><span class="nv">cols</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">sym</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="nv">m</span><span class="p">.</span><span class="nf">adds</span><span class="p">({</span><span class="s2">&quot;a&quot;</span><span class="p">,</span><span class="s2">&quot;a&quot;</span><span class="p">,</span><span class="s2">&quot;b&quot;</span><span class="p">,</span><span class="s2">&quot;a&quot;</span><span class="p">,</span><span class="s2">&quot;c&quot;</span><span class="p">},</span><span class="w"> </span><span class="nv">Sym</span><span class="p">.</span><span class="nf">new</span><span class="p">())</span>
+<span class="w">  </span><span class="nv">num</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="nv">m</span><span class="p">.</span><span class="py">adds</span><span class="p">{</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">}</span>
+<span class="w">  </span><span class="nv">cols</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">Cols</span><span class="p">.</span><span class="py">new</span><span class="p">{</span><span class="s2">&quot;Age&quot;</span><span class="p">,</span><span class="s2">&quot;name&quot;</span><span class="p">,</span><span class="s2">&quot;Mpg+&quot;</span><span class="p">,</span><span class="s2">&quot;Wt-&quot;</span><span class="p">,</span><span class="s2">&quot;statusX&quot;</span><span class="p">}</span>
+<span class="w">  </span><span class="kr">return</span><span class="w"> </span><span class="nv">l</span><span class="p">.</span><span class="nf">chk</span><span class="p">({</span><span class="s2">&quot;sym mid&quot;</span><span class="p">,</span><span class="nv">sym</span><span class="p">:</span><span class="nf">mid</span><span class="p">(),</span><span class="s2">&quot;a&quot;</span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span><span class="s2">&quot;sym spread&gt;0&quot;</span><span class="p">,</span><span class="nv">sym</span><span class="p">:</span><span class="nf">spread</span><span class="p">()</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">,</span><span class="kc">true</span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span><span class="s2">&quot;num mid&quot;</span><span class="p">,</span><span class="nv">num</span><span class="p">:</span><span class="nf">mid</span><span class="p">(),</span><span class="mi">3</span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span><span class="s2">&quot;num sd&quot;</span><span class="p">,</span><span class="nv">num</span><span class="p">:</span><span class="nf">spread</span><span class="p">(),</span><span class="mf">1.5811</span><span class="p">,</span><span class="mf">1E-3</span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span><span class="s2">&quot;? skip&quot;</span><span class="p">,</span><span class="nv">num</span><span class="p">:</span><span class="nf">add</span><span class="p">(</span><span class="s2">&quot;?&quot;</span><span class="p">),</span><span class="s2">&quot;?&quot;</span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span><span class="s2">&quot;#x&quot;</span><span class="p">,</span><span class="o">#</span><span class="nv">cols</span><span class="p">.</span><span class="py">x</span><span class="p">,</span><span class="mi">2</span><span class="p">},</span><span class="w"> </span><span class="p">{</span><span class="s2">&quot;#y&quot;</span><span class="p">,</span><span class="o">#</span><span class="nv">cols</span><span class="p">.</span><span class="py">y</span><span class="p">,</span><span class="mi">2</span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span><span class="s2">&quot;goal+&quot;</span><span class="p">,</span><span class="nv">cols</span><span class="p">.</span><span class="py">all</span><span class="p">[</span><span class="mi">3</span><span class="p">].</span><span class="nv">goal</span><span class="p">,</span><span class="mi">1</span><span class="p">},</span><span class="w"> </span><span class="p">{</span><span class="s2">&quot;goal-&quot;</span><span class="p">,</span><span class="nv">cols</span><span class="p">.</span><span class="py">all</span><span class="p">[</span><span class="mi">4</span><span class="p">].</span><span class="nv">goal</span><span class="p">,</span><span class="mi">0</span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span><span class="s2">&quot;skipX&quot;</span><span class="p">,</span><span class="nv">cols</span><span class="p">.</span><span class="py">all</span><span class="p">[</span><span class="mi">5</span><span class="p">].</span><span class="nv">goal</span><span class="p">,</span><span class="kc">nil</span><span class="p">})</span><span class="w"> </span><span class="kr">end</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-19'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-19'>#</a>
+      </div>
+      <h2>data-eg</h2>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="kd">local</span><span class="w"> </span><span class="nv">Data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">m</span><span class="p">.</span><span class="py">Data</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-20'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-20'>#</a>
+      </div>
+      <h2>Tables</h2>
+<p>Five rows, two columns, all visible below. <code>Data</code> holds the
+rows plus one summary per column; <code>clone</code> copies the header
+into an empty twin; the centroid is each column&rsquo;s mid.
+Notice <code>dxdy</code>: it bakes the Minkowski p into x, y and win
+functions so later code never threads p around.</p>
+<table>
+<thead>
+<tr>
+<th>call</th>
+<th>returns</th>
+<th>what</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Data.new(src)</code></td>
+<td>data</td>
+<td>src = rows, iterator, or file</td>
+</tr>
+<tr>
+<td><code>d:clone(rows)</code></td>
+<td>data</td>
+<td>same header, new rows</td>
+</tr>
+<tr>
+<td><code>d.cols:mid()</code></td>
+<td>list</td>
+<td>centroid, cached</td>
+</tr>
+<tr>
+<td><code>d:dxdy(p)</code></td>
+<td>{x,y,win}</td>
+<td>distance views, p baked in</td>
+</tr>
+</tbody>
+</table>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="nv">eg</span><span class="p">[</span><span class="s2">&quot;--data&quot;</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">function</span><span class="p">(</span><span class="w">    </span><span class="nv">data</span><span class="p">,</span><span class="nv">b</span><span class="p">,</span><span class="nv">d</span><span class="p">,</span><span class="nv">r1</span><span class="p">,</span><span class="nv">r2</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">Data</span><span class="p">.</span><span class="py">new</span><span class="p">{{</span><span class="s2">&quot;X1&quot;</span><span class="p">,</span><span class="s2">&quot;X2&quot;</span><span class="p">},{</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">},{</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">},{</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">},{</span><span class="mi">4</span><span class="p">,</span><span class="mi">4</span><span class="p">},{</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">}}</span>
+<span class="w">  </span><span class="nv">b</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">data</span><span class="p">:</span><span class="nf">clone</span><span class="p">()</span>
+<span class="w">  </span><span class="nv">d</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">data</span><span class="p">:</span><span class="nf">dxdy</span><span class="p">()</span>
+<span class="w">  </span><span class="nv">r1</span><span class="p">,</span><span class="nv">r2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">data</span><span class="p">.</span><span class="py">rows</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="w"> </span><span class="nv">data</span><span class="p">.</span><span class="py">rows</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span>
+<span class="w">  </span><span class="kr">return</span><span class="w"> </span><span class="nv">l</span><span class="p">.</span><span class="nf">chk</span><span class="p">({</span><span class="s2">&quot;#rows&quot;</span><span class="p">,</span><span class="o">#</span><span class="nv">data</span><span class="p">.</span><span class="py">rows</span><span class="p">,</span><span class="mi">5</span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span><span class="s2">&quot;clone empty&quot;</span><span class="p">,</span><span class="o">#</span><span class="nv">b</span><span class="p">.</span><span class="py">rows</span><span class="p">,</span><span class="mi">0</span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span><span class="s2">&quot;clone hdr&quot;</span><span class="p">,</span><span class="nv">b</span><span class="p">.</span><span class="py">cols</span><span class="p">.</span><span class="py">all</span><span class="p">[</span><span class="mi">1</span><span class="p">].</span><span class="nv">txt</span><span class="p">,</span><span class="s2">&quot;X1&quot;</span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span><span class="s2">&quot;names kept&quot;</span><span class="p">,</span><span class="nv">b</span><span class="p">.</span><span class="py">cols</span><span class="p">.</span><span class="py">names</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span><span class="s2">&quot;X2&quot;</span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span><span class="s2">&quot;centroid&quot;</span><span class="p">,</span><span class="nv">data</span><span class="p">.</span><span class="py">cols</span><span class="p">:</span><span class="nf">mid</span><span class="p">()[</span><span class="mi">1</span><span class="p">],</span><span class="mi">3</span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span><span class="s2">&quot;symmetric&quot;</span><span class="p">,</span><span class="nv">d</span><span class="p">.</span><span class="nf">x</span><span class="p">(</span><span class="nv">r1</span><span class="p">,</span><span class="nv">r2</span><span class="p">)</span><span class="o">==</span><span class="nv">d</span><span class="p">.</span><span class="nf">x</span><span class="p">(</span><span class="nv">r2</span><span class="p">,</span><span class="nv">r1</span><span class="p">),</span><span class="kc">true</span><span class="p">})</span><span class="w"> </span><span class="kr">end</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-21'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-21'>#</a>
+      </div>
+      <h2>Streaming rows</h2>
+<p>Sometimes we want the rows without the header. <code>body</code>
+returns an iterator that has already consumed line one.
+The demo writes a three-row csv, streams it back, counts.</p>
+<table>
+<thead>
+<tr>
+<th>call</th>
+<th>returns</th>
+<th>what</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>m.body(file)</code></td>
+<td>iterator</td>
+<td>csv rows, header skipped</td>
+</tr>
+</tbody>
+</table>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="nv">eg</span><span class="p">[</span><span class="s2">&quot;--body&quot;</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">function</span><span class="p">(</span><span class="w">    </span><span class="nv">tmp</span><span class="p">,</span><span class="nv">f</span><span class="p">,</span><span class="nv">n</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">tmp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">os.tmpname</span><span class="p">()</span>
+<span class="w">  </span><span class="nv">f</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">io.open</span><span class="p">(</span><span class="nv">tmp</span><span class="p">,</span><span class="s2">&quot;w&quot;</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">f</span><span class="p">:</span><span class="nf">write</span><span class="p">(</span><span class="s2">&quot;a,b</span><span class="se">\n</span><span class="s2">1,2</span><span class="se">\n</span><span class="s2">3,4</span><span class="se">\n</span><span class="s2">5,6</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">);</span><span class="w"> </span><span class="nv">f</span><span class="p">:</span><span class="nf">close</span><span class="p">()</span>
+<span class="w">  </span><span class="nv">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="kr">for</span><span class="w"> </span><span class="nv">_</span><span class="w"> </span><span class="kr">in</span><span class="w"> </span><span class="nv">m</span><span class="p">.</span><span class="nf">body</span><span class="p">(</span><span class="nv">tmp</span><span class="p">)</span><span class="w"> </span><span class="kr">do</span><span class="w"> </span><span class="nv">n</span><span class="o">=</span><span class="nv">n</span><span class="o">+</span><span class="mi">1</span><span class="w"> </span><span class="kr">end</span><span class="p">;</span><span class="w"> </span><span class="nb">os.remove</span><span class="p">(</span><span class="nv">tmp</span><span class="p">)</span>
+<span class="w">  </span><span class="kr">return</span><span class="w"> </span><span class="nv">l</span><span class="p">.</span><span class="nf">chk</span><span class="p">({</span><span class="s2">&quot;body rows&quot;</span><span class="p">,</span><span class="w"> </span><span class="nv">n</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">})</span><span class="w"> </span><span class="kr">end</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-22'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-22'>#</a>
+      </div>
+      <h2>dist-eg</h2>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="kd">local</span><span class="w"> </span><span class="nv">Data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">m</span><span class="p">.</span><span class="py">Data</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-23'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-23'>#</a>
+      </div>
+      <h2>Distance</h2>
+<p>Two distances, two jobs. <code>distx</code> reads only x columns: how
+far apart two rows are before we know their goals. <code>disty</code>
+reads only y columns: distance to the ideal goals, 0 =
+best. In the goals table below, the row (1,40,1500) &ndash; high
+mpg, low weight &ndash; must sit nearer heaven than (4,10,3000).
+Notice <code>near</code>: 1-nearest-neighbour is one keysort away.</p>
+<table>
+<thead>
+<tr>
+<th>call</th>
+<th>returns</th>
+<th>what</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>m.distx(cols,r1,r2,p)</code></td>
+<td>0..1</td>
+<td>over x cols</td>
+</tr>
+<tr>
+<td><code>m.disty(cols,row,p)</code></td>
+<td>0..1</td>
+<td>0 = ideal goals</td>
+</tr>
+<tr>
+<td><code>m.near(cols,query,rows)</code></td>
+<td>rows</td>
+<td>sorted by distx</td>
+</tr>
+</tbody>
+</table>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="nv">eg</span><span class="p">[</span><span class="s2">&quot;--dist&quot;</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">function</span><span class="p">(</span><span class="w">    </span><span class="nv">data</span><span class="p">,</span><span class="nv">goals</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">Data</span><span class="p">.</span><span class="py">new</span><span class="p">{{</span><span class="s2">&quot;X1&quot;</span><span class="p">,</span><span class="s2">&quot;X2&quot;</span><span class="p">},{</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">},{</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">},{</span><span class="mi">9</span><span class="p">,</span><span class="mi">9</span><span class="p">}}</span>
+<span class="w">  </span><span class="nv">goals</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">Data</span><span class="p">.</span><span class="py">new</span><span class="p">{{</span><span class="s2">&quot;X1&quot;</span><span class="p">,</span><span class="s2">&quot;Mpg+&quot;</span><span class="p">,</span><span class="s2">&quot;Wt-&quot;</span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span><span class="mi">1</span><span class="p">,</span><span class="mi">40</span><span class="p">,</span><span class="mi">1500</span><span class="p">},{</span><span class="mi">2</span><span class="p">,</span><span class="mi">30</span><span class="p">,</span><span class="mi">2000</span><span class="p">},{</span><span class="mi">3</span><span class="p">,</span><span class="mi">20</span><span class="p">,</span><span class="mi">2500</span><span class="p">},{</span><span class="mi">4</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">3000</span><span class="p">}}</span>
+<span class="w">  </span><span class="kr">return</span><span class="w"> </span><span class="nv">l</span><span class="p">.</span><span class="nf">chk</span><span class="p">(</span>
+<span class="w">    </span><span class="p">{</span><span class="s2">&quot;self=0&quot;</span><span class="p">,</span><span class="nv">m</span><span class="p">.</span><span class="nf">distx</span><span class="p">(</span><span class="nv">data</span><span class="p">.</span><span class="py">cols</span><span class="p">,{</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">},{</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">},</span><span class="nv">the</span><span class="p">.</span><span class="py">p</span><span class="p">),</span><span class="mi">0</span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span><span class="s2">&quot;far&gt;near&quot;</span><span class="p">,</span><span class="nv">m</span><span class="p">.</span><span class="nf">distx</span><span class="p">(</span><span class="nv">data</span><span class="p">.</span><span class="py">cols</span><span class="p">,{</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">},{</span><span class="mi">9</span><span class="p">,</span><span class="mi">9</span><span class="p">},</span><span class="nv">the</span><span class="p">.</span><span class="py">p</span><span class="p">)</span>
+<span class="w">              </span><span class="o">&gt;</span><span class="w"> </span><span class="nv">m</span><span class="p">.</span><span class="nf">distx</span><span class="p">(</span><span class="nv">data</span><span class="p">.</span><span class="py">cols</span><span class="p">,{</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">},{</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">},</span><span class="nv">the</span><span class="p">.</span><span class="py">p</span><span class="p">),</span><span class="kc">true</span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span><span class="s2">&quot;1-NN&quot;</span><span class="p">,</span><span class="nv">m</span><span class="p">.</span><span class="nf">near</span><span class="p">(</span><span class="nv">data</span><span class="p">.</span><span class="py">cols</span><span class="p">,{</span><span class="mi">4</span><span class="p">,</span><span class="mi">4</span><span class="p">},</span><span class="nv">data</span><span class="p">.</span><span class="py">rows</span><span class="p">,</span><span class="nv">the</span><span class="p">.</span><span class="py">p</span><span class="p">)[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span><span class="mi">5</span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span><span class="s2">&quot;dBest&lt;dWorst&quot;</span><span class="p">,</span><span class="nv">m</span><span class="p">.</span><span class="nf">disty</span><span class="p">(</span><span class="nv">goals</span><span class="p">.</span><span class="py">cols</span><span class="p">,{</span><span class="mi">1</span><span class="p">,</span><span class="mi">40</span><span class="p">,</span><span class="mi">1500</span><span class="p">},</span><span class="nv">the</span><span class="p">.</span><span class="py">p</span><span class="p">)</span>
+<span class="w">                  </span><span class="o">&lt;</span><span class="w"> </span><span class="nv">m</span><span class="p">.</span><span class="nf">disty</span><span class="p">(</span><span class="nv">goals</span><span class="p">.</span><span class="py">cols</span><span class="p">,{</span><span class="mi">4</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">3000</span><span class="p">},</span><span class="nv">the</span><span class="p">.</span><span class="py">p</span><span class="p">),</span>
+<span class="w">     </span><span class="kc">true</span><span class="p">})</span>
+<span class="w">  </span><span class="kr">end</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-24'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-24'>#</a>
+      </div>
+      <h2>cut-eg</h2>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="kd">local</span><span class="w"> </span><span class="nv">floor</span><span class="p">,</span><span class="nv">rand</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">math.floor</span><span class="p">,</span><span class="w"> </span><span class="nb">math.random</span>
+<span class="kd">local</span><span class="w"> </span><span class="nv">Data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">m</span><span class="p">.</span><span class="py">Data</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-25'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-25'>#</a>
+      </div>
+      <h2>Cuts</h2>
+<p>To explain anything we need splits. A cut is one test:
+op(row[at], val). Five visible rows split at X1 &lt;= 3; then
+1000 noisy rows where class flips at X1 &gt; 67 &ndash; and
+<code>bestCut</code> recovers that boundary (~67) without being told.
+Notice: the cut search reads only x summaries and a y
+function; it never needs to know what y means.</p>
+<table>
+<thead>
+<tr>
+<th>call</th>
+<th>returns</th>
+<th>what</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>col:cuts(rows)</code></td>
+<td>cuts</td>
+<td>candidate tests, one col</td>
+</tr>
+<tr>
+<td><code>cut:apply(rows,y)</code></td>
+<td>ls,rs,+sums</td>
+<td>split both ways</td>
+</tr>
+<tr>
+<td><code>m.bestCut(cols,rows,y)</code></td>
+<td>cut</td>
+<td>min size-wtd spread</td>
+</tr>
+</tbody>
+</table>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="nv">eg</span><span class="p">[</span><span class="s2">&quot;--cuts&quot;</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">function</span><span class="p">(</span><span class="w">    </span><span class="nv">data</span><span class="p">,</span><span class="nv">cuts</span><span class="p">,</span><span class="nv">ls</span><span class="p">,</span><span class="nv">rs</span><span class="p">,</span><span class="nv">best</span><span class="p">,</span><span class="nv">v</span><span class="p">,</span><span class="nv">was</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">was</span><span class="p">,</span><span class="w"> </span><span class="nv">the</span><span class="p">.</span><span class="py">bins</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">the</span><span class="p">.</span><span class="py">bins</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span>
+<span class="w">  </span><span class="nv">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">Data</span><span class="p">.</span><span class="py">new</span><span class="p">{{</span><span class="s2">&quot;X1&quot;</span><span class="p">,</span><span class="s2">&quot;name&quot;</span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span><span class="mi">1</span><span class="p">,</span><span class="s2">&quot;a&quot;</span><span class="p">},{</span><span class="mi">2</span><span class="p">,</span><span class="s2">&quot;a&quot;</span><span class="p">},{</span><span class="mi">3</span><span class="p">,</span><span class="s2">&quot;b&quot;</span><span class="p">},{</span><span class="mi">4</span><span class="p">,</span><span class="s2">&quot;b&quot;</span><span class="p">},{</span><span class="mi">5</span><span class="p">,</span><span class="s2">&quot;c&quot;</span><span class="p">}}</span>
+<span class="w">  </span><span class="nv">cuts</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">data</span><span class="p">.</span><span class="py">cols</span><span class="p">.</span><span class="py">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span><span class="nf">cuts</span><span class="p">(</span><span class="nv">data</span><span class="p">.</span><span class="py">rows</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">ls</span><span class="p">,</span><span class="nv">rs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">cuts</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span><span class="nf">apply</span><span class="p">(</span><span class="nv">data</span><span class="p">.</span><span class="py">rows</span><span class="p">,</span><span class="w"> </span><span class="kr">function</span><span class="p">(</span><span class="nv">r</span><span class="p">)</span><span class="w"> </span><span class="kr">return</span><span class="w"> </span><span class="nv">r</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="kr">end</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">the</span><span class="p">.</span><span class="py">bins</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">10</span>
+<span class="w">  </span><span class="nv">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{{</span><span class="s2">&quot;X1&quot;</span><span class="p">,</span><span class="s2">&quot;X2&quot;</span><span class="p">,</span><span class="s2">&quot;class!&quot;</span><span class="p">}}</span>
+<span class="w">  </span><span class="kr">for</span><span class="w"> </span><span class="nv">_</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="mi">1000</span><span class="w"> </span><span class="kr">do</span>
+<span class="w">    </span><span class="nv">v</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">floor</span><span class="p">(</span><span class="mi">100</span><span class="o">*</span><span class="nf">rand</span><span class="p">())</span>
+<span class="w">    </span><span class="nv">l</span><span class="p">.</span><span class="nf">push</span><span class="p">(</span><span class="nv">data</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="nv">v</span><span class="p">,</span><span class="w"> </span><span class="nf">rand</span><span class="p">(),</span><span class="w"> </span><span class="nv">v</span><span class="o">&gt;</span><span class="mi">67</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="s2">&quot;a&quot;</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="s2">&quot;b&quot;</span><span class="p">})</span><span class="w"> </span><span class="kr">end</span>
+<span class="w">  </span><span class="nv">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">Data</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="nv">data</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">best</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">m</span><span class="p">.</span><span class="nf">bestCut</span><span class="p">(</span><span class="nv">data</span><span class="p">.</span><span class="py">cols</span><span class="p">,</span><span class="w"> </span><span class="nv">data</span><span class="p">.</span><span class="py">rows</span><span class="p">,</span>
+<span class="w">                   </span><span class="kr">function</span><span class="p">(</span><span class="nv">r</span><span class="p">)</span><span class="w"> </span><span class="kr">return</span><span class="w"> </span><span class="nv">r</span><span class="p">[</span><span class="o">#</span><span class="nv">r</span><span class="p">]</span><span class="w"> </span><span class="kr">end</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">the</span><span class="p">.</span><span class="py">bins</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">was</span>
+<span class="w">  </span><span class="kr">return</span><span class="w"> </span><span class="nv">l</span><span class="p">.</span><span class="nf">chk</span><span class="p">({</span><span class="s2">&quot;cut val&quot;</span><span class="p">,</span><span class="nv">cuts</span><span class="p">[</span><span class="mi">1</span><span class="p">].</span><span class="nv">val</span><span class="p">,</span><span class="mi">3</span><span class="p">},</span><span class="w"> </span><span class="p">{</span><span class="s2">&quot;split&quot;</span><span class="p">,</span><span class="o">#</span><span class="nv">ls</span><span class="o">+#</span><span class="nv">rs</span><span class="p">,</span><span class="mi">5</span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span><span class="s2">&quot;finds X1&quot;</span><span class="p">,</span><span class="nv">best</span><span class="p">.</span><span class="py">txt</span><span class="p">,</span><span class="s2">&quot;X1&quot;</span><span class="p">},</span><span class="w"> </span><span class="p">{</span><span class="s2">&quot;cut ~67&quot;</span><span class="p">,</span><span class="nv">best</span><span class="p">.</span><span class="py">val</span><span class="p">,</span><span class="mi">67</span><span class="p">,</span><span class="mi">8</span><span class="p">})</span><span class="w"> </span><span class="kr">end</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-26'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-26'>#</a>
+      </div>
+      <h2>tree-eg</h2>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="kd">local</span><span class="w"> </span><span class="nv">Sym</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">m</span><span class="p">.</span><span class="py">Sym</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-27'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-27'>#</a>
+      </div>
+      <h2>Trees, supervised</h2>
+<p>Recurse the cuts: a tree. Here the running example goes
+real: auto93 (via $MOOT), budget-sampled, tree&rsquo;d on its
+last column, printed as an aligned if/else table with the
+best (+) and worst (-) leaves marked. Notice the checks:
+every row lands in exactly one leaf, and <code>relevant</code> routes
+a row back to its leaf&rsquo;s rows.</p>
+<table>
+<thead>
+<tr>
+<th>call</th>
+<th>returns</th>
+<th>what</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>d:tree(y,Sumr,leaf)</code></td>
+<td>node</td>
+<td>greedy bi-tree on y</td>
+</tr>
+<tr>
+<td><code>m.show(node,cols)</code></td>
+<td>&ndash;</td>
+<td>print aligned table</td>
+</tr>
+<tr>
+<td><code>m.relevant(node,row)</code></td>
+<td>rows</td>
+<td>that row&rsquo;s leaf</td>
+</tr>
+<tr>
+<td><code>m.leafStats(node,fn)</code></td>
+<td>num</td>
+<td>fold over leaves</td>
+</tr>
+</tbody>
+</table>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="nv">eg</span><span class="p">[</span><span class="s2">&quot;--tree&quot;</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">function</span><span class="p">(</span><span class="w">    </span><span class="nv">data</span><span class="p">,</span><span class="nv">root</span><span class="p">,</span><span class="nv">y</span><span class="p">,</span><span class="nv">count</span><span class="p">,</span><span class="nv">ls</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">h</span><span class="p">.</span><span class="nf">egData</span><span class="p">()</span>
+<span class="w">  </span><span class="nv">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">data</span><span class="p">:</span><span class="nf">clone</span><span class="p">(</span><span class="nv">l</span><span class="p">.</span><span class="nf">slice</span><span class="p">(</span><span class="nv">l</span><span class="p">.</span><span class="nf">shuffle</span><span class="p">(</span><span class="nv">l</span><span class="p">.</span><span class="nf">copy</span><span class="p">(</span><span class="nv">data</span><span class="p">.</span><span class="py">rows</span><span class="p">)),</span>
+<span class="w">                            </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="nv">the</span><span class="p">.</span><span class="py">labels</span><span class="p">))</span>
+<span class="w">  </span><span class="nv">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">function</span><span class="p">(</span><span class="nv">r</span><span class="p">)</span><span class="w"> </span><span class="kr">return</span><span class="w"> </span><span class="nv">r</span><span class="p">[</span><span class="o">#</span><span class="nv">r</span><span class="p">]</span><span class="w"> </span><span class="kr">end</span>
+<span class="w">  </span><span class="nv">root</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">data</span><span class="p">:</span><span class="nf">tree</span><span class="p">(</span><span class="nv">y</span><span class="p">,</span><span class="w"> </span><span class="nv">Sym</span><span class="p">.</span><span class="py">new</span><span class="p">,</span><span class="w"> </span><span class="nv">the</span><span class="p">.</span><span class="py">leaf</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">m</span><span class="p">.</span><span class="nf">show</span><span class="p">(</span><span class="nv">root</span><span class="p">,</span><span class="w"> </span><span class="nv">data</span><span class="p">.</span><span class="py">cols</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">count</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">function</span><span class="p">(</span><span class="nv">n</span><span class="p">)</span><span class="w"> </span><span class="kr">if</span><span class="w"> </span><span class="nv">n</span><span class="p">.</span><span class="py">leaf</span><span class="w"> </span><span class="kr">then</span><span class="w"> </span><span class="kr">return</span><span class="w"> </span><span class="o">#</span><span class="nv">n</span><span class="p">.</span><span class="py">rows</span><span class="w"> </span><span class="kr">end</span>
+<span class="w">                      </span><span class="kr">return</span><span class="w"> </span><span class="nf">count</span><span class="p">(</span><span class="nv">n</span><span class="p">.</span><span class="py">left</span><span class="p">)</span><span class="o">+</span><span class="nf">count</span><span class="p">(</span><span class="nv">n</span><span class="p">.</span><span class="py">right</span><span class="p">)</span><span class="w"> </span><span class="kr">end</span>
+<span class="w">  </span><span class="nv">ls</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">m</span><span class="p">.</span><span class="nf">leafStats</span><span class="p">(</span><span class="nv">root</span><span class="p">)</span>
+<span class="w">  </span><span class="kr">return</span><span class="w"> </span><span class="nv">l</span><span class="p">.</span><span class="nf">chk</span><span class="p">({</span><span class="s2">&quot;#rows&quot;</span><span class="p">,</span><span class="nf">count</span><span class="p">(</span><span class="nv">root</span><span class="p">),</span><span class="o">#</span><span class="nv">data</span><span class="p">.</span><span class="py">rows</span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span><span class="s2">&quot;leaves&gt;0&quot;</span><span class="p">,</span><span class="nv">ls</span><span class="p">.</span><span class="py">n</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">,</span><span class="kc">true</span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span><span class="s2">&quot;relevant&quot;</span><span class="p">,</span><span class="o">#</span><span class="nv">m</span><span class="p">.</span><span class="nf">relevant</span><span class="p">(</span><span class="nv">root</span><span class="p">,</span><span class="nv">data</span><span class="p">.</span><span class="py">rows</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">,</span><span class="kc">true</span><span class="p">})</span><span class="w"> </span><span class="kr">end</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-28'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-28'>#</a>
+      </div>
+      <h2>Trees, unsupervised</h2>
+<p><code>ftree</code> grows the same shape of tree without ever reading a
+y column: find two far rows (<code>poles</code>, via fastmap), project
+everything onto the line between them, split on that.
+Notice the promise this makes: structure gets found for
+free; labels are only spent later, on the leaves we like.</p>
+<table>
+<thead>
+<tr>
+<th>call</th>
+<th>returns</th>
+<th>what</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>m.poles(d,rows)</code></td>
+<td>a,b</td>
+<td>two far rows</td>
+</tr>
+<tr>
+<td><code>d:ftree(leaf,p,cap)</code></td>
+<td>node</td>
+<td>y never consulted</td>
+</tr>
+</tbody>
+</table>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="nv">eg</span><span class="p">[</span><span class="s2">&quot;--ftree&quot;</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">function</span><span class="p">(</span><span class="w">    </span><span class="nv">data</span><span class="p">,</span><span class="nv">p1</span><span class="p">,</span><span class="nv">p2</span><span class="p">,</span><span class="nv">root</span><span class="p">,</span><span class="nv">count</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">h</span><span class="p">.</span><span class="nf">egData</span><span class="p">()</span>
+<span class="w">  </span><span class="nv">p1</span><span class="p">,</span><span class="nv">p2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">m</span><span class="p">.</span><span class="nf">poles</span><span class="p">(</span><span class="nv">data</span><span class="p">:</span><span class="nf">dxdy</span><span class="p">(),</span><span class="w"> </span><span class="nv">data</span><span class="p">.</span><span class="py">rows</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">root</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">data</span><span class="p">:</span><span class="nf">ftree</span><span class="p">(</span><span class="nv">the</span><span class="p">.</span><span class="py">leaf</span><span class="p">,</span><span class="w"> </span><span class="nv">the</span><span class="p">.</span><span class="py">p</span><span class="p">,</span><span class="w"> </span><span class="o">#</span><span class="nv">data</span><span class="p">.</span><span class="py">rows</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">count</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">function</span><span class="p">(</span><span class="nv">n</span><span class="p">)</span><span class="w"> </span><span class="kr">if</span><span class="w"> </span><span class="nv">n</span><span class="p">.</span><span class="py">leaf</span><span class="w"> </span><span class="kr">then</span><span class="w"> </span><span class="kr">return</span><span class="w"> </span><span class="o">#</span><span class="nv">n</span><span class="p">.</span><span class="py">rows</span><span class="w"> </span><span class="kr">end</span>
+<span class="w">                      </span><span class="kr">return</span><span class="w"> </span><span class="nf">count</span><span class="p">(</span><span class="nv">n</span><span class="p">.</span><span class="py">left</span><span class="p">)</span><span class="o">+</span><span class="nf">count</span><span class="p">(</span><span class="nv">n</span><span class="p">.</span><span class="py">right</span><span class="p">)</span><span class="w"> </span><span class="kr">end</span>
+<span class="w">  </span><span class="kr">return</span><span class="w"> </span><span class="nv">l</span><span class="p">.</span><span class="nf">chk</span><span class="p">({</span><span class="s2">&quot;poles differ&quot;</span><span class="p">,</span><span class="nv">p1</span><span class="w"> </span><span class="o">~=</span><span class="w"> </span><span class="nv">p2</span><span class="p">,</span><span class="kc">true</span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span><span class="s2">&quot;#rows&quot;</span><span class="p">,</span><span class="nf">count</span><span class="p">(</span><span class="nv">root</span><span class="p">),</span><span class="o">#</span><span class="nv">data</span><span class="p">.</span><span class="py">rows</span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span><span class="s2">&quot;is tree&quot;</span><span class="p">,</span><span class="nv">root</span><span class="p">.</span><span class="py">at</span><span class="o">~=</span><span class="kc">nil</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="nv">root</span><span class="p">.</span><span class="py">leaf</span><span class="p">,</span><span class="kc">true</span><span class="p">})</span><span class="w"> </span><span class="kr">end</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-29'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-29'>#</a>
+      </div>
+      <h2>bayes-eg</h2>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="kd">local</span><span class="w"> </span><span class="nv">huge</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">math.huge</span>
+<span class="kd">local</span><span class="w"> </span><span class="nv">Sym</span><span class="p">,</span><span class="nv">Num</span><span class="p">,</span><span class="nv">Data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">m</span><span class="p">.</span><span class="py">Sym</span><span class="p">,</span><span class="w"> </span><span class="nv">m</span><span class="p">.</span><span class="py">Num</span><span class="p">,</span><span class="w"> </span><span class="nv">m</span><span class="p">.</span><span class="py">Data</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-30'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-30'>#</a>
+      </div>
+      <h2>Bayes</h2>
+<p>Two functions make a naive bayes classifier: <code>like</code> scores
+one value against one column (frequency for Syms, gaussian
+for Nums); <code>likes</code> log-sums a whole row against one class&rsquo;s
+data. Six visible rows, two obvious classes; the row
+(1,1,?) must look &ldquo;lo&rdquo;. Notice the log-space sums: products
+of tiny probabilities underflow, sums of logs do not.</p>
+<table>
+<thead>
+<tr>
+<th>call</th>
+<th>returns</th>
+<th>what</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>m.like(col,v,prior)</code></td>
+<td>prob</td>
+<td>P(v given col)</td>
+</tr>
+<tr>
+<td><code>m.likes(data,row,n,k)</code></td>
+<td>log prob</td>
+<td>row given class</td>
+</tr>
+</tbody>
+</table>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="nv">eg</span><span class="p">[</span><span class="s2">&quot;--bayes&quot;</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">function</span><span class="p">(</span><span class="w">    </span><span class="nv">s</span><span class="p">,</span><span class="nv">n</span><span class="p">,</span><span class="nv">data</span><span class="p">,</span><span class="nv">got</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">s</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">m</span><span class="p">.</span><span class="nf">adds</span><span class="p">({</span><span class="s2">&quot;a&quot;</span><span class="p">,</span><span class="s2">&quot;a&quot;</span><span class="p">,</span><span class="s2">&quot;b&quot;</span><span class="p">},</span><span class="w"> </span><span class="nv">Sym</span><span class="p">.</span><span class="py">new</span><span class="s2">&quot;k&quot;</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">m</span><span class="p">.</span><span class="nf">adds</span><span class="p">({</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">},</span><span class="w"> </span><span class="nv">Num</span><span class="p">.</span><span class="py">new</span><span class="s2">&quot;Y&quot;</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">Data</span><span class="p">.</span><span class="py">new</span><span class="p">{{</span><span class="s2">&quot;X1&quot;</span><span class="p">,</span><span class="s2">&quot;X2&quot;</span><span class="p">,</span><span class="s2">&quot;class!&quot;</span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="s2">&quot;lo&quot;</span><span class="p">},{</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="s2">&quot;lo&quot;</span><span class="p">},{</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="s2">&quot;lo&quot;</span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span><span class="mi">9</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="s2">&quot;hi&quot;</span><span class="p">},{</span><span class="mi">9</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="s2">&quot;hi&quot;</span><span class="p">},{</span><span class="mi">8</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="s2">&quot;hi&quot;</span><span class="p">}}</span>
+<span class="w">  </span><span class="nv">got</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">m</span><span class="p">.</span><span class="nf">likes</span><span class="p">(</span><span class="nv">data</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="s2">&quot;?&quot;</span><span class="p">},</span><span class="w"> </span><span class="mi">6</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span>
+<span class="w">  </span><span class="kr">return</span><span class="w"> </span><span class="nv">l</span><span class="p">.</span><span class="nf">chk</span><span class="p">({</span><span class="s2">&quot;sym like&gt;0&quot;</span><span class="p">,</span><span class="nv">m</span><span class="p">.</span><span class="nf">like</span><span class="p">(</span><span class="nv">s</span><span class="p">,</span><span class="s2">&quot;a&quot;</span><span class="p">,</span><span class="mf">0.5</span><span class="p">)</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="kc">true</span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span><span class="s2">&quot;num like&gt;0&quot;</span><span class="p">,</span><span class="nv">m</span><span class="p">.</span><span class="nf">like</span><span class="p">(</span><span class="nv">n</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mf">0.5</span><span class="p">)</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="kc">true</span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span><span class="s2">&quot;finite&quot;</span><span class="p">,</span><span class="nv">got</span><span class="o">==</span><span class="nv">got</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="nv">got</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="o">-</span><span class="nv">huge</span><span class="p">,</span><span class="kc">true</span><span class="p">})</span><span class="w"> </span><span class="kr">end</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-31'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-31'>#</a>
+      </div>
+      <h2>mutate-eg</h2>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="kd">local</span><span class="w"> </span><span class="nv">Data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">m</span><span class="p">.</span><span class="py">Data</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-32'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-32'>#</a>
+      </div>
+      <h2>Mutation</h2>
+<p>Optimizers (the app files) need to invent new rows. <code>pick</code>
+samples one column&rsquo;s distribution; <code>picks</code> mutates n random
+x cells of a copied row; <code>extrapolate</code> is differential
+evolution&rsquo;s a + F*(b - c), wrapped back into mu +- 4sd.
+Notice what never changes: the y cell of a mutant &ndash; goals
+are computed, not guessed.</p>
+<table>
+<thead>
+<tr>
+<th>call</th>
+<th>returns</th>
+<th>what</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>m.pick(col,v)</code></td>
+<td>value</td>
+<td>sample near v (or mid)</td>
+</tr>
+<tr>
+<td><code>m.picks(data,row,n)</code></td>
+<td>row</td>
+<td>mutate n x cells</td>
+</tr>
+<tr>
+<td><code>m.extrapolate(cols,a,b,c,F)</code></td>
+<td>row</td>
+<td>DE blend</td>
+</tr>
+</tbody>
+</table>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="nv">eg</span><span class="p">[</span><span class="s2">&quot;--mutate&quot;</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">function</span><span class="p">(</span><span class="w">    </span><span class="nv">data</span><span class="p">,</span><span class="nv">n</span><span class="p">,</span><span class="nv">row</span><span class="p">,</span><span class="nv">out</span><span class="p">,</span><span class="nv">kid</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">Data</span><span class="p">.</span><span class="py">new</span><span class="p">{{</span><span class="s2">&quot;X1&quot;</span><span class="p">,</span><span class="s2">&quot;X2&quot;</span><span class="p">,</span><span class="s2">&quot;Y-&quot;</span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">10</span><span class="p">},{</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">20</span><span class="p">},{</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">30</span><span class="p">},{</span><span class="mi">4</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">40</span><span class="p">},{</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">50</span><span class="p">}}</span>
+<span class="w">  </span><span class="nv">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">data</span><span class="p">.</span><span class="py">cols</span><span class="p">.</span><span class="py">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="w">  </span><span class="nv">row</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">30</span><span class="p">}</span>
+<span class="w">  </span><span class="nv">out</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">m</span><span class="p">.</span><span class="nf">picks</span><span class="p">(</span><span class="nv">data</span><span class="p">,</span><span class="w"> </span><span class="nv">row</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">kid</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">m</span><span class="p">.</span><span class="nf">extrapolate</span><span class="p">(</span><span class="nv">data</span><span class="p">.</span><span class="py">cols</span><span class="p">.</span><span class="py">x</span><span class="p">,</span>
+<span class="w">          </span><span class="nv">data</span><span class="p">.</span><span class="py">rows</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="w"> </span><span class="nv">data</span><span class="p">.</span><span class="py">rows</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span><span class="w"> </span><span class="nv">data</span><span class="p">.</span><span class="py">rows</span><span class="p">[</span><span class="mi">5</span><span class="p">],</span><span class="w"> </span><span class="nv">the</span><span class="p">.</span><span class="py">F</span><span class="p">)</span>
+<span class="w">  </span><span class="kr">return</span><span class="w"> </span><span class="nv">l</span><span class="p">.</span><span class="nf">chk</span><span class="p">(</span>
+<span class="w">    </span><span class="p">{</span><span class="s2">&quot;pick in range&quot;</span><span class="p">,</span><span class="nv">m</span><span class="p">.</span><span class="nf">pick</span><span class="p">(</span><span class="nv">n</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="nv">n</span><span class="p">.</span><span class="py">mu</span><span class="o">+</span><span class="mi">4</span><span class="o">*</span><span class="nv">n</span><span class="p">:</span><span class="nf">spread</span><span class="p">(),</span><span class="kc">true</span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span><span class="s2">&quot;picks len&quot;</span><span class="p">,</span><span class="o">#</span><span class="nv">out</span><span class="p">,</span><span class="o">#</span><span class="nv">row</span><span class="p">},</span><span class="w"> </span><span class="p">{</span><span class="s2">&quot;y kept&quot;</span><span class="p">,</span><span class="nv">out</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span><span class="nv">row</span><span class="p">[</span><span class="mi">3</span><span class="p">]},</span>
+<span class="w">    </span><span class="p">{</span><span class="s2">&quot;kid len&quot;</span><span class="p">,</span><span class="o">#</span><span class="nv">kid</span><span class="p">,</span><span class="mi">3</span><span class="p">})</span><span class="w"> </span><span class="kr">end</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-33'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-33'>#</a>
+      </div>
+      <h2>cluster-eg</h2>
+<h2>Clustering</h2>
+<p><code>kmeans</code> around sampled centroids, error per iteration
+(watch it shrink); <code>kpp</code> picks smarter starting centroids,
+d^2-weighted far from each other.</p>
+<table>
+<thead>
+<tr>
+<th>call</th>
+<th>returns</th>
+<th>what</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>a.kmeans(data,k,iter)</code></td>
+<td>clusters,errs</td>
+<td>k Data + errs</td>
+</tr>
+<tr>
+<td><code>a.kpp(data,k,few)</code></td>
+<td>rows</td>
+<td>k far centroids</td>
+</tr>
+</tbody>
+</table>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="nv">eg</span><span class="p">[</span><span class="s2">&quot;--kmeans&quot;</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">function</span><span class="p">(</span><span class="w">    </span><span class="nv">data</span><span class="p">,</span><span class="nv">clusters</span><span class="p">,</span><span class="nv">errs</span><span class="p">,</span><span class="nv">n</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">h</span><span class="p">.</span><span class="nf">pickData</span><span class="p">()</span>
+<span class="w">  </span><span class="nv">clusters</span><span class="p">,</span><span class="w"> </span><span class="nv">errs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">a</span><span class="p">.</span><span class="nf">kmeans</span><span class="p">(</span><span class="nv">data</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="mi">8</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="kr">for</span><span class="w"> </span><span class="nv">_</span><span class="p">,</span><span class="nv">c</span><span class="w"> </span><span class="kr">in</span><span class="w"> </span><span class="nb">ipairs</span><span class="p">(</span><span class="nv">clusters</span><span class="p">)</span><span class="w"> </span><span class="kr">do</span><span class="w"> </span><span class="nv">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">n</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="o">#</span><span class="nv">c</span><span class="p">.</span><span class="py">rows</span><span class="w"> </span><span class="kr">end</span>
+<span class="w">  </span><span class="kr">for</span><span class="w"> </span><span class="nv">i</span><span class="p">,</span><span class="nv">e</span><span class="w"> </span><span class="kr">in</span><span class="w"> </span><span class="nb">ipairs</span><span class="p">(</span><span class="nv">errs</span><span class="p">)</span><span class="w"> </span><span class="kr">do</span>
+<span class="w">    </span><span class="nb">print</span><span class="p">((</span><span class="s2">&quot;iter %d  err=%.4f&quot;</span><span class="p">):</span><span class="nf">format</span><span class="p">(</span><span class="nv">i</span><span class="p">,</span><span class="nv">e</span><span class="p">))</span><span class="w"> </span><span class="kr">end</span>
+<span class="w">  </span><span class="kr">return</span><span class="w"> </span><span class="nv">l</span><span class="p">.</span><span class="nf">chk</span><span class="p">({</span><span class="s2">&quot;k clusters&quot;</span><span class="p">,</span><span class="o">#</span><span class="nv">clusters</span><span class="p">,</span><span class="mi">5</span><span class="p">},</span>
+<span class="w">               </span><span class="p">{</span><span class="s2">&quot;all rows kept&quot;</span><span class="p">,</span><span class="nv">n</span><span class="p">,</span><span class="o">#</span><span class="nv">data</span><span class="p">.</span><span class="py">rows</span><span class="p">},</span>
+<span class="w">               </span><span class="p">{</span><span class="s2">&quot;err shrinks&quot;</span><span class="p">,</span><span class="nv">errs</span><span class="p">[</span><span class="o">#</span><span class="nv">errs</span><span class="p">]</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="nv">errs</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="kc">true</span><span class="p">})</span><span class="w"> </span><span class="kr">end</span>
+
+<span class="nv">eg</span><span class="p">[</span><span class="s2">&quot;--kpp&quot;</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">function</span><span class="p">(</span><span class="w">    </span><span class="nv">data</span><span class="p">,</span><span class="nv">cents</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">h</span><span class="p">.</span><span class="nf">pickData</span><span class="p">()</span>
+<span class="w">  </span><span class="nv">cents</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">a</span><span class="p">.</span><span class="nf">kpp</span><span class="p">(</span><span class="nv">data</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="mi">64</span><span class="p">)</span>
+<span class="w">  </span><span class="kr">return</span><span class="w"> </span><span class="nv">l</span><span class="p">.</span><span class="nf">chk</span><span class="p">({</span><span class="s2">&quot;k cents&quot;</span><span class="p">,</span><span class="w"> </span><span class="o">#</span><span class="nv">cents</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">})</span><span class="w"> </span><span class="kr">end</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-34'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-34'>#</a>
+      </div>
+      <h2>classify-eg</h2>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="kd">local</span><span class="w"> </span><span class="nv">Data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">m</span><span class="p">.</span><span class="py">Data</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-35'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-35'>#</a>
+      </div>
+      <h2>Classify</h2>
+<p>Incremental naive bayes, test-then-train: guess each row&rsquo;s
+klass from the models so far, score the guess, then learn
+the truth. Notice the honesty: every prediction is made
+before that row is seen.</p>
+<table>
+<thead>
+<tr>
+<th>call</th>
+<th>returns</th>
+<th>what</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>a.classify(data,wait)</code></td>
+<td>confuse</td>
+<td>scored predictions</td>
+</tr>
+</tbody>
+</table>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="nv">eg</span><span class="p">[</span><span class="s2">&quot;--classify&quot;</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">function</span><span class="p">(</span><span class="w">    </span><span class="nv">data</span><span class="p">,</span><span class="nv">cf</span><span class="p">,</span><span class="nv">n</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">h</span><span class="p">.</span><span class="nf">loadCsv</span><span class="p">(</span><span class="nv">the</span><span class="p">.</span><span class="py">train</span><span class="p">)</span>
+<span class="w">  </span><span class="kr">if</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="p">(</span><span class="nv">data</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="nv">data</span><span class="p">.</span><span class="py">cols</span><span class="p">.</span><span class="py">klass</span><span class="p">)</span><span class="w"> </span><span class="kr">then</span>
+<span class="w">    </span><span class="nv">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">Data</span><span class="p">.</span><span class="py">new</span><span class="p">{{</span><span class="s2">&quot;X1&quot;</span><span class="p">,</span><span class="s2">&quot;X2&quot;</span><span class="p">,</span><span class="s2">&quot;klass!&quot;</span><span class="p">},</span>
+<span class="w">      </span><span class="p">{</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="s2">&quot;a&quot;</span><span class="p">},{</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="s2">&quot;a&quot;</span><span class="p">},{</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="s2">&quot;a&quot;</span><span class="p">},{</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="s2">&quot;a&quot;</span><span class="p">},</span>
+<span class="w">      </span><span class="p">{</span><span class="mi">9</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="s2">&quot;b&quot;</span><span class="p">},{</span><span class="mi">9</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="s2">&quot;b&quot;</span><span class="p">},{</span><span class="mi">8</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="s2">&quot;b&quot;</span><span class="p">},{</span><span class="mi">8</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="s2">&quot;b&quot;</span><span class="p">},</span>
+<span class="w">      </span><span class="p">{</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="s2">&quot;a&quot;</span><span class="p">},{</span><span class="mi">9</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="s2">&quot;b&quot;</span><span class="p">},{</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="s2">&quot;a&quot;</span><span class="p">},{</span><span class="mi">8</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="s2">&quot;b&quot;</span><span class="p">}}</span><span class="w"> </span><span class="kr">end</span>
+<span class="w">  </span><span class="nv">cf</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">a</span><span class="p">.</span><span class="nf">classify</span><span class="p">(</span><span class="nv">data</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">cf</span><span class="p">:</span><span class="nf">show</span><span class="p">()</span>
+<span class="w">  </span><span class="nv">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span>
+<span class="w">  </span><span class="kr">for</span><span class="w"> </span><span class="nv">_</span><span class="p">,</span><span class="nv">gs</span><span class="w"> </span><span class="kr">in</span><span class="w"> </span><span class="nb">pairs</span><span class="p">(</span><span class="nv">cf</span><span class="p">.</span><span class="py">t</span><span class="p">)</span><span class="w"> </span><span class="kr">do</span>
+<span class="w">    </span><span class="kr">for</span><span class="w"> </span><span class="nv">_</span><span class="p">,</span><span class="nv">c</span><span class="w"> </span><span class="kr">in</span><span class="w"> </span><span class="nb">pairs</span><span class="p">(</span><span class="nv">gs</span><span class="p">)</span><span class="w"> </span><span class="kr">do</span><span class="w"> </span><span class="nv">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">n</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nv">c</span><span class="w"> </span><span class="kr">end</span><span class="w"> </span><span class="kr">end</span>
+<span class="w">  </span><span class="kr">return</span><span class="w"> </span><span class="nv">l</span><span class="p">.</span><span class="nf">chk</span><span class="p">({</span><span class="s2">&quot;cf nonempty&quot;</span><span class="p">,</span><span class="w"> </span><span class="nv">n</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="kc">true</span><span class="p">})</span><span class="w"> </span><span class="kr">end</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-36'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-36'>#</a>
+      </div>
+      <h2>acquire-eg</h2>
+<h2>Active learning</h2>
+<p>Labels are dear: <code>acquire</code> warm-starts on a few labeled
+rows, splits them best/rest, then repeatedly labels the
+unlabeled row the Bayes score likes most.</p>
+<table>
+<thead>
+<tr>
+<th>call</th>
+<th>returns</th>
+<th>what</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>a.acquire(data,score)</code></td>
+<td>data</td>
+<td>the labeled few</td>
+</tr>
+<tr>
+<td><code>a.acquireBayes(b,r,row)</code></td>
+<td>num</td>
+<td>like(best)-like(rest)</td>
+</tr>
+</tbody>
+</table>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="nv">eg</span><span class="p">[</span><span class="s2">&quot;--acquire&quot;</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">function</span><span class="p">(</span><span class="w">    </span><span class="nv">data</span><span class="p">,</span><span class="nv">lab</span><span class="p">,</span><span class="nv">was</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">h</span><span class="p">.</span><span class="nf">pickData</span><span class="p">()</span>
+<span class="w">  </span><span class="nv">was</span><span class="p">,</span><span class="w"> </span><span class="nv">the</span><span class="p">.</span><span class="py">start</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">the</span><span class="p">.</span><span class="py">start</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span>
+<span class="w">  </span><span class="nv">the</span><span class="p">.</span><span class="py">budget</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">20</span>
+<span class="w">  </span><span class="nv">lab</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">a</span><span class="p">.</span><span class="nf">acquire</span><span class="p">(</span><span class="nv">data</span><span class="p">,</span><span class="w"> </span><span class="nv">a</span><span class="p">.</span><span class="py">acquireBayes</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">the</span><span class="p">.</span><span class="py">start</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">was</span>
+<span class="w">  </span><span class="kr">return</span><span class="w"> </span><span class="nv">l</span><span class="p">.</span><span class="nf">chk</span><span class="p">({</span><span class="s2">&quot;labeled grew&quot;</span><span class="p">,</span><span class="w"> </span><span class="o">#</span><span class="nv">lab</span><span class="p">.</span><span class="py">rows</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">10</span><span class="p">,</span><span class="w"> </span><span class="kc">true</span><span class="p">})</span><span class="w"> </span><span class="kr">end</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-37'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-37'>#</a>
+      </div>
+      <h2>sample-eg</h2>
+<h2>Synthesis and anomalies</h2>
+<p><code>sample</code> invents rows by DE-blending three real rows per
+ftree leaf; <code>anomalyDetector</code> calibrates a 1-NN-in-leaf
+distance CDF, so tails mark anomalies. Notice the cross
+check: most synthetic rows should NOT look anomalous.</p>
+<table>
+<thead>
+<tr>
+<th>call</th>
+<th>returns</th>
+<th>what</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>a.sample(data,N)</code></td>
+<td>rows</td>
+<td>N synthetic rows</td>
+</tr>
+<tr>
+<td><code>a.anomalyDetector(data)</code></td>
+<td>fn</td>
+<td>row -&gt; CDF 0..1</td>
+</tr>
+</tbody>
+</table>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="nv">eg</span><span class="p">[</span><span class="s2">&quot;--sample&quot;</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">function</span><span class="p">(</span><span class="w">    </span><span class="nv">data</span><span class="p">,</span><span class="nv">synth</span><span class="p">,</span><span class="nv">det</span><span class="p">,</span><span class="nv">bad</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">data</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="nv">h</span><span class="p">.</span><span class="nf">pickData</span><span class="p">()</span>
+<span class="w">  </span><span class="nv">synth</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">a</span><span class="p">.</span><span class="nf">sample</span><span class="p">(</span><span class="nv">data</span><span class="p">,</span><span class="w"> </span><span class="mi">50</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">det</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="nv">a</span><span class="p">.</span><span class="nf">anomalyDetector</span><span class="p">(</span><span class="nv">data</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">bad</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span>
+<span class="w">  </span><span class="kr">for</span><span class="w"> </span><span class="nv">_</span><span class="p">,</span><span class="nv">r</span><span class="w"> </span><span class="kr">in</span><span class="w"> </span><span class="nb">ipairs</span><span class="p">(</span><span class="nv">synth</span><span class="p">)</span><span class="w"> </span><span class="kr">do</span>
+<span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">cdf</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">det</span><span class="p">(</span><span class="nv">r</span><span class="p">)</span>
+<span class="w">    </span><span class="kr">if</span><span class="w"> </span><span class="nv">cdf</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mf">0.1</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="nv">cdf</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mf">0.9</span><span class="w"> </span><span class="kr">then</span><span class="w"> </span><span class="nv">bad</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">bad</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="kr">end</span><span class="w"> </span><span class="kr">end</span>
+<span class="w">  </span><span class="nv">l</span><span class="p">.</span><span class="nf">say</span><span class="p">((</span><span class="s2">&quot;anomalous synth: %d/%d</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">):</span><span class="nf">format</span><span class="p">(</span><span class="nv">bad</span><span class="p">,</span><span class="w"> </span><span class="o">#</span><span class="nv">synth</span><span class="p">))</span>
+<span class="w">  </span><span class="kr">return</span><span class="w"> </span><span class="nv">l</span><span class="p">.</span><span class="nf">chk</span><span class="p">({</span><span class="s2">&quot;n synth&quot;</span><span class="p">,</span><span class="o">#</span><span class="nv">synth</span><span class="p">,</span><span class="mi">50</span><span class="p">},</span>
+<span class="w">               </span><span class="p">{</span><span class="s2">&quot;row len&quot;</span><span class="p">,</span><span class="o">#</span><span class="nv">synth</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="o">#</span><span class="nv">data</span><span class="p">.</span><span class="py">cols</span><span class="p">.</span><span class="py">all</span><span class="p">},</span>
+<span class="w">               </span><span class="p">{</span><span class="s2">&quot;mostly sane&quot;</span><span class="p">,</span><span class="nv">bad</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="o">#</span><span class="nv">synth</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span><span class="kc">true</span><span class="p">})</span><span class="w"> </span><span class="kr">end</span>
+
+<span class="nv">eg</span><span class="p">[</span><span class="s2">&quot;--anomaly&quot;</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">function</span><span class="p">(</span><span class="w">    </span><span class="nv">data</span><span class="p">,</span><span class="nv">det</span><span class="p">,</span><span class="nv">known</span><span class="p">,</span><span class="nv">outlier</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">data</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="nv">h</span><span class="p">.</span><span class="nf">pickData</span><span class="p">()</span>
+<span class="w">  </span><span class="nv">det</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="nv">a</span><span class="p">.</span><span class="nf">anomalyDetector</span><span class="p">(</span><span class="nv">data</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">known</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">data</span><span class="p">.</span><span class="py">rows</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="w">  </span><span class="nv">outlier</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">l</span><span class="p">.</span><span class="nf">copy</span><span class="p">(</span><span class="nv">known</span><span class="p">)</span>
+<span class="w">  </span><span class="kr">for</span><span class="w"> </span><span class="nv">_</span><span class="p">,</span><span class="nv">c</span><span class="w"> </span><span class="kr">in</span><span class="w"> </span><span class="nb">ipairs</span><span class="p">(</span><span class="nv">data</span><span class="p">.</span><span class="py">cols</span><span class="p">.</span><span class="py">x</span><span class="p">)</span><span class="w"> </span><span class="kr">do</span>
+<span class="w">    </span><span class="kr">if</span><span class="w"> </span><span class="nv">c</span><span class="p">.</span><span class="py">mu</span><span class="w"> </span><span class="kr">then</span><span class="w"> </span><span class="nv">outlier</span><span class="p">[</span><span class="nv">c</span><span class="p">.</span><span class="py">at</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1E6</span><span class="w"> </span><span class="kr">end</span><span class="w"> </span><span class="kr">end</span>
+<span class="w">  </span><span class="kr">return</span><span class="w"> </span><span class="nv">l</span><span class="p">.</span><span class="nf">chk</span><span class="p">({</span><span class="s2">&quot;known in body&quot;</span><span class="p">,</span>
+<span class="w">                </span><span class="nf">det</span><span class="p">(</span><span class="nv">known</span><span class="p">)</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mf">0.1</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="nf">det</span><span class="p">(</span><span class="nv">known</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mf">0.9</span><span class="p">,</span><span class="w"> </span><span class="kc">true</span><span class="p">},</span>
+<span class="w">               </span><span class="p">{</span><span class="s2">&quot;outlier tail&quot;</span><span class="p">,</span><span class="w"> </span><span class="nf">det</span><span class="p">(</span><span class="nv">outlier</span><span class="p">)</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mf">0.9</span><span class="p">,</span><span class="w"> </span><span class="kc">true</span><span class="p">})</span><span class="w"> </span><span class="kr">end</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-38'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-38'>#</a>
+      </div>
+      <h2>bob-eg</h2>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="kd">local</span><span class="w"> </span><span class="nv">Num</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">m</span><span class="p">.</span><span class="py">Num</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-39'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-39'>#</a>
+      </div>
+      <h2>Someplace cool: the whole rig</h2>
+<p><code>bob</code> is the pipeline: split the rows, acquire labels on
+the train half, tree the labels, rank the unseen test half,
+check the top few. <code>--acq</code> batches it: one csv in, one
+&ldquo;win disty file&rdquo; line out.</p>
+<table>
+<thead>
+<tr>
+<th>call</th>
+<th>returns</th>
+<th>what</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>a.bob(data,score)</code></td>
+<td>row,dxdy</td>
+<td>best unseen test row</td>
+</tr>
+</tbody>
+</table>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="nv">eg</span><span class="p">[</span><span class="s2">&quot;--bob&quot;</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">function</span><span class="p">(</span><span class="w">    </span><span class="nv">data</span><span class="p">,</span><span class="nv">best</span><span class="p">,</span><span class="nv">d</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">h</span><span class="p">.</span><span class="nf">pickData</span><span class="p">()</span>
+<span class="w">  </span><span class="nv">the</span><span class="p">.</span><span class="py">budget</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">20</span>
+<span class="w">  </span><span class="nv">the</span><span class="p">.</span><span class="py">start</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">10</span>
+<span class="w">  </span><span class="nv">best</span><span class="p">,</span><span class="w"> </span><span class="nv">d</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">a</span><span class="p">.</span><span class="nf">bob</span><span class="p">(</span><span class="nv">data</span><span class="p">)</span>
+<span class="w">  </span><span class="kr">return</span><span class="w"> </span><span class="nv">l</span><span class="p">.</span><span class="nf">chk</span><span class="p">({</span><span class="s2">&quot;bob is row&quot;</span><span class="p">,</span><span class="nv">best</span><span class="w"> </span><span class="o">~=</span><span class="w"> </span><span class="kc">nil</span><span class="p">,</span><span class="kc">true</span><span class="p">},</span>
+<span class="w">               </span><span class="p">{</span><span class="s2">&quot;win number&quot;</span><span class="p">,</span><span class="nb">type</span><span class="p">(</span><span class="nv">d</span><span class="p">.</span><span class="nf">win</span><span class="p">(</span><span class="nv">best</span><span class="p">)),</span><span class="s2">&quot;number&quot;</span><span class="p">})</span><span class="w"> </span><span class="kr">end</span>
+
+<span class="nv">eg</span><span class="p">[</span><span class="s2">&quot;--acq&quot;</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">function</span><span class="p">(</span><span class="w">    </span><span class="nv">data</span><span class="p">,</span><span class="nv">win</span><span class="p">,</span><span class="nv">dy</span><span class="p">,</span><span class="nv">best</span><span class="p">,</span><span class="nv">d</span><span class="p">,</span><span class="nv">ok</span><span class="p">,</span><span class="nv">err</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">ok</span><span class="p">,</span><span class="w"> </span><span class="nv">err</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">pcall</span><span class="p">(</span><span class="kr">function</span><span class="p">()</span>
+<span class="w">    </span><span class="nv">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">h</span><span class="p">.</span><span class="nf">loadCsv</span><span class="p">(</span><span class="nv">the</span><span class="p">.</span><span class="py">train</span><span class="p">)</span>
+<span class="w">    </span><span class="kr">if</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="nv">data</span><span class="w"> </span><span class="kr">then</span><span class="w"> </span><span class="nb">error</span><span class="p">(</span><span class="s2">&quot;missing file&quot;</span><span class="p">)</span><span class="w"> </span><span class="kr">end</span>
+<span class="w">    </span><span class="nv">win</span><span class="p">,</span><span class="w"> </span><span class="nv">dy</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">Num</span><span class="p">.</span><span class="nf">new</span><span class="p">(),</span><span class="w"> </span><span class="nv">Num</span><span class="p">.</span><span class="nf">new</span><span class="p">()</span>
+<span class="w">    </span><span class="kr">for</span><span class="w"> </span><span class="nv">_</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="nv">the</span><span class="p">.</span><span class="py">repeats</span><span class="w"> </span><span class="kr">do</span>
+<span class="w">      </span><span class="nv">best</span><span class="p">,</span><span class="w"> </span><span class="nv">d</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">a</span><span class="p">.</span><span class="nf">bob</span><span class="p">(</span><span class="nv">data</span><span class="p">)</span>
+<span class="w">      </span><span class="nv">win</span><span class="p">:</span><span class="nf">add</span><span class="p">(</span><span class="nv">d</span><span class="p">.</span><span class="nf">win</span><span class="p">(</span><span class="nv">best</span><span class="p">))</span>
+<span class="w">      </span><span class="nv">dy</span><span class="p">:</span><span class="nf">add</span><span class="p">(</span><span class="nv">m</span><span class="p">.</span><span class="nf">disty</span><span class="p">(</span><span class="nv">data</span><span class="p">.</span><span class="py">cols</span><span class="p">,</span><span class="w"> </span><span class="nv">best</span><span class="p">,</span><span class="w"> </span><span class="nv">the</span><span class="p">.</span><span class="py">p</span><span class="p">))</span><span class="w"> </span><span class="kr">end</span>
+<span class="w">    </span><span class="nb">print</span><span class="p">(</span><span class="nb">string.format</span><span class="p">(</span><span class="s2">&quot;%4.0f  %.4f  %s&quot;</span><span class="p">,</span>
+<span class="w">                        </span><span class="nv">win</span><span class="p">.</span><span class="py">mu</span><span class="p">,</span><span class="w"> </span><span class="nv">dy</span><span class="p">.</span><span class="py">mu</span><span class="p">,</span><span class="w"> </span><span class="nv">the</span><span class="p">.</span><span class="py">train</span><span class="p">))</span><span class="w"> </span><span class="kr">end</span><span class="p">)</span>
+<span class="w">  </span><span class="kr">if</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="nv">ok</span><span class="w"> </span><span class="kr">then</span><span class="w"> </span><span class="nb">print</span><span class="p">(</span><span class="nb">string.format</span><span class="p">(</span><span class="s2">&quot;ERR   ---     %s  # %s&quot;</span><span class="p">,</span>
+<span class="w">                                     </span><span class="nv">the</span><span class="p">.</span><span class="py">train</span><span class="p">,</span><span class="w"> </span><span class="nv">err</span><span class="p">))</span><span class="w"> </span><span class="kr">end</span>
+<span class="w">  </span><span class="kr">return</span><span class="w"> </span><span class="kc">true</span><span class="w"> </span><span class="kr">end</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-40'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-40'>#</a>
+      </div>
+      <h2>ga-eg</h2>
+<h2>Genetic algorithm</h2>
+<p>Mutate, tournament select, crossover; the tracker snaps
+every kid to its nearest real row and logs each new global
+best.</p>
+<table>
+<thead>
+<tr>
+<th>call</th>
+<th>returns</th>
+<th>what</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>a.ga(data,better)</code></td>
+<td>stepper</td>
+<td>one call = one gen</td>
+</tr>
+</tbody>
+</table>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="nv">eg</span><span class="p">[</span><span class="s2">&quot;--ga&quot;</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">function</span><span class="p">(</span><span class="w">    </span><span class="nv">data</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">h</span><span class="p">.</span><span class="nf">pickData</span><span class="p">()</span>
+<span class="w">  </span><span class="nv">the</span><span class="p">.</span><span class="py">np</span><span class="p">,</span><span class="w"> </span><span class="nv">the</span><span class="p">.</span><span class="py">cr</span><span class="p">,</span><span class="w"> </span><span class="nv">the</span><span class="p">.</span><span class="py">gens</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">50</span><span class="p">,</span><span class="w"> </span><span class="mf">0.25</span><span class="p">,</span><span class="w"> </span><span class="mi">50</span>
+<span class="w">  </span><span class="kr">return</span><span class="w"> </span><span class="nv">h</span><span class="p">.</span><span class="nf">runRace</span><span class="p">(</span><span class="nv">data</span><span class="p">,</span><span class="w"> </span><span class="p">{{</span><span class="s2">&quot;ga&quot;</span><span class="p">,</span><span class="w"> </span><span class="nv">a</span><span class="p">.</span><span class="nf">ga</span><span class="p">(</span><span class="nv">data</span><span class="p">,</span><span class="w"> </span><span class="nv">a</span><span class="p">.</span><span class="nf">knn</span><span class="p">(</span><span class="nv">data</span><span class="p">))}})</span><span class="w"> </span><span class="kr">end</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-41'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-41'>#</a>
+      </div>
+      <h2>de-eg</h2>
+<h2>Differential evolution</h2>
+<p>DE/rand/1: blend three distinct rows per parent; the kid
+replaces its parent when the oracle scores it better.</p>
+<table>
+<thead>
+<tr>
+<th>call</th>
+<th>returns</th>
+<th>what</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>a.de(data,oracle)</code></td>
+<td>stepper</td>
+<td>one call = one gen</td>
+</tr>
+</tbody>
+</table>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="nv">eg</span><span class="p">[</span><span class="s2">&quot;--de&quot;</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">function</span><span class="p">(</span><span class="w">    </span><span class="nv">data</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">h</span><span class="p">.</span><span class="nf">pickData</span><span class="p">()</span>
+<span class="w">  </span><span class="nv">the</span><span class="p">.</span><span class="py">de_iter</span><span class="p">,</span><span class="w"> </span><span class="nv">the</span><span class="p">.</span><span class="py">np</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">30</span><span class="p">,</span><span class="w"> </span><span class="mi">20</span>
+<span class="w">  </span><span class="kr">return</span><span class="w"> </span><span class="nv">h</span><span class="p">.</span><span class="nf">runRace</span><span class="p">(</span><span class="nv">data</span><span class="p">,</span><span class="w"> </span><span class="p">{{</span><span class="s2">&quot;de&quot;</span><span class="p">,</span><span class="w"> </span><span class="nv">a</span><span class="p">.</span><span class="nf">de</span><span class="p">(</span><span class="nv">data</span><span class="p">)}})</span><span class="w"> </span><span class="kr">end</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-42'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-42'>#</a>
+      </div>
+      <h2>search-eg</h2>
+<h2>(1+1) search</h2>
+<p>One current solution, one mutant at a time. <code>sa</code> accepts
+worse kids early (metropolis, cooling); <code>ls</code> is greedy with
+restarts. Both ride the same <code>oneplus1</code> stepper.</p>
+<table>
+<thead>
+<tr>
+<th>call</th>
+<th>returns</th>
+<th>what</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>a.sa(data)</code></td>
+<td>stepper</td>
+<td>simulated annealing</td>
+</tr>
+<tr>
+<td><code>a.ls(data)</code></td>
+<td>stepper</td>
+<td>greedy local search</td>
+</tr>
+</tbody>
+</table>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="nv">eg</span><span class="p">[</span><span class="s2">&quot;--sa&quot;</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">function</span><span class="p">(</span><span class="w">    </span><span class="nv">data</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">h</span><span class="p">.</span><span class="nf">pickData</span><span class="p">()</span>
+<span class="w">  </span><span class="kr">return</span><span class="w"> </span><span class="nv">h</span><span class="p">.</span><span class="nf">runRace</span><span class="p">(</span><span class="nv">data</span><span class="p">,</span><span class="w"> </span><span class="p">{{</span><span class="s2">&quot;sa&quot;</span><span class="p">,</span><span class="w"> </span><span class="nv">a</span><span class="p">.</span><span class="nf">sa</span><span class="p">(</span><span class="nv">data</span><span class="p">)}})</span><span class="w"> </span><span class="kr">end</span>
+
+<span class="nv">eg</span><span class="p">[</span><span class="s2">&quot;--ls&quot;</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">function</span><span class="p">(</span><span class="w">    </span><span class="nv">data</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">h</span><span class="p">.</span><span class="nf">pickData</span><span class="p">()</span>
+<span class="w">  </span><span class="kr">return</span><span class="w"> </span><span class="nv">h</span><span class="p">.</span><span class="nf">runRace</span><span class="p">(</span><span class="nv">data</span><span class="p">,</span><span class="w"> </span><span class="p">{{</span><span class="s2">&quot;ls&quot;</span><span class="p">,</span><span class="w"> </span><span class="nv">a</span><span class="p">.</span><span class="nf">ls</span><span class="p">(</span><span class="nv">data</span><span class="p">)}})</span><span class="w"> </span><span class="kr">end</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-43'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-43'>#</a>
+      </div>
+      <h2>race-eg</h2>
+<h2>Race them all</h2>
+<p>Run ga, de, sa and ls under one eval budget; merge their
+logs into one global-best timeline. The printed table is
+the story: who found what, when, and how good.</p>
+<table>
+<thead>
+<tr>
+<th>call</th>
+<th>returns</th>
+<th>what</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>a.race(data,opts)</code></td>
+<td>log</td>
+<td>merged best timeline</td>
+</tr>
+<tr>
+<td><code>a.report(data,log)</code></td>
+<td>dists</td>
+<td>print + return distys</td>
+</tr>
+</tbody>
+</table>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="nv">eg</span><span class="p">[</span><span class="s2">&quot;--race&quot;</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">function</span><span class="p">(</span><span class="w">    </span><span class="nv">data</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">h</span><span class="p">.</span><span class="nf">pickData</span><span class="p">()</span>
+<span class="w">  </span><span class="nv">the</span><span class="p">.</span><span class="py">np</span><span class="p">,</span><span class="w"> </span><span class="nv">the</span><span class="p">.</span><span class="py">cr</span><span class="p">,</span><span class="w"> </span><span class="nv">the</span><span class="p">.</span><span class="py">gens</span><span class="p">,</span><span class="w"> </span><span class="nv">the</span><span class="p">.</span><span class="py">de_iter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">50</span><span class="p">,</span><span class="w"> </span><span class="mf">0.25</span><span class="p">,</span><span class="w"> </span><span class="mi">50</span><span class="p">,</span><span class="w"> </span><span class="mi">30</span>
+<span class="w">  </span><span class="kr">return</span><span class="w"> </span><span class="nv">h</span><span class="p">.</span><span class="nf">runRace</span><span class="p">(</span><span class="nv">data</span><span class="p">,</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="p">{</span><span class="s2">&quot;ga&quot;</span><span class="p">,</span><span class="w"> </span><span class="nv">a</span><span class="p">.</span><span class="nf">ga</span><span class="p">(</span><span class="nv">data</span><span class="p">,</span><span class="w"> </span><span class="nv">a</span><span class="p">.</span><span class="nf">knn</span><span class="p">(</span><span class="nv">data</span><span class="p">))},</span>
+<span class="w">    </span><span class="p">{</span><span class="s2">&quot;de&quot;</span><span class="p">,</span><span class="w"> </span><span class="nv">a</span><span class="p">.</span><span class="nf">de</span><span class="p">(</span><span class="nv">data</span><span class="p">)},</span>
+<span class="w">    </span><span class="p">{</span><span class="s2">&quot;sa&quot;</span><span class="p">,</span><span class="w"> </span><span class="nv">a</span><span class="p">.</span><span class="nf">sa</span><span class="p">(</span><span class="nv">data</span><span class="p">)},</span>
+<span class="w">    </span><span class="p">{</span><span class="s2">&quot;ls&quot;</span><span class="p">,</span><span class="w"> </span><span class="nv">a</span><span class="p">.</span><span class="nf">ls</span><span class="p">(</span><span class="nv">data</span><span class="p">)}})</span><span class="w"> </span><span class="kr">end</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-44'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-44'>#</a>
       </div>
       <p>seed the from this help&rsquo;s options; dispatch if main</p>
     </div>
