@@ -90,6 +90,6 @@ def load(*files, into=None):
            globals() if into is None else into)
 
 load("lib", "rand", "cols", "data", "dist", "acquire",
-     "cuts", "tree", "stats", "show", "main")
+     "bins", "tree", "stats", "show", "main")
 
 the = settings(__doc__)

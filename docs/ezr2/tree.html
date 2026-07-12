@@ -20,7 +20,7 @@
 <img alt="language" src="https://img.shields.io/badge/language-python-9558B2">
 <img alt="runs on" src="https://img.shields.io/badge/runs%20on-python3-EE4C2C">
 <a href="https://timm.fyi"><img alt="author" src="https://img.shields.io/badge/author-timm-blueviolet"></a>
-</p><p><a href="ezr2.html">ezr2</a> | <a href="lib.html">lib</a> | <a href="rand.html">rand</a> | <a href="cols.html">cols</a> | <a href="data.html">data</a> | <a href="dist.html">dist</a> | <a href="acquire.html">acquire</a> | <a href="cuts.html">cuts</a> | <b>tree</b> | <a href="stats.html">stats</a> | <a href="show.html">show</a> | <a href="main.html">main</a> | <a href="dtlz.html">dtlz</a></p><p><a href="cuts.html">&lt; prev</a> | <a href="stats.html">next &gt;</a></p><h1><a href="https://github.com/timm/src/blob/main/ezr2/tree.py">tree.py</a></h1></div>
+</p><p><a href="ezr2.html">ezr2</a> | <a href="lib.html">lib</a> | <a href="rand.html">rand</a> | <a href="cols.html">cols</a> | <a href="data.html">data</a> | <a href="dist.html">dist</a> | <a href="acquire.html">acquire</a> | <a href="bins.html">bins</a> | <b>tree</b> | <a href="stats.html">stats</a> | <a href="show.html">show</a> | <a href="main.html">main</a> | <a href="dtlz.html">dtlz</a></p><p><a href="bins.html">&lt; prev</a> | <a href="stats.html">next &gt;</a></p><h1><a href="https://github.com/timm/src/blob/main/ezr2/tree.py">tree.py</a></h1></div>
   </div>
   <div class='clearall'>
   <div class='section' id='section-0'>
@@ -28,9 +28,9 @@
       <div class='octowrap'>
         <a class='octothorpe' href='#section-0'>#</a>
       </div>
-      <p>Trees. <code>tree</code> recurses the min-cost cut while rows and
+      <p>Trees. <code>tree</code> recurses the min-cost bin while rows and
 depth allow; leaves keep their rows and a <code>mid</code>
-prediction. <code>has</code> picks a row&rsquo;s side of a cut (? = yes);
+prediction. <code>has</code> picks a row&rsquo;s side of a bin (? = yes);
 <code>leaf</code> routes a row down; <code>leaves</code> yields them all.</p>
     </div>
     <div class='code'>
@@ -43,7 +43,7 @@ prediction. <code>has</code> picks a row&rsquo;s side of a cut (? = yes);
       <div class='octowrap'>
         <a class='octothorpe' href='#section-1'>#</a>
       </div>
-      <p>Does row fall on the yes-side of a cut? (? = yes)</p>
+      <p>Does row fall on the yes-side of a bin? (? = yes)</p>
     </div>
     <div class='code'>
       <div class="highlight"><pre><span class="k">def</span><span class="w"> </span><span class="nf">has</span><span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">,</span> <span class="n">at</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
@@ -57,7 +57,7 @@ prediction. <code>has</code> picks a row&rsquo;s side of a cut (? = yes);
       <div class='octowrap'>
         <a class='octothorpe' href='#section-2'>#</a>
       </div>
-      <p>Recursively split rows on the min-cost cut; accum=Num|Sym</p>
+      <p>Recursively split rows on the min-cost bin; accum=Num|Sym</p>
     </div>
     <div class='code'>
       <div class="highlight"><pre><span class="k">def</span><span class="w"> </span><span class="nf">tree</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">rows</span><span class="p">,</span> <span class="n">Y</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">accum</span><span class="o">=</span><span class="n">Num</span><span class="p">,</span> <span class="n">lvl</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
@@ -65,9 +65,9 @@ prediction. <code>has</code> picks a row&rsquo;s side of a cut (? = yes);
   <span class="n">t</span> <span class="o">=</span> <span class="n">o</span><span class="p">(</span><span class="n">at</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mid</span><span class="o">=</span><span class="n">mid</span><span class="p">(</span><span class="n">adds</span><span class="p">((</span><span class="n">Y</span><span class="p">(</span><span class="n">r</span><span class="p">)</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">rows</span><span class="p">),</span> <span class="n">accum</span><span class="p">())),</span>
         <span class="n">n</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">rows</span><span class="p">),</span> <span class="n">rows</span><span class="o">=</span><span class="n">rows</span><span class="p">)</span>
   <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">rows</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">2</span><span class="o">*</span><span class="n">the</span><span class="o">.</span><span class="n">leaf</span> <span class="ow">and</span> <span class="n">lvl</span> <span class="o">&lt;</span> <span class="n">the</span><span class="o">.</span><span class="n">maxd</span><span class="p">:</span>
-    <span class="k">if</span> <span class="n">cut</span> <span class="o">:=</span> <span class="nb">min</span><span class="p">((</span><span class="n">c</span> <span class="k">for</span> <span class="n">at</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">x</span>
-        <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">cuts</span><span class="p">(</span><span class="n">data</span><span class="p">,</span><span class="n">rows</span><span class="p">,</span><span class="n">at</span><span class="p">,</span><span class="n">Y</span><span class="p">,</span><span class="n">accum</span><span class="p">)),</span> <span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
-      <span class="n">_</span><span class="p">,</span> <span class="n">at</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="n">cut</span>
+    <span class="k">if</span> <span class="nb">bin</span> <span class="o">:=</span> <span class="nb">min</span><span class="p">((</span><span class="n">c</span> <span class="k">for</span> <span class="n">at</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">x</span>
+        <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">bins</span><span class="p">(</span><span class="n">data</span><span class="p">,</span><span class="n">rows</span><span class="p">,</span><span class="n">at</span><span class="p">,</span><span class="n">Y</span><span class="p">,</span><span class="n">accum</span><span class="p">)),</span> <span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+      <span class="n">_</span><span class="p">,</span> <span class="n">at</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="nb">bin</span>
       <span class="n">col</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">cols</span><span class="p">[</span><span class="n">at</span><span class="p">]</span>
       <span class="n">yes</span><span class="p">,</span> <span class="n">no</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[]</span>
       <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">rows</span><span class="p">:</span> <span class="p">(</span><span class="n">yes</span> <span class="k">if</span> <span class="n">has</span><span class="p">(</span><span class="n">r</span><span class="p">,</span><span class="n">col</span><span class="p">,</span><span class="n">at</span><span class="p">,</span><span class="n">v</span><span class="p">)</span> <span class="k">else</span> <span class="n">no</span><span class="p">)</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>

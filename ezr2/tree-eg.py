@@ -2,7 +2,7 @@
 ## Label a few, explain with a tree
 
 `landscape` spends the label budget; `tree` then recurses
-min-cost cuts over just those labelled rows, and `show`
+min-cost bins over just those labelled rows, and `show`
 prints it -- win (100=best, 0=median), n, per-goal means,
 then the branch conditions:
 
@@ -16,7 +16,7 @@ small engine, early model.
 
 | call | returns | what |
 |------|---------|------|
-| `tree(data, rows)` | node | recurse min-cost cuts |
+| `tree(data, rows)` | node | recurse min-cost bins |
 | `leaf(data, t, row)` | value | route row to its leaf |
 """
 

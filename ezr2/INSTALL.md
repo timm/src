@@ -5,7 +5,7 @@ FILES="ezr2.py
        data.py
        dist.py
        acquire.py
-       cuts.py
+       bins.py
        tree.py
        stats.py
        show.py
@@ -19,7 +19,7 @@ FILES="ezr2.py
        dist-eg.py
        stats-eg.py
        acquire-eg.py
-       cuts-eg.py
+       bins-eg.py
        tree-eg.py
        show-eg.py
        main-eg.py"

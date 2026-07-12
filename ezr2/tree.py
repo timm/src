@@ -1,22 +1,22 @@
-# Trees. `tree` recurses the min-cost cut while rows and
+# Trees. `tree` recurses the min-cost bin while rows and
 # depth allow; leaves keep their rows and a `mid`
-# prediction. `has` picks a row's side of a cut (? = yes);
+# prediction. `has` picks a row's side of a bin (? = yes);
 # `leaf` routes a row down; `leaves` yields them all.
 
-# Does row fall on the yes-side of a cut? (? = yes)
+# Does row fall on the yes-side of a bin? (? = yes)
 def has(row, col, at, v):
   w = row[at]
   return w == "?" or (v == w if is_sym(col) else w <= v)
 
-# Recursively split rows on the min-cost cut; accum=Num|Sym
+# Recursively split rows on the min-cost bin; accum=Num|Sym
 def tree(data, rows, Y=None, accum=Num, lvl=0):
   Y = Y or (lambda r: disty(data, r))
   t = o(at=None, mid=mid(adds((Y(r) for r in rows), accum())),
         n=len(rows), rows=rows)
   if len(rows) >= 2*the.leaf and lvl < the.maxd:
-    if cut := min((c for at in data.x
-        for c in cuts(data,rows,at,Y,accum)), default=0):
-      _, at, v = cut
+    if bin := min((c for at in data.x
+        for c in bins(data,rows,at,Y,accum)), default=0):
+      _, at, v = bin
       col = data.cols[at]
       yes, no = [], []
       for r in rows: (yes if has(r,col,at,v) else no).append(r)

@@ -1,4 +1,4 @@
-# Cuts. `cuts` yields candidate (cost,at,v) splits for one
+# Bins. `bins` yields candidate (cost,at,v) splits for one
 # column; `score` = size-weighted var of the two halves (the
 # far half computed by `mix`, not a second pass); sides must
 # hold at least the.leaf rows. accum=Num|Sym flips the same
@@ -12,20 +12,20 @@ def score(here, there):
   a, b = size(here), size(there)
   return (var(here)*a + var(there)*b) / (a + b + 1e-32)
 
-# Yield (cost,at,v) cuts; sides >= the.leaf; accum=Num|Sym
-def cuts(data,rows,at,Y,accum=Num):
+# Yield (cost,at,v) bins; sides >= the.leaf; accum=Num|Sym
+def bins(data,rows,at,Y,accum=Num):
   xy  = [(r[at], Y(r)) for r in rows if r[at] != "?"]
   n   = len(xy)
   tot = adds((y for _,y in xy), accum())
-  cut = lambda here,k: (score(here, mix(tot,here,-1)), at,k)
+  bin = lambda here,k: (score(here, mix(tot,here,-1)), at,k)
   big = lambda lo: the.leaf <= lo <= n-the.leaf
   if is_sym(data.cols[at]):
     for k in {x for x,_ in xy}:
       ys = [y for x,y in xy if x==k]
-      if big(len(ys)): yield cut(adds(ys, accum()), k)
+      if big(len(ys)): yield bin(adds(ys, accum()), k)
   else:
     xy.sort(); me=accum()
     for j,(x,y) in enumerate(xy):
       me = add(me, y)
       if j+1 < n and x != xy[j+1][0] and big(j+1):
-        yield cut(me, x)
+        yield bin(me, x)

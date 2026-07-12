@@ -113,6 +113,8 @@ def m2_(num) : return num[2]
 
 def is_sym(i): return isinstance(i, dict)  # Sym = dict of counts
 
+def size(c): return sum(c.values()) if is_sym(c) else n_(c)
+
 def mid(i): return max(i,key=i.get) if is_sym(i) else mu_(i)
 def var(i): return entropy(i)       if is_sym(i) else sd(i)
 
@@ -252,29 +254,28 @@ def landscape(tbl):
       pool = sorted(pool, key=project(here, x, y))[n:]
   return sorted(lab.values(), key=y)
 
-#-- cuts --------------------------------------------------------
-def size(c): return sum(c.values()) if is_sym(c) else n_(c)
+#-- bins --------------------------------------------------------
 
 def score(here, there):
   a, b = size(here), size(there)
   return (var(here)*a + var(there)*b) / (a + b + 1e-32)
 
-def cuts(tbl,rows,at,Y,accum=Num):
+def bins(tbl,rows,at,Y,accum=Num):
   xy  = [(r[at], Y(r)) for r in rows if r[at] != "?"]
   n   = len(xy)
   tot = adds((y for _,y in xy), accum())
-  cut = lambda here,k: (score(here, mix(tot,here,-1)), at,k)
+  bin = lambda here,k: (score(here, mix(tot,here,-1)), at,k)
   big = lambda lo: the.leaf <= lo <= n-the.leaf
   if is_sym(tbl.cols[at]):
     for k in {x for x,_ in xy}:
       ys = [y for x,y in xy if x==k]
-      if big(len(ys)): yield cut(adds(ys, accum()), k)
+      if big(len(ys)): yield bin(adds(ys, accum()), k)
   else:
     xy.sort(); me=accum()
     for j,(x,y) in enumerate(xy):
       me = add(me, y)
       if j+1 < n and x != xy[j+1][0] and big(j+1):
-        yield cut(me, x)
+        yield bin(me, x)
 
 #-- tree --------------------------------------------------------
 def has(row, col, at, v):
@@ -286,9 +287,9 @@ def tree(tbl, rows, Y=None, accum=Num, lvl=0):
   t = o(at=None, mid=mid(adds((Y(r) for r in rows), accum())),
         n=len(rows), rows=rows)
   if len(rows) >= 2*the.leaf and lvl < the.maxd:
-    if cut := min((c for at in tbl.x
-        for c in cuts(tbl,rows,at,Y,accum)), default=0):
-      _, at, v = cut
+    if bin := min((c for at in tbl.x
+        for c in bins(tbl,rows,at,Y,accum)), default=0):
+      _, at, v = bin
       col = tbl.cols[at]
       yes, no = [], []
       for r in rows: (yes if has(r,col,at,v) else no).append(r)

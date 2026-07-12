@@ -24,7 +24,7 @@ Mpg+.
 
 # The tutorial, one -eg file per engine file, reading order
 load("lib-eg", "rand-eg", "cols-eg", "data-eg", "dist-eg",
-     "stats-eg", "acquire-eg", "cuts-eg", "tree-eg",
+     "stats-eg", "acquire-eg", "bins-eg", "tree-eg",
      "show-eg", "main-eg", into=globals())
 
 """
