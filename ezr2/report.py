@@ -108,9 +108,9 @@ if __name__ == "__main__":
   print("\nRQ1: mu(win@50) - mu(win@20), active")
   hist([r["d50v20"] for r in ok], -15, 30, 5, ties=True)
   verdicts("RQ1", "d50v20", ok)
-  print("\nRQ1b: mu(win@200) - mu(win@50) (unspendable check)")
-  print("ties %d / %d"
-        % (sum(1 for r in ok if r["d200v50"] == 0), len(ok)))
+  print("\nRQ1b: mu(win@200) - mu(win@50), active")
+  hist([r["d200v50"] for r in ok], -30, 30, 5, ties=True)
+  verdicts("RQ1b", "d200v50", ok)
   print("\nRQ2: mu(win(active)) - mu(win(random)), budget 50")
   hist([r["dAvR"] for r in ok], -15, 30, 5, ties=True)
   verdicts("RQ2", "dAvR", ok)
