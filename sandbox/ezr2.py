@@ -153,31 +153,31 @@ def pick(col, v=None):
   r  = random.random
   return mu + sd(col)*2*(r()+r()+r()-1.5)
 
-#-- data --------------------------------------------------------
-def Data(src):
+#-- tbl --------------------------------------------------------
+def Tbl(src):
   src  = iter(src)
-  data = o(names=next(src), cols={}, x=[], y=[], goal={},
+  tbl = o(names=next(src), cols={}, x=[], y=[], goal={},
            klass=None, protect=[], rows=[], mid=None)
-  return adds(src, roles(data))
+  return adds(src, Cols(tbl))
 
-def clone(data, rows):
-  return Data([data.names] + rows)
-
-def mids(data):
-  data.mid = data.mid or [mid(col) for col in data.cols.values()]
-  return data.mid
-
-def roles(data):
-  for at, s in enumerate(data.names):
-    data.cols[at] = Num() if s[0].isupper() else Sym()
+def Cols(tbl):
+  for at, s in enumerate(tbl.names):
+    tbl.cols[at] = Num() if s[0].isupper() else Sym()
     if s[-1] == "X": continue
     if s[-1] in "+-!":
-      data.y += [at]; data.goal[at] = s[-1] == "+"
-      if s[-1] == "!": data.klass = at
+      tbl.y += [at]; tbl.goal[at] = s[-1] == "+"
+      if s[-1] == "!": tbl.klass = at
     else:
-      data.x += [at]
-      if s[-1] == "~": data.protect += [at]
-  return data
+      tbl.x += [at]
+      if s[-1] == "~": tbl.protect += [at]
+  return tbl
+
+def clone(tbl, rows):
+  return Tbl([tbl.names] + rows)
+
+def mids(tbl):
+  tbl.mid = tbl.mid or [mid(col) for col in tbl.cols.values()]
+  return tbl.mid
 
 def adds(src, i=None):
   i = Num() if i is None else i  # keep empty Sym; {} is falsy
@@ -214,15 +214,15 @@ def gap(col, u, v):
 
 def labelled(row): return row
 
-def disty(data, row, **kw):
+def disty(tbl, row, **kw):
   row = labelled(row)
   return minkowski(
-    (abs(norm(data.cols[at], row[at]) - data.goal[at])
-     for at in data.y if row[at] != "?"), **kw)
+    (abs(norm(tbl.cols[at], row[at]) - tbl.goal[at])
+     for at in tbl.y if row[at] != "?"), **kw)
 
-def distx(data, r1, r2, **kw):
-  return minkowski((gap(data.cols[at], r1[at], r2[at])
-                    for at in data.x), **kw)
+def distx(tbl, r1, r2, **kw):
+  return minkowski((gap(tbl.cols[at], r1[at], r2[at])
+                    for at in tbl.x), **kw)
 
 #-- acquire -----------------------------------------------------
 def project(rows, x, y):
@@ -232,13 +232,13 @@ def project(rows, x, y):
   c = x(east, west) + TINY
   return lambda r: (x(east,r)**2 + c*c - x(west,r)**2)/(2*c)
 
-def landscape(data):
-  y   = lambda r: disty(data, r)
+def landscape(tbl):
+  y   = lambda r: disty(tbl, r)
   cap = the.budget - the.check
   if the.landscape == "random":
-    return sorted(some(data.rows, cap), key=y)
-  x   = lambda r1, r2: distx(data, r1, r2)
-  pool = shuffle(data.rows)
+    return sorted(some(tbl.rows, cap), key=y)
+  x   = lambda r1, r2: distx(tbl, r1, r2)
+  pool = shuffle(tbl.rows)
   lab  = {}
   while len(lab) < cap and len(pool) >= 2*the.leaf:
     here, grown = [], 0
@@ -258,13 +258,13 @@ def score(here, there):
   a, b = size(here), size(there)
   return (var(here)*a + var(there)*b) / (a + b + 1e-32)
 
-def cuts(data,rows,at,Y,accum=Num):
+def cuts(tbl,rows,at,Y,accum=Num):
   xy  = [(r[at], Y(r)) for r in rows if r[at] != "?"]
   n   = len(xy)
   tot = adds((y for _,y in xy), accum())
   cut = lambda here,k: (score(here, mix(tot,here,-1)), at,k)
   big = lambda lo: the.leaf <= lo <= n-the.leaf
-  if is_sym(data.cols[at]):
+  if is_sym(tbl.cols[at]):
     for k in {x for x,_ in xy}:
       ys = [y for x,y in xy if x==k]
       if big(len(ys)): yield cut(adds(ys, accum()), k)
@@ -280,26 +280,26 @@ def has(row, col, at, v):
   w = row[at]
   return w == "?" or (v == w if is_sym(col) else w <= v)
 
-def tree(data, rows, Y=None, accum=Num, lvl=0):
-  Y = Y or (lambda r: disty(data, r))
+def tree(tbl, rows, Y=None, accum=Num, lvl=0):
+  Y = Y or (lambda r: disty(tbl, r))
   t = o(at=None, mid=mid(adds((Y(r) for r in rows), accum())),
         n=len(rows), rows=rows)
   if len(rows) >= 2*the.leaf and lvl < the.maxd:
-    if cut := min((c for at in data.x
-        for c in cuts(data,rows,at,Y,accum)), default=0):
+    if cut := min((c for at in tbl.x
+        for c in cuts(tbl,rows,at,Y,accum)), default=0):
       _, at, v = cut
-      col = data.cols[at]
+      col = tbl.cols[at]
       yes, no = [], []
       for r in rows: (yes if has(r,col,at,v) else no).append(r)
       if yes and no:
         t.at, t.v = at, v
-        t.yes = tree(data, yes, Y, accum, lvl+1)
-        t.no  = tree(data, no,  Y, accum, lvl+1)
+        t.yes = tree(tbl, yes, Y, accum, lvl+1)
+        t.no  = tree(tbl, no,  Y, accum, lvl+1)
   return t
 
-def leaf(data, t, row):
+def leaf(tbl, t, row):
   while t.at is not None:
-    t = t.yes if has(row,data.cols[t.at],t.at,t.v) else t.no
+    t = t.yes if has(row,tbl.cols[t.at],t.at,t.v) else t.no
   return t.mid
 
 def leaves(t):
@@ -330,51 +330,51 @@ def same(xs, ys, cliff=0.195, conf=1.36):
   n, m = len(xs), len(ys)
   return ks(xs, ys) <= conf * ((n + m) / (n * m)) ** 0.5
 
-def wins(data, rows=None):
-  ys = sorted(disty(data,r) for r in rows or data.rows)
+def wins(tbl, rows=None):
+  ys = sorted(disty(tbl,r) for r in rows or tbl.rows)
   lo, b4 = ys[0], ys[len(ys)//2]
   return lambda r: max(-100, min(100,
-    100 * (1 - (disty(data,r)-lo) / (b4-lo+TINY))))
+    100 * (1 - (disty(tbl,r)-lo) / (b4-lo+TINY))))
 
 #-- show --------------------------------------------------------
-def cond(data, t, yes):
-  op = (("==" if yes else "!=") if is_sym(data.cols[t.at])
+def cond(tbl, t, yes):
+  op = (("==" if yes else "!=") if is_sym(tbl.cols[t.at])
         else ("<=" if yes else ">"))
   v  = round(t.v, the.round) if type(t.v)==float else t.v
-  return "%s %s %s" % (data.names[t.at], op, v)
+  return "%s %s %s" % (tbl.names[t.at], op, v)
 
-def show(data, t):
-  W   = wins(data, t.rows)
+def show(tbl, t):
+  W   = wins(tbl, t.rows)
   win = lambda rows: int(mu_(adds(map(W, rows))))
   ws  = [win(x.rows) for x in leaves(t)]
   print("%s %4s %5s  %s" % (" ", "win", "n",
-    " ".join("%8s" % data.names[a] for a in data.y)))
-  branch(data, t, win, min(ws), max(ws))
+    " ".join("%8s" % tbl.names[a] for a in tbl.y)))
+  branch(tbl, t, win, min(ws), max(ws))
 
-def branch(data, t, win, lo, hi, pad="", edge=""):
+def branch(tbl, t, win, lo, hi, pad="", edge=""):
   w = win(t.rows)
   m = " " if t.at is not None else (              # mark leaves:
       chr(0x25B2) if w==hi else                   # best=up,
       chr(0x25BC) if w==lo else " ")              # worst=down
   mids = " ".join("%8.*f" % (the.round, mid(adds(r[a]
-         for r in t.rows))) for a in data.y)
+         for r in t.rows))) for a in tbl.y)
   print(("%s %4d %5d  %s  %s%s" % (
          m,w,t.n,mids,pad,edge)).rstrip())
   if t.at is not None:
     pad += "|  " if edge else ""
     for kid, yes in sorted([(t.yes,True), (t.no,False)],
                            key=lambda kb: kb[0].mid):
-      branch(data, kid, win, lo, hi, pad, cond(data, t, yes))
+      branch(tbl, kid, win, lo, hi, pad, cond(tbl, t, yes))
 
 #-- main --------------------------------------------------------
-def holdout(data):
-  rows  = shuffle(data.rows)
+def holdout(tbl):
+  rows  = shuffle(tbl.rows)
   half  = len(rows)//2
   train, test = rows[:half], rows[half:]
-  got   = landscape(clone(data, train))
-  t     = tree(data, got)
-  top   = sorted(test, key=lambda r: leaf(data,t,r))[:the.check]
-  return min(top, key=lambda r: disty(data,r))
+  got   = landscape(clone(tbl, train))
+  t     = tree(tbl, got)
+  top   = sorted(test, key=lambda r: leaf(tbl,t,r))[:the.check]
+  return min(top, key=lambda r: disty(tbl,r))
 
 def main(funs):
   if "-h" in sys.argv: return print(__doc__)

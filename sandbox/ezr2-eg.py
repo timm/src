@@ -91,10 +91,10 @@ def test_cols():
   print("num mu %.3f sd %.3f" % (mid(n), var(n)))
   assert abs(mid(n)) < 0.05 and abs(var(n) - 1) < 0.05
 
-#-- data-eg -----------------------------------------------------
+#-- tbl-eg -----------------------------------------------------
 """
 
-`Data` streams the csv once: the first row names the
+`Tbl` streams the csv once: the first row names the
 columns and `roles` types them from the name suffixes;
 later rows update the per-column summaries. Notice auto93's
 shape: 4 x-columns, 3 goals (minimize Lbs-, maximize Acc+
@@ -102,19 +102,19 @@ and Mpg+), one ignored column (HpX).
 
 | call | returns | what |
 |------|---------|------|
-| `Data(csv(f))` | data | rows + column summaries |
-| `clone(data, rows)` | data | fresh table, same header |
+| `Tbl(csv(f))` | tbl | rows + column summaries |
+| `clone(tbl, rows)` | tbl | fresh table, same header |
 """
 
 def test_data():
-  "Data build: col roles and goal stats."
-  data = Data(csv(the.file))
-  print("rows %s |x| %s |y| %s" % (len(data.rows),
-        len(data.x), len(data.y)))
+  "Tbl build: col roles and goal stats."
+  tbl = Tbl(csv(the.file))
+  print("rows %s |x| %s |y| %s" % (len(tbl.rows),
+        len(tbl.x), len(tbl.y)))
   if "auto93" in the.file:
-    assert len(data.rows) == 398
-    assert len(data.x) == 4 and len(data.y) == 3
-    mpg = data.cols[data.y[-1]]
+    assert len(tbl.rows) == 398
+    assert len(tbl.x) == 4 and len(tbl.y) == 3
+    mpg = tbl.cols[tbl.y[-1]]
     print("Mpg+ mu %.2f sd %.2f" % (mu_(mpg), sd(mpg)))
     assert abs(mu_(mpg) - 23.84) < 0.1
     assert abs(sd(mpg) - 8.34) < 0.1
@@ -139,16 +139,16 @@ old guzzlers at the bottom.
 
 | call | returns | what |
 |------|---------|------|
-| `disty(data, row)` | 0..1 | distance to ideal goals |
-| `distx(data, r1, r2)` | 0..1 | difference over x cols |
+| `disty(tbl, row)` | 0..1 | distance to ideal goals |
+| `distx(tbl, r1, r2)` | 0..1 | difference over x cols |
 """
 
 def test_disty():
   "Rows sorted by disty: header, top 5, blank, bottom 5."
-  data = Data(csv(the.file))
-  rows = sorted(data.rows, key=lambda r: disty(data, r))
-  hdr  = list(data.names) + ["disty"]
-  fmt  = lambda r: [str(v) for v in r]+["%.3f" % disty(data,r)]
+  tbl = Tbl(csv(the.file))
+  rows = sorted(tbl.rows, key=lambda r: disty(tbl, r))
+  hdr  = list(tbl.names) + ["disty"]
+  fmt  = lambda r: [str(v) for v in r]+["%.3f" % disty(tbl,r)]
   body = [fmt(r) for r in rows[:5] + rows[-5:]]
   w = [max(len(row[c]) for row in [hdr]+body)
        for c in range(len(hdr))]
@@ -158,7 +158,7 @@ def test_disty():
   for r in body[:5]: line(r)
   print()
   for r in body[5:]: line(r)
-  assert disty(data, rows[0]) <= disty(data, rows[-1])
+  assert disty(tbl, rows[0]) <= disty(tbl, rows[-1])
 
 #-- stats-eg ----------------------------------------------------
 """
@@ -198,23 +198,23 @@ bigger table, then one mean-win summary line.
 
 | call | returns | what |
 |------|---------|------|
-| `landscape(data)` | rows | labelled few, best first |
+| `landscape(tbl)` | rows | labelled few, best first |
 """
 
 def test_landscape():
   "20 shuffles; active vs random, sorted by significant delta."
   f0 = the.file
   the.file = "$MOOT/optimize/binary_config/billing10k.csv"
-  data = Data(csv(the.file))
-  data.rows = some(data.rows, the.cap)
+  tbl = Tbl(csv(the.file))
+  tbl.rows = some(tbl.rows, the.cap)
   A, R = [], []
   for i in range(20):
     random.seed(the.seed + i)
-    data.rows = shuffle(data.rows)
+    tbl.rows = shuffle(tbl.rows)
     the.landscape = "active"
-    A += [disty(data, landscape(data)[0])]
+    A += [disty(tbl, landscape(tbl)[0])]
     the.landscape = "random"
-    R += [disty(data, landscape(data)[0])]
+    R += [disty(tbl, landscape(tbl)[0])]
   the.landscape = "active"
   sd_ = lambda z: (sum((v - sum(z)/len(z))**2
                        for v in z) / (len(z)-1)) ** 0.5
@@ -237,14 +237,14 @@ def test_landscape():
 
 def test_landscapes():
   "One summary line: mean win/disty over 20 runs."
-  data = Data(csv(the.file))
-  data.rows = some(data.rows, the.cap)
-  W, ds, ws, n = wins(data), [], [], 0
+  tbl = Tbl(csv(the.file))
+  tbl.rows = some(tbl.rows, the.cap)
+  W, ds, ws, n = wins(tbl), [], [], 0
   for i in range(20):
     random.seed(the.seed + i)
-    data.rows = shuffle(data.rows)
-    got = landscape(data)
-    ds += [disty(data,got[0])]; ws += [W(got[0])]; n = len(got)
+    tbl.rows = shuffle(tbl.rows)
+    got = landscape(tbl)
+    ds += [disty(tbl,got[0])]; ws += [W(got[0])]; n = len(got)
   print("%6.1f %7.3f %4d  %s" % (sum(ws)/len(ws),
         sum(ds)/len(ds), n, the.file.split("/")[-1]))
   assert -100 <= sum(ws)/len(ws) <= 100
@@ -259,18 +259,18 @@ unsplit spread, else explanation would be hopeless.
 
 | call | returns | what |
 |------|---------|------|
-| `cuts(data,rows,at,Y)` | iter | (cost, at, v) candidates |
+| `cuts(tbl,rows,at,Y)` | iter | (cost, at, v) candidates |
 """
 
 def test_cuts():
   "Best single cut beats the unsplit spread."
-  data = Data(csv(the.file))
-  Y    = lambda r: disty(data, r)
-  best = min(c for at in data.x
-             for c in cuts(data, data.rows, at, Y))
-  tot  = adds(map(Y, data.rows))
+  tbl = Tbl(csv(the.file))
+  Y    = lambda r: disty(tbl, r)
+  best = min(c for at in tbl.x
+             for c in cuts(tbl, tbl.rows, at, Y))
+  tot  = adds(map(Y, tbl.rows))
   print("best cost %.3f at %s v %s  (unsplit var %.3f)" %
-        (best[0], data.names[best[1]], best[2], var(tot)))
+        (best[0], tbl.names[best[1]], best[2], var(tot)))
   assert best[0] < var(tot)
 
 #-- tree-eg -----------------------------------------------------
@@ -291,16 +291,16 @@ small engine, early model.
 
 | call | returns | what |
 |------|---------|------|
-| `tree(data, rows)` | node | recurse min-cost cuts |
-| `leaf(data, t, row)` | value | route row to its leaf |
+| `tree(tbl, rows)` | node | recurse min-cost cuts |
+| `leaf(tbl, t, row)` | value | route row to its leaf |
 """
 
 def test_tree():
   "Build a tree over landscape's rows and print it."
   random.seed(the.seed)
-  data = Data(csv(the.file))
-  data.rows = some(data.rows, the.cap)
-  show(data, tree(data, landscape(data)))
+  tbl = Tbl(csv(the.file))
+  tbl.rows = some(tbl.rows, the.cap)
+  show(tbl, tree(tbl, landscape(tbl)))
 
 #-- show-eg -----------------------------------------------------
 """
@@ -312,22 +312,22 @@ on landscape's rows.
 
 | call | returns | what |
 |------|---------|------|
-| `show(data, t)` | -- | win, n, means, branches |
+| `show(tbl, t)` | -- | win, n, means, branches |
 """
 
 def test_trees():
   "Same budget: random-trained vs landscape-trained tree."
   random.seed(the.seed)
-  data = Data(csv(the.file))
-  data.rows = some(data.rows, the.cap)
-  land = landscape(data)
-  rand = some(data.rows, len(land))
-  W = wins(data)
+  tbl = Tbl(csv(the.file))
+  tbl.rows = some(tbl.rows, the.cap)
+  land = landscape(tbl)
+  rand = some(tbl.rows, len(land))
+  W = wins(tbl)
   for tag, rows in [("random", rand), ("landscape", land)]:
-    best = min(rows, key=lambda r: disty(data,r))
+    best = min(rows, key=lambda r: disty(tbl,r))
     print("\n== %s  n=%d  best disty=%.3f  win=%.1f ==" %
-          (tag, len(rows), disty(data,best), W(best)))
-    show(data, tree(data, rows))
+          (tag, len(rows), disty(tbl,best), W(best)))
+    show(tbl, tree(tbl, rows))
 
 #-- main-eg -----------------------------------------------------
 """
@@ -340,19 +340,19 @@ among cars never seen in training.
 
 | call | returns | what |
 |------|---------|------|
-| `holdout(data)` | row | best check from unseen half |
-| `wins(data)` | fn | grader: row -> [-100, 100] |
+| `holdout(tbl)` | row | best check from unseen half |
+| `wins(tbl)` | fn | grader: row -> [-100, 100] |
 """
 
 def test_holdout():
   "One run: the holdout-picked best row's disty and win."
   random.seed(the.seed)
-  data = Data(csv(the.file))
-  data.rows = some(data.rows, the.cap)
-  b = holdout(data)
-  print("best disty %.3f  win %.1f  (%s)" % (disty(data,b),
-        wins(data)(b), the.file.split("/")[-1]))
-  assert -100 <= wins(data)(b) <= 100
+  tbl = Tbl(csv(the.file))
+  tbl.rows = some(tbl.rows, the.cap)
+  b = holdout(tbl)
+  print("best disty %.3f  win %.1f  (%s)" % (disty(tbl,b),
+        wins(tbl)(b), the.file.split("/")[-1]))
+  assert -100 <= wins(tbl)(b) <= 100
 
 """
 
@@ -363,16 +363,16 @@ labelled row.
 
 | call | returns | what |
 |------|---------|------|
-| `vs(data, pick)` | -- | active-vs-random verdict line |
+| `vs(tbl, pick)` | -- | active-vs-random verdict line |
 """
 
-def vs(data, pick):
+def vs(tbl, pick):
   "active vs random over 20 runs of pick(); verdict line."
-  W, out = wins(data), {}
+  W, out = wins(tbl), {}
   for mode in ("active", "random"):
     the.landscape = mode; out[mode] = []
     for i in range(20):
-      random.seed(the.seed + i); out[mode] += [W(pick(data))]
+      random.seed(the.seed + i); out[mode] += [W(pick(tbl))]
   the.landscape = "active"
   L, R = out["active"], out["random"]
   ml, mr = sum(L)/20, sum(R)/20
@@ -382,15 +382,15 @@ def vs(data, pick):
 
 def test_holdouts():
   "active vs random landscape, through the holdout pipeline."
-  data = Data(csv(the.file))
-  data.rows = some(data.rows, the.cap)
-  vs(data, holdout)
+  tbl = Tbl(csv(the.file))
+  tbl.rows = some(tbl.rows, the.cap)
+  vs(tbl, holdout)
 
 def test_pure():
   "active vs random landscape; best labelled row, no tree."
-  data = Data(csv(the.file))
-  data.rows = some(data.rows, the.cap)
-  vs(data, lambda d: landscape(d)[0])
+  tbl = Tbl(csv(the.file))
+  tbl.rows = some(tbl.rows, the.cap)
+  vs(tbl, lambda d: landscape(d)[0])
 
 """
 ## Runner
