@@ -249,11 +249,11 @@ x&rsquo;s form the &ldquo;distance&rdquo; group xm; the rest shape the front.</p
       <div class='octowrap'>
         <a class='octothorpe' href='#section-15'>#</a>
       </div>
-      <p>ezr2&rsquo;s seam: goals come from the model, folded into data.cols so</p>
+      <p>ezr2&rsquo;s seam: goals come from the model, folded into
+data.cols so disty can normalize objectives as they arrive</p>
     </div>
     <div class='code'>
       <div class="highlight"><pre><span class="k">def</span><span class="w"> </span><span class="nf">labelled</span><span class="p">(</span><span class="n">row</span><span class="p">):</span>
-  <span class="s2">&quot;disty can normalize objectives as labels arrive.&quot;</span>
   <span class="k">if</span> <span class="s2">&quot;?&quot;</span> <span class="ow">in</span> <span class="n">row</span><span class="p">[</span><span class="n">N</span><span class="p">:]:</span>
     <span class="n">row</span><span class="p">[</span><span class="n">N</span><span class="p">:]</span> <span class="o">=</span> <span class="n">MODEL</span><span class="p">(</span><span class="n">row</span><span class="p">[:</span><span class="n">N</span><span class="p">],</span> <span class="n">M</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">at</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">y</span><span class="p">:</span> <span class="n">data</span><span class="o">.</span><span class="n">cols</span><span class="p">[</span><span class="n">at</span><span class="p">]</span> <span class="o">=</span> <span class="n">ezr2</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">cols</span><span class="p">[</span><span class="n">at</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="n">at</span><span class="p">])</span>

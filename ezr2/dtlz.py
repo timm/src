@@ -69,9 +69,9 @@ names = [f"X{i+1}" for i in range(N)] + [f"F{m+1}-" for m in range(M)]
 def fresh_pool(n=1000):
   return [[random.random() for _ in range(N)] + ["?"]*M for _ in range(n)]
 
+# ezr2's seam: goals come from the model, folded into
+# data.cols so disty can normalize objectives as they arrive
 def labelled(row):
-  "ezr2's seam: goals come from the model, folded into data.cols so"
-  "disty can normalize objectives as labels arrive."
   if "?" in row[N:]:
     row[N:] = MODEL(row[:N], M)
     for at in data.y: data.cols[at] = ezr2.add(data.cols[at], row[at])
