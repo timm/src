@@ -50,8 +50,8 @@ This is how an outside user plugs their own (expensive) model into ezr2.
       <div class='octowrap'>
         <a class='octothorpe' href='#section-1'>#</a>
       </div>
-      <p>&ndash; the models --------------------------------------------------
-Each maps x in [0,1]^N -&gt; M objectives to MINIMIZE. k = N-M+1 of the
+      <h2>the models</h2>
+<p>Each maps x in [0,1]^N -&gt; M objectives to MINIMIZE. k = N-M+1 of the
 x&rsquo;s form the &ldquo;distance&rdquo; group xm; the rest shape the front.</p>
     </div>
     <div class='code'>
@@ -219,7 +219,7 @@ x&rsquo;s form the &ldquo;distance&rdquo; group xm; the rest shape the front.</p
       <div class='octowrap'>
         <a class='octothorpe' href='#section-13'>#</a>
       </div>
-      <p>&ndash; CLI knobs (model, M objectives, N decision vars) ------------</p>
+      <h2>CLI knobs (model, M objectives, N decision vars)</h2>
     </div>
     <div class='code'>
       <div class="highlight"><pre><span class="n">arg</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">k</span><span class="p">,</span> <span class="n">d</span><span class="p">:</span> <span class="nb">next</span><span class="p">((</span><span class="n">ezr2</span><span class="o">.</span><span class="n">thing</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;=&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">])</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span>
@@ -236,7 +236,7 @@ x&rsquo;s form the &ldquo;distance&rdquo; group xm; the rest shape the front.</p
       <div class='octowrap'>
         <a class='octothorpe' href='#section-14'>#</a>
       </div>
-      <p>&ndash; the unlabelled pool + the label seam ------------------------</p>
+      <h2>the unlabelled pool + the label seam</h2>
     </div>
     <div class='code'>
       <div class="highlight"><pre><span class="k">def</span><span class="w"> </span><span class="nf">fresh_pool</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="mi">1000</span><span class="p">):</span>

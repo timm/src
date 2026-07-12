@@ -23,6 +23,10 @@ ext == "py" && md      {
   if (first) { first = 0
     if ($0 !~ /^#/) { fenced = 1; print "# ```text" } }
   print "# " $0; next }
+ext == "py" && /^# ?--+ ?[A-Za-z]/ {
+  t = $0
+  gsub(/^# ?--+ ?/, "", t); gsub(/ ?-+ *$/, "", t)
+  print ""; print "# ## " t; next }
 ext == "py" && pd {
   if ($0 ~ /^  ".*"$/) {
     doc = $0; gsub(/^  "|"$/, "", doc)
