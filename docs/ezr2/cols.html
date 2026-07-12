@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html;charset=utf-8">
+  <title>cols.py</title>
+  <link rel="stylesheet" href="pycco.css">
+</head>
+<body>
+<div id='container'>
+  <div id="background"></div>
+  <div class='section'>
+    <div class='docs'><p align="center">
+<a href="https://timm.github.io/src/"><img alt="home" src="https://img.shields.io/badge/🏠-home-gold"></a>
+<a href="https://github.com/timm/src/tree/main/ezr2"><img alt="src" src="https://img.shields.io/badge/src-ezr2-black"></a>
+<a href="ezr2.html"><img alt="code" src="https://img.shields.io/badge/code-13%20files-2ea44f"></a>
+<a href="ezr2-eg.html"><img alt="tests" src="https://img.shields.io/badge/tests-12%20files-06b6d4"></a>
+<a href="https://github.com/timm/src/actions/workflows/tests-ezr2.yml"><img alt="ci" src="https://github.com/timm/src/actions/workflows/tests-ezr2.yml/badge.svg"></a>
+<a href="https://github.com/timm/src/issues"><img alt="issues" src="https://img.shields.io/badge/issues-report-red"></a>
+<a href="https://github.com/timm/src/blob/main/LICENSE.md"><img alt="license" src="https://img.shields.io/badge/license-MIT-brightgreen"></a>
+<img alt="language" src="https://img.shields.io/badge/language-python-9558B2">
+<img alt="runs on" src="https://img.shields.io/badge/runs%20on-python3-EE4C2C">
+<a href="https://timm.fyi"><img alt="author" src="https://img.shields.io/badge/author-timm-blueviolet"></a>
+</p><p><a href="ezr2.html">ezr2</a> | <a href="lib.html">lib</a> | <a href="rand.html">rand</a> | <b>cols</b> | <a href="data.html">data</a> | <a href="dist.html">dist</a> | <a href="acquire.html">acquire</a> | <a href="cuts.html">cuts</a> | <a href="tree.html">tree</a> | <a href="stats.html">stats</a> | <a href="show.html">show</a> | <a href="main.html">main</a> | <a href="dtlz.html">dtlz</a></p><p><a href="rand.html">&lt; prev</a> | <a href="data.html">next &gt;</a></p><h1><a href="https://github.com/timm/src/blob/main/ezr2/cols.py">cols.py</a></h1></div>
+  </div>
+  <div class='clearall'>
+  <div class='section' id='section-0'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-0'>#</a>
+      </div>
+      <p>Column summaries. <code>Num</code> is a (n,mu,m2) tuple grown by
+<code>welford</code>; <code>Sym</code> is a dict of counts. <code>mid</code>/<code>var</code> =
+centrality and dispersion for either; <code>mix</code> merges two
+summaries (inc=-1 subtracts); <code>pick</code> samples one value
+(roulette or Irwin-Hall bell).</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span></span><span class="n">Sym</span> <span class="o">=</span> <span class="nb">dict</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-1'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-1'>#</a>
+      </div>
+      
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="k">def</span><span class="w"> </span><span class="nf">is_sym</span><span class="p">(</span><span class="n">i</span><span class="p">):</span> <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span>  <span class="c1"># Sym = dict of counts</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-2'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-2'>#</a>
+      </div>
+      
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="k">def</span><span class="w"> </span><span class="nf">Num</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">mu</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">m2</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span> <span class="k">return</span> <span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">mu</span><span class="p">,</span> <span class="n">m2</span><span class="p">)</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-3'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-3'>#</a>
+      </div>
+      
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="k">def</span><span class="w"> </span><span class="nf">n_</span><span class="p">(</span><span class="n">num</span><span class="p">)</span>  <span class="p">:</span> <span class="k">return</span> <span class="n">num</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-4'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-4'>#</a>
+      </div>
+      
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="k">def</span><span class="w"> </span><span class="nf">mu_</span><span class="p">(</span><span class="n">num</span><span class="p">)</span> <span class="p">:</span> <span class="k">return</span> <span class="n">num</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-5'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-5'>#</a>
+      </div>
+      
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="k">def</span><span class="w"> </span><span class="nf">m2_</span><span class="p">(</span><span class="n">num</span><span class="p">)</span> <span class="p">:</span> <span class="k">return</span> <span class="n">num</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-6'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-6'>#</a>
+      </div>
+      
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="k">def</span><span class="w"> </span><span class="nf">mid</span><span class="p">(</span><span class="n">i</span><span class="p">):</span> <span class="k">return</span> <span class="nb">max</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">key</span><span class="o">=</span><span class="n">i</span><span class="o">.</span><span class="n">get</span><span class="p">)</span> <span class="k">if</span> <span class="n">is_sym</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">else</span> <span class="n">mu_</span><span class="p">(</span><span class="n">i</span><span class="p">)</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-7'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-7'>#</a>
+      </div>
+      
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="k">def</span><span class="w"> </span><span class="nf">var</span><span class="p">(</span><span class="n">i</span><span class="p">):</span> <span class="k">return</span> <span class="n">entropy</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>       <span class="k">if</span> <span class="n">is_sym</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">else</span> <span class="n">sd</span><span class="p">(</span><span class="n">i</span><span class="p">)</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-8'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-8'>#</a>
+      </div>
+      
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="k">def</span><span class="w"> </span><span class="nf">sd</span><span class="p">(</span><span class="n">num</span><span class="p">):</span> <span class="n">n</span><span class="p">,</span><span class="n">_</span><span class="p">,</span><span class="n">m2</span><span class="o">=</span><span class="n">num</span><span class="p">;</span><span class="k">return</span> <span class="mi">0</span> <span class="k">if</span> <span class="n">n</span><span class="o">&lt;</span><span class="mi">2</span> <span class="k">else</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">m2</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span><span class="o">**</span><span class="mf">.5</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-9'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-9'>#</a>
+      </div>
+      <p>Shannon entropy of a Sym (a dict of counts)</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="k">def</span><span class="w"> </span><span class="nf">entropy</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
+  <span class="n">N</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">values</span><span class="p">())</span> <span class="ow">or</span> <span class="mi">1</span>
+  <span class="k">return</span> <span class="o">-</span><span class="nb">sum</span><span class="p">(</span><span class="n">v</span><span class="o">/</span><span class="n">N</span><span class="o">*</span><span class="n">log2</span><span class="p">(</span><span class="n">v</span><span class="o">/</span><span class="n">N</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">d</span><span class="o">.</span><span class="n">values</span><span class="p">()</span> <span class="k">if</span> <span class="n">v</span><span class="p">)</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-10'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-10'>#</a>
+      </div>
+      <p>Change or delete keys</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="k">def</span><span class="w"> </span><span class="nf">count</span><span class="p">(</span><span class="n">sym</span><span class="p">,</span><span class="n">v</span><span class="p">,</span><span class="n">inc</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">c</span> <span class="o">:=</span> <span class="n">sym</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">v</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="n">inc</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span> <span class="n">sym</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">=</span> <span class="n">c</span>
+  <span class="k">else</span><span class="p">:</span> <span class="n">sym</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+  <span class="k">return</span> <span class="n">sym</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-11'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-11'>#</a>
+      </div>
+      <p>Fold v into a Num (inc=-1 removes); return new (n,mu,m2)</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="k">def</span><span class="w"> </span><span class="nf">welford</span><span class="p">(</span><span class="n">num</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">inc</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+  <span class="n">n</span><span class="p">,</span> <span class="n">mu</span><span class="p">,</span> <span class="n">m2</span> <span class="o">=</span> <span class="n">num</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">n</span> <span class="o">:=</span> <span class="n">n</span> <span class="o">+</span> <span class="n">inc</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span> <span class="k">return</span> <span class="n">Num</span><span class="p">()</span>
+  <span class="n">d</span> <span class="o">=</span> <span class="n">v</span> <span class="o">-</span> <span class="n">mu</span><span class="p">;</span> <span class="n">mu</span> <span class="o">+=</span> <span class="n">inc</span> <span class="o">*</span> <span class="n">d</span> <span class="o">/</span> <span class="n">n</span>
+  <span class="k">return</span> <span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">mu</span><span class="p">,</span> <span class="n">m2</span> <span class="o">+</span> <span class="n">inc</span> <span class="o">*</span> <span class="n">d</span> <span class="o">*</span> <span class="p">(</span><span class="n">v</span> <span class="o">-</span> <span class="n">mu</span><span class="p">))</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-12'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-12'>#</a>
+      </div>
+      <p>Merge two cols; inc=-1 subtracts j from i</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="k">def</span><span class="w"> </span><span class="nf">mix</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">inc</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+  <span class="k">if</span> <span class="n">is_sym</span><span class="p">(</span><span class="n">i</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">i</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="n">inc</span> <span class="o">*</span> <span class="n">j</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">i</span> <span class="o">|</span> <span class="n">j</span><span class="p">}</span>
+  <span class="p">(</span><span class="n">ni</span><span class="p">,</span> <span class="n">mui</span><span class="p">,</span> <span class="n">m2i</span><span class="p">),</span> <span class="p">(</span><span class="n">nj</span><span class="p">,</span> <span class="n">muj</span><span class="p">,</span> <span class="n">m2j</span><span class="p">)</span> <span class="o">=</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span>
+  <span class="n">n</span> <span class="o">=</span> <span class="n">ni</span> <span class="o">+</span> <span class="n">inc</span> <span class="o">*</span> <span class="n">nj</span>
+  <span class="k">if</span> <span class="n">n</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span> <span class="k">return</span> <span class="n">Num</span><span class="p">()</span>
+  <span class="n">d</span>  <span class="o">=</span> <span class="n">muj</span> <span class="o">-</span> <span class="n">mui</span>
+  <span class="n">mu</span> <span class="o">=</span> <span class="p">(</span><span class="n">ni</span> <span class="o">*</span> <span class="n">mui</span> <span class="o">+</span> <span class="n">inc</span> <span class="o">*</span> <span class="n">nj</span> <span class="o">*</span> <span class="n">muj</span><span class="p">)</span> <span class="o">/</span> <span class="n">n</span>
+  <span class="n">m2</span> <span class="o">=</span> <span class="n">m2i</span> <span class="o">+</span> <span class="n">inc</span> <span class="o">*</span> <span class="n">m2j</span> <span class="o">+</span> <span class="n">inc</span> <span class="o">*</span> <span class="n">d</span> <span class="o">*</span> <span class="n">d</span> <span class="o">*</span> <span class="n">ni</span> <span class="o">*</span> <span class="n">nj</span> <span class="o">/</span> <span class="n">n</span>
+  <span class="k">return</span> <span class="n">Num</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">mu</span><span class="p">,</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">m2</span><span class="p">))</span>  <span class="c1"># subtraction can underflow m2</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-13'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-13'>#</a>
+      </div>
+      <p>Sample one value: roulette for a Sym, Irwin-Hall for a Num</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="k">def</span><span class="w"> </span><span class="nf">pick</span><span class="p">(</span><span class="n">col</span><span class="p">,</span> <span class="n">v</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+  <span class="k">if</span> <span class="n">is_sym</span><span class="p">(</span><span class="n">col</span><span class="p">):</span>                  <span class="c1"># roulette wheel over counts</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">col</span><span class="o">.</span><span class="n">values</span><span class="p">())</span> <span class="o">*</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">col</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+      <span class="k">if</span> <span class="p">(</span><span class="n">n</span> <span class="o">:=</span> <span class="n">n</span> <span class="o">-</span> <span class="n">c</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span> <span class="k">return</span> <span class="n">k</span>
+    <span class="k">return</span> <span class="n">k</span>
+  <span class="n">mu</span> <span class="o">=</span> <span class="n">mu_</span><span class="p">(</span><span class="n">col</span><span class="p">)</span> <span class="k">if</span> <span class="n">v</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">v</span> <span class="o">==</span> <span class="s2">&quot;?&quot;</span> <span class="k">else</span> <span class="n">v</span>  <span class="c1"># bell at v|mu</span>
+  <span class="n">r</span>  <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span>
+  <span class="k">return</span> <span class="n">mu</span> <span class="o">+</span> <span class="n">sd</span><span class="p">(</span><span class="n">col</span><span class="p">)</span><span class="o">*</span><span class="mi">2</span><span class="o">*</span><span class="p">(</span><span class="n">r</span><span class="p">()</span><span class="o">+</span><span class="n">r</span><span class="p">()</span><span class="o">+</span><span class="n">r</span><span class="p">()</span><span class="o">-</span><span class="mf">1.5</span><span class="p">)</span>
+
+</pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+</div>
+</body>

@@ -26,11 +26,13 @@ doc: ## pycco html into docs/<proj>/ for each project with an INSTALL.md
 	   mkdir -p docs/$$p; \
 	   ( cd $$p && \
 	     for f in $$(sh INSTALL.md list); do \
-	       b=$${f%.lisp}; \
-	       awk -f ../etc/doc.awk $$f > ../docs/$$p/$$b.scm; \
+	       b=$${f%.*}; e=$${f##*.}; \
+	       case $$e in lisp) t=scm;; *) t=$$e;; esac; \
+	       awk -v ext=$$e -f ../etc/doc.awk $$f \
+	         > ../docs/$$p/$$b.$$t; \
 	       python3 ../etc/pyccot.py -d ../docs/$$p \
-	         ../docs/$$p/$$b.scm >/dev/null; \
-	       rm -f ../docs/$$p/$$b.scm; \
+	         ../docs/$$p/$$b.$$t >/dev/null; \
+	       rm -f ../docs/$$p/$$b.$$t; \
 	       python3 ../etc/nav.py ../docs/$$p/$$b.html; \
 	     done; \
 	     python3 ../etc/toc.py ); \

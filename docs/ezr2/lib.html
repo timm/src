@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html;charset=utf-8">
+  <title>lib.py</title>
+  <link rel="stylesheet" href="pycco.css">
+</head>
+<body>
+<div id='container'>
+  <div id="background"></div>
+  <div class='section'>
+    <div class='docs'><p align="center">
+<a href="https://timm.github.io/src/"><img alt="home" src="https://img.shields.io/badge/🏠-home-gold"></a>
+<a href="https://github.com/timm/src/tree/main/ezr2"><img alt="src" src="https://img.shields.io/badge/src-ezr2-black"></a>
+<a href="ezr2.html"><img alt="code" src="https://img.shields.io/badge/code-13%20files-2ea44f"></a>
+<a href="ezr2-eg.html"><img alt="tests" src="https://img.shields.io/badge/tests-12%20files-06b6d4"></a>
+<a href="https://github.com/timm/src/actions/workflows/tests-ezr2.yml"><img alt="ci" src="https://github.com/timm/src/actions/workflows/tests-ezr2.yml/badge.svg"></a>
+<a href="https://github.com/timm/src/issues"><img alt="issues" src="https://img.shields.io/badge/issues-report-red"></a>
+<a href="https://github.com/timm/src/blob/main/LICENSE.md"><img alt="license" src="https://img.shields.io/badge/license-MIT-brightgreen"></a>
+<img alt="language" src="https://img.shields.io/badge/language-python-9558B2">
+<img alt="runs on" src="https://img.shields.io/badge/runs%20on-python3-EE4C2C">
+<a href="https://timm.fyi"><img alt="author" src="https://img.shields.io/badge/author-timm-blueviolet"></a>
+</p><p><a href="ezr2.html">ezr2</a> | <b>lib</b> | <a href="rand.html">rand</a> | <a href="cols.html">cols</a> | <a href="data.html">data</a> | <a href="dist.html">dist</a> | <a href="acquire.html">acquire</a> | <a href="cuts.html">cuts</a> | <a href="tree.html">tree</a> | <a href="stats.html">stats</a> | <a href="show.html">show</a> | <a href="main.html">main</a> | <a href="dtlz.html">dtlz</a></p><p><a href="ezr2.html">&lt; prev</a> | <a href="rand.html">next &gt;</a></p><h1><a href="https://github.com/timm/src/blob/main/ezr2/lib.py">lib.py</a></h1></div>
+  </div>
+  <div class='clearall'>
+  <div class='section' id='section-0'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-0'>#</a>
+      </div>
+      <p>Strings and files. <code>thing</code> coerces csv cells; <code>settings</code>
+parses the help text&rsquo;s &ldquo;&ndash;key = val&rdquo; lines into <code>the</code>;
+<code>csv</code> streams typed rows, <code>path</code> expanding a leading $MOOT
+(env var, else ~/gits/moot).</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span></span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-1'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-1'>#</a>
+      </div>
+      <p>Coerce a string to int/float/bool, else leave as str</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="k">def</span><span class="w"> </span><span class="nf">thing</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="k">if</span> <span class="n">s</span><span class="p">[:</span><span class="mi">1</span><span class="p">]</span><span class="o">==</span><span class="s2">&quot;-&quot;</span> <span class="k">else</span> <span class="n">s</span><span class="p">)</span><span class="o">.</span><span class="n">isdigit</span><span class="p">():</span> <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+  <span class="k">try</span><span class="p">:</span> <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+  <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span> <span class="k">return</span> <span class="n">s</span><span class="o">==</span><span class="s2">&quot;True&quot;</span> <span class="ow">or</span> <span class="p">(</span><span class="n">s</span><span class="o">!=</span><span class="s2">&quot;False&quot;</span> <span class="ow">and</span> <span class="n">s</span><span class="p">)</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-2'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-2'>#</a>
+      </div>
+      <p>Parse &lsquo;&ndash;key &hellip; = val&rsquo; lines of doc into an o()</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="k">def</span><span class="w"> </span><span class="nf">settings</span><span class="p">(</span><span class="n">doc</span><span class="p">):</span>
+  <span class="n">pat</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;--(\w+)\s+[^=\n]*=\s*(\S+)&quot;</span>
+  <span class="k">return</span> <span class="n">o</span><span class="p">(</span><span class="o">**</span><span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">thing</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span><span class="n">v</span> <span class="ow">in</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">pat</span><span class="p">,</span> <span class="n">doc</span><span class="p">)})</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-3'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-3'>#</a>
+      </div>
+      <p>Expand a leading $MOOT (env, else ~/gits/moot) and ~</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="k">def</span><span class="w"> </span><span class="nf">path</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+  <span class="n">s</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;$MOOT&quot;</span><span class="p">,</span> <span class="n">MOOT</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+  <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="n">s</span><span class="p">)</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-4'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-4'>#</a>
+      </div>
+      <p>Yield typed rows (lists) from a CSV file</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="k">def</span><span class="w"> </span><span class="nf">csv</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="n">clean</span><span class="o">=</span><span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="n">s</span><span class="o">.</span><span class="n">partition</span><span class="p">(</span><span class="s2">&quot;#&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)):</span>
+  <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">(</span><span class="n">file</span><span class="p">),</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">f</span><span class="p">:</span>
+      <span class="n">row</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">clean</span><span class="p">(</span><span class="n">line</span><span class="p">)]</span>
+      <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">row</span><span class="p">):</span> <span class="k">yield</span> <span class="p">[</span><span class="n">thing</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">row</span><span class="p">]</span>
+
+</pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+</div>
+</body>

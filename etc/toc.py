@@ -8,10 +8,10 @@ import os, re, subprocess
 
 PROJ  = os.path.basename(os.getcwd())
 D     = f"https://timm.github.io/src/{PROJ}/docs"
-order = [f[:-len(".lisp")] for f in subprocess.run(
+order = [os.path.splitext(f)[0] for f in subprocess.run(
            ["sh", "INSTALL.md", "list"], text=True,
            capture_output=True).stdout.split()
-         if f.endswith(".lisp")]
+         if f.endswith((".lisp", ".py", ".lua"))]
 code  = [p for p in order if not p.endswith("-eg")]
 tests = [p for p in order if p.endswith("-eg")]
 row   = lambda ps: " |\n".join(f"[{p}]({D}/{p}.html)"

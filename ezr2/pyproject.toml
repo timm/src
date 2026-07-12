@@ -19,5 +19,7 @@ py-modules = ["ezr2"]
 Homepage = "https://github.com/timm/src"
 
 [tool.ruff]
-# this is deliberately terse, K&R-style code; ignore the house-style rules
-lint.ignore = ["E701","E702","E731","E401","E402","F403","F405"]
+# terse K&R-style code, exec-loaded (see ezr2.py load());
+# ignore the house-style rules and cross-file name checks
+lint.ignore = ["E701","E702","E731","E401","E402",
+               "F403","F405","F821"]

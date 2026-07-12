@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html;charset=utf-8">
+  <title>ezr2.py</title>
+  <link rel="stylesheet" href="pycco.css">
+</head>
+<body>
+<div id='container'>
+  <div id="background"></div>
+  <div class='section'>
+    <div class='docs'><p align="center">
+<a href="https://timm.github.io/src/"><img alt="home" src="https://img.shields.io/badge/🏠-home-gold"></a>
+<a href="https://github.com/timm/src/tree/main/ezr2"><img alt="src" src="https://img.shields.io/badge/src-ezr2-black"></a>
+<a href="ezr2.html"><img alt="code" src="https://img.shields.io/badge/code-13%20files-2ea44f"></a>
+<a href="ezr2-eg.html"><img alt="tests" src="https://img.shields.io/badge/tests-12%20files-06b6d4"></a>
+<a href="https://github.com/timm/src/actions/workflows/tests-ezr2.yml"><img alt="ci" src="https://github.com/timm/src/actions/workflows/tests-ezr2.yml/badge.svg"></a>
+<a href="https://github.com/timm/src/issues"><img alt="issues" src="https://img.shields.io/badge/issues-report-red"></a>
+<a href="https://github.com/timm/src/blob/main/LICENSE.md"><img alt="license" src="https://img.shields.io/badge/license-MIT-brightgreen"></a>
+<img alt="language" src="https://img.shields.io/badge/language-python-9558B2">
+<img alt="runs on" src="https://img.shields.io/badge/runs%20on-python3-EE4C2C">
+<a href="https://timm.fyi"><img alt="author" src="https://img.shields.io/badge/author-timm-blueviolet"></a>
+</p><p><b>ezr2</b> | <a href="lib.html">lib</a> | <a href="rand.html">rand</a> | <a href="cols.html">cols</a> | <a href="data.html">data</a> | <a href="dist.html">dist</a> | <a href="acquire.html">acquire</a> | <a href="cuts.html">cuts</a> | <a href="tree.html">tree</a> | <a href="stats.html">stats</a> | <a href="show.html">show</a> | <a href="main.html">main</a> | <a href="dtlz.html">dtlz</a></p><p>&lt; prev | <a href="lib.html">next &gt;</a></p><h1><a href="https://github.com/timm/src/blob/main/ezr2/ezr2.py">ezr2.py</a></h1></div>
+  </div>
+  <div class='clearall'>
+  <div class='section' id='section-0'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-0'>#</a>
+      </div>
+      <p>ezr2: landscape analysis for xai and optimization CSV data.
+(c) 2026, Tim Menzies <a href="&#109;&#97;&#105;&#108;&#116;&#111;&#58;&#116;&#105;&#109;&#109;&#64;&#105;&#101;&#101;&#101;&#46;&#111;&#114;&#103;">&#116;&#105;&#109;&#109;&#64;&#105;&#101;&#101;&#101;&#46;&#111;&#114;&#103;</a>, MIT license</p>
+<p>USAGE: python3 ezr2-eg.py [&ndash;key=val &hellip;] [test &hellip;]</p>
+<p>OPTIONS: (defaults below are parsed into <code>the</code>):
+  &ndash;file   data file  = $MOOT/optimize/misc/auto93.csv
+  &ndash;seed   random seed           = 1
+  &ndash;leaf   tree min leaf rows    = 3
+  &ndash;maxd   tree max depth        = 8
+  &ndash;grow   add labels/round      = 4
+  &ndash;budget labeling cap          = 50
+  &ndash;cap    max rows kept         = 1024
+  &ndash;check  rows labelled by tree = 5
+  &ndash;keepf  keep frac             = 0.66
+  &ndash;round  decimals shown        = 3
+  &ndash;landscape  active | random   = active
+  -h       print this help</p>
+<p>TESTS: (run with their bare name):
+  disty       rows by disty: top 5 / bottom 5
+  landscape   20 shuffles; best disty per run
+  landscapes  one mean-win line (the sweep)
+  tree      build+show a tree on acquired rows
+  holdout  50:50 split; tree picks best test row
+  holdouts holdout x20; land vs random verdict
+  pure     no tree: best labelled, land vs random
+  same     demo+validate the same() stat test
+  all      run every test above, reseting seed each
+INSTALL: one curl fetches every file; data lives in the moot
+repo (tiny.cc/moot), cloned to ~/gits/moot (or set $MOOT):
+  REPO=https://raw.githubusercontent.com/timm/src/main/ezr2
+  curl -fL $REPO/INSTALL.md | sh
+  git clone https://github.com/timm/moot ~/gits/moot
+  python3 ezr2-eg.py disty</p>
+<p>MODES: optimize a static CSV (format below), or a live model by
+  overriding labelled() to compute goals live &ndash; worked example
+  in dtlz.py ($REPO/dtlz.py).</p>
+<p>DATA: comma-separated, first row names the columns. A name&rsquo;s last
+character sets that column&rsquo;s role; its first sets its type:
+  Upper case first letter  -&gt; numeric  (else: symbolic)
+  +  /  -   suffix         -&gt; goal: maximize / minimize  (y-col)
+  !         suffix         -&gt; klass   (a y-column)
+  X         suffix         -&gt; ignore this column
+  ~         suffix         -&gt; protected x-column
+  (no suffix)              -&gt; ordinary x-column (input)
+E.g. auto93 header Clndrs,Volume,HpX,Model,origin,Lbs-,Acc+,Mpg+
+has numeric inputs (Clndrs/Volume/Model), symbolic input origin,
+an ignored column (HpX); goals minimize Lbs, maximize Acc/Mpg.</p>
+<p>DISTY: each row&rsquo;s &ldquo;distance to heaven&rdquo; &ndash; its distance to ideal
+point where goals are best (0 = ideal, 1 = worst). <code>disty</code> reads
+only the y-columns, so optimization scores a row without seeing
+how it was made. <code>python3 ezr2-eg.py disty</code> sorts by disty and
+prints the best 5, a blank line, then the worst 5:</p>
+<p>Clndrs  Volume  HpX  Model  origin  Lbs-  Acc+  Mpg+  disty
+       4      90   48     78       2  1985  21.5    40  0.075
+       &hellip;                                              &hellip;
+       8     455  225     70       1  4425    10    10  0.954</p>
+<p>Best rows (disty~0) are light, high-Mpg cars; worst (disty~1) are
+heavy guzzlers. Optimizers seek low-disty rows while labelling
+(inspecting the y of) as few rows as possible.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span><span class="o">,</span><span class="w"> </span><span class="nn">re</span><span class="o">,</span><span class="w"> </span><span class="nn">sys</span><span class="o">,</span><span class="w"> </span><span class="nn">random</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">math</span><span class="w"> </span><span class="kn">import</span> <span class="n">log2</span><span class="p">,</span> <span class="n">exp</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">bisect</span><span class="w"> </span><span class="kn">import</span> <span class="n">bisect_left</span><span class="p">,</span> <span class="n">bisect_right</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">types</span><span class="w"> </span><span class="kn">import</span> <span class="n">SimpleNamespace</span> <span class="k">as</span> <span class="n">o</span>
+<span class="n">BIG</span>  <span class="o">=</span> <span class="mf">1e32</span>
+<span class="n">TINY</span> <span class="o">=</span> <span class="mf">1e-32</span>
+<span class="n">MOOT</span> <span class="o">=</span> <span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;MOOT&quot;</span><span class="p">)</span>
+        <span class="ow">or</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="s2">&quot;~/gits/moot&quot;</span><span class="p">))</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-1'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-1'>#</a>
+      </div>
+      <p>One load point for the whole engine: exec each sibling file
+into one namespace (default: this one), in dependency
+order, exactly once. The eg loader passes its own globals.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="k">def</span><span class="w"> </span><span class="nf">load</span><span class="p">(</span><span class="o">*</span><span class="n">files</span><span class="p">,</span> <span class="n">into</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+  <span class="n">here</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))</span>
+  <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">here</span><span class="p">,</span> <span class="n">f</span> <span class="o">+</span> <span class="s2">&quot;.py&quot;</span><span class="p">)</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
+      <span class="n">exec</span><span class="p">(</span><span class="nb">compile</span><span class="p">(</span><span class="n">fp</span><span class="o">.</span><span class="n">read</span><span class="p">(),</span> <span class="n">p</span><span class="p">,</span> <span class="s2">&quot;exec&quot;</span><span class="p">),</span>
+           <span class="nb">globals</span><span class="p">()</span> <span class="k">if</span> <span class="n">into</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">into</span><span class="p">)</span>
+
+<span class="n">load</span><span class="p">(</span><span class="s2">&quot;lib&quot;</span><span class="p">,</span> <span class="s2">&quot;rand&quot;</span><span class="p">,</span> <span class="s2">&quot;cols&quot;</span><span class="p">,</span> <span class="s2">&quot;data&quot;</span><span class="p">,</span> <span class="s2">&quot;dist&quot;</span><span class="p">,</span> <span class="s2">&quot;acquire&quot;</span><span class="p">,</span>
+     <span class="s2">&quot;cuts&quot;</span><span class="p">,</span> <span class="s2">&quot;tree&quot;</span><span class="p">,</span> <span class="s2">&quot;stats&quot;</span><span class="p">,</span> <span class="s2">&quot;show&quot;</span><span class="p">,</span> <span class="s2">&quot;main&quot;</span><span class="p">)</span>
+
+<span class="n">the</span> <span class="o">=</span> <span class="n">settings</span><span class="p">(</span><span class="vm">__doc__</span><span class="p">)</span>
+
+</pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+</div>
+</body>

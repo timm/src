@@ -4,27 +4,34 @@ nav.py docs/NAME.html: inject badges, a grouped TOC and
 <prev | next> links into a pycco page, before its first <h1>.
 
 Run from inside a project dir. Page order = `sh INSTALL.md
-list`. Code pages (x.lisp) get a TOC of the code pages;
-test pages (x-eg.lisp) get a TOC of the test pages; the
-badge strip carries "code" and "tests" links to the first
-page of each group. prev/next walk the full INSTALL.md
-order. Also retitles the page NAME.scm -> NAME.lisp and
-links the <h1> to the file on github.
+list`. Code pages get a TOC of the code pages; -eg pages a
+TOC of the -eg pages; the badge strip carries "code" and
+"tests" links to each group's first page plus the dir's own
+live ci badge. Also retitles the page to its true source
+name and links the <h1> to the file on github.
 """
 import os, subprocess, sys
 
 REPO = "https://github.com/timm/src"
 B    = "https://img.shields.io/badge"
 PROJ = os.path.basename(os.getcwd())
+EXTS = (".lisp", ".py", ".lua")
+LANG = {".lisp": ("common%20lisp", "sbcl%20|%20clisp"),
+        ".py":   ("python", "python3"),
+        ".lua":  ("lua", "lua5.4")}
 
 page  = sys.argv[1]                      # docs/name.html
 name  = page.split("/")[-1][:-len(".html")]
-order = [f[:-len(".lisp")] for f in subprocess.run(
+srcs  = [f for f in subprocess.run(
            ["sh", "INSTALL.md", "list"], text=True,
            capture_output=True).stdout.split()
-         if f.endswith(".lisp")]
+         if f.endswith(EXTS)]
+stem  = lambda f: os.path.splitext(f)[0]
+order = [stem(f) for f in srcs]
 code  = [p for p in order if not p.endswith("-eg")]
 tests = [p for p in order if p.endswith("-eg")]
+src   = {stem(f): f for f in srcs}.get(name, name)
+lang, runs = LANG[os.path.splitext(src)[1]]
 
 def badge(alt, img, url=None):
   img = f'<img alt="{alt}" src="{img}">'
@@ -46,8 +53,8 @@ BADGES = '<p align="center">\n' + "\n".join([
         f"{REPO}/issues"),
   badge("license",  f"{B}/license-MIT-brightgreen",
         f"{REPO}/blob/main/LICENSE.md"),
-  badge("language", f"{B}/language-common%20lisp-9558B2"),
-  badge("runs on",  f"{B}/runs%20on-sbcl%20|%20clisp-EE4C2C"),
+  badge("language", f"{B}/language-{lang}-9558B2"),
+  badge("runs on",  f"{B}/runs%20on-{runs}-EE4C2C"),
   badge("author",   f"{B}/author-timm-blueviolet",
         "https://timm.fyi"),
 ]) + "\n</p>"
@@ -67,10 +74,11 @@ if name in order:
           if i + 1 < len(order) else "next &gt;")
   nav  = f"<p>{prev} | {nxt}</p>"
 top = BADGES + f"<p>{toc}</p>" + nav
+old = (f"{name}.scm" if src.endswith(".lisp")
+       else os.path.basename(src))
 s = open(page).read()
-s = s.replace(f"<title>{name}.scm</title>",
-              f"<title>{name}.lisp</title>")
-s = s.replace(f"<h1>{name}.scm</h1>",
+s = s.replace(f"<title>{old}</title>", f"<title>{src}</title>")
+s = s.replace(f"<h1>{old}</h1>",
               f'<h1><a href="{REPO}/blob/main/{PROJ}/'
-              f'{name}.lisp">{name}.lisp</a></h1>')
+              f'{src}">{src}</a></h1>')
 open(page, "w").write(s.replace("<h1", top + "<h1", 1))
