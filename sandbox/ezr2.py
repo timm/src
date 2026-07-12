@@ -233,7 +233,7 @@ def distx(tbl, r1, r2, **kw):
 def project(rows, x, y):
   far  = lambda r: max(rows, key=lambda z: x(z, r))
   east = far(rows[0]); west = far(east)
-  if y(east) < y(west): east, west = west, east
+  if y(east) > y(west): east, west = west, east
   c = x(east, west) + TINY
   return lambda r: (x(east,r)**2 + c*c - x(west,r)**2)/(2*c)
 
@@ -245,13 +245,14 @@ def acquire(tbl):
   x   = lambda r1, r2: distx(tbl, r1, r2)
   pool, lab = shuffle(tbl.rows), {}
   while len(lab) < cap and len(pool) >= 2*the.leaf:
-    new, grow = [], min(the.grow, cap - len(lab))
+    more = min(the.more, cap - len(lab))
+    less = int(max(1, the.keepf * len(pool)))
+    new  = [] 
     for r in pool:
       if   id(r) in lab         : new += [r]
-      elif (grow := grow-1) >= 0: new += [r]; lab[id(r)]=r
+      elif (more := more-1) >= 0: new += [r]; lab[id(r)]=r
     if len(lab) < cap:
-      n    = max(1, int((1-the.keepf)*len(pool)))
-      pool = sorted(pool, key=project(new, x, y))[n:]
+      pool = sorted(pool, key=project(new, x, y))[:less]
   return sorted(lab.values(), key=y)
 
 #-- bins --------------------------------------------------------

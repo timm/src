@@ -8,7 +8,7 @@
 def project(rows, x, y):
   far  = lambda r: max(rows, key=lambda z: x(z, r))
   east = far(rows[0]); west = far(east)
-  if y(east) < y(west): east, west = west, east
+  if y(east) > y(west): east, west = west, east
   c = x(east, west) + TINY
   return lambda r: (x(east,r)**2 + c*c - x(west,r)**2)/(2*c)
 
@@ -26,6 +26,6 @@ def acquire(data):
       if   id(r) in lab         : here += [r]
       elif (grow := grow-1) >= 0: here += [r]; lab[id(r)] = r
     if len(lab) < cap:
-      n    = max(1, int((1-the.keepf)*len(pool)))
-      pool = sorted(pool, key=project(here, x, y))[n:]
+      more = int(max(1, the.keepf * len(pool)))
+      pool = sorted(pool, key=project(here, x, y))[:more]
   return sorted(lab.values(), key=y)

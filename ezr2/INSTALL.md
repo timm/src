@@ -10,6 +10,7 @@ FILES="ezr2.py
        stats.py
        show.py
        main.py
+       report.py
        dtlz.py
        ezr2-eg.py
        lib-eg.py
