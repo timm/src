@@ -244,13 +244,11 @@ def acquire(tbl):
     return sorted(some(tbl.rows, cap), key=y)
   x   = lambda r1, r2: distx(tbl, r1, r2)
   pool, lab = shuffle(tbl.rows), {}
-  known = lambda r: id(r) in lab
   while len(lab) < cap and len(pool) >= 2*the.leaf:
     new, grow = [], min(the.grow, cap - len(lab))
     for r in pool:
-      if   known(r): new += [r]
-      elif (grow := grow-1) >= 0:
-        lab[id(r)] = r; new += [r]
+      if   id(r) in lab         : new += [r]
+      elif (grow := grow-1) >= 0: new += [r]; lab[id(r)]=r
     if len(lab) < cap:
       n    = max(1, int((1-the.keepf)*len(pool)))
       pool = sorted(pool, key=project(new, x, y))[n:]
