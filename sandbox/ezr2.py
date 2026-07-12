@@ -246,12 +246,15 @@ def acquire(tbl):
   pool, lab = shuffle(tbl.rows), {}
   known = lambda r: id(r) in lab
   while len(lab) < cap and len(pool) >= 2*the.leaf:
-    for r in [r for r in pool if not known(r)][:the.grow]:
-      if len(lab) < cap: lab[id(r)] = r
+    grow = min(the.grow, cap - len(lab))
+    for r in pool:
+      if not known(r):
+        lab[id(r)] = r
+        if (grow := grow-1) < 1: break
     if len(lab) < cap:
       new  = [r for r in pool if known(r)]  # labelled & pool
       n    = max(1, int((1-the.keepf)*len(pool)))
-      pool = sorted(pool, key=project(new, x, y))[n:]
+      pool = sorted(pool, key=project(new , x, y))[n:]
   return sorted(lab.values(), key=y)
 
 #-- bins --------------------------------------------------------
