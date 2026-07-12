@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html;charset=utf-8">
+  <title>tree-eg.lua</title>
+  <link rel="stylesheet" href="pycco.css">
+</head>
+<body>
+<div id='container'>
+  <div id="background"></div>
+  <div class='section'>
+    <div class='docs'><p align="center">
+<a href="https://timm.github.io/src/"><img alt="home" src="https://img.shields.io/badge/🏠-home-gold"></a>
+<a href="https://github.com/timm/src/tree/main/luamine"><img alt="src" src="https://img.shields.io/badge/src-luamine-black"></a>
+<a href="lib.html"><img alt="code" src="https://img.shields.io/badge/code-28%20files-2ea44f"></a>
+<a href="luamine-eg.html"><img alt="tests" src="https://img.shields.io/badge/tests-23%20files-06b6d4"></a>
+<a href="https://github.com/timm/src/actions/workflows/tests-luamine.yml"><img alt="ci" src="https://github.com/timm/src/actions/workflows/tests-luamine.yml/badge.svg"></a>
+<a href="https://github.com/timm/src/issues"><img alt="issues" src="https://img.shields.io/badge/issues-report-red"></a>
+<a href="https://github.com/timm/src/blob/main/LICENSE.md"><img alt="license" src="https://img.shields.io/badge/license-MIT-brightgreen"></a>
+<img alt="language" src="https://img.shields.io/badge/language-lua-9558B2">
+<img alt="runs on" src="https://img.shields.io/badge/runs%20on-lua5.4-EE4C2C">
+<a href="https://timm.fyi"><img alt="author" src="https://img.shields.io/badge/author-timm-blueviolet"></a>
+</p><p><a href="luamine-eg.html">luamine-eg</a> | <a href="list-eg.html">list-eg</a> | <a href="rand-eg.html">rand-eg</a> | <a href="stats-eg.html">stats-eg</a> | <a href="confuse-eg.html">confuse-eg</a> | <a href="str-eg.html">str-eg</a> | <a href="cli-eg.html">cli-eg</a> | <a href="cols-eg.html">cols-eg</a> | <a href="data-eg.html">data-eg</a> | <a href="dist-eg.html">dist-eg</a> | <a href="cut-eg.html">cut-eg</a> | <b>tree-eg</b> | <a href="bayes-eg.html">bayes-eg</a> | <a href="mutate-eg.html">mutate-eg</a> | <a href="cluster-eg.html">cluster-eg</a> | <a href="classify-eg.html">classify-eg</a> | <a href="acquire-eg.html">acquire-eg</a> | <a href="sample-eg.html">sample-eg</a> | <a href="bob-eg.html">bob-eg</a> | <a href="ga-eg.html">ga-eg</a> | <a href="de-eg.html">de-eg</a> | <a href="search-eg.html">search-eg</a> | <a href="race-eg.html">race-eg</a></p><p><a href="cut-eg.html">&lt; prev</a> | <a href="bayes-eg.html">next &gt;</a></p><h1><a href="https://github.com/timm/src/blob/main/luamine/tree-eg.lua">tree-eg.lua</a></h1></div>
+  </div>
+  <div class='clearall'>
+  <div class='section' id='section-0'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-0'>#</a>
+      </div>
+      <p>Tutorial and tests for tree.lua and show.lua.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span></span><span class="kd">local</span><span class="w"> </span><span class="nv">eg</span><span class="p">,</span><span class="w"> </span><span class="nv">h</span><span class="p">,</span><span class="w"> </span><span class="nv">a</span><span class="p">,</span><span class="w"> </span><span class="nv">m</span><span class="p">,</span><span class="w"> </span><span class="nv">l</span><span class="p">,</span><span class="w"> </span><span class="nv">the</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">...</span>
+
+<span class="kd">local</span><span class="w"> </span><span class="nv">Sym</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">m</span><span class="p">.</span><span class="py">Sym</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-1'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-1'>#</a>
+      </div>
+      <h2>Trees, supervised</h2>
+<p>Recurse the cuts: a tree. Here the running example goes
+real: auto93 (via $MOOT), budget-sampled, tree&rsquo;d on its
+last column, printed as an aligned if/else table with the
+best (+) and worst (-) leaves marked. Notice the checks:
+every row lands in exactly one leaf, and <code>relevant</code> routes
+a row back to its leaf&rsquo;s rows.</p>
+<table>
+<thead>
+<tr>
+<th>call</th>
+<th>returns</th>
+<th>what</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>d:tree(y,Sumr,leaf)</code></td>
+<td>node</td>
+<td>greedy bi-tree on y</td>
+</tr>
+<tr>
+<td><code>m.show(node,cols)</code></td>
+<td>&ndash;</td>
+<td>print aligned table</td>
+</tr>
+<tr>
+<td><code>m.relevant(node,row)</code></td>
+<td>rows</td>
+<td>that row&rsquo;s leaf</td>
+</tr>
+<tr>
+<td><code>m.leafStats(node,fn)</code></td>
+<td>num</td>
+<td>fold over leaves</td>
+</tr>
+</tbody>
+</table>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="nv">eg</span><span class="p">[</span><span class="s2">&quot;--tree&quot;</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">function</span><span class="p">(</span><span class="w">    </span><span class="nv">data</span><span class="p">,</span><span class="nv">root</span><span class="p">,</span><span class="nv">y</span><span class="p">,</span><span class="nv">count</span><span class="p">,</span><span class="nv">ls</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">the</span><span class="p">.</span><span class="py">budget</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">32</span><span class="w">     </span><span class="c1">-- label budget (lapps resets it to 512)</span>
+<span class="w">  </span><span class="nv">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">h</span><span class="p">.</span><span class="nf">egData</span><span class="p">()</span>
+<span class="w">  </span><span class="nv">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">data</span><span class="p">:</span><span class="nf">clone</span><span class="p">(</span><span class="nv">l</span><span class="p">.</span><span class="nf">slice</span><span class="p">(</span><span class="nv">l</span><span class="p">.</span><span class="nf">shuffle</span><span class="p">(</span><span class="nv">l</span><span class="p">.</span><span class="nf">copy</span><span class="p">(</span><span class="nv">data</span><span class="p">.</span><span class="py">rows</span><span class="p">)),</span>
+<span class="w">                            </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="nv">the</span><span class="p">.</span><span class="py">budget</span><span class="p">))</span>
+<span class="w">  </span><span class="nv">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">function</span><span class="p">(</span><span class="nv">r</span><span class="p">)</span><span class="w"> </span><span class="kr">return</span><span class="w"> </span><span class="nv">r</span><span class="p">[</span><span class="o">#</span><span class="nv">r</span><span class="p">]</span><span class="w"> </span><span class="kr">end</span>
+<span class="w">  </span><span class="nv">root</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">data</span><span class="p">:</span><span class="nf">tree</span><span class="p">(</span><span class="nv">y</span><span class="p">,</span><span class="w"> </span><span class="nv">Sym</span><span class="p">.</span><span class="py">new</span><span class="p">,</span><span class="w"> </span><span class="nv">the</span><span class="p">.</span><span class="py">leaf</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">m</span><span class="p">.</span><span class="nf">show</span><span class="p">(</span><span class="nv">root</span><span class="p">,</span><span class="w"> </span><span class="nv">data</span><span class="p">.</span><span class="py">cols</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">count</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">function</span><span class="p">(</span><span class="nv">n</span><span class="p">)</span><span class="w"> </span><span class="kr">if</span><span class="w"> </span><span class="nv">n</span><span class="p">.</span><span class="py">leaf</span><span class="w"> </span><span class="kr">then</span><span class="w"> </span><span class="kr">return</span><span class="w"> </span><span class="o">#</span><span class="nv">n</span><span class="p">.</span><span class="py">rows</span><span class="w"> </span><span class="kr">end</span>
+<span class="w">                      </span><span class="kr">return</span><span class="w"> </span><span class="nf">count</span><span class="p">(</span><span class="nv">n</span><span class="p">.</span><span class="py">left</span><span class="p">)</span><span class="o">+</span><span class="nf">count</span><span class="p">(</span><span class="nv">n</span><span class="p">.</span><span class="py">right</span><span class="p">)</span><span class="w"> </span><span class="kr">end</span>
+<span class="w">  </span><span class="nv">ls</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">m</span><span class="p">.</span><span class="nf">leafStats</span><span class="p">(</span><span class="nv">root</span><span class="p">)</span>
+<span class="w">  </span><span class="kr">return</span><span class="w"> </span><span class="nv">l</span><span class="p">.</span><span class="nf">chk</span><span class="p">({</span><span class="s2">&quot;#rows&quot;</span><span class="p">,</span><span class="nf">count</span><span class="p">(</span><span class="nv">root</span><span class="p">),</span><span class="o">#</span><span class="nv">data</span><span class="p">.</span><span class="py">rows</span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span><span class="s2">&quot;leaves&gt;0&quot;</span><span class="p">,</span><span class="nv">ls</span><span class="p">.</span><span class="py">n</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">,</span><span class="kc">true</span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span><span class="s2">&quot;relevant&quot;</span><span class="p">,</span><span class="o">#</span><span class="nv">m</span><span class="p">.</span><span class="nf">relevant</span><span class="p">(</span><span class="nv">root</span><span class="p">,</span><span class="nv">data</span><span class="p">.</span><span class="py">rows</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">,</span><span class="kc">true</span><span class="p">})</span><span class="w"> </span><span class="kr">end</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-2'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-2'>#</a>
+      </div>
+      <h2>Trees, unsupervised</h2>
+<p><code>ftree</code> grows the same shape of tree without ever reading a
+y column: find two far rows (<code>poles</code>, via fastmap), project
+everything onto the line between them, split on that.
+Notice the promise this makes: structure gets found for
+free; labels are only spent later, on the leaves we like.</p>
+<table>
+<thead>
+<tr>
+<th>call</th>
+<th>returns</th>
+<th>what</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>m.poles(d,rows)</code></td>
+<td>a,b</td>
+<td>two far rows</td>
+</tr>
+<tr>
+<td><code>d:ftree(leaf,p,cap)</code></td>
+<td>node</td>
+<td>y never consulted</td>
+</tr>
+</tbody>
+</table>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="nv">eg</span><span class="p">[</span><span class="s2">&quot;--ftree&quot;</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">function</span><span class="p">(</span><span class="w">    </span><span class="nv">data</span><span class="p">,</span><span class="nv">p1</span><span class="p">,</span><span class="nv">p2</span><span class="p">,</span><span class="nv">root</span><span class="p">,</span><span class="nv">count</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">h</span><span class="p">.</span><span class="nf">egData</span><span class="p">()</span>
+<span class="w">  </span><span class="nv">p1</span><span class="p">,</span><span class="nv">p2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">m</span><span class="p">.</span><span class="nf">poles</span><span class="p">(</span><span class="nv">data</span><span class="p">:</span><span class="nf">dxdy</span><span class="p">(),</span><span class="w"> </span><span class="nv">data</span><span class="p">.</span><span class="py">rows</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">root</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">data</span><span class="p">:</span><span class="nf">ftree</span><span class="p">(</span><span class="nv">the</span><span class="p">.</span><span class="py">leaf</span><span class="p">,</span><span class="w"> </span><span class="nv">the</span><span class="p">.</span><span class="py">p</span><span class="p">,</span><span class="w"> </span><span class="o">#</span><span class="nv">data</span><span class="p">.</span><span class="py">rows</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">count</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">function</span><span class="p">(</span><span class="nv">n</span><span class="p">)</span><span class="w"> </span><span class="kr">if</span><span class="w"> </span><span class="nv">n</span><span class="p">.</span><span class="py">leaf</span><span class="w"> </span><span class="kr">then</span><span class="w"> </span><span class="kr">return</span><span class="w"> </span><span class="o">#</span><span class="nv">n</span><span class="p">.</span><span class="py">rows</span><span class="w"> </span><span class="kr">end</span>
+<span class="w">                      </span><span class="kr">return</span><span class="w"> </span><span class="nf">count</span><span class="p">(</span><span class="nv">n</span><span class="p">.</span><span class="py">left</span><span class="p">)</span><span class="o">+</span><span class="nf">count</span><span class="p">(</span><span class="nv">n</span><span class="p">.</span><span class="py">right</span><span class="p">)</span><span class="w"> </span><span class="kr">end</span>
+<span class="w">  </span><span class="kr">return</span><span class="w"> </span><span class="nv">l</span><span class="p">.</span><span class="nf">chk</span><span class="p">({</span><span class="s2">&quot;poles differ&quot;</span><span class="p">,</span><span class="nv">p1</span><span class="w"> </span><span class="o">~=</span><span class="w"> </span><span class="nv">p2</span><span class="p">,</span><span class="kc">true</span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span><span class="s2">&quot;#rows&quot;</span><span class="p">,</span><span class="nf">count</span><span class="p">(</span><span class="nv">root</span><span class="p">),</span><span class="o">#</span><span class="nv">data</span><span class="p">.</span><span class="py">rows</span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span><span class="s2">&quot;is tree&quot;</span><span class="p">,</span><span class="nv">root</span><span class="p">.</span><span class="py">at</span><span class="o">~=</span><span class="kc">nil</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="nv">root</span><span class="p">.</span><span class="py">leaf</span><span class="p">,</span><span class="kc">true</span><span class="p">})</span><span class="w"> </span><span class="kr">end</span>
+
+</pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+</div>
+</body>

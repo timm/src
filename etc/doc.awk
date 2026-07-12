@@ -34,6 +34,11 @@ ext == "py" && pd {
   print pd; pd = ""; print; next }
 ext == "py" && /^def / { pd = $0; next }
 ext == "py"            { print; next }
+ext == "lua" && /^#!/     { next }
+ext == "lua" && /^--\[\[/ { md = 1; next }
+ext == "lua" && /^\]\]/   { md = 0; next }
+ext == "lua" && md        { print "-- " $0; next }
+ext == "lua"              { print; next }
 /^#\|/      { md = 1; next }
 /^\|#/      { md = 0; next }
 md          { print ";; " $0; next }

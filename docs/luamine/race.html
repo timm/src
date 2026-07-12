@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html;charset=utf-8">
+  <title>race.lua</title>
+  <link rel="stylesheet" href="pycco.css">
+</head>
+<body>
+<div id='container'>
+  <div id="background"></div>
+  <div class='section'>
+    <div class='docs'><p align="center">
+<a href="https://timm.github.io/src/"><img alt="home" src="https://img.shields.io/badge/🏠-home-gold"></a>
+<a href="https://github.com/timm/src/tree/main/luamine"><img alt="src" src="https://img.shields.io/badge/src-luamine-black"></a>
+<a href="lib.html"><img alt="code" src="https://img.shields.io/badge/code-28%20files-2ea44f"></a>
+<a href="luamine-eg.html"><img alt="tests" src="https://img.shields.io/badge/tests-23%20files-06b6d4"></a>
+<a href="https://github.com/timm/src/actions/workflows/tests-luamine.yml"><img alt="ci" src="https://github.com/timm/src/actions/workflows/tests-luamine.yml/badge.svg"></a>
+<a href="https://github.com/timm/src/issues"><img alt="issues" src="https://img.shields.io/badge/issues-report-red"></a>
+<a href="https://github.com/timm/src/blob/main/LICENSE.md"><img alt="license" src="https://img.shields.io/badge/license-MIT-brightgreen"></a>
+<img alt="language" src="https://img.shields.io/badge/language-lua-9558B2">
+<img alt="runs on" src="https://img.shields.io/badge/runs%20on-lua5.4-EE4C2C">
+<a href="https://timm.fyi"><img alt="author" src="https://img.shields.io/badge/author-timm-blueviolet"></a>
+</p><p><a href="lib.html">lib</a> | <a href="rand.html">rand</a> | <a href="list.html">list</a> | <a href="stats.html">stats</a> | <a href="confuse.html">confuse</a> | <a href="str.html">str</a> | <a href="cli.html">cli</a> | <a href="luamine.html">luamine</a> | <a href="cut.html">cut</a> | <a href="sym.html">sym</a> | <a href="num.html">num</a> | <a href="cols.html">cols</a> | <a href="data.html">data</a> | <a href="dist.html">dist</a> | <a href="bayes.html">bayes</a> | <a href="mutate.html">mutate</a> | <a href="tree.html">tree</a> | <a href="show.html">show</a> | <a href="lapps.html">lapps</a> | <a href="cluster.html">cluster</a> | <a href="classify.html">classify</a> | <a href="acquire.html">acquire</a> | <a href="sample.html">sample</a> | <a href="bob.html">bob</a> | <b>race</b> | <a href="ga.html">ga</a> | <a href="de.html">de</a> | <a href="search.html">search</a></p><p><a href="bob.html">&lt; prev</a> | <a href="ga.html">next &gt;</a></p><h1><a href="https://github.com/timm/src/blob/main/luamine/race.lua">race.lua</a></h1></div>
+  </div>
+  <div class='clearall'>
+  <div class='section' id='section-0'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-0'>#</a>
+      </div>
+      <p>Race. Oracles and Pareto predicates for the optimizers,
+plus the harness: <code>track</code> drives one stepper, snapping
+kids to their nearest real row and logging each new
+global best; <code>race</code> merges logs; <code>report</code> prints the
+best-trace table.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span></span><span class="kd">local</span><span class="w"> </span><span class="nv">a</span><span class="p">,</span><span class="w"> </span><span class="nv">m</span><span class="p">,</span><span class="w"> </span><span class="nv">l</span><span class="p">,</span><span class="w"> </span><span class="nv">the</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">...</span>
+
+<span class="kd">local</span><span class="w"> </span><span class="nv">huge</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">math.huge</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-1'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-1'>#</a>
+      </div>
+      <p>score row by disty of nearest labeled row</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="kr">function</span><span class="w"> </span><span class="nc">a</span><span class="p">.</span><span class="nf">oracle</span><span class="p">(</span><span class="nv">data</span><span class="p">,</span><span class="w">    </span><span class="nv">ref</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">ref</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">data</span><span class="p">.</span><span class="py">rows</span>
+<span class="w">  </span><span class="kr">return</span><span class="w"> </span><span class="kr">function</span><span class="p">(</span><span class="nv">r</span><span class="p">)</span>
+<span class="w">    </span><span class="kr">return</span><span class="w"> </span><span class="nv">m</span><span class="p">.</span><span class="nf">disty</span><span class="p">(</span><span class="nv">data</span><span class="p">.</span><span class="py">cols</span><span class="p">,</span>
+<span class="w">      </span><span class="nv">m</span><span class="p">.</span><span class="nf">near</span><span class="p">(</span><span class="nv">data</span><span class="p">.</span><span class="py">cols</span><span class="p">,</span><span class="w"> </span><span class="nv">r</span><span class="p">,</span><span class="w"> </span><span class="nv">ref</span><span class="p">,</span><span class="w"> </span><span class="nv">the</span><span class="p">.</span><span class="py">p</span><span class="p">)[</span><span class="mi">1</span><span class="p">],</span><span class="w"> </span><span class="nv">the</span><span class="p">.</span><span class="py">p</span><span class="p">)</span><span class="w"> </span><span class="kr">end</span><span class="w"> </span><span class="kr">end</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-2'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-2'>#</a>
+      </div>
+      <p>predicate: direct Zitzler compare (ignores ref)</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="kr">function</span><span class="w"> </span><span class="nc">a</span><span class="p">.</span><span class="nf">betters</span><span class="p">(</span><span class="nv">data</span><span class="p">)</span>
+<span class="w">  </span><span class="kr">return</span><span class="w"> </span><span class="kr">function</span><span class="p">(</span><span class="nv">x</span><span class="p">,</span><span class="nv">y</span><span class="p">,</span><span class="nv">_</span><span class="p">)</span><span class="w"> </span><span class="kr">return</span><span class="w"> </span><span class="nv">m</span><span class="p">.</span><span class="nf">better</span><span class="p">(</span><span class="nv">data</span><span class="p">,</span><span class="nv">x</span><span class="p">,</span><span class="nv">y</span><span class="p">)</span><span class="w"> </span><span class="kr">end</span><span class="w"> </span><span class="kr">end</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-3'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-3'>#</a>
+      </div>
+      <p>predicate: snap a,b to nearest in ref, compare</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="kr">function</span><span class="w"> </span><span class="nc">a</span><span class="p">.</span><span class="nf">knn</span><span class="p">(</span><span class="nv">data</span><span class="p">)</span>
+<span class="w">  </span><span class="kr">return</span><span class="w"> </span><span class="kr">function</span><span class="p">(</span><span class="nv">x</span><span class="p">,</span><span class="nv">y</span><span class="p">,</span><span class="nv">ref</span><span class="p">)</span>
+<span class="w">    </span><span class="kr">return</span><span class="w"> </span><span class="nv">m</span><span class="p">.</span><span class="nf">better</span><span class="p">(</span><span class="nv">data</span><span class="p">,</span>
+<span class="w">      </span><span class="nv">m</span><span class="p">.</span><span class="nf">near</span><span class="p">(</span><span class="nv">data</span><span class="p">.</span><span class="py">cols</span><span class="p">,</span><span class="nv">x</span><span class="p">,</span><span class="nv">ref</span><span class="p">,</span><span class="nv">the</span><span class="p">.</span><span class="py">p</span><span class="p">)[</span><span class="mi">1</span><span class="p">],</span>
+<span class="w">      </span><span class="nv">m</span><span class="p">.</span><span class="nf">near</span><span class="p">(</span><span class="nv">data</span><span class="p">.</span><span class="py">cols</span><span class="p">,</span><span class="nv">y</span><span class="p">,</span><span class="nv">ref</span><span class="p">,</span><span class="nv">the</span><span class="p">.</span><span class="py">p</span><span class="p">)[</span><span class="mi">1</span><span class="p">])</span><span class="w"> </span><span class="kr">end</span><span class="w"> </span><span class="kr">end</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-4'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-4'>#</a>
+      </div>
+      <p>drive stepper; snap kids to nearest real row;
+log each new global best as {who,eval,gen,disty,nbr}</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="kr">function</span><span class="w"> </span><span class="nc">a</span><span class="p">.</span><span class="nf">track</span><span class="p">(</span><span class="nv">name</span><span class="p">,</span><span class="w"> </span><span class="nv">step</span><span class="p">,</span><span class="w"> </span><span class="nv">cols</span><span class="p">,</span><span class="w"> </span><span class="nv">rows</span><span class="p">,</span>
+<span class="w">                 </span><span class="nv">bob</span><span class="p">,</span><span class="nv">bd</span><span class="p">,</span><span class="nv">lob</span><span class="p">,</span><span class="nv">h</span><span class="p">,</span><span class="nv">mark</span><span class="p">,</span><span class="nv">nbr</span><span class="p">,</span><span class="nv">d</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">bob</span><span class="p">,</span><span class="w"> </span><span class="nv">bd</span><span class="p">,</span><span class="w"> </span><span class="nv">lob</span><span class="p">,</span><span class="w"> </span><span class="nv">h</span><span class="p">,</span><span class="w"> </span><span class="nv">mark</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">nil</span><span class="p">,</span><span class="w"> </span><span class="nv">huge</span><span class="p">,</span><span class="w"> </span><span class="p">{},</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span>
+<span class="w">  </span><span class="kr">for</span><span class="w"> </span><span class="nv">gen</span><span class="p">,</span><span class="nv">kids</span><span class="w"> </span><span class="kr">in</span><span class="w"> </span><span class="nv">step</span><span class="w"> </span><span class="kr">do</span>
+<span class="w">    </span><span class="kr">for</span><span class="w"> </span><span class="nv">_</span><span class="p">,</span><span class="nv">kid</span><span class="w"> </span><span class="kr">in</span><span class="w"> </span><span class="nb">ipairs</span><span class="p">(</span><span class="nv">kids</span><span class="p">)</span><span class="w"> </span><span class="kr">do</span>
+<span class="w">      </span><span class="nv">h</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">h</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span>
+<span class="w">      </span><span class="kr">if</span><span class="w"> </span><span class="nv">h</span><span class="o">-</span><span class="nv">mark</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="nv">the</span><span class="p">.</span><span class="py">dot</span><span class="w"> </span><span class="kr">then</span><span class="w"> </span><span class="nv">mark</span><span class="o">=</span><span class="nv">h</span><span class="p">;</span><span class="w"> </span><span class="nv">l</span><span class="p">.</span><span class="nf">say</span><span class="p">(</span><span class="nv">name</span><span class="p">:</span><span class="nf">sub</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span><span class="w"> </span><span class="kr">end</span>
+<span class="w">      </span><span class="nv">nbr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">m</span><span class="p">.</span><span class="nf">near</span><span class="p">(</span><span class="nv">cols</span><span class="p">,</span><span class="w"> </span><span class="nv">kid</span><span class="p">,</span><span class="w"> </span><span class="nv">rows</span><span class="p">,</span><span class="w"> </span><span class="nv">the</span><span class="p">.</span><span class="py">p</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+<span class="w">      </span><span class="nv">d</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="nv">m</span><span class="p">.</span><span class="nf">disty</span><span class="p">(</span><span class="nv">cols</span><span class="p">,</span><span class="w"> </span><span class="nv">nbr</span><span class="p">,</span><span class="w"> </span><span class="nv">the</span><span class="p">.</span><span class="py">p</span><span class="p">)</span>
+<span class="w">      </span><span class="kr">if</span><span class="w"> </span><span class="nv">d</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="nv">bd</span><span class="w"> </span><span class="kr">then</span>
+<span class="w">        </span><span class="nv">bd</span><span class="p">,</span><span class="w"> </span><span class="nv">bob</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">d</span><span class="p">,</span><span class="w"> </span><span class="nv">nbr</span>
+<span class="w">        </span><span class="nv">lob</span><span class="p">[</span><span class="mi">1</span><span class="o">+#</span><span class="nv">lob</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="nv">who</span><span class="o">=</span><span class="nv">name</span><span class="p">,</span><span class="w"> </span><span class="nv">eval</span><span class="o">=</span><span class="nv">h</span><span class="p">,</span><span class="w"> </span><span class="nv">gen</span><span class="o">=</span><span class="nv">gen</span><span class="p">,</span>
+<span class="w">                       </span><span class="nv">disty</span><span class="o">=</span><span class="nv">d</span><span class="p">,</span><span class="w"> </span><span class="nv">nbr</span><span class="o">=</span><span class="nv">nbr</span><span class="p">}</span><span class="w"> </span><span class="kr">end</span><span class="w"> </span><span class="kr">end</span><span class="w"> </span><span class="kr">end</span>
+<span class="w">  </span><span class="nv">l</span><span class="p">.</span><span class="nf">say</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="w">  </span><span class="kr">return</span><span class="w"> </span><span class="nv">bob</span><span class="p">,</span><span class="w"> </span><span class="nv">lob</span><span class="w"> </span><span class="kr">end</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-5'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-5'>#</a>
+      </div>
+      <p>run optimizers; merge logs to global-best timeline</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="kr">function</span><span class="w"> </span><span class="nc">a</span><span class="p">.</span><span class="nf">race</span><span class="p">(</span><span class="nv">data</span><span class="p">,</span><span class="w"> </span><span class="nv">opts</span><span class="p">,</span><span class="w">    </span><span class="nv">all</span><span class="p">,</span><span class="w"> </span><span class="nv">lob</span><span class="p">,</span><span class="w"> </span><span class="nv">bd</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">all</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{}</span>
+<span class="w">  </span><span class="kr">for</span><span class="w"> </span><span class="nv">_</span><span class="p">,</span><span class="nv">o</span><span class="w"> </span><span class="kr">in</span><span class="w"> </span><span class="nb">ipairs</span><span class="p">(</span><span class="nv">opts</span><span class="p">)</span><span class="w"> </span><span class="kr">do</span>
+<span class="w">    </span><span class="kd">local</span><span class="w"> </span><span class="nv">_</span><span class="p">,</span><span class="w"> </span><span class="nv">lb</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">a</span><span class="p">.</span><span class="nf">track</span><span class="p">(</span><span class="nv">o</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="w"> </span><span class="nv">o</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span><span class="w"> </span><span class="nv">data</span><span class="p">.</span><span class="py">cols</span><span class="p">,</span><span class="w"> </span><span class="nv">data</span><span class="p">.</span><span class="py">rows</span><span class="p">)</span>
+<span class="w">    </span><span class="kr">for</span><span class="w"> </span><span class="nv">_</span><span class="p">,</span><span class="nv">e</span><span class="w"> </span><span class="kr">in</span><span class="w"> </span><span class="nb">ipairs</span><span class="p">(</span><span class="nv">lb</span><span class="p">)</span><span class="w"> </span><span class="kr">do</span><span class="w"> </span><span class="nv">all</span><span class="p">[</span><span class="mi">1</span><span class="o">+#</span><span class="nv">all</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">e</span><span class="w"> </span><span class="kr">end</span><span class="w"> </span><span class="kr">end</span>
+<span class="w">  </span><span class="nv">all</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">l</span><span class="p">.</span><span class="nf">keysort</span><span class="p">(</span><span class="nv">all</span><span class="p">,</span><span class="w"> </span><span class="kr">function</span><span class="p">(</span><span class="nv">e</span><span class="p">)</span><span class="w"> </span><span class="kr">return</span><span class="w"> </span><span class="nv">e</span><span class="p">.</span><span class="py">eval</span><span class="w"> </span><span class="kr">end</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">lob</span><span class="p">,</span><span class="w"> </span><span class="nv">bd</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{},</span><span class="w"> </span><span class="nv">huge</span>
+<span class="w">  </span><span class="kr">for</span><span class="w"> </span><span class="nv">_</span><span class="p">,</span><span class="nv">e</span><span class="w"> </span><span class="kr">in</span><span class="w"> </span><span class="nb">ipairs</span><span class="p">(</span><span class="nv">all</span><span class="p">)</span><span class="w"> </span><span class="kr">do</span>
+<span class="w">    </span><span class="kr">if</span><span class="w"> </span><span class="nv">e</span><span class="p">.</span><span class="py">disty</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="nv">bd</span><span class="w"> </span><span class="kr">then</span><span class="w"> </span><span class="nv">bd</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">e</span><span class="p">.</span><span class="py">disty</span><span class="p">;</span><span class="w"> </span><span class="nv">lob</span><span class="p">[</span><span class="mi">1</span><span class="o">+#</span><span class="nv">lob</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">e</span><span class="w"> </span><span class="kr">end</span><span class="w"> </span><span class="kr">end</span>
+<span class="w">  </span><span class="kr">return</span><span class="w"> </span><span class="nv">lob</span><span class="w"> </span><span class="kr">end</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-6'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-6'>#</a>
+      </div>
+      <p>print race table: who/eval/gen/disty + y goals</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="kr">function</span><span class="w"> </span><span class="nc">a</span><span class="p">.</span><span class="nf">report</span><span class="p">(</span><span class="nv">data</span><span class="p">,</span><span class="w"> </span><span class="nv">lob</span><span class="p">,</span><span class="w">    </span><span class="nv">ys</span><span class="p">,</span><span class="nv">rows</span><span class="p">,</span><span class="nv">row</span><span class="p">,</span><span class="nv">dists</span><span class="p">,</span><span class="nv">mu</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">ys</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="nv">data</span><span class="p">.</span><span class="py">cols</span><span class="p">.</span><span class="py">y</span>
+<span class="w">  </span><span class="nv">rows</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{{</span><span class="s2">&quot;who&quot;</span><span class="p">,</span><span class="s2">&quot;eval&quot;</span><span class="p">,</span><span class="s2">&quot;gen&quot;</span><span class="p">,</span><span class="s2">&quot;disty&quot;</span><span class="p">}}</span>
+<span class="w">  </span><span class="kr">for</span><span class="w"> </span><span class="nv">_</span><span class="p">,</span><span class="nv">c</span><span class="w"> </span><span class="kr">in</span><span class="w"> </span><span class="nb">ipairs</span><span class="p">(</span><span class="nv">ys</span><span class="p">)</span><span class="w"> </span><span class="kr">do</span><span class="w"> </span><span class="nv">rows</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="o">+#</span><span class="nv">rows</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">c</span><span class="p">.</span><span class="py">txt</span><span class="w"> </span><span class="kr">end</span>
+<span class="w">  </span><span class="nv">mu</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{};</span><span class="w"> </span><span class="kr">for</span><span class="w"> </span><span class="nv">_</span><span class="p">,</span><span class="nv">c</span><span class="w"> </span><span class="kr">in</span><span class="w"> </span><span class="nb">ipairs</span><span class="p">(</span><span class="nv">ys</span><span class="p">)</span><span class="w"> </span><span class="kr">do</span><span class="w"> </span><span class="nv">mu</span><span class="p">[</span><span class="nv">c</span><span class="p">.</span><span class="py">at</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">c</span><span class="p">.</span><span class="py">mu</span><span class="w"> </span><span class="kr">end</span>
+<span class="w">  </span><span class="nv">row</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="s2">&quot;average&quot;</span><span class="p">,</span><span class="s2">&quot;-&quot;</span><span class="p">,</span><span class="s2">&quot;-&quot;</span><span class="p">,</span><span class="nv">l</span><span class="p">.</span><span class="nf">o</span><span class="p">(</span><span class="nv">m</span><span class="p">.</span><span class="nf">disty</span><span class="p">(</span><span class="nv">data</span><span class="p">.</span><span class="py">cols</span><span class="p">,</span><span class="nv">mu</span><span class="p">,</span><span class="nv">the</span><span class="p">.</span><span class="py">p</span><span class="p">))}</span>
+<span class="w">  </span><span class="kr">for</span><span class="w"> </span><span class="nv">_</span><span class="p">,</span><span class="nv">c</span><span class="w"> </span><span class="kr">in</span><span class="w"> </span><span class="nb">ipairs</span><span class="p">(</span><span class="nv">ys</span><span class="p">)</span><span class="w"> </span><span class="kr">do</span><span class="w"> </span><span class="nv">row</span><span class="p">[</span><span class="mi">1</span><span class="o">+#</span><span class="nv">row</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">l</span><span class="p">.</span><span class="nf">o</span><span class="p">(</span><span class="nv">c</span><span class="p">.</span><span class="py">mu</span><span class="p">)</span><span class="w"> </span><span class="kr">end</span>
+<span class="w">  </span><span class="nv">rows</span><span class="p">[</span><span class="mi">1</span><span class="o">+#</span><span class="nv">rows</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">row</span>
+<span class="w">  </span><span class="nv">dists</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{}</span>
+<span class="w">  </span><span class="kr">for</span><span class="w"> </span><span class="nv">_</span><span class="p">,</span><span class="nv">e</span><span class="w"> </span><span class="kr">in</span><span class="w"> </span><span class="nb">ipairs</span><span class="p">(</span><span class="nv">lob</span><span class="p">)</span><span class="w"> </span><span class="kr">do</span>
+<span class="w">    </span><span class="nv">dists</span><span class="p">[</span><span class="mi">1</span><span class="o">+#</span><span class="nv">dists</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">e</span><span class="p">.</span><span class="py">disty</span>
+<span class="w">    </span><span class="nv">row</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="nv">e</span><span class="p">.</span><span class="py">who</span><span class="p">,</span><span class="w"> </span><span class="nv">e</span><span class="p">.</span><span class="py">eval</span><span class="p">,</span><span class="w"> </span><span class="nv">l</span><span class="p">.</span><span class="nf">o</span><span class="p">(</span><span class="nv">e</span><span class="p">.</span><span class="py">gen</span><span class="p">),</span><span class="w"> </span><span class="nv">l</span><span class="p">.</span><span class="nf">o</span><span class="p">(</span><span class="nv">e</span><span class="p">.</span><span class="py">disty</span><span class="p">)}</span>
+<span class="w">    </span><span class="kr">for</span><span class="w"> </span><span class="nv">_</span><span class="p">,</span><span class="nv">c</span><span class="w"> </span><span class="kr">in</span><span class="w"> </span><span class="nb">ipairs</span><span class="p">(</span><span class="nv">ys</span><span class="p">)</span><span class="w"> </span><span class="kr">do</span><span class="w"> </span><span class="nv">row</span><span class="p">[</span><span class="mi">1</span><span class="o">+#</span><span class="nv">row</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">l</span><span class="p">.</span><span class="nf">o</span><span class="p">(</span><span class="nv">e</span><span class="p">.</span><span class="py">nbr</span><span class="p">[</span><span class="nv">c</span><span class="p">.</span><span class="py">at</span><span class="p">])</span><span class="w"> </span><span class="kr">end</span>
+<span class="w">    </span><span class="nv">rows</span><span class="p">[</span><span class="mi">1</span><span class="o">+#</span><span class="nv">rows</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">row</span><span class="w"> </span><span class="kr">end</span>
+<span class="w">  </span><span class="nv">l</span><span class="p">.</span><span class="nf">tabulate</span><span class="p">(</span><span class="nv">rows</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="s2">&quot;&lt;&quot;</span><span class="p">},</span><span class="w"> </span><span class="s2">&quot;  &quot;</span><span class="p">)</span>
+<span class="w">  </span><span class="kr">return</span><span class="w"> </span><span class="nv">dists</span><span class="w"> </span><span class="kr">end</span>
+
+</pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+</div>
+</body>

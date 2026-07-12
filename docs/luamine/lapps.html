@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html;charset=utf-8">
+  <title>lapps.lua</title>
+  <link rel="stylesheet" href="pycco.css">
+</head>
+<body>
+<div id='container'>
+  <div id="background"></div>
+  <div class='section'>
+    <div class='docs'><p align="center">
+<a href="https://timm.github.io/src/"><img alt="home" src="https://img.shields.io/badge/🏠-home-gold"></a>
+<a href="https://github.com/timm/src/tree/main/luamine"><img alt="src" src="https://img.shields.io/badge/src-luamine-black"></a>
+<a href="lib.html"><img alt="code" src="https://img.shields.io/badge/code-28%20files-2ea44f"></a>
+<a href="luamine-eg.html"><img alt="tests" src="https://img.shields.io/badge/tests-23%20files-06b6d4"></a>
+<a href="https://github.com/timm/src/actions/workflows/tests-luamine.yml"><img alt="ci" src="https://github.com/timm/src/actions/workflows/tests-luamine.yml/badge.svg"></a>
+<a href="https://github.com/timm/src/issues"><img alt="issues" src="https://img.shields.io/badge/issues-report-red"></a>
+<a href="https://github.com/timm/src/blob/main/LICENSE.md"><img alt="license" src="https://img.shields.io/badge/license-MIT-brightgreen"></a>
+<img alt="language" src="https://img.shields.io/badge/language-lua-9558B2">
+<img alt="runs on" src="https://img.shields.io/badge/runs%20on-lua5.4-EE4C2C">
+<a href="https://timm.fyi"><img alt="author" src="https://img.shields.io/badge/author-timm-blueviolet"></a>
+</p><p><a href="lib.html">lib</a> | <a href="rand.html">rand</a> | <a href="list.html">list</a> | <a href="stats.html">stats</a> | <a href="confuse.html">confuse</a> | <a href="str.html">str</a> | <a href="cli.html">cli</a> | <a href="luamine.html">luamine</a> | <a href="cut.html">cut</a> | <a href="sym.html">sym</a> | <a href="num.html">num</a> | <a href="cols.html">cols</a> | <a href="data.html">data</a> | <a href="dist.html">dist</a> | <a href="bayes.html">bayes</a> | <a href="mutate.html">mutate</a> | <a href="tree.html">tree</a> | <a href="show.html">show</a> | <b>lapps</b> | <a href="cluster.html">cluster</a> | <a href="classify.html">classify</a> | <a href="acquire.html">acquire</a> | <a href="sample.html">sample</a> | <a href="bob.html">bob</a> | <a href="race.html">race</a> | <a href="ga.html">ga</a> | <a href="de.html">de</a> | <a href="search.html">search</a></p><p><a href="show.html">&lt; prev</a> | <a href="cluster.html">next &gt;</a></p><h1><a href="https://github.com/timm/src/blob/main/luamine/lapps.lua">lapps.lua</a></h1></div>
+  </div>
+  <div class='clearall'>
+  <div class='section' id='section-0'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-0'>#</a>
+      </div>
+      <p>Apps: cluster, classify, acquire, bob, ga, de, sa, ls,
+race &ndash; the loader. Loads each app file into this one
+module, merges this help&rsquo;s options into the shared <code>the</code>
+and returns the assembled module. require&rdquo;lapps&rdquo; as
+before.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span></span><span class="kd">local</span><span class="w"> </span><span class="nv">help</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[[</span>
+<span class="o">#</span><span class="w"> </span><span class="nv">Apps</span><span class="p">:</span><span class="w"> </span><span class="py">cluster</span><span class="p">,</span><span class="w"> </span><span class="nv">classify</span><span class="p">,</span><span class="w"> </span><span class="nv">acquire</span><span class="p">,</span><span class="w"> </span><span class="nv">bob</span><span class="p">,</span><span class="w"> </span><span class="nv">ga</span><span class="p">,</span><span class="w"> </span><span class="nv">de</span><span class="p">,</span><span class="w"> </span><span class="nv">sa</span><span class="p">,</span><span class="w"> </span><span class="nv">ls</span><span class="p">,</span><span class="w"> </span><span class="nf">race</span>
+<span class="p">(</span><span class="nv">c</span><span class="p">)</span><span class="w"> </span><span class="mi">2026</span><span class="w"> </span><span class="nv">Tim</span><span class="w"> </span><span class="nv">Menzies</span><span class="w"> </span><span class="o">&lt;</span><span class="nv">timm</span><span class="err">@</span><span class="nv">ieee</span><span class="p">.</span><span class="py">org</span><span class="o">&gt;</span><span class="w"> </span><span class="nv">MIT</span><span class="w"> </span><span class="nv">license</span>
+<span class="o">##</span><span class="w"> </span><span class="nv">options</span>
+<span class="w">  </span><span class="o">-</span><span class="nv">t</span><span class="w">  </span><span class="c1">--train=$MOOT/optimize/misc/auto93.csv  train CSV</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-1'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-1'>#</a>
+      </div>
+      <p>seed=1     RNG seed
+k_cluster=20   #clusters for kmeans/kpp
+iter=10        kmeans iterations
+few=128        active-pool cap (kpp + bob)
+start=10       acquire warm-start labels
+wait=10        classify warm-up before scoring
+np=20           GA/DE population
+gens=100        GA generations
+tour=5         GA tournament size
+mut=0.8        GA mutation rate (frac of x-cols)
+de_iter=30     DE iterations
+budget=512     label/eval budget (acquire + ga ref pool)
+budget1=1000   oneplus1/sa/ls eval budget
+dot=25         evals per progress letter
+repeats=20     acq shuffle+bob repeats per file
+check=4        post-acquire top-N to evaluate</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="w">  </span><span class="o">-</span>
+<span class="o">##</span><span class="w"> </span><span class="nf">egs</span>
+<span class="w">  </span><span class="p">(</span><span class="nv">see</span><span class="w"> </span><span class="nv">luamine</span><span class="o">-</span><span class="nv">eg</span><span class="p">.</span><span class="py">lua</span><span class="p">)</span>
+<span class="kd">local</span><span class="w"> </span><span class="nv">b4</span><span class="o">=</span><span class="p">{};</span><span class="w"> </span><span class="kr">for</span><span class="w"> </span><span class="nv">k</span><span class="p">,</span><span class="nv">_</span><span class="w"> </span><span class="kr">in</span><span class="w"> </span><span class="nb">pairs</span><span class="p">(</span><span class="nb">_G</span><span class="p">)</span><span class="w"> </span><span class="kr">do</span><span class="w"> </span><span class="nv">b4</span><span class="p">[</span><span class="nv">k</span><span class="p">]</span><span class="o">=</span><span class="nv">k</span><span class="w"> </span><span class="kr">end</span>
+<span class="kd">local</span><span class="w"> </span><span class="nv">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{}</span>
+<span class="kd">local</span><span class="w"> </span><span class="nv">l</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">require</span><span class="s2">&quot;lib&quot;</span>
+<span class="kd">local</span><span class="w"> </span><span class="nv">m</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">require</span><span class="s2">&quot;luamine&quot;</span>
+<span class="kd">local</span><span class="w"> </span><span class="nv">the</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">l</span><span class="p">.</span><span class="py">the</span>
+<span class="nv">a</span><span class="p">.</span><span class="py">help</span><span class="p">,</span><span class="w"> </span><span class="nv">a</span><span class="p">.</span><span class="py">Data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">help</span><span class="p">,</span><span class="w"> </span><span class="nv">m</span><span class="p">.</span><span class="py">Data</span>
+
+<span class="kd">local</span><span class="w"> </span><span class="nv">here</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">debug.getinfo</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="s2">&quot;S&quot;</span><span class="p">).</span><span class="nv">source</span>
+<span class="w">             </span><span class="p">:</span><span class="py">match</span><span class="s2">&quot;^@(.-)[^/</span><span class="se">\\</span><span class="s2">]*$&quot;</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="s2">&quot;&quot;</span>
+<span class="kr">for</span><span class="w"> </span><span class="nv">_</span><span class="p">,</span><span class="nv">f</span><span class="w"> </span><span class="kr">in</span><span class="w"> </span><span class="nb">ipairs</span><span class="p">{</span><span class="s2">&quot;cluster&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;classify&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;acquire&quot;</span><span class="p">,</span>
+<span class="w">                  </span><span class="s2">&quot;sample&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;bob&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;race&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;ga&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;de&quot;</span><span class="p">,</span>
+<span class="w">                  </span><span class="s2">&quot;search&quot;</span><span class="p">}</span><span class="w"> </span><span class="kr">do</span>
+<span class="w">  </span><span class="nb">assert</span><span class="p">(</span><span class="nb">loadfile</span><span class="p">(</span><span class="nv">here</span><span class="o">..</span><span class="nv">f</span><span class="o">..</span><span class="s2">&quot;.lua&quot;</span><span class="p">))(</span><span class="nv">a</span><span class="p">,</span><span class="w"> </span><span class="nv">m</span><span class="p">,</span><span class="w"> </span><span class="nv">l</span><span class="p">,</span><span class="w"> </span><span class="nv">the</span><span class="p">)</span><span class="w"> </span><span class="kr">end</span>
+
+<span class="nv">l</span><span class="p">.</span><span class="nf">boot</span><span class="p">({},</span><span class="w"> </span><span class="nv">b4</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;lapps&quot;</span><span class="p">,</span><span class="w"> </span><span class="nv">help</span><span class="p">)</span>
+<span class="kr">return</span><span class="w"> </span><span class="nv">a</span>
+
+</pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+</div>
+</body>

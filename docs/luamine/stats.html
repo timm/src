@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html;charset=utf-8">
+  <title>stats.lua</title>
+  <link rel="stylesheet" href="pycco.css">
+</head>
+<body>
+<div id='container'>
+  <div id="background"></div>
+  <div class='section'>
+    <div class='docs'><p align="center">
+<a href="https://timm.github.io/src/"><img alt="home" src="https://img.shields.io/badge/🏠-home-gold"></a>
+<a href="https://github.com/timm/src/tree/main/luamine"><img alt="src" src="https://img.shields.io/badge/src-luamine-black"></a>
+<a href="lib.html"><img alt="code" src="https://img.shields.io/badge/code-28%20files-2ea44f"></a>
+<a href="luamine-eg.html"><img alt="tests" src="https://img.shields.io/badge/tests-23%20files-06b6d4"></a>
+<a href="https://github.com/timm/src/actions/workflows/tests-luamine.yml"><img alt="ci" src="https://github.com/timm/src/actions/workflows/tests-luamine.yml/badge.svg"></a>
+<a href="https://github.com/timm/src/issues"><img alt="issues" src="https://img.shields.io/badge/issues-report-red"></a>
+<a href="https://github.com/timm/src/blob/main/LICENSE.md"><img alt="license" src="https://img.shields.io/badge/license-MIT-brightgreen"></a>
+<img alt="language" src="https://img.shields.io/badge/language-lua-9558B2">
+<img alt="runs on" src="https://img.shields.io/badge/runs%20on-lua5.4-EE4C2C">
+<a href="https://timm.fyi"><img alt="author" src="https://img.shields.io/badge/author-timm-blueviolet"></a>
+</p><p><a href="lib.html">lib</a> | <a href="rand.html">rand</a> | <a href="list.html">list</a> | <b>stats</b> | <a href="confuse.html">confuse</a> | <a href="str.html">str</a> | <a href="cli.html">cli</a> | <a href="luamine.html">luamine</a> | <a href="cut.html">cut</a> | <a href="sym.html">sym</a> | <a href="num.html">num</a> | <a href="cols.html">cols</a> | <a href="data.html">data</a> | <a href="dist.html">dist</a> | <a href="bayes.html">bayes</a> | <a href="mutate.html">mutate</a> | <a href="tree.html">tree</a> | <a href="show.html">show</a> | <a href="lapps.html">lapps</a> | <a href="cluster.html">cluster</a> | <a href="classify.html">classify</a> | <a href="acquire.html">acquire</a> | <a href="sample.html">sample</a> | <a href="bob.html">bob</a> | <a href="race.html">race</a> | <a href="ga.html">ga</a> | <a href="de.html">de</a> | <a href="search.html">search</a></p><p><a href="list.html">&lt; prev</a> | <a href="confuse.html">next &gt;</a></p><h1><a href="https://github.com/timm/src/blob/main/luamine/stats.lua">stats.lua</a></h1></div>
+  </div>
+  <div class='clearall'>
+  <div class='section' id='section-0'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-0'>#</a>
+      </div>
+      <p>Stats. Welford accumulation, mode/entropy for counts,
+then the conservative equality tests: cliffsDelta + ks +
+a median-gap check feed <code>same</code>; <code>topTier</code> keeps every
+treatment statistically level with the best.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span></span><span class="kd">local</span><span class="w"> </span><span class="nv">l</span><span class="p">,</span><span class="w"> </span><span class="nv">the</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">...</span>
+
+<span class="kd">local</span><span class="w"> </span><span class="nv">abs</span><span class="p">,</span><span class="nv">log</span><span class="p">,</span><span class="nv">max</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">math.abs</span><span class="p">,</span><span class="w"> </span><span class="nb">math.log</span><span class="p">,</span><span class="w"> </span><span class="nb">math.max</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-1'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-1'>#</a>
+      </div>
+      <p>stdev from welford state n,m2</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="kr">function</span><span class="w"> </span><span class="nc">l</span><span class="p">.</span><span class="nf">sd</span><span class="p">(</span><span class="nv">n</span><span class="p">,</span><span class="nv">m2</span><span class="p">)</span><span class="w"> </span><span class="kr">return</span><span class="w"> </span><span class="nv">n</span><span class="o">&lt;</span><span class="mi">2</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="p">(</span><span class="nv">m2</span><span class="o">/</span><span class="p">(</span><span class="nv">n</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span><span class="o">^</span><span class="mf">0.5</span><span class="w"> </span><span class="kr">end</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-2'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-2'>#</a>
+      </div>
+      <p>online update of n,mu,m2 for one value v</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="kr">function</span><span class="w"> </span><span class="nc">l</span><span class="p">.</span><span class="nf">welford</span><span class="p">(</span><span class="nv">v</span><span class="p">,</span><span class="nv">n</span><span class="p">,</span><span class="nv">mu</span><span class="p">,</span><span class="nv">m2</span><span class="p">,</span><span class="nv">w</span><span class="p">,</span><span class="w">    </span><span class="nv">d</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">w</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">w</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="mi">1</span>
+<span class="w">  </span><span class="nv">n</span><span class="o">=</span><span class="nv">n</span><span class="o">+</span><span class="nv">w</span><span class="p">;</span><span class="w"> </span><span class="nv">d</span><span class="o">=</span><span class="nv">v</span><span class="o">-</span><span class="nv">mu</span><span class="p">;</span><span class="w"> </span><span class="nv">mu</span><span class="o">=</span><span class="nv">mu</span><span class="o">+</span><span class="nv">w</span><span class="o">*</span><span class="nv">d</span><span class="o">/</span><span class="nv">n</span><span class="p">;</span><span class="w"> </span><span class="kr">return</span><span class="w"> </span><span class="nv">n</span><span class="p">,</span><span class="nv">mu</span><span class="p">,</span><span class="w"> </span><span class="nv">m2</span><span class="o">+</span><span class="nv">w</span><span class="o">*</span><span class="nv">d</span><span class="o">*</span><span class="p">(</span><span class="nv">v</span><span class="o">-</span><span class="nv">mu</span><span class="p">)</span><span class="w"> </span><span class="kr">end</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-3'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-3'>#</a>
+      </div>
+      <p>batch mu,sd of a list, via welford</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="kr">function</span><span class="w"> </span><span class="nc">l</span><span class="p">.</span><span class="nf">welfords</span><span class="p">(</span><span class="nv">xs</span><span class="p">,</span><span class="w">    </span><span class="nv">n</span><span class="p">,</span><span class="nv">mu</span><span class="p">,</span><span class="nv">m2</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">n</span><span class="p">,</span><span class="nv">mu</span><span class="p">,</span><span class="nv">m2</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span>
+<span class="w">  </span><span class="kr">for</span><span class="w"> </span><span class="nv">_</span><span class="p">,</span><span class="nv">v</span><span class="w"> </span><span class="kr">in</span><span class="w"> </span><span class="nb">ipairs</span><span class="p">(</span><span class="nv">xs</span><span class="p">)</span><span class="w"> </span><span class="kr">do</span><span class="w"> </span><span class="nv">n</span><span class="p">,</span><span class="nv">mu</span><span class="p">,</span><span class="nv">m2</span><span class="o">=</span><span class="nv">l</span><span class="p">.</span><span class="nf">welford</span><span class="p">(</span><span class="nv">v</span><span class="p">,</span><span class="nv">n</span><span class="p">,</span><span class="nv">mu</span><span class="p">,</span><span class="nv">m2</span><span class="p">)</span><span class="w"> </span><span class="kr">end</span>
+<span class="w">  </span><span class="kr">return</span><span class="w"> </span><span class="nv">mu</span><span class="p">,</span><span class="w"> </span><span class="nv">l</span><span class="p">.</span><span class="nf">sd</span><span class="p">(</span><span class="nv">n</span><span class="p">,</span><span class="nv">m2</span><span class="p">)</span><span class="w"> </span><span class="kr">end</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-4'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-4'>#</a>
+      </div>
+      <p>highest-count key of dict; sorted scan (stable ties)</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="kr">function</span><span class="w"> </span><span class="nc">l</span><span class="p">.</span><span class="nf">mode</span><span class="p">(</span><span class="nv">t</span><span class="p">,</span><span class="w">    </span><span class="nv">ks</span><span class="p">,</span><span class="nv">out</span><span class="p">,</span><span class="nv">N</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">ks</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">l</span><span class="p">.</span><span class="nf">sort</span><span class="p">(</span><span class="nv">l</span><span class="p">.</span><span class="nf">kap</span><span class="p">(</span><span class="nv">t</span><span class="p">,</span><span class="w"> </span><span class="kr">function</span><span class="p">(</span><span class="nv">k</span><span class="p">,</span><span class="nv">_</span><span class="p">)</span><span class="w"> </span><span class="kr">return</span><span class="w"> </span><span class="nv">k</span><span class="w"> </span><span class="kr">end</span><span class="p">))</span>
+<span class="w">  </span><span class="nv">N</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">-</span><span class="mi">1</span>
+<span class="w">  </span><span class="kr">for</span><span class="w"> </span><span class="nv">_</span><span class="p">,</span><span class="nv">k</span><span class="w"> </span><span class="kr">in</span><span class="w"> </span><span class="nb">ipairs</span><span class="p">(</span><span class="nv">ks</span><span class="p">)</span><span class="w"> </span><span class="kr">do</span>
+<span class="w">    </span><span class="kr">if</span><span class="w"> </span><span class="nv">t</span><span class="p">[</span><span class="nv">k</span><span class="p">]</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="nv">N</span><span class="w"> </span><span class="kr">then</span><span class="w"> </span><span class="nv">out</span><span class="p">,</span><span class="nv">N</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">k</span><span class="p">,</span><span class="nv">t</span><span class="p">[</span><span class="nv">k</span><span class="p">]</span><span class="w"> </span><span class="kr">end</span><span class="w"> </span><span class="kr">end</span>
+<span class="w">  </span><span class="kr">return</span><span class="w"> </span><span class="nv">out</span><span class="w"> </span><span class="kr">end</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-5'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-5'>#</a>
+      </div>
+      <p>shannon entropy (bits) of dict counts</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="kr">function</span><span class="w"> </span><span class="nc">l</span><span class="p">.</span><span class="nf">ent</span><span class="p">(</span><span class="nv">t</span><span class="p">,</span><span class="w">    </span><span class="nv">e</span><span class="p">,</span><span class="nv">N</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">e</span><span class="p">,</span><span class="nv">N</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span>
+<span class="w">  </span><span class="kr">for</span><span class="w"> </span><span class="nv">_</span><span class="p">,</span><span class="nv">n</span><span class="w"> </span><span class="kr">in</span><span class="w"> </span><span class="nb">pairs</span><span class="p">(</span><span class="nv">t</span><span class="p">)</span><span class="w"> </span><span class="kr">do</span><span class="w"> </span><span class="nv">N</span><span class="o">=</span><span class="nv">N</span><span class="o">+</span><span class="nv">n</span><span class="w"> </span><span class="kr">end</span>
+<span class="w">  </span><span class="kr">for</span><span class="w"> </span><span class="nv">_</span><span class="p">,</span><span class="nv">n</span><span class="w"> </span><span class="kr">in</span><span class="w"> </span><span class="nb">pairs</span><span class="p">(</span><span class="nv">t</span><span class="p">)</span><span class="w"> </span><span class="kr">do</span><span class="w"> </span><span class="nv">e</span><span class="o">=</span><span class="nv">e</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="nv">n</span><span class="o">/</span><span class="nv">N</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="nf">log</span><span class="p">(</span><span class="nv">n</span><span class="o">/</span><span class="nv">N</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="kr">end</span>
+<span class="w">  </span><span class="kr">return</span><span class="w"> </span><span class="nv">e</span><span class="w"> </span><span class="kr">end</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-6'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-6'>#</a>
+      </div>
+      <p>count of t[i]&lt;=x (or &lt;x if strict) in sorted t</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="kr">function</span><span class="w"> </span><span class="nc">l</span><span class="p">.</span><span class="nf">bisect</span><span class="p">(</span><span class="nv">t</span><span class="p">,</span><span class="nv">x</span><span class="p">,</span><span class="nv">strict</span><span class="p">,</span><span class="w">    </span><span class="nv">lo</span><span class="p">,</span><span class="nv">hi</span><span class="p">,</span><span class="nv">mid</span><span class="p">,</span><span class="nv">go</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">lo</span><span class="p">,</span><span class="nv">hi</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="o">#</span><span class="nv">t</span>
+<span class="w">  </span><span class="kr">while</span><span class="w"> </span><span class="nv">lo</span><span class="o">&lt;=</span><span class="nv">hi</span><span class="w"> </span><span class="kr">do</span><span class="w"> </span><span class="nv">mid</span><span class="o">=</span><span class="p">(</span><span class="nv">lo</span><span class="o">+</span><span class="nv">hi</span><span class="p">)</span><span class="o">//</span><span class="mi">2</span>
+<span class="w">    </span><span class="nv">go</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">strict</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="nv">t</span><span class="p">[</span><span class="nv">mid</span><span class="p">]</span><span class="o">&lt;</span><span class="nv">x</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="p">(</span><span class="ow">not</span><span class="w"> </span><span class="nv">strict</span><span class="p">)</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="nv">t</span><span class="p">[</span><span class="nv">mid</span><span class="p">]</span><span class="o">&lt;=</span><span class="nv">x</span>
+<span class="w">    </span><span class="kr">if</span><span class="w"> </span><span class="nv">go</span><span class="w"> </span><span class="kr">then</span><span class="w"> </span><span class="nv">lo</span><span class="o">=</span><span class="nv">mid</span><span class="o">+</span><span class="mi">1</span><span class="w"> </span><span class="kr">else</span><span class="w"> </span><span class="nv">hi</span><span class="o">=</span><span class="nv">mid</span><span class="o">-</span><span class="mi">1</span><span class="w"> </span><span class="kr">end</span><span class="w"> </span><span class="kr">end</span>
+<span class="w">  </span><span class="kr">return</span><span class="w"> </span><span class="nv">lo</span><span class="o">-</span><span class="mi">1</span><span class="w"> </span><span class="kr">end</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-7'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-7'>#</a>
+      </div>
+      <p>pooled stdev of two raw samples</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="kr">function</span><span class="w"> </span><span class="nc">l</span><span class="p">.</span><span class="nf">pooledSd</span><span class="p">(</span><span class="nv">xs</span><span class="p">,</span><span class="nv">ys</span><span class="p">,</span><span class="w">    </span><span class="nv">nx</span><span class="p">,</span><span class="nv">sx</span><span class="p">,</span><span class="nv">ny</span><span class="p">,</span><span class="nv">sy</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">nx</span><span class="p">,</span><span class="nv">sx</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">#</span><span class="nv">xs</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="nb">select</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="nv">l</span><span class="p">.</span><span class="nf">welfords</span><span class="p">(</span><span class="nv">xs</span><span class="p">)))</span>
+<span class="w">  </span><span class="nv">ny</span><span class="p">,</span><span class="nv">sy</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">#</span><span class="nv">ys</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="nb">select</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="nv">l</span><span class="p">.</span><span class="nf">welfords</span><span class="p">(</span><span class="nv">ys</span><span class="p">)))</span>
+<span class="w">  </span><span class="kr">return</span><span class="w"> </span><span class="p">(((</span><span class="nv">nx</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="nv">sx</span><span class="o">*</span><span class="nv">sx</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="p">(</span><span class="nv">ny</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="nv">sy</span><span class="o">*</span><span class="nv">sy</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="nv">nx</span><span class="o">+</span><span class="nv">ny</span><span class="o">-</span><span class="mi">2</span><span class="p">))</span><span class="o">^</span><span class="mf">0.5</span><span class="w"> </span><span class="kr">end</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-8'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-8'>#</a>
+      </div>
+      <p>Cliff&rsquo;s delta effect size; ys pre-sorted</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="kr">function</span><span class="w"> </span><span class="nc">l</span><span class="p">.</span><span class="nf">cliffsDelta</span><span class="p">(</span><span class="nv">xs</span><span class="p">,</span><span class="nv">ys</span><span class="p">,</span><span class="w">    </span><span class="nv">n</span><span class="p">,</span><span class="nv">p</span><span class="p">,</span><span class="nv">ngt</span><span class="p">,</span><span class="nv">nlt</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">n</span><span class="p">,</span><span class="nv">p</span><span class="p">,</span><span class="nv">ngt</span><span class="p">,</span><span class="nv">nlt</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">#</span><span class="nv">xs</span><span class="p">,</span><span class="o">#</span><span class="nv">ys</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span>
+<span class="w">  </span><span class="kr">for</span><span class="w"> </span><span class="nv">_</span><span class="p">,</span><span class="nv">v</span><span class="w"> </span><span class="kr">in</span><span class="w"> </span><span class="nb">ipairs</span><span class="p">(</span><span class="nv">xs</span><span class="p">)</span><span class="w"> </span><span class="kr">do</span>
+<span class="w">    </span><span class="nv">ngt</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">ngt</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nv">l</span><span class="p">.</span><span class="nf">bisect</span><span class="p">(</span><span class="nv">ys</span><span class="p">,</span><span class="nv">v</span><span class="p">,</span><span class="kc">true</span><span class="p">)</span>
+<span class="w">    </span><span class="nv">nlt</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">nlt</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="p">(</span><span class="nv">p</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="nv">l</span><span class="p">.</span><span class="nf">bisect</span><span class="p">(</span><span class="nv">ys</span><span class="p">,</span><span class="nv">v</span><span class="p">))</span><span class="w"> </span><span class="kr">end</span>
+<span class="w">  </span><span class="kr">return</span><span class="w"> </span><span class="nf">abs</span><span class="p">(</span><span class="nv">ngt</span><span class="o">-</span><span class="nv">nlt</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="nv">n</span><span class="o">*</span><span class="nv">p</span><span class="p">)</span><span class="w"> </span><span class="kr">end</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-9'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-9'>#</a>
+      </div>
+      <p>Kolmogorov-Smirnov max CDF gap; both pre-sorted</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="kr">function</span><span class="w"> </span><span class="nc">l</span><span class="p">.</span><span class="nf">ks</span><span class="p">(</span><span class="nv">xs</span><span class="p">,</span><span class="nv">ys</span><span class="p">,</span><span class="w">    </span><span class="nv">n</span><span class="p">,</span><span class="nv">p</span><span class="p">,</span><span class="nv">d</span><span class="p">,</span><span class="nv">gap</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">n</span><span class="p">,</span><span class="nv">p</span><span class="p">,</span><span class="nv">d</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">#</span><span class="nv">xs</span><span class="p">,</span><span class="o">#</span><span class="nv">ys</span><span class="p">,</span><span class="mi">0</span>
+<span class="w">  </span><span class="nv">gap</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">function</span><span class="p">(</span><span class="nv">v</span><span class="p">)</span>
+<span class="w">    </span><span class="kr">return</span><span class="w"> </span><span class="nf">abs</span><span class="p">(</span><span class="nv">l</span><span class="p">.</span><span class="nf">bisect</span><span class="p">(</span><span class="nv">xs</span><span class="p">,</span><span class="nv">v</span><span class="p">)</span><span class="o">/</span><span class="nv">n</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="nv">l</span><span class="p">.</span><span class="nf">bisect</span><span class="p">(</span><span class="nv">ys</span><span class="p">,</span><span class="nv">v</span><span class="p">)</span><span class="o">/</span><span class="nv">p</span><span class="p">)</span><span class="w"> </span><span class="kr">end</span>
+<span class="w">  </span><span class="kr">for</span><span class="w"> </span><span class="nv">_</span><span class="p">,</span><span class="nv">v</span><span class="w"> </span><span class="kr">in</span><span class="w"> </span><span class="nb">ipairs</span><span class="p">(</span><span class="nv">xs</span><span class="p">)</span><span class="w"> </span><span class="kr">do</span><span class="w"> </span><span class="nv">d</span><span class="o">=</span><span class="nf">max</span><span class="p">(</span><span class="nv">d</span><span class="p">,</span><span class="nf">gap</span><span class="p">(</span><span class="nv">v</span><span class="p">))</span><span class="w"> </span><span class="kr">end</span>
+<span class="w">  </span><span class="kr">for</span><span class="w"> </span><span class="nv">_</span><span class="p">,</span><span class="nv">v</span><span class="w"> </span><span class="kr">in</span><span class="w"> </span><span class="nb">ipairs</span><span class="p">(</span><span class="nv">ys</span><span class="p">)</span><span class="w"> </span><span class="kr">do</span><span class="w"> </span><span class="nv">d</span><span class="o">=</span><span class="nf">max</span><span class="p">(</span><span class="nv">d</span><span class="p">,</span><span class="nf">gap</span><span class="p">(</span><span class="nv">v</span><span class="p">))</span><span class="w"> </span><span class="kr">end</span>
+<span class="w">  </span><span class="kr">return</span><span class="w"> </span><span class="nv">d</span><span class="w"> </span><span class="kr">end</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-10'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-10'>#</a>
+      </div>
+      <p>xs,ys same? all of: mid gap&lt;=eps, cliffs, ks</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="kr">function</span><span class="w"> </span><span class="nc">l</span><span class="p">.</span><span class="nf">same</span><span class="p">(</span><span class="nv">xs</span><span class="p">,</span><span class="nv">ys</span><span class="p">,</span><span class="nv">eps</span><span class="p">,</span><span class="nv">cliffs</span><span class="p">,</span><span class="nv">ksconf</span><span class="p">,</span><span class="w">    </span><span class="nv">n</span><span class="p">,</span><span class="nv">p</span><span class="p">,</span><span class="nv">a</span><span class="p">,</span><span class="nv">b</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">eps</span><span class="p">,</span><span class="w"> </span><span class="nv">cliffs</span><span class="p">,</span><span class="w"> </span><span class="nv">ksconf</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">eps</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="nv">cliffs</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="mf">0.195</span><span class="p">,</span><span class="w"> </span><span class="nv">ksconf</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="mf">1.36</span>
+<span class="w">  </span><span class="nv">a</span><span class="p">,</span><span class="nv">b</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">l</span><span class="p">.</span><span class="nf">sort</span><span class="p">({</span><span class="nb">table.unpack</span><span class="p">(</span><span class="nv">xs</span><span class="p">)}),</span><span class="w"> </span><span class="nv">l</span><span class="p">.</span><span class="nf">sort</span><span class="p">({</span><span class="nb">table.unpack</span><span class="p">(</span><span class="nv">ys</span><span class="p">)})</span>
+<span class="w">  </span><span class="nv">n</span><span class="p">,</span><span class="nv">p</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">#</span><span class="nv">a</span><span class="p">,</span><span class="o">#</span><span class="nv">b</span>
+<span class="w">  </span><span class="kr">if</span><span class="w"> </span><span class="nf">abs</span><span class="p">(</span><span class="nv">a</span><span class="p">[</span><span class="nv">n</span><span class="o">//</span><span class="mi">2</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="nv">b</span><span class="p">[</span><span class="nv">p</span><span class="o">//</span><span class="mi">2</span><span class="o">+</span><span class="mi">1</span><span class="p">])</span><span class="o">&lt;=</span><span class="nv">eps</span><span class="w"> </span><span class="kr">then</span><span class="w"> </span><span class="kr">return</span><span class="w"> </span><span class="kc">true</span><span class="w"> </span><span class="kr">end</span>
+<span class="w">  </span><span class="kr">if</span><span class="w"> </span><span class="nv">l</span><span class="p">.</span><span class="nf">cliffsDelta</span><span class="p">(</span><span class="nv">a</span><span class="p">,</span><span class="nv">b</span><span class="p">)</span><span class="o">&gt;</span><span class="nv">cliffs</span><span class="w"> </span><span class="kr">then</span><span class="w"> </span><span class="kr">return</span><span class="w"> </span><span class="kc">false</span><span class="w"> </span><span class="kr">end</span>
+<span class="w">  </span><span class="kr">return</span><span class="w"> </span><span class="nv">l</span><span class="p">.</span><span class="nf">ks</span><span class="p">(</span><span class="nv">a</span><span class="p">,</span><span class="nv">b</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="nv">ksconf</span><span class="o">*</span><span class="p">((</span><span class="nv">n</span><span class="o">+</span><span class="nv">p</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="nv">n</span><span class="o">*</span><span class="nv">p</span><span class="p">))</span><span class="o">^</span><span class="mf">0.5</span><span class="w"> </span><span class="kr">end</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-11'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-11'>#</a>
+      </div>
+      <p>dict[k]=nums -&gt; all keys stats-same as best mu</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="kr">function</span><span class="w"> </span><span class="nc">l</span><span class="p">.</span><span class="nf">topTier</span><span class="p">(</span><span class="nv">dict</span><span class="p">,</span><span class="nv">cmp</span><span class="p">,</span><span class="nv">eps</span><span class="p">,</span><span class="nv">cliffs</span><span class="p">,</span><span class="nv">ksconf</span><span class="p">,</span>
+<span class="w">                   </span><span class="nv">out</span><span class="p">,</span><span class="nv">names</span><span class="p">,</span><span class="nv">best</span><span class="p">,</span><span class="nv">cand</span><span class="p">,</span><span class="nv">th</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">out</span><span class="o">=</span><span class="p">{}</span>
+<span class="w">  </span><span class="nv">names</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">l</span><span class="p">.</span><span class="nf">keysort</span><span class="p">(</span><span class="nv">l</span><span class="p">.</span><span class="nf">kap</span><span class="p">(</span><span class="nv">dict</span><span class="p">,</span><span class="kr">function</span><span class="p">(</span><span class="nv">k</span><span class="p">,</span><span class="nv">_</span><span class="p">)</span><span class="w"> </span><span class="kr">return</span><span class="w"> </span><span class="nv">k</span><span class="w"> </span><span class="kr">end</span><span class="p">),</span>
+<span class="w">                    </span><span class="kr">function</span><span class="p">(</span><span class="nv">k</span><span class="p">)</span><span class="w"> </span><span class="kr">return</span><span class="w"> </span><span class="p">(</span><span class="nv">l</span><span class="p">.</span><span class="nf">welfords</span><span class="p">(</span><span class="nv">dict</span><span class="p">[</span><span class="nv">k</span><span class="p">]))</span><span class="w"> </span><span class="kr">end</span><span class="p">,</span>
+<span class="w">                    </span><span class="nv">cmp</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">best</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">dict</span><span class="p">[</span><span class="nv">names</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
+<span class="w">  </span><span class="nv">out</span><span class="p">[</span><span class="nv">names</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="nv">l</span><span class="p">.</span><span class="nf">welfords</span><span class="p">(</span><span class="nv">best</span><span class="p">))</span>
+<span class="w">  </span><span class="kr">for</span><span class="w"> </span><span class="nv">i</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span><span class="o">#</span><span class="nv">names</span><span class="w"> </span><span class="kr">do</span>
+<span class="w">    </span><span class="nv">cand</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">dict</span><span class="p">[</span><span class="nv">names</span><span class="p">[</span><span class="nv">i</span><span class="p">]]</span>
+<span class="w">    </span><span class="nv">th</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="nv">eps</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="nv">l</span><span class="p">.</span><span class="nf">pooledSd</span><span class="p">(</span><span class="nv">best</span><span class="p">,</span><span class="w"> </span><span class="nv">cand</span><span class="p">)</span>
+<span class="w">    </span><span class="kr">if</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="nv">l</span><span class="p">.</span><span class="nf">same</span><span class="p">(</span><span class="nv">best</span><span class="p">,</span><span class="w"> </span><span class="nv">cand</span><span class="p">,</span><span class="w"> </span><span class="nv">th</span><span class="p">,</span><span class="w"> </span><span class="nv">cliffs</span><span class="p">,</span><span class="w"> </span><span class="nv">ksconf</span><span class="p">)</span><span class="w"> </span><span class="kr">then</span><span class="w"> </span><span class="kr">break</span><span class="w"> </span><span class="kr">end</span>
+<span class="w">    </span><span class="nv">out</span><span class="p">[</span><span class="nv">names</span><span class="p">[</span><span class="nv">i</span><span class="p">]]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="nv">l</span><span class="p">.</span><span class="nf">welfords</span><span class="p">(</span><span class="nv">cand</span><span class="p">))</span><span class="w"> </span><span class="kr">end</span>
+<span class="w">  </span><span class="kr">return</span><span class="w"> </span><span class="nv">out</span><span class="w"> </span><span class="kr">end</span>
+
+</pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+</div>
+</body>

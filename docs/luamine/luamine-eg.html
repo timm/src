@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html;charset=utf-8">
+  <title>luamine-eg.lua</title>
+  <link rel="stylesheet" href="pycco.css">
+</head>
+<body>
+<div id='container'>
+  <div id="background"></div>
+  <div class='section'>
+    <div class='docs'><p align="center">
+<a href="https://timm.github.io/src/"><img alt="home" src="https://img.shields.io/badge/🏠-home-gold"></a>
+<a href="https://github.com/timm/src/tree/main/luamine"><img alt="src" src="https://img.shields.io/badge/src-luamine-black"></a>
+<a href="lib.html"><img alt="code" src="https://img.shields.io/badge/code-28%20files-2ea44f"></a>
+<a href="luamine-eg.html"><img alt="tests" src="https://img.shields.io/badge/tests-23%20files-06b6d4"></a>
+<a href="https://github.com/timm/src/actions/workflows/tests-luamine.yml"><img alt="ci" src="https://github.com/timm/src/actions/workflows/tests-luamine.yml/badge.svg"></a>
+<a href="https://github.com/timm/src/issues"><img alt="issues" src="https://img.shields.io/badge/issues-report-red"></a>
+<a href="https://github.com/timm/src/blob/main/LICENSE.md"><img alt="license" src="https://img.shields.io/badge/license-MIT-brightgreen"></a>
+<img alt="language" src="https://img.shields.io/badge/language-lua-9558B2">
+<img alt="runs on" src="https://img.shields.io/badge/runs%20on-lua5.4-EE4C2C">
+<a href="https://timm.fyi"><img alt="author" src="https://img.shields.io/badge/author-timm-blueviolet"></a>
+</p><p><b>luamine-eg</b> | <a href="list-eg.html">list-eg</a> | <a href="rand-eg.html">rand-eg</a> | <a href="stats-eg.html">stats-eg</a> | <a href="confuse-eg.html">confuse-eg</a> | <a href="str-eg.html">str-eg</a> | <a href="cli-eg.html">cli-eg</a> | <a href="cols-eg.html">cols-eg</a> | <a href="data-eg.html">data-eg</a> | <a href="dist-eg.html">dist-eg</a> | <a href="cut-eg.html">cut-eg</a> | <a href="tree-eg.html">tree-eg</a> | <a href="bayes-eg.html">bayes-eg</a> | <a href="mutate-eg.html">mutate-eg</a> | <a href="cluster-eg.html">cluster-eg</a> | <a href="classify-eg.html">classify-eg</a> | <a href="acquire-eg.html">acquire-eg</a> | <a href="sample-eg.html">sample-eg</a> | <a href="bob-eg.html">bob-eg</a> | <a href="ga-eg.html">ga-eg</a> | <a href="de-eg.html">de-eg</a> | <a href="search-eg.html">search-eg</a> | <a href="race-eg.html">race-eg</a></p><p><a href="search.html">&lt; prev</a> | <a href="list-eg.html">next &gt;</a></p><h1><a href="https://github.com/timm/src/blob/main/luamine/luamine-eg.lua">luamine-eg.lua</a></h1></div>
+  </div>
+  <div class='clearall'>
+  <div class='section' id='section-0'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-0'>#</a>
+      </div>
+      <p>Tutorial and tests for luamine (modules: lib, luamine,
+lapps). One -eg file per engine file, loaded below in
+tutorial order; prose lives in &ndash; <a href="markdown .html"> markdown </a> blocks;
+each demo is one eg[&ldquo;&ndash;name&rdquo;] returning chk cases.
+Run any demo by flag:  lua luamine-eg.lua &ndash;all &ndash;tree</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span></span><span class="kd">local</span><span class="w"> </span><span class="nv">b4</span><span class="o">=</span><span class="p">{};</span><span class="w"> </span><span class="kr">for</span><span class="w"> </span><span class="nv">k</span><span class="p">,</span><span class="nv">_</span><span class="w"> </span><span class="kr">in</span><span class="w"> </span><span class="nb">pairs</span><span class="p">(</span><span class="nb">_G</span><span class="p">)</span><span class="w"> </span><span class="kr">do</span><span class="w"> </span><span class="nv">b4</span><span class="p">[</span><span class="nv">k</span><span class="p">]</span><span class="o">=</span><span class="nv">k</span><span class="w"> </span><span class="kr">end</span>
+<span class="kd">local</span><span class="w"> </span><span class="nv">l</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="nb">require</span><span class="s2">&quot;lib&quot;</span>
+<span class="kd">local</span><span class="w"> </span><span class="nv">m</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="nb">require</span><span class="s2">&quot;luamine&quot;</span>
+<span class="kd">local</span><span class="w"> </span><span class="nv">a</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="nb">require</span><span class="s2">&quot;lapps&quot;</span>
+<span class="kd">local</span><span class="w"> </span><span class="nv">the</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="nv">l</span><span class="p">.</span><span class="py">the</span>
+<span class="kd">local</span><span class="w"> </span><span class="nv">rand</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">math.random</span>
+
+<span class="kd">local</span><span class="w"> </span><span class="nv">help</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[[</span>
+<span class="o">#</span><span class="w"> </span><span class="nv">luamine</span><span class="o">-</span><span class="nv">eg</span><span class="p">:</span><span class="w"> </span><span class="py">tutorial</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="nv">tests</span><span class="w"> </span><span class="kr">for</span><span class="w"> </span><span class="nf">luamine</span>
+<span class="p">(</span><span class="nv">c</span><span class="p">)</span><span class="w"> </span><span class="mi">2026</span><span class="w"> </span><span class="nv">Tim</span><span class="w"> </span><span class="nv">Menzies</span><span class="w"> </span><span class="o">&lt;</span><span class="nv">timm</span><span class="err">@</span><span class="nv">ieee</span><span class="p">.</span><span class="py">org</span><span class="o">&gt;</span><span class="w"> </span><span class="nv">MIT</span><span class="w"> </span><span class="nv">license</span>
+<span class="o">##</span><span class="w"> </span><span class="nv">options</span>
+<span class="w">  </span><span class="o">-</span><span class="nv">t</span><span class="w">  </span><span class="c1">--train=$MOOT/optimize/misc/auto93.csv  train CSV</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-1'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-1'>#</a>
+      </div>
+      <p>seed=1     RNG seed</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="o">##</span><span class="w"> </span><span class="nv">egs</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-2'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-2'>#</a>
+      </div>
+      <p>lists     sort/list/slice/copy/shuffle/keysort/argmin
+tabulate  aligned table demo
+rand      pickDict/irwinHall
+stats     welford/sd/mode/ent/bisect
+sames     cliffs/ks/pooledSd/same/topTier
+confuse   confusion matrix demo
+str       thing coercion, o pretty-print
+csv       stream csv rows
+cli       help-text mining
+cols      Sym/Num/adds + header parse
+data      Data ctor, clone, centroid, dxdy
+body      iter csv rows (skip header)
+dist      distx/disty/near
+cuts      cut emit/apply + bestCut
+tree      bi-tree build/show/relevant/leafStats
+ftree     fastmap bi-tree + poles
+bayes     like/likes
+mutate    pick/picks/extrapolate
+kmeans    kmeans cluster
+kpp       kmeans++ centroid pick
+classify  incremental NB test-then-train
+acquire   active learning (Bayes scorer)
+sample    gen N synth rows via ftree + DE per leaf
+anomaly   ftree + 1-NN-in-leaf dist CDF (tail=anomaly)
+bob       split + acquire + tree + check -&gt; best row
+acq       batch CLI: 1 csv -&gt; &ldquo;win disty file&rdquo;
+ga        genetic algorithm
+de        differential evolution
+sa        simulated annealing (1+1)
+ls        local search (1+1)
+race      race ga+de+sa+ls -&gt; merged best-trace table</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-3'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-3'>#</a>
+      </div>
+      <p>shared demo helpers, passed to every -eg file</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="kd">local</span><span class="w"> </span><span class="nv">h</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{}</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-4'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-4'>#</a>
+      </div>
+      <p>Data from CSV if file exists, else nil</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="kr">function</span><span class="w"> </span><span class="nc">h</span><span class="p">.</span><span class="nf">loadCsv</span><span class="p">(</span><span class="nv">file</span><span class="p">,</span><span class="w">    </span><span class="nv">f</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">f</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">io.open</span><span class="p">(</span><span class="nv">l</span><span class="p">.</span><span class="nf">path</span><span class="p">(</span><span class="nv">file</span><span class="p">))</span>
+<span class="w">  </span><span class="kr">if</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="nv">f</span><span class="w"> </span><span class="kr">then</span><span class="w"> </span><span class="kr">return</span><span class="w"> </span><span class="kc">nil</span><span class="w"> </span><span class="kr">end</span>
+<span class="w">  </span><span class="nv">f</span><span class="p">:</span><span class="nf">close</span><span class="p">()</span>
+<span class="w">  </span><span class="kr">return</span><span class="w"> </span><span class="nv">m</span><span class="p">.</span><span class="py">Data</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="nv">l</span><span class="p">.</span><span class="nf">csv</span><span class="p">(</span><span class="nv">file</span><span class="p">))</span><span class="w"> </span><span class="kr">end</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-5'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-5'>#</a>
+      </div>
+      <p>synthetic regression Data: n rows, nx X, 1 Y-</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="kr">function</span><span class="w"> </span><span class="nc">h</span><span class="p">.</span><span class="nf">mock</span><span class="p">(</span><span class="nv">n</span><span class="p">,</span><span class="nv">nx</span><span class="p">,</span><span class="w">    </span><span class="nv">k</span><span class="p">,</span><span class="nv">gen</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">k</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span>
+<span class="w">  </span><span class="nv">gen</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">function</span><span class="p">(</span><span class="w">    </span><span class="nv">t</span><span class="p">)</span>
+<span class="w">    </span><span class="nv">k</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">k</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span>
+<span class="w">    </span><span class="kr">if</span><span class="w"> </span><span class="nv">k</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="kr">then</span>
+<span class="w">      </span><span class="nv">t</span><span class="o">=</span><span class="p">{};</span><span class="w"> </span><span class="kr">for</span><span class="w"> </span><span class="nv">i</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="nv">nx</span><span class="w"> </span><span class="kr">do</span><span class="w"> </span><span class="nv">t</span><span class="p">[</span><span class="nv">i</span><span class="p">]</span><span class="o">=</span><span class="s2">&quot;X&quot;</span><span class="o">..</span><span class="nv">i</span><span class="w"> </span><span class="kr">end</span>
+<span class="w">      </span><span class="nv">t</span><span class="p">[</span><span class="nv">nx</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span><span class="o">=</span><span class="s2">&quot;Y-&quot;</span><span class="p">;</span><span class="w"> </span><span class="kr">return</span><span class="w"> </span><span class="nv">t</span><span class="w"> </span><span class="kr">end</span>
+<span class="w">    </span><span class="kr">if</span><span class="w"> </span><span class="nv">k</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="nv">n</span><span class="o">+</span><span class="mi">1</span><span class="w"> </span><span class="kr">then</span>
+<span class="w">      </span><span class="nv">t</span><span class="o">=</span><span class="p">{};</span><span class="w"> </span><span class="kr">for</span><span class="w"> </span><span class="nv">i</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="nv">nx</span><span class="w"> </span><span class="kr">do</span><span class="w"> </span><span class="nv">t</span><span class="p">[</span><span class="nv">i</span><span class="p">]</span><span class="o">=</span><span class="nf">rand</span><span class="p">()</span><span class="w"> </span><span class="kr">end</span>
+<span class="w">      </span><span class="nv">t</span><span class="p">[</span><span class="nv">nx</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span><span class="o">=</span><span class="nf">rand</span><span class="p">();</span><span class="w"> </span><span class="kr">return</span><span class="w"> </span><span class="nv">t</span><span class="w"> </span><span class="kr">end</span><span class="w"> </span><span class="kr">end</span>
+<span class="w">  </span><span class="kr">return</span><span class="w"> </span><span class="nv">m</span><span class="p">.</span><span class="py">Data</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="nv">gen</span><span class="p">)</span><span class="w"> </span><span class="kr">end</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-6'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-6'>#</a>
+      </div>
+      <p>the.train CSV if present, else mock</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="kr">function</span><span class="w"> </span><span class="nc">h</span><span class="p">.</span><span class="nf">pickData</span><span class="p">(</span><span class="nv">nRow</span><span class="p">,</span><span class="nv">nx</span><span class="p">)</span>
+<span class="w">  </span><span class="kr">return</span><span class="w"> </span><span class="nv">h</span><span class="p">.</span><span class="nf">loadCsv</span><span class="p">(</span><span class="nv">the</span><span class="p">.</span><span class="py">train</span><span class="p">)</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="nv">h</span><span class="p">.</span><span class="nf">mock</span><span class="p">(</span><span class="nv">nRow</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="mi">200</span><span class="p">,</span><span class="w"> </span><span class="nv">nx</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="mi">6</span><span class="p">)</span><span class="w"> </span><span class="kr">end</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-7'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-7'>#</a>
+      </div>
+      <p>synthetic Data: nx X cols + class!/numeric y</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="kr">function</span><span class="w"> </span><span class="nc">h</span><span class="p">.</span><span class="nf">mock64</span><span class="p">(</span><span class="nv">rows</span><span class="p">,</span><span class="nv">nx</span><span class="p">,</span><span class="nv">ylabel</span><span class="p">,</span><span class="w">    </span><span class="nv">n</span><span class="p">,</span><span class="nv">gen</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">rows</span><span class="p">,</span><span class="w"> </span><span class="nv">nx</span><span class="p">,</span><span class="w"> </span><span class="nv">ylabel</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">rows</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="mi">64</span><span class="p">,</span><span class="w"> </span><span class="nv">nx</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="nv">ylabel</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="s2">&quot;class!&quot;</span>
+<span class="w">  </span><span class="nv">gen</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">function</span><span class="p">(</span><span class="w">    </span><span class="nv">t</span><span class="p">,</span><span class="nv">s</span><span class="p">)</span>
+<span class="w">    </span><span class="nv">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="nv">n</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span>
+<span class="w">    </span><span class="kr">if</span><span class="w"> </span><span class="nv">n</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="kr">then</span>
+<span class="w">      </span><span class="nv">t</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{}</span>
+<span class="w">      </span><span class="kr">for</span><span class="w"> </span><span class="nv">i</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="nv">nx</span><span class="w"> </span><span class="kr">do</span><span class="w"> </span><span class="nv">t</span><span class="p">[</span><span class="nv">i</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;X&quot;</span><span class="o">..</span><span class="nv">i</span><span class="w"> </span><span class="kr">end</span>
+<span class="w">      </span><span class="nv">t</span><span class="p">[</span><span class="nv">nx</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">ylabel</span>
+<span class="w">      </span><span class="kr">return</span><span class="w"> </span><span class="nv">t</span><span class="w"> </span><span class="kr">end</span>
+<span class="w">    </span><span class="kr">if</span><span class="w"> </span><span class="nv">n</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="nv">rows</span><span class="o">+</span><span class="mi">1</span><span class="w"> </span><span class="kr">then</span>
+<span class="w">      </span><span class="nv">t</span><span class="p">,</span><span class="nv">s</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{},</span><span class="mi">0</span>
+<span class="w">      </span><span class="kr">for</span><span class="w"> </span><span class="nv">i</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="nv">nx</span><span class="w"> </span><span class="kr">do</span><span class="w"> </span><span class="nv">t</span><span class="p">[</span><span class="nv">i</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">rand</span><span class="p">();</span><span class="w"> </span><span class="nv">s</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">s</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nv">t</span><span class="p">[</span><span class="nv">i</span><span class="p">]</span><span class="w"> </span><span class="kr">end</span>
+<span class="w">      </span><span class="nv">t</span><span class="p">[</span><span class="nv">nx</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">ylabel</span><span class="o">==</span><span class="s2">&quot;class!&quot;</span>
+<span class="w">                  </span><span class="ow">and</span><span class="w"> </span><span class="p">(</span><span class="nv">s</span><span class="o">&lt;</span><span class="nv">nx</span><span class="o">/</span><span class="mi">2</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="s2">&quot;lo&quot;</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="s2">&quot;hi&quot;</span><span class="p">)</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="nf">rand</span><span class="p">()</span>
+<span class="w">      </span><span class="kr">return</span><span class="w"> </span><span class="nv">t</span><span class="w"> </span><span class="kr">end</span><span class="w"> </span><span class="kr">end</span>
+<span class="w">  </span><span class="kr">return</span><span class="w"> </span><span class="nv">m</span><span class="p">.</span><span class="py">Data</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="nv">gen</span><span class="p">)</span><span class="w"> </span><span class="kr">end</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-8'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-8'>#</a>
+      </div>
+      <p>train CSV if readable, else mock64</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="kr">function</span><span class="w"> </span><span class="nc">h</span><span class="p">.</span><span class="nf">egData</span><span class="p">(</span><span class="w">    </span><span class="nv">f</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">f</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">io.open</span><span class="p">(</span><span class="nv">l</span><span class="p">.</span><span class="nf">path</span><span class="p">(</span><span class="nv">the</span><span class="p">.</span><span class="py">train</span><span class="p">))</span>
+<span class="w">  </span><span class="kr">if</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="nv">f</span><span class="w"> </span><span class="kr">then</span><span class="w"> </span><span class="kr">return</span><span class="w"> </span><span class="nv">h</span><span class="p">.</span><span class="nf">mock64</span><span class="p">()</span><span class="w"> </span><span class="kr">end</span>
+<span class="w">  </span><span class="nv">f</span><span class="p">:</span><span class="nf">close</span><span class="p">()</span>
+<span class="w">  </span><span class="kr">return</span><span class="w"> </span><span class="nv">m</span><span class="p">.</span><span class="py">Data</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="nv">l</span><span class="p">.</span><span class="nf">csv</span><span class="p">(</span><span class="nv">the</span><span class="p">.</span><span class="py">train</span><span class="p">))</span><span class="w"> </span><span class="kr">end</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-9'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-9'>#</a>
+      </div>
+      <p>race opts, print table, assert improvement</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="kr">function</span><span class="w"> </span><span class="nc">h</span><span class="p">.</span><span class="nf">runRace</span><span class="p">(</span><span class="nv">data</span><span class="p">,</span><span class="w"> </span><span class="nv">opts</span><span class="p">,</span><span class="w">    </span><span class="nv">d</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">d</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">a</span><span class="p">.</span><span class="nf">report</span><span class="p">(</span><span class="nv">data</span><span class="p">,</span><span class="w"> </span><span class="nv">a</span><span class="p">.</span><span class="nf">race</span><span class="p">(</span><span class="nv">data</span><span class="p">,</span><span class="w"> </span><span class="nv">opts</span><span class="p">))</span>
+<span class="w">  </span><span class="kr">return</span><span class="w"> </span><span class="nv">l</span><span class="p">.</span><span class="nf">chk</span><span class="p">({</span><span class="s2">&quot;some rows&quot;</span><span class="p">,</span><span class="o">#</span><span class="nv">d</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="kc">true</span><span class="p">},</span>
+<span class="w">               </span><span class="p">{</span><span class="s2">&quot;improved&quot;</span><span class="p">,</span><span class="o">#</span><span class="nv">d</span><span class="o">&gt;</span><span class="mi">0</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="nv">d</span><span class="p">[</span><span class="o">#</span><span class="nv">d</span><span class="p">]</span><span class="o">&lt;=</span><span class="nv">d</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="kc">true</span><span class="p">})</span><span class="w"> </span><span class="kr">end</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-10'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-10'>#</a>
+      </div>
+      <p>The tutorial, one -eg file per engine file, reading order</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="kd">local</span><span class="w"> </span><span class="nv">eg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{}</span>
+<span class="kd">local</span><span class="w"> </span><span class="nv">here</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">debug.getinfo</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="s2">&quot;S&quot;</span><span class="p">).</span><span class="nv">source</span>
+<span class="w">             </span><span class="p">:</span><span class="py">match</span><span class="s2">&quot;^@(.-)[^/</span><span class="se">\\</span><span class="s2">]*$&quot;</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="s2">&quot;&quot;</span>
+<span class="kr">for</span><span class="w"> </span><span class="nv">_</span><span class="p">,</span><span class="nv">f</span><span class="w"> </span><span class="kr">in</span><span class="w"> </span><span class="nb">ipairs</span><span class="p">{</span><span class="s2">&quot;list-eg&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;rand-eg&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;stats-eg&quot;</span><span class="p">,</span>
+<span class="w">                  </span><span class="s2">&quot;confuse-eg&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;str-eg&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;cli-eg&quot;</span><span class="p">,</span>
+<span class="w">                  </span><span class="s2">&quot;cols-eg&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;data-eg&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;dist-eg&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;cut-eg&quot;</span><span class="p">,</span>
+<span class="w">                  </span><span class="s2">&quot;tree-eg&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;bayes-eg&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;mutate-eg&quot;</span><span class="p">,</span>
+<span class="w">                  </span><span class="s2">&quot;cluster-eg&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;classify-eg&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;acquire-eg&quot;</span><span class="p">,</span>
+<span class="w">                  </span><span class="s2">&quot;sample-eg&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;bob-eg&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;ga-eg&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;de-eg&quot;</span><span class="p">,</span>
+<span class="w">                  </span><span class="s2">&quot;search-eg&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;race-eg&quot;</span><span class="p">}</span><span class="w"> </span><span class="kr">do</span>
+<span class="w">  </span><span class="nb">assert</span><span class="p">(</span><span class="nb">loadfile</span><span class="p">(</span><span class="nv">here</span><span class="o">..</span><span class="nv">f</span><span class="o">..</span><span class="s2">&quot;.lua&quot;</span><span class="p">))(</span><span class="nv">eg</span><span class="p">,</span><span class="w"> </span><span class="nv">h</span><span class="p">,</span><span class="w"> </span><span class="nv">a</span><span class="p">,</span><span class="w"> </span><span class="nv">m</span><span class="p">,</span><span class="w"> </span><span class="nv">l</span><span class="p">,</span><span class="w"> </span><span class="nv">the</span><span class="p">)</span><span class="w"> </span><span class="kr">end</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-11'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-11'>#</a>
+      </div>
+      <p>seed the from this help&rsquo;s options; dispatch if main</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="kr">for</span><span class="w"> </span><span class="nv">k</span><span class="p">,</span><span class="nv">v</span><span class="w"> </span><span class="kr">in</span><span class="w"> </span><span class="nv">l</span><span class="p">.</span><span class="nf">section</span><span class="p">(</span><span class="nv">help</span><span class="p">,</span><span class="s2">&quot;options&quot;</span><span class="p">):</span><span class="nv">gmatch</span><span class="s2">&quot;%-%-(%w+)=(%S+)&quot;</span><span class="w"> </span><span class="kr">do</span>
+<span class="w">  </span><span class="nv">the</span><span class="p">[</span><span class="nv">k</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">l</span><span class="p">.</span><span class="nf">thing</span><span class="p">(</span><span class="nv">v</span><span class="p">)</span><span class="w"> </span><span class="kr">end</span>
+<span class="kr">if</span><span class="w"> </span><span class="p">(</span><span class="nv">arg</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="p">):</span><span class="nf">find</span><span class="p">(</span><span class="s2">&quot;luamine-eg.lua&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="kc">true</span><span class="p">)</span><span class="w"> </span><span class="kr">then</span>
+<span class="w">  </span><span class="nv">l</span><span class="p">.</span><span class="nf">main</span><span class="p">(</span><span class="nv">eg</span><span class="p">,</span><span class="w"> </span><span class="nv">b4</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;luamine-eg&quot;</span><span class="p">,</span><span class="w"> </span><span class="nv">help</span><span class="p">)</span><span class="w"> </span><span class="kr">end</span>
+
+</pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+</div>
+</body>
