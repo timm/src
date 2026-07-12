@@ -76,13 +76,13 @@ if name in order:
   nxt  = (f'<a href="{order[i+1]}.html">next &gt;</a>'
           if i + 1 < len(order) else "next &gt;")
   nav  = f"<p>{prev} | {nxt}</p>"
-top = BADGES + f"<p>{toc}</p>" + nav
+top = (BADGES +
+       f'<p style="text-align:left">{toc}</p>' +
+       nav)
 ext = os.path.splitext(src)[1]
 old = name + (".scm" if ext == ".lisp" else ext)
 h1  = (f'<h1><a href="{REPO}/blob/main/{PROJ}/{src}">'
        f'{src}</a></h1>')
-if name != os.path.splitext(src)[0]:
-  h1 += f"\n<h2>{name}</h2>"
 s = open(page).read()
 s = s.replace(f"<title>{old}</title>",
               f"<title>{src}: {name}</title>")
