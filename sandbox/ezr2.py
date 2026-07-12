@@ -232,8 +232,8 @@ def distx(tbl, r1, r2, **kw):
 #-- acquire -----------------------------------------------------
 def project(rows, x, y, east=None, west=None):
   far  = lambda r: max(rows, key=lambda z: x(z, r))
-  east = far(rows[0]) if east is None else east
-  west = far(east)    if west is None else west
+  east = east or far(rows[0])
+  west = west or far(east)
   if y(east) > y(west): east, west = west, east
   c = x(east, west) + TINY
   return lambda r: (x(east,r)**2 + c*c - x(west,r)**2)/(2*c)
