@@ -70,33 +70,33 @@ def fresh_pool(n=1000):
   return [[random.random() for _ in range(N)] + ["?"]*M for _ in range(n)]
 
 # ezr2's seam: goals come from the model, folded into
-# data.cols so disty can normalize objectives as they arrive
+# tbl.cols so disty can normalize objectives as they arrive
 def labelled(row):
   if "?" in row[N:]:
     row[N:] = MODEL(row[:N], M)
-    for at in data.y: data.cols[at] = ezr2.add(data.cols[at], row[at])
+    for at in tbl.y: tbl.cols[at] = ezr2.add(tbl.cols[at], row[at])
   return row
-ezr2.labelled = labelled            # labelled() reads the global `data`
+ezr2.labelled = labelled            # labelled() reads the global `tbl`
 
 def instance(row):
   print("  x  " + " ".join("%.2f" % v for v in row[:N]))
   print("  f  " + " ".join("%.3f" % v for v in row[N:]) +
-        "   (disty %.3f, lower=better)" % ezr2.disty(data, row))
+        "   (disty %.3f, lower=better)" % ezr2.disty(tbl, row))
 
 print("model %s   N=%d x-vars   M=%d objectives" % (NAME, N, M))
 ezr2.the.budget = 30
 
 # (1) pure: acquire ranks the whole pool, no train/test split
-random.seed(1); data = ezr2.Data([names] + fresh_pool())
-got = ezr2.acquire(data)
+random.seed(1); tbl = ezr2.Tbl([names] + fresh_pool())
+got = ezr2.acquire(tbl)
 print("\nthe best option found (one instance):")
 instance(got[0])
 
 # (2) explanatory model: which x-ranges reach good goals
 print("\nwhy? an explanatory model -- which x-ranges reach good goals:")
-ezr2.show(data, ezr2.tree(data, got))
+ezr2.show(tbl, ezr2.tree(tbl, got))
 
 # (3) test the model on new data: train/test split via holdout
-random.seed(1); data = ezr2.Data([names] + fresh_pool())
+random.seed(1); tbl = ezr2.Tbl([names] + fresh_pool())
 print("\ndoes that model generalize? best pick on unseen test data:")
-instance(ezr2.holdout(data))
+instance(ezr2.holdout(tbl))

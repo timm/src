@@ -8,16 +8,16 @@ unsplit spread, else explanation would be hopeless.
 
 | call | returns | what |
 |------|---------|------|
-| `bins(data,rows,at,Y)` | iter | (cost, at, v) candidates |
+| `bins(tbl,rows,at,Y)` | iter | (cost, at, v) candidates |
 """
 
 def test_bins():
   "Best single bin beats the unsplit spread."
-  data = Data(csv(the.file))
-  Y    = lambda r: disty(data, r)
-  best = min(c for at in data.x
-             for c in bins(data, data.rows, at, Y))
-  tot  = adds(map(Y, data.rows))
+  tbl = Tbl(csv(the.file))
+  Y    = lambda r: disty(tbl, r)
+  best = min(c for at in tbl.x
+             for c in bins(tbl, tbl.rows, at, Y))
+  tot  = adds(map(Y, tbl.rows))
   print("best cost %.3f at %s v %s  (unsplit var %.3f)" %
-        (best[0], data.names[best[1]], best[2], var(tot)))
+        (best[0], tbl.names[best[1]], best[2], var(tot)))
   assert best[0] < var(tot)

@@ -2,7 +2,7 @@ FILES="ezr2.py
        lib.py
        rand.py
        cols.py
-       data.py
+       tbl.py
        dist.py
        acquire.py
        bins.py
@@ -16,7 +16,7 @@ FILES="ezr2.py
        lib-eg.py
        rand-eg.py
        cols-eg.py
-       data-eg.py
+       tbl-eg.py
        dist-eg.py
        stats-eg.py
        acquire-eg.py

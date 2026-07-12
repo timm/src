@@ -257,8 +257,7 @@ def sway3(rows, y, x, cap, lab=None, east=None, west=None):
       if   id(r) in lab         : new += [r]
       elif (more := more-1) >= 0: new += [r]; lab[id(r)]=r
     if len(lab) >= cap: return lab.values()  # budget spent
-    rows = sorted(rows,
-                  key=project(new, x, y, east, west))[:less]
+    rows = sorted(rows, key=project(new, x,y, east, west))[:less]
   if len(lab) < len(b4):                     # redo: reshuffle,
     seen = sorted(lab.values(), key=y)       # anchored at the
     return sway3(shuffle(b4), y, x, cap,

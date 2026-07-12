@@ -24,12 +24,12 @@ from ezr2 import *
 
 REPEATS = 20
 
-def arm(data, budget, mode):
+def arm(tbl, budget, mode):
   the.budget, the.acquire = budget, mode
-  W, out = wins(data), []
+  W, out = wins(tbl), []
   for k in range(REPEATS):
     random.seed(the.seed + k)
-    out.append(W(holdout(data)))
+    out.append(W(holdout(tbl)))
   return out
 
 def dataset(file):
@@ -37,15 +37,15 @@ def dataset(file):
   the.maxd = 4               # the study rig (matches tiny-xai)
   try:
     random.seed(the.seed)
-    data = Data(csv(file))
-    data.rows = some(data.rows, the.cap)
-    a50, a20  = arm(data, 50, "active"), arm(data, 20, "active")
-    a200, r50 = arm(data, 200, "active"), arm(data, 50, "random")
-    r200      = arm(data, 200, "random")
+    tbl = Tbl(csv(file))
+    tbl.rows = some(tbl.rows, the.cap)
+    a50, a20  = arm(tbl, 50, "active"), arm(tbl, 20, "active")
+    a200, r50 = arm(tbl, 200, "active"), arm(tbl, 50, "random")
+    r200      = arm(tbl, 200, "random")
     d = lambda xs,ys: (0.0 if same(xs,ys)
                        else sum(xs)/len(xs) - sum(ys)/len(ys))
     return dict(file=os.path.basename(file),
-                rows=len(data.rows),
+                rows=len(tbl.rows),
                 mu=sum(a50)/len(a50), d50v20=d(a50,a20),
                 d200v50=d(a200,a50), dAvR=d(a50,r50),
                 dAvR200=d(a50,r200),

@@ -14,13 +14,13 @@ def project(rows, x, y, east=None, west=None):
   c = x(east, west) + TINY
   return lambda r: (x(east,r)**2 + c*c - x(west,r)**2)/(2*c)
 
-def acquire(data):
-  y   = lambda r: disty(data, r)
-  x   = lambda r1, r2: distx(data, r1, r2)
+def acquire(tbl):
+  y   = lambda r: disty(tbl, r)
+  x   = lambda r1, r2: distx(tbl, r1, r2)
   cap = the.budget - the.check
   if the.acquire == "random":
-    return sorted(some(data.rows, cap), key=y)
-  return sorted(sway3(shuffle(data.rows), y, x, cap), key=y)
+    return sorted(some(tbl.rows, cap), key=y)
+  return sorted(sway3(shuffle(tbl.rows), y, x, cap), key=y)
 
 def sway3(rows, y, x, cap, lab=None, east=None, west=None):
   b4  = rows[:]

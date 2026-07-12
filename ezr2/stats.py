@@ -31,8 +31,8 @@ def same(xs, ys, cliff=0.195, conf=1.36):
   return ks(xs, ys) <= conf * ((n + m) / (n * m)) ** 0.5
 
 # Grader: row -> % of gap to best closed, [-100,100]
-def wins(data, rows=None):
-  ys = sorted(disty(data,r) for r in rows or data.rows)
+def wins(tbl, rows=None):
+  ys = sorted(disty(tbl,r) for r in rows or tbl.rows)
   lo, b4 = ys[0], ys[len(ys)//2]
   return lambda r: max(-100, min(100,
-    100 * (1 - (disty(data,r)-lo) / (b4-lo+TINY))))
+    100 * (1 - (disty(tbl,r)-lo) / (b4-lo+TINY))))

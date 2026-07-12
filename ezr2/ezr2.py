@@ -89,7 +89,7 @@ def load(*files, into=None):
       exec(compile(fp.read(), p, "exec"),
            globals() if into is None else into)
 
-load("lib", "rand", "cols", "data", "dist", "acquire",
+load("lib", "rand", "cols", "tbl", "dist", "acquire",
      "bins", "tree", "stats", "show", "main")
 
 the = settings(__doc__)

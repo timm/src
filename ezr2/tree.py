@@ -9,27 +9,27 @@ def has(row, col, at, v):
   return w == "?" or (v == w if is_sym(col) else w <= v)
 
 # Recursively split rows on the min-cost bin; accum=Num|Sym
-def tree(data, rows, Y=None, accum=Num, lvl=0):
-  Y = Y or (lambda r: disty(data, r))
+def tree(tbl, rows, Y=None, accum=Num, lvl=0):
+  Y = Y or (lambda r: disty(tbl, r))
   t = o(at=None, mid=mid(adds((Y(r) for r in rows), accum())),
         n=len(rows), rows=rows)
   if len(rows) >= 2*the.leaf and lvl < the.maxd:
-    if bin := min((c for at in data.x
-        for c in bins(data,rows,at,Y,accum)), default=0):
+    if bin := min((c for at in tbl.x
+        for c in bins(tbl,rows,at,Y,accum)), default=0):
       _, at, v = bin
-      col = data.cols[at]
+      col = tbl.cols[at]
       yes, no = [], []
       for r in rows: (yes if has(r,col,at,v) else no).append(r)
       if yes and no:
         t.at, t.v = at, v
-        t.yes = tree(data, yes, Y, accum, lvl+1)
-        t.no  = tree(data, no,  Y, accum, lvl+1)
+        t.yes = tree(tbl, yes, Y, accum, lvl+1)
+        t.no  = tree(tbl, no,  Y, accum, lvl+1)
   return t
 
 # Walk a row down to its leaf; return the leaf's mid
-def leaf(data, t, row):
+def leaf(tbl, t, row):
   while t.at is not None:
-    t = t.yes if has(row,data.cols[t.at],t.at,t.v) else t.no
+    t = t.yes if has(row,tbl.cols[t.at],t.at,t.v) else t.no
   return t.mid
 
 # Yield every leaf node of a tree

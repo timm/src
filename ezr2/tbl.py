@@ -1,36 +1,36 @@
-# Tables. `Data` = o(names, cols, x, y, rows, ...). `roles`
+# Tables. `Tbl` = o(names, cols, x, y, rows, ...). `Cols`
 # types columns from header suffixes; `add` folds one row in
 # (inc=-1 removes; `mids` caches the centroid); `clone`
 # reuses a header; `adds` folds any stream.
 
 # Build a table; first row = column names
-def Data(src):
+def Tbl(src):
   src  = iter(src)
-  data = o(names=next(src), cols={}, x=[], y=[], goal={},
+  tbl = o(names=next(src), cols={}, x=[], y=[], goal={},
            klass=None, protect=[], rows=[], mid=None)
-  return adds(src, roles(data))
+  return adds(src, Cols(tbl))
 
-# Fresh Data over a subset of rows
-def clone(data, rows):
-  return Data([data.names] + rows)
+# Fresh Tbl over a subset of rows
+def clone(tbl, rows):
+  return Tbl([tbl.names] + rows)
 
 # Cached centroid: per-column mid, rebuilt after add/remove
-def mids(data):
-  data.mid = data.mid or [mid(col) for col in data.cols.values()]
-  return data.mid
+def mids(tbl):
+  tbl.mid = tbl.mid or [mid(col) for col in tbl.cols.values()]
+  return tbl.mid
 
 # Tag cols x/y/klass/protect from name suffixes
-def roles(data):
-  for at, s in enumerate(data.names):
-    data.cols[at] = Num() if s[0].isupper() else Sym()
+def Cols(tbl):
+  for at, s in enumerate(tbl.names):
+    tbl.cols[at] = Num() if s[0].isupper() else Sym()
     if s[-1] == "X": continue
     if s[-1] in "+-!":
-      data.y += [at]; data.goal[at] = s[-1] == "+"
-      if s[-1] == "!": data.klass = at
+      tbl.y += [at]; tbl.goal[at] = s[-1] == "+"
+      if s[-1] == "!": tbl.klass = at
     else:
-      data.x += [at]
-      if s[-1] == "~": data.protect += [at]
-  return data
+      tbl.x += [at]
+      if s[-1] == "~": tbl.protect += [at]
+  return tbl
 
 # Fold a stream of values/rows into i (Num by default)
 def adds(src, i=None):

@@ -18,16 +18,16 @@ old guzzlers at the bottom.
 
 | call | returns | what |
 |------|---------|------|
-| `disty(data, row)` | 0..1 | distance to ideal goals |
-| `distx(data, r1, r2)` | 0..1 | difference over x cols |
+| `disty(tbl, row)` | 0..1 | distance to ideal goals |
+| `distx(tbl, r1, r2)` | 0..1 | difference over x cols |
 """
 
 def test_disty():
   "Rows sorted by disty: header, top 5, blank, bottom 5."
-  data = Data(csv(the.file))
-  rows = sorted(data.rows, key=lambda r: disty(data, r))
-  hdr  = list(data.names) + ["disty"]
-  fmt  = lambda r: [str(v) for v in r]+["%.3f" % disty(data,r)]
+  tbl = Tbl(csv(the.file))
+  rows = sorted(tbl.rows, key=lambda r: disty(tbl, r))
+  hdr  = list(tbl.names) + ["disty"]
+  fmt  = lambda r: [str(v) for v in r]+["%.3f" % disty(tbl,r)]
   body = [fmt(r) for r in rows[:5] + rows[-5:]]
   w = [max(len(row[c]) for row in [hdr]+body)
        for c in range(len(hdr))]
@@ -37,4 +37,4 @@ def test_disty():
   for r in body[:5]: line(r)
   print()
   for r in body[5:]: line(r)
-  assert disty(data, rows[0]) <= disty(data, rows[-1])
+  assert disty(tbl, rows[0]) <= disty(tbl, rows[-1])

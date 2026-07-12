@@ -29,13 +29,13 @@ def gap(col, u, v):
 def labelled(row): return row
 
 # Row's distance to the best goals (0 = ideal)
-def disty(data, row, **kw):
+def disty(tbl, row, **kw):
   row = labelled(row)
   return minkowski(
-    (abs(norm(data.cols[at], row[at]) - data.goal[at])
-     for at in data.y if row[at] != "?"), **kw)
+    (abs(norm(tbl.cols[at], row[at]) - tbl.goal[at])
+     for at in tbl.y if row[at] != "?"), **kw)
 
 # Distance between two rows over the x-columns
-def distx(data, r1, r2, **kw):
-  return minkowski((gap(data.cols[at], r1[at], r2[at])
-                    for at in data.x), **kw)
+def distx(tbl, r1, r2, **kw):
+  return minkowski((gap(tbl.cols[at], r1[at], r2[at])
+                    for at in tbl.x), **kw)

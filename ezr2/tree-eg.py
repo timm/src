@@ -16,13 +16,13 @@ small engine, early model.
 
 | call | returns | what |
 |------|---------|------|
-| `tree(data, rows)` | node | recurse min-cost bins |
-| `leaf(data, t, row)` | value | route row to its leaf |
+| `tree(tbl, rows)` | node | recurse min-cost bins |
+| `leaf(tbl, t, row)` | value | route row to its leaf |
 """
 
 def test_tree():
   "Build a tree over acquire's rows and print it."
   random.seed(the.seed)
-  data = Data(csv(the.file))
-  data.rows = some(data.rows, the.cap)
-  show(data, tree(data, acquire(data)))
+  tbl = Tbl(csv(the.file))
+  tbl.rows = some(tbl.rows, the.cap)
+  show(tbl, tree(tbl, acquire(tbl)))

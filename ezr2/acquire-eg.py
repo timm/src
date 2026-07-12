@@ -9,23 +9,23 @@ bigger table, then one mean-win summary line.
 
 | call | returns | what |
 |------|---------|------|
-| `acquire(data)` | rows | labelled few, best first |
+| `acquire(tbl)` | rows | labelled few, best first |
 """
 
 def test_acquire():
   "20 shuffles; active vs random, sorted by significant delta."
   f0 = the.file
   the.file = "$MOOT/optimize/binary_config/billing10k.csv"
-  data = Data(csv(the.file))
-  data.rows = some(data.rows, the.cap)
+  tbl = Tbl(csv(the.file))
+  tbl.rows = some(tbl.rows, the.cap)
   A, R = [], []
   for i in range(20):
     random.seed(the.seed + i)
-    data.rows = shuffle(data.rows)
+    tbl.rows = shuffle(tbl.rows)
     the.acquire = "active"
-    A += [disty(data, acquire(data)[0])]
+    A += [disty(tbl, acquire(tbl)[0])]
     the.acquire = "random"
-    R += [disty(data, acquire(data)[0])]
+    R += [disty(tbl, acquire(tbl)[0])]
   the.acquire = "active"
   sd_ = lambda z: (sum((v - sum(z)/len(z))**2
                        for v in z) / (len(z)-1)) ** 0.5
@@ -48,14 +48,14 @@ def test_acquire():
 
 def test_acquires():
   "One summary line: mean win/disty over 20 runs."
-  data = Data(csv(the.file))
-  data.rows = some(data.rows, the.cap)
-  W, ds, ws, n = wins(data), [], [], 0
+  tbl = Tbl(csv(the.file))
+  tbl.rows = some(tbl.rows, the.cap)
+  W, ds, ws, n = wins(tbl), [], [], 0
   for i in range(20):
     random.seed(the.seed + i)
-    data.rows = shuffle(data.rows)
-    got = acquire(data)
-    ds += [disty(data,got[0])]; ws += [W(got[0])]; n = len(got)
+    tbl.rows = shuffle(tbl.rows)
+    got = acquire(tbl)
+    ds += [disty(tbl,got[0])]; ws += [W(got[0])]; n = len(got)
   print("%6.1f %7.3f %4d  %s" % (sum(ws)/len(ws),
         sum(ds)/len(ds), n, the.file.split("/")[-1]))
   assert -100 <= sum(ws)/len(ws) <= 100

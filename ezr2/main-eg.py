@@ -9,19 +9,19 @@ among cars never seen in training.
 
 | call | returns | what |
 |------|---------|------|
-| `holdout(data)` | row | best check from unseen half |
-| `wins(data)` | fn | grader: row -> [-100, 100] |
+| `holdout(tbl)` | row | best check from unseen half |
+| `wins(tbl)` | fn | grader: row -> [-100, 100] |
 """
 
 def test_holdout():
   "One run: the holdout-picked best row's disty and win."
   random.seed(the.seed)
-  data = Data(csv(the.file))
-  data.rows = some(data.rows, the.cap)
-  b = holdout(data)
-  print("best disty %.3f  win %.1f  (%s)" % (disty(data,b),
-        wins(data)(b), the.file.split("/")[-1]))
-  assert -100 <= wins(data)(b) <= 100
+  tbl = Tbl(csv(the.file))
+  tbl.rows = some(tbl.rows, the.cap)
+  b = holdout(tbl)
+  print("best disty %.3f  win %.1f  (%s)" % (disty(tbl,b),
+        wins(tbl)(b), the.file.split("/")[-1]))
+  assert -100 <= wins(tbl)(b) <= 100
 
 """
 ## Studies
@@ -33,16 +33,16 @@ labelled row.
 
 | call | returns | what |
 |------|---------|------|
-| `vs(data, pick)` | -- | active-vs-random verdict line |
+| `vs(tbl, pick)` | -- | active-vs-random verdict line |
 """
 
-def vs(data, pick):
+def vs(tbl, pick):
   "active vs random over 20 runs of pick(); verdict line."
-  W, out = wins(data), {}
+  W, out = wins(tbl), {}
   for mode in ("active", "random"):
     the.acquire = mode; out[mode] = []
     for i in range(20):
-      random.seed(the.seed + i); out[mode] += [W(pick(data))]
+      random.seed(the.seed + i); out[mode] += [W(pick(tbl))]
   the.acquire = "active"
   L, R = out["active"], out["random"]
   ml, mr = sum(L)/20, sum(R)/20
@@ -52,12 +52,12 @@ def vs(data, pick):
 
 def test_holdouts():
   "active vs random acquire, through the holdout pipeline."
-  data = Data(csv(the.file))
-  data.rows = some(data.rows, the.cap)
-  vs(data, holdout)
+  tbl = Tbl(csv(the.file))
+  tbl.rows = some(tbl.rows, the.cap)
+  vs(tbl, holdout)
 
 def test_pure():
   "active vs random acquire; best labelled row, no tree."
-  data = Data(csv(the.file))
-  data.rows = some(data.rows, the.cap)
-  vs(data, lambda d: acquire(d)[0])
+  tbl = Tbl(csv(the.file))
+  tbl.rows = some(tbl.rows, the.cap)
+  vs(tbl, lambda d: acquire(d)[0])
