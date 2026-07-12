@@ -128,12 +128,15 @@ def some(lst, k): return random.sample(lst, min(k, len(lst)))
 # (roulette or Irwin-Hall bell).
 
 Sym = dict
-def is_sym(i): return isinstance(i, dict)  # Sym = dict of counts
 def Num(n=0, mu=0, m2=0): return (n, mu, m2)
 
 def n_(num)  : return num[0]
 def mu_(num) : return num[1]
 def m2_(num) : return num[2]
+
+def is_sym(i): return isinstance(i, dict)  # Sym = dict of counts
+
+def size(i): return sum(i.values()) if is_sym(i) else n_(i)
 
 def mid(i): return max(i,key=i.get) if is_sym(i) else mu_(i)
 def var(i): return entropy(i)       if is_sym(i) else sd(i)
@@ -142,7 +145,7 @@ def sd(num): n,_,m2=num;return 0 if n<2 else(max(0,m2)/(n-1))**.5
 
 def entropy(d):
   "Shannon entropy of a Sym (a dict of counts)"
-  N = sum(d.values()) or 1
+  N = size(d) or 1
   return -sum(v/N*log2(v/N) for v in d.values() if v)
 
 def count(sym,v,inc=1):
@@ -331,7 +334,6 @@ def sway3(rows, y, x, cap, lab=None, east=None, west=None):
 # code between regression and classification.
 # Rows in a summary, either flavor
 
-def size(c): return sum(c.values()) if is_sym(c) else n_(c)
 
 def score(here, there):
   "Split cost (lower=better): size-weighted mean of var"
