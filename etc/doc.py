@@ -14,7 +14,7 @@ leading comments): preview and theory before any code.
 USAGE: python3 etc/doc.py [outdir]     # default _site
 Emits markdown; the gh-pages Jekyll build renders it.
 """
-import os, re, sys, glob
+import os, re, sys, glob, subprocess
 
 MARK = {".py":   re.compile(r"^#--\s*(.*?)\s*-*\s*$"),
         ".lisp": re.compile(r"^;;;\s*##\s*(.*)$"),
@@ -116,23 +116,27 @@ def main(site="_site"):
     if d in ("etc", "attic") or not srcs: continue
     os.makedirs(f"{site}/{d}", exist_ok=True)
     files = []
-    for f in srcs:
-      base = os.path.basename(f)
-      open(f"{site}/{d}/{base}.md", "w").write(page(f))
-      files += [f"- [{base}]({base}.md)"]
-    for f in sorted(glob.glob(f"{d}/*.md")):   # hand-written docs
-      base = os.path.basename(f)
-      if base != "README.md":                  # site copy only:
-        open(f"{site}/{d}/{base}", "w").write( # Liquid-escape
-          "{% raw %}\n" + open(f).read() + "\n{% endraw %}")
-        files += [f"- [{base}]({base})"]
-    if os.path.isdir(f"docs/{d}"):             # pycco html, verbatim
+    if os.path.isdir(f"docs/{d}"):   # pycco html: copy verbatim,
       os.makedirs(f"{site}/{d}/docs", exist_ok=True)
       for f in glob.glob(f"docs/{d}/*"):
         base = os.path.basename(f)
         open(f"{site}/{d}/docs/{base}", "w").write(open(f).read())
-        if base == f"{d}.html":
-          files = [f"- [annotated source](docs/{base})"] + files
+      order = subprocess.run(         # index them, reading order
+        ["sh", "INSTALL.md", "list"], cwd=d, text=True,
+        capture_output=True).stdout.split()
+      files = [f"- [{b}](docs/{b}.html)"
+               for b in (os.path.splitext(f)[0] for f in order)]
+    else:                             # no pycco: render md pages
+      for f in srcs:
+        base = os.path.basename(f)
+        open(f"{site}/{d}/{base}.md", "w").write(page(f))
+        files += [f"- [{base}]({base}.md)"]
+    for f in sorted(glob.glob(f"{d}/*.md")):   # hand-written docs
+      base = os.path.basename(f)
+      if base not in ("README.md", "INSTALL.md"):  # site copy:
+        open(f"{site}/{d}/{base}", "w").write(     # Liquid-escape
+          "{% raw %}\n" + open(f).read() + "\n{% endraw %}")
+        files += [f"- [{base}]({base})"]
     lead = open(f"{d}/README.md").read().splitlines()[2] \
            if os.path.exists(f"{d}/README.md") else ""
     open(f"{site}/{d}/index.md", "w").write(
