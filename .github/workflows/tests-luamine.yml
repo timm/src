@@ -22,3 +22,6 @@ jobs:
       - run: cd luamine && lua luamine-eg.lua --all
         env:
           MOOT: ${{ github.workspace }}/moot
+      - run: cd luamine && lua tutchk.lua
+        env:
+          MOOT: ${{ github.workspace }}/moot

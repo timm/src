@@ -26,6 +26,7 @@ FILES="lib.lua
        ga.lua
        de.lua
        search.lua
+       tutchk.lua
        luamine-eg.lua
        list-eg.lua
        rand-eg.lua

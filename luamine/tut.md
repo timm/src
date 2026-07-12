@@ -212,7 +212,7 @@ defaults.
 
 ```
 [5]> l.o(l.the)
-{F=0.50, bins=2, budget1=1000, budget=512, cap=2048, check=4, cliffs=0.20, cr=0.90, dot=25, eps=0.35, few=128, gens=100, iter=10, k=1, ksconf=1.36, leaf=3, m=2, mut=0.80, np=20, p=2, repeats=20, seed=1, start=10, test=$MOOT/optimize/misc/auto93.csv, tour=5, train=$MOOT/optimize/misc/auto93.csv, wait=10}
+{F=0.50, bins=2, budget1=1000, budget=512, cap=2048, check=4, cliffs=0.20, cr=0.90, dot=25, eps=0.35, few=128, gens=100, iter=10, k=1, ksconf=1.36, leaf=3, m=2, mut=0.80, np=20, p=2, pool=512, repeats=20, seed=1, start=10, test=$MOOT/optimize/misc/auto93.csv, tour=5, train=$MOOT/optimize/misc/auto93.csv, wait=10}
 [6]> l.the.train
 $MOOT/optimize/misc/auto93.csv
 [7]> l.the.seed
