@@ -41,18 +41,32 @@
         <a class='octothorpe' href='#section-1'>#</a>
       </div>
       <h2>stats-eg</h2>
-<pre><code class="language-text">
-A tool needed before any experiment: `same` calls two lists
+<p>A tool needed before any experiment: <code>same</code> calls two lists
 equal only if cohen AND cliffs AND ks all agree. Watch it
 on a gaussian nudged by ever-larger shifts: same up to 0.1,
-different from 0.3 on. Notice how conservative that is --
-later &quot;X beats Y&quot; claims must clear all three tests.
-
-| call | returns | what |
-|------|---------|------|
-| `same(xs, ys)` | bool | cohen+cliffs+ks all agree |
-| `cliffs(xs, ys)` | 0..1 | effect size (0 = identical) |
-</code></pre>
+different from 0.3 on. Notice how conservative that is &ndash;
+later &ldquo;X beats Y&rdquo; claims must clear all three tests.</p>
+<table>
+<thead>
+<tr>
+<th>call</th>
+<th>returns</th>
+<th>what</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>same(xs, ys)</code></td>
+<td>bool</td>
+<td>cohen+cliffs+ks all agree</td>
+</tr>
+<tr>
+<td><code>cliffs(xs, ys)</code></td>
+<td>0..1</td>
+<td>effect size (0 = identical)</td>
+</tr>
+</tbody>
+</table>
     </div>
     <div class='code'>
       <div class="highlight"><pre></pre></div>

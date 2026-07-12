@@ -41,16 +41,26 @@
         <a class='octothorpe' href='#section-1'>#</a>
       </div>
       <h2>lib-eg</h2>
-<pre><code class="language-text">
-Csv cells arrive as strings. `thing` coerces each one:
-&quot;23&quot; becomes an int, &quot;-1e2&quot; a float (csv cells can hide
-exponents), &quot;True&quot;/&quot;False&quot; become bools, &quot;?&quot; marks a
-missing value, anything else stays text.
-
-| call | returns | what |
-|------|---------|------|
-| `thing(s)` | int, float, bool, text | coerce one cell |
-</code></pre>
+<p>Csv cells arrive as strings. <code>thing</code> coerces each one:
+&ldquo;23&rdquo; becomes an int, &ldquo;-1e2&rdquo; a float (csv cells can hide
+exponents), &ldquo;True&rdquo;/&rdquo;False&rdquo; become bools, &ldquo;?&rdquo; marks a
+missing value, anything else stays text.</p>
+<table>
+<thead>
+<tr>
+<th>call</th>
+<th>returns</th>
+<th>what</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>thing(s)</code></td>
+<td>int, float, bool, text</td>
+<td>coerce one cell</td>
+</tr>
+</tbody>
+</table>
     </div>
     <div class='code'>
       <div class="highlight"><pre></pre></div>

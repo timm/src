@@ -41,18 +41,32 @@
         <a class='octothorpe' href='#section-1'>#</a>
       </div>
       <h2>main-eg</h2>
-<pre><code class="language-text">
-Split the table 50:50; acquire-label the train half; grow
-a tree from those labels; let it rank the *unseen* test
-half; label only the top `check` rows and keep the best.
+<p>Split the table 50:50; acquire-label the train half; grow
+a tree from those labels; let it rank the <em>unseen</em> test
+half; label only the top <code>check</code> rows and keep the best.
 Notice the win: a few dozen labels find a near-best car
-among cars never seen in training.
-
-| call | returns | what |
-|------|---------|------|
-| `holdout(tbl)` | row | best check from unseen half |
-| `wins(tbl)` | fn | grader: row -&gt; [-100, 100] |
-</code></pre>
+among cars never seen in training.</p>
+<table>
+<thead>
+<tr>
+<th>call</th>
+<th>returns</th>
+<th>what</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>holdout(tbl)</code></td>
+<td>row</td>
+<td>best check from unseen half</td>
+</tr>
+<tr>
+<td><code>wins(tbl)</code></td>
+<td>fn</td>
+<td>grader: row -&gt; [-100, 100]</td>
+</tr>
+</tbody>
+</table>
     </div>
     <div class='code'>
       <div class="highlight"><pre></pre></div>
@@ -83,16 +97,26 @@ among cars never seen in training.
       <div class='octowrap'>
         <a class='octothorpe' href='#section-3'>#</a>
       </div>
-      <pre><code class="language-text">
-Demos convince; studies measure -- 20 repeats each, wins
-scale, `same` deciding ties. holdouts: active vs random
+      <p>Demos convince; studies measure &ndash; 20 repeats each, wins
+scale, <code>same</code> deciding ties. holdouts: active vs random
 through the full rig. pure: no tree, just the best
-labelled row.
-
-| call | returns | what |
-|------|---------|------|
-| `vs(tbl, pick)` | -- | active-vs-random verdict line |
-</code></pre>
+labelled row.</p>
+<table>
+<thead>
+<tr>
+<th>call</th>
+<th>returns</th>
+<th>what</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>vs(tbl, pick)</code></td>
+<td>&ndash;</td>
+<td>active-vs-random verdict line</td>
+</tr>
+</tbody>
+</table>
     </div>
     <div class='code'>
       <div class="highlight"><pre></pre></div>

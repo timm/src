@@ -9,8 +9,8 @@
 #  - one-line docstrings lift ABOVE their defun as comments
 # py (emit .py):
 #  - bare `"""` lines toggle markdown prose blocks; a block
-#    NOT opening with a markdown heading is help text and
-#    gets fenced verbatim (line structure survives)
+#    opening "word: ..." (e.g. "ezr2.py: ...") is help text
+#    and gets fenced verbatim (line structure survives)
 #  - col-0 "# " notes pass through (already pycco prose)
 #  - one-line docstrings lift ABOVE their def as comments
 BEGIN { n = 0 }
@@ -21,8 +21,11 @@ ext == "py" && /^"""$/ {
   else     { md = 0; if (fenced) print "# ```"; fenced = 0 }
   next }
 ext == "py" && md      {
-  if (first) { first = 0
-    if ($0 !~ /^#/) { fenced = 1; print "# ```text" } }
+  if (first) {
+    if ($0 == "") next
+    first = 0
+    if ($0 ~ /^[A-Za-z0-9_.-]+: /) {
+      fenced = 1; print "# ```text" } }
   print "# " $0; next }
 ext == "py" && /^# ?--+ ?[A-Za-z]/ {
   t = $0
@@ -36,13 +39,16 @@ ext == "py" && pd {
 ext == "py" && /^def / { pd = $0; next }
 ext == "py"            { print; next }
 ext == "lua" && /^#!/     { next }
-ext == "lua" && /^--\[\[/ { md = 1; next }
+ext == "lua" && /^--\[\[/ { md = 1; first = 1; next }
 ext == "lua" && /^\]\]/   { md = 0; next }
-ext == "lua" && md        { print "-- " $0; next }
+ext == "lua" && md        {
+  if (first && $0 == "") next
+  first = 0; print "-- " $0; next }
 ext == "lua"              { print; next }
-/^#\|/      { md = 1; next }
+/^#\|/      { md = 1; first = 1; next }
 /^\|#/      { md = 0; next }
-md          { print ";; " $0; next }
+md          { if (first && $0 == "") next
+              first = 0; print ";; " $0; next }
 /^;;; ## /  { print ""; print ";; " substr($0, 5); next }
 /^;;;;/     { print ";; " substr($0, 6); next }
 /^;;;/      { next }

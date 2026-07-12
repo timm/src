@@ -41,18 +41,32 @@
         <a class='octothorpe' href='#section-1'>#</a>
       </div>
       <h2>tbl-eg</h2>
-<pre><code class="language-text">
-`Tbl` streams the csv once: the first row names the
-columns and `roles` types them from the name suffixes;
-later rows update the per-column summaries. Notice auto93's
+<p><code>Tbl</code> streams the csv once: the first row names the
+columns and <code>roles</code> types them from the name suffixes;
+later rows update the per-column summaries. Notice auto93&rsquo;s
 shape: 4 x-columns, 3 goals (minimize Lbs-, maximize Acc+
-and Mpg+), one ignored column (HpX).
-
-| call | returns | what |
-|------|---------|------|
-| `Tbl(csv(f))` | tbl | rows + column summaries |
-| `clone(tbl, rows)` | tbl | fresh table, same header |
-</code></pre>
+and Mpg+), one ignored column (HpX).</p>
+<table>
+<thead>
+<tr>
+<th>call</th>
+<th>returns</th>
+<th>what</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Tbl(csv(f))</code></td>
+<td>tbl</td>
+<td>rows + column summaries</td>
+</tr>
+<tr>
+<td><code>clone(tbl, rows)</code></td>
+<td>tbl</td>
+<td>fresh table, same header</td>
+</tr>
+</tbody>
+</table>
     </div>
     <div class='code'>
       <div class="highlight"><pre></pre></div>

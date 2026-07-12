@@ -41,27 +41,40 @@
         <a class='octothorpe' href='#section-1'>#</a>
       </div>
       <h2>dist-eg</h2>
-<pre><code class="language-text">
-`disty` scores each row by distance to the ideal goals
+<p><code>disty</code> scores each row by distance to the ideal goals
 (0 = best), reading only the y columns. Sort our table by
-it and the best cars float to the top:
+it and the best cars float to the top:</p>
+<pre><code>Clndrs  Volume  HpX  Model  origin  Lbs-  Acc+  Mpg+  disty
+     4      90   48     78       2  1985  21.5    40  0.075
+     4      90   48     80       2  2085  21.7    40  0.087
+     4      85   65     81       3  1975  19.4    40  0.087
 
-    Clndrs  Volume  HpX  Model  origin  Lbs-  Acc+  Mpg+  disty
-         4      90   48     78       2  1985  21.5    40  0.075
-         4      90   48     80       2  2085  21.7    40  0.087
-         4      85   65     81       3  1975  19.4    40  0.087
-
-         8     440  215     70       1  4312   8.5    10  0.956
-         8     455  225     73       1  4951    11    10  0.956
-
-Notice the shape: light, late, high-mpg cars up top; big
-old guzzlers at the bottom.
-
-| call | returns | what |
-|------|---------|------|
-| `disty(tbl, row)` | 0..1 | distance to ideal goals |
-| `distx(tbl, r1, r2)` | 0..1 | difference over x cols |
+     8     440  215     70       1  4312   8.5    10  0.956
+     8     455  225     73       1  4951    11    10  0.956
 </code></pre>
+<p>Notice the shape: light, late, high-mpg cars up top; big
+old guzzlers at the bottom.</p>
+<table>
+<thead>
+<tr>
+<th>call</th>
+<th>returns</th>
+<th>what</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>disty(tbl, row)</code></td>
+<td>0..1</td>
+<td>distance to ideal goals</td>
+</tr>
+<tr>
+<td><code>distx(tbl, r1, r2)</code></td>
+<td>0..1</td>
+<td>difference over x cols</td>
+</tr>
+</tbody>
+</table>
     </div>
     <div class='code'>
       <div class="highlight"><pre></pre></div>

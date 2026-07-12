@@ -41,25 +41,38 @@
         <a class='octothorpe' href='#section-1'>#</a>
       </div>
       <h2>tree-eg</h2>
-<pre><code class="language-text">
-`acquire` spends the label budget; `tree` then recurses
-min-cost bins over just those labelled rows, and `show`
-prints it -- win (100=best, 0=median), n, per-goal means,
-then the branch conditions:
-
-       win     n      Lbs-     Acc+     Mpg+
-         3    44  2520.545   16.609   28.182
-        41    21  2017.762   16.914   31.905  Volume &lt;= 108
-    ▲   83     3  1924.000   20.333   30.000  |  Model &lt;= 73
-
-Notice: ~44 labels, and the ▲ best leaf reads as advice --
-small engine, early model.
-
-| call | returns | what |
-|------|---------|------|
-| `tree(tbl, rows)` | node | recurse min-cost bins |
-| `leaf(tbl, t, row)` | value | route row to its leaf |
+<p><code>acquire</code> spends the label budget; <code>tree</code> then recurses
+min-cost bins over just those labelled rows, and <code>show</code>
+prints it &ndash; win (100=best, 0=median), n, per-goal means,
+then the branch conditions:</p>
+<pre><code>   win     n      Lbs-     Acc+     Mpg+
+     3    44  2520.545   16.609   28.182
+    41    21  2017.762   16.914   31.905  Volume &lt;= 108
+▲   83     3  1924.000   20.333   30.000  |  Model &lt;= 73
 </code></pre>
+<p>Notice: ~44 labels, and the ▲ best leaf reads as advice &ndash;
+small engine, early model.</p>
+<table>
+<thead>
+<tr>
+<th>call</th>
+<th>returns</th>
+<th>what</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>tree(tbl, rows)</code></td>
+<td>node</td>
+<td>recurse min-cost bins</td>
+</tr>
+<tr>
+<td><code>leaf(tbl, t, row)</code></td>
+<td>value</td>
+<td>route row to its leaf</td>
+</tr>
+</tbody>
+</table>
     </div>
     <div class='code'>
       <div class="highlight"><pre></pre></div>

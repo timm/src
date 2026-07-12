@@ -41,20 +41,38 @@
         <a class='octothorpe' href='#section-1'>#</a>
       </div>
       <h2>cols-eg</h2>
-<pre><code class="language-text">
-Two summaries, one interface. `Num` folds values one at a
-time by Welford's trick (no list kept, just n, mu, m2);
-`Sym` counts. `mid`/`var` answer for either. First a Sym
+<p>Two summaries, one interface. <code>Num</code> folds values one at a
+time by Welford&rsquo;s trick (no list kept, just n, mu, m2);
+<code>Sym</code> counts. <code>mid</code>/<code>var</code> answer for either. First a Sym
 tiny enough to check by eye; then 10,000 Irwin-Hall samples
 (three uniforms, centered, scaled): mean lands on 0, sd on
-1 -- testing `add`, `welford`, `mid` and `var` in one shot.
-
-| call | returns | what |
-|------|---------|------|
-| `add(col, v)` | col | fold v in (Num or Sym) |
-| `mid(col)` | value | mean or mode |
-| `var(col)` | float | sd or entropy |
-</code></pre>
+1 &ndash; testing <code>add</code>, <code>welford</code>, <code>mid</code> and <code>var</code> in one shot.</p>
+<table>
+<thead>
+<tr>
+<th>call</th>
+<th>returns</th>
+<th>what</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>add(col, v)</code></td>
+<td>col</td>
+<td>fold v in (Num or Sym)</td>
+</tr>
+<tr>
+<td><code>mid(col)</code></td>
+<td>value</td>
+<td>mean or mode</td>
+</tr>
+<tr>
+<td><code>var(col)</code></td>
+<td>float</td>
+<td>sd or entropy</td>
+</tr>
+</tbody>
+</table>
     </div>
     <div class='code'>
       <div class="highlight"><pre></pre></div>

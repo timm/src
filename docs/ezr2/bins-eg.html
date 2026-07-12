@@ -41,16 +41,26 @@
         <a class='octothorpe' href='#section-1'>#</a>
       </div>
       <h2>bins-eg</h2>
-<pre><code class="language-text">
-Why are the good rows good? `bins` offers candidate splits
+<p>Why are the good rows good? <code>bins</code> offers candidate splits
 per x-column; the cheapest (size-weighted variance of the
 two halves) wins. The assert: the best bin beats the
-unsplit spread, else explanation would be hopeless.
-
-| call | returns | what |
-|------|---------|------|
-| `bins(tbl,rows,at,Y)` | iter | (cost, at, v) candidates |
-</code></pre>
+unsplit spread, else explanation would be hopeless.</p>
+<table>
+<thead>
+<tr>
+<th>call</th>
+<th>returns</th>
+<th>what</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>bins(tbl,rows,at,Y)</code></td>
+<td>iter</td>
+<td>(cost, at, v) candidates</td>
+</tr>
+</tbody>
+</table>
     </div>
     <div class='code'>
       <div class="highlight"><pre></pre></div>
