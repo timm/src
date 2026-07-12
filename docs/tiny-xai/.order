@@ -25,7 +25,7 @@ bins-egs	tiny-xai-eg.lisp	tests
 tree-egs	tiny-xai-eg.lisp	tests
 main-egs	tiny-xai-eg.lisp	tests
 dtlz	dtlz.lisp	code
-the-models	dtlz.lisp	code
-the-pool-and-the-label-seam	dtlz.lisp	code
-drive-one-model	dtlz.lisp	code
+models	dtlz.lisp	code
+seam	dtlz.lisp	code
+driver	dtlz.lisp	code
 report	report.lisp	code

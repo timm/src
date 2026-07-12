@@ -16,7 +16,7 @@
 (in-package :tiny-xai)
 
 
-;;; ## The models
+;;; ## Models
 
 ;;;; Each maps x in [0,1]^N to M objectives to MINIMIZE.
 ;;;; The last N-M+1 x's form the "distance" group xm; the
@@ -105,7 +105,8 @@
 (defvar *models* '(dtlz1 dtlz2 dtlz3 dtlz4 dtlz5 dtlz6 dtlz7))
 
 
-;;; ## The pool and the label seam
+;;; ## Seam
+;;; The pool and the label seam.
 
 (defun opt (flag default)
   "Value after `flag` on the command line, else default"
@@ -143,7 +144,8 @@
           "100=best 0=median"))
 
 
-;;; ## Drive one model
+;;; ## Driver
+;;; Drive one model.
 
 (defun names (nn mm)
   "Header: X1..Xn decision vars, F1-..Fm- minimize goals"

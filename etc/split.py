@@ -40,6 +40,7 @@ for src in srcs:
     body = "\n".join(lines).strip()
     if not body: continue
     assert name not in seen, "slug clash: " + name
+    assert len(name) <= 20, "section title too long: " + name
     seen.add(name)
     open("%s/%s%s.part" % (out, name, ext), "w"
          ).write(body + "\n")

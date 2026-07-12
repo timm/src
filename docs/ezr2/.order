@@ -23,7 +23,7 @@ tree-eg	ezr2-eg.py	tests
 show-eg	ezr2-eg.py	tests
 main-eg	ezr2-eg.py	tests
 dtlz	dtlz.py	code
-the-models	dtlz.py	code
-cli-knobs-model-m-objectives-n-decision-vars	dtlz.py	code
-the-unlabelled-pool-the-label-seam	dtlz.py	code
+models	dtlz.py	code
+knobs	dtlz.py	code
+seam	dtlz.py	code
 report	report.py	code
