@@ -15,7 +15,8 @@ Everything lives in exactly two repos:
 Data is NEVER copied into src. Code reaches it via a leading
 `$MOOT` in file names: the MOOT env var if set, else
 `~/gits/moot`. Every language implements the same tiny
-`path()` expansion (see ezr2.py, tiny-xai/lib.lisp, lib.lua).
+`path()` expansion (see ezr2/ezr2.py, tiny-xai/tiny-xai.lisp,
+luamine/lib.lua).
 Copies of moot data in other repos were a mistake; do not
 recreate them.
 
@@ -55,8 +56,13 @@ recreate them.
                         section marker, so make xx.pdf
                         paginates per section
 
-No figlet banners. No form feeds. Section markers
-(`-- ##` etc) divide the library file into topics.
+No figlet banners. Section markers (`-- ##` etc) divide
+the library file into topics; the ONLY form feeds are the
+ones before markers. Prose stanzas (block comments / bare
+`"""` blocks) open with a sentence, never a blank line; a
+python block opening `word: ...` (e.g. `ezr2.py: ...`,
+`INSTALL: ...`) is help text and doc.awk renders it
+fenced verbatim.
 
 ## versions: tags, never dirs
 

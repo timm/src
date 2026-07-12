@@ -36,9 +36,11 @@ A tutorial is made of DEMONSTRATIONS, not explanations.
 Prose only says "now watch this" and "notice that".
 Stanza skeleton, every stanza:
 
+    ;;; ## name                    <- section marker (after \f)
     #|                      (lang's block comment = markdown)
-    ## Heading
     motivation prose, K&R voice ("you", direct, admits limits)
+                            (marker IS the heading; stanza
+                             opens with prose, NEVER blank)
     pasted REAL output, indented   <- when data must be SEEN
     "Notice: ..." pointer sentence
     | call | returns | what |      <- signature table
@@ -67,8 +69,8 @@ Stanza skeleton, every stanza:
 - `make doc` picks the dir up automatically once
   INSTALL.md exists (pycco pages into docs/<dir>/, badges,
   toc, prev/next, README doc-toc block). etc/doc.awk may
-  need the language's comment syntax taught to it (lisp
-  done; python/lua pending).
+  need a NEW language's comment syntax taught to it
+  (lisp, python, lua done).
 - README.md: intro, REPORT.md pointer if any, Install
   lines, `<!-- doc-toc -->` block (generated; do not
   hand-edit).
