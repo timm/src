@@ -105,17 +105,20 @@ def some(lst, k): return random.sample(lst, min(k, len(lst)))
 
 #-- cols --------------------------------------------------------
 Sym = dict
-def is_sym(i): return isinstance(i, dict)  # Sym = dict of counts
 def Num(n=0, mu=0, m2=0): return (n, mu, m2)
 
 def n_(num)  : return num[0]
 def mu_(num) : return num[1]
 def m2_(num) : return num[2]
 
+def is_sym(i): return isinstance(i, dict)  # Sym = dict of counts
+
 def mid(i): return max(i,key=i.get) if is_sym(i) else mu_(i)
 def var(i): return entropy(i)       if is_sym(i) else sd(i)
 
-def sd(num): n,_,m2=num;return 0 if n<2 else(max(0,m2)/(n-1))**.5
+def sd(num): 
+  n,_,m2=num
+  return 0 if n<2 else(max(0,m2)/(n-1))**.5
 
 def entropy(d):
   N = sum(d.values()) or 1
@@ -238,14 +241,12 @@ def landscape(tbl):
   if the.landscape == "random":
     return sorted(some(tbl.rows, cap), key=y)
   x   = lambda r1, r2: distx(tbl, r1, r2)
-  pool = shuffle(tbl.rows)
-  lab  = {}
+  pool, lab = shuffle(tbl.rows), {}
   while len(lab) < cap and len(pool) >= 2*the.leaf:
-    here, grown = [], 0
-    for r in pool:
-      if id(r) not in lab and grown<the.grow and len(lab) < cap:
-        lab[id(r)] = r; grown += 1
-      if id(r) in lab: here.append(r)
+    for r in [r for r in pool if id(r) not in lab
+             ][:min(the.grow, cap - len(lab))]:
+      lab[id(r)] = r
+    here = [r for r in pool if id(r) in lab]  # labelled & pool
     if len(lab) < cap:
       n = max(1, int((1-the.keepf)*len(pool)))
       pool = sorted(pool, key=project(here, x, y))[n:]
