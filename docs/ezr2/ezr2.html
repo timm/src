@@ -28,23 +28,26 @@
       <div class='octowrap'>
         <a class='octothorpe' href='#section-0'>#</a>
       </div>
-      <p>ezr2: landscape analysis for xai and optimization CSV data.
-(c) 2026, Tim Menzies <a href="&#109;&#97;&#105;&#108;&#116;&#111;&#58;&#116;&#105;&#109;&#109;&#64;&#105;&#101;&#101;&#101;&#46;&#111;&#114;&#103;">&#116;&#105;&#109;&#109;&#64;&#105;&#101;&#101;&#101;&#46;&#111;&#114;&#103;</a>, MIT license</p>
-<p>USAGE: python3 ezr2-eg.py [&ndash;key=val &hellip;] [test &hellip;]</p>
-<p>OPTIONS: (defaults below are parsed into <code>the</code>):
-  &ndash;file   data file  = $MOOT/optimize/misc/auto93.csv
-  &ndash;seed   random seed           = 1
-  &ndash;leaf   tree min leaf rows    = 3
-  &ndash;maxd   tree max depth        = 8
-  &ndash;grow   add labels/round      = 4
-  &ndash;budget labeling cap          = 50
-  &ndash;cap    max rows kept         = 1024
-  &ndash;check  rows labelled by tree = 5
-  &ndash;keepf  keep frac             = 0.66
-  &ndash;round  decimals shown        = 3
-  &ndash;landscape  active | random   = active
-  -h       print this help</p>
-<p>TESTS: (run with their bare name):
+      <pre><code class="language-text">ezr2: landscape analysis for xai and optimization CSV data.
+(c) 2026, Tim Menzies &lt;timm@ieee.org&gt;, MIT license
+
+USAGE: python3 ezr2-eg.py [--key=val ...] [test ...]
+
+OPTIONS: (defaults below are parsed into `the`):
+  --file   data file  = $MOOT/optimize/misc/auto93.csv
+  --seed   random seed           = 1
+  --leaf   tree min leaf rows    = 3
+  --maxd   tree max depth        = 8
+  --grow   add labels/round      = 4
+  --budget labeling cap          = 50
+  --cap    max rows kept         = 1024
+  --check  rows labelled by tree = 5
+  --keepf  keep frac             = 0.66
+  --round  decimals shown        = 3
+  --landscape  active | random   = active
+  -h       print this help
+
+TESTS: (run with their bare name):
   disty       rows by disty: top 5 / bottom 5
   landscape   20 shuffles; best disty per run
   landscapes  one mean-win line (the sweep)
@@ -54,17 +57,20 @@
   pure     no tree: best labelled, land vs random
   same     demo+validate the same() stat test
   all      run every test above, reseting seed each
-INSTALL: one curl fetches every file; data lives in the moot
+</code></pre>
+<pre><code class="language-text">INSTALL: one curl fetches every file; data lives in the moot
 repo (tiny.cc/moot), cloned to ~/gits/moot (or set $MOOT):
   REPO=https://raw.githubusercontent.com/timm/src/main/ezr2
   curl -fL $REPO/INSTALL.md | sh
   git clone https://github.com/timm/moot ~/gits/moot
-  python3 ezr2-eg.py disty</p>
-<p>MODES: optimize a static CSV (format below), or a live model by
-  overriding labelled() to compute goals live &ndash; worked example
-  in dtlz.py ($REPO/dtlz.py).</p>
-<p>DATA: comma-separated, first row names the columns. A name&rsquo;s last
-character sets that column&rsquo;s role; its first sets its type:
+  python3 ezr2-eg.py disty
+
+MODES: optimize a static CSV (format below), or a live model by
+  overriding labelled() to compute goals live -- worked example
+  in dtlz.py ($REPO/dtlz.py).
+
+DATA: comma-separated, first row names the columns. A name's last
+character sets that column's role; its first sets its type:
   Upper case first letter  -&gt; numeric  (else: symbolic)
   +  /  -   suffix         -&gt; goal: maximize / minimize  (y-col)
   !         suffix         -&gt; klass   (a y-column)
@@ -73,19 +79,23 @@ character sets that column&rsquo;s role; its first sets its type:
   (no suffix)              -&gt; ordinary x-column (input)
 E.g. auto93 header Clndrs,Volume,HpX,Model,origin,Lbs-,Acc+,Mpg+
 has numeric inputs (Clndrs/Volume/Model), symbolic input origin,
-an ignored column (HpX); goals minimize Lbs, maximize Acc/Mpg.</p>
-<p>DISTY: each row&rsquo;s &ldquo;distance to heaven&rdquo; &ndash; its distance to ideal
-point where goals are best (0 = ideal, 1 = worst). <code>disty</code> reads
+an ignored column (HpX); goals minimize Lbs, maximize Acc/Mpg.
+
+DISTY: each row's &quot;distance to heaven&quot; -- its distance to ideal
+point where goals are best (0 = ideal, 1 = worst). `disty` reads
 only the y-columns, so optimization scores a row without seeing
-how it was made. <code>python3 ezr2-eg.py disty</code> sorts by disty and
-prints the best 5, a blank line, then the worst 5:</p>
-<p>Clndrs  Volume  HpX  Model  origin  Lbs-  Acc+  Mpg+  disty
+how it was made. `python3 ezr2-eg.py disty` sorts by disty and
+prints the best 5, a blank line, then the worst 5:
+
+  Clndrs  Volume  HpX  Model  origin  Lbs-  Acc+  Mpg+  disty
        4      90   48     78       2  1985  21.5    40  0.075
-       &hellip;                                              &hellip;
-       8     455  225     70       1  4425    10    10  0.954</p>
-<p>Best rows (disty~0) are light, high-Mpg cars; worst (disty~1) are
+       ...                                              ...
+       8     455  225     70       1  4425    10    10  0.954
+
+Best rows (disty~0) are light, high-Mpg cars; worst (disty~1) are
 heavy guzzlers. Optimizers seek low-disty rows while labelling
-(inspecting the y of) as few rows as possible.</p>
+(inspecting the y of) as few rows as possible.
+</code></pre>
     </div>
     <div class='code'>
       <div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span><span class="o">,</span><span class="w"> </span><span class="nn">re</span><span class="o">,</span><span class="w"> </span><span class="nn">sys</span><span class="o">,</span><span class="w"> </span><span class="nn">random</span>

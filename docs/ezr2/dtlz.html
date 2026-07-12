@@ -28,13 +28,16 @@
       <div class='octowrap'>
         <a class='octothorpe' href='#section-0'>#</a>
       </div>
-      <p>dtlz.py: drive ezr2 with an EXTERNAL MODEL instead of a CSV.</p>
-<p>The DTLZ1-7 benchmarks are live models: a row&rsquo;s x-values are decision
+      <pre><code class="language-text">dtlz.py: drive ezr2 with an EXTERNAL MODEL instead of a CSV.
+
+The DTLZ1-7 benchmarks are live models: a row's x-values are decision
 variables; its goals are computed on demand by overriding ezr2.labelled.
-This is how an outside user plugs their own (expensive) model into ezr2.</p>
-<p>python3 dtlz.py                 # default model: dtlz2
-  python3 dtlz.py &ndash;model=dtlz4   # any of dtlz1..dtlz7
-  python3 dtlz.py &ndash;model=dtlz7 &ndash;M=3 &ndash;N=8</p>
+This is how an outside user plugs their own (expensive) model into ezr2.
+
+  python3 dtlz.py                 # default model: dtlz2
+  python3 dtlz.py --model=dtlz4   # any of dtlz1..dtlz7
+  python3 dtlz.py --model=dtlz7 --M=3 --N=8
+</code></pre>
     </div>
     <div class='code'>
       <div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">sys</span><span class="o">,</span><span class="w"> </span><span class="nn">random</span><span class="o">,</span><span class="w"> </span><span class="nn">ezr2</span>
