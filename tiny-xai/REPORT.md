@@ -17,7 +17,7 @@ there 43:8, here 41:11.
 
 ## The sampler
 
-`sway3` (acquire.lisp) is a landscape sampler in the
+`sway3` (tiny-xai.lisp) is a landscape sampler in the
 FASTMAP family: project the pool onto the line joining two
 poles (initially the two most distant rows; on redo
 passes, the best and worst labels seen so far), orient the

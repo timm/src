@@ -1,31 +1,7 @@
 FILES="tiny-xai.lisp
-       macros.lisp
-       lib.lisp
-       rand.lisp
-       cols.lisp
-       query.lisp
-       tbl.lisp
-       dist.lisp
-       acquire.lisp
-       bins.lisp
-       tree.lisp
-       stats.lisp
-       main.lisp
-       report.lisp
-       dtlz.lisp
        tiny-xai-eg.lisp
-       lib-eg.lisp
-       macros-eg.lisp
-       cols-eg.lisp
-       query-eg.lisp
-       rand-eg.lisp
-       tbl-eg.lisp
-       dist-eg.lisp
-       stats-eg.lisp
-       acquire-eg.lisp
-       bins-eg.lisp
-       tree-eg.lisp
-       main-eg.lisp"
+       dtlz.lisp
+       report.lisp"
 : <<'DOCS'
 
 # tiny-xai
