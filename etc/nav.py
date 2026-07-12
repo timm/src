@@ -59,8 +59,15 @@ def link(p):
   return (f"<b>{p}</b>" if p == name
           else f'<a href="{p}.html">{p}</a>')
 
-mine = tests if name in tests else code
-toc  = " | ".join(link(p) for p in mine)
+# toc: one line per source file (newline at file jumps)
+mine  = tests if name in tests else code
+srcOf = dict((r[0], r[1]) for r in rows)
+lines, cur = [], None
+for p in mine:
+  if srcOf[p] != cur:
+    cur = srcOf[p]; lines.append([])
+  lines[-1].append(link(p))
+toc = "<br>\n".join(" | ".join(l) for l in lines)
 nav  = ""
 if name in order:
   i    = order.index(name)
@@ -72,10 +79,12 @@ if name in order:
 top = BADGES + f"<p>{toc}</p>" + nav
 ext = os.path.splitext(src)[1]
 old = name + (".scm" if ext == ".lisp" else ext)
+h1  = (f'<h1><a href="{REPO}/blob/main/{PROJ}/{src}">'
+       f'{src}</a></h1>')
+if name != os.path.splitext(src)[0]:
+  h1 += f"\n<h2>{name}</h2>"
 s = open(page).read()
 s = s.replace(f"<title>{old}</title>",
-              f"<title>{PROJ}: {name}</title>")
-s = s.replace(f"<h1>{old}</h1>",
-              f'<h1><a href="{REPO}/blob/main/{PROJ}/'
-              f'{src}">{name}</a></h1>')
+              f"<title>{src}: {name}</title>")
+s = s.replace(f"<h1>{old}</h1>", h1)
 open(page, "w").write(s.replace("<h1", top + "<h1", 1))
