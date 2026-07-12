@@ -22,13 +22,12 @@ def acquire(data):
   pool, lab = shuffle(data.rows), {}
   known = lambda r: id(r) in lab
   while len(lab) < cap and len(pool) >= 2*the.leaf:
-    grow = min(the.grow, cap - len(lab))
+    here, grow = [], min(the.grow, cap - len(lab))
     for r in pool:
-      if not known(r):
-        lab[id(r)] = r
-        if (grow := grow-1) < 1: break
+      if   known(r): here += [r]
+      elif (grow := grow-1) >= 0:
+        lab[id(r)] = r; here += [r]
     if len(lab) < cap:
-      here = [r for r in pool if known(r)]  # labelled & pool
       n    = max(1, int((1-the.keepf)*len(pool)))
       pool = sorted(pool, key=project(here, x, y))[n:]
   return sorted(lab.values(), key=y)
