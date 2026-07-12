@@ -19,14 +19,14 @@
         (- 1 (/ (- (disty tbl r) lo)
                 (+ (- b4 lo) +tiny+)))))))))
 
-; Budget rig: landscape train -> tree -> best test row
+; Budget rig: acquire train -> tree -> best test row
 (defun holdout (tbl)
   (labels ((y (r) (disty tbl r)))
     (let* ((rows  (shuffle (? tbl rows)))
            (half  (floor (length rows) 2))
            (train (subseq rows 0 half))
            (test  (nthcdr half rows))
-           (got   (landscape (clone tbl train)))
+           (got   (acquire (clone tbl train)))
            (tr    (tree tbl got #'y)))
       (argmin #'y
               (subseq (sort test #'<

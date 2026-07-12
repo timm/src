@@ -5,7 +5,7 @@
 #|
 ## The active learner
 
-The payoff. `landscape` labels a handful of rows, projects
+The payoff. `acquire` labels a handful of rows, projects
 the rest onto a line between two distant labelled poles
 (good end, bad end), culls the third nearest the bad pole,
 and repeats -- spending at most --budget labels. Notice the
@@ -15,12 +15,12 @@ scored all 398.
 
 | call | returns | what |
 |------|---------|------|
-| `(landscape tbl)` | rows | labelled few, best first |
+| `(acquire tbl)` | rows | labelled few, best first |
 |#
 
 (defun eg--land (&aux (i (make-tbl (? *my* --file))))
   "Landscape labels few rows, sorted best first"
-  (let* ((lab (landscape i))
+  (let* ((lab (acquire i))
          (ys  (mapcar (lambda (r) (disty i r)) lab)))
     (format t "~&labelled ~a best ~,3f worst ~,3f~%"
             (length lab) (first ys) (car (last ys)))

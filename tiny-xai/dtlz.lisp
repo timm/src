@@ -169,7 +169,7 @@
     (let* ((tbl (make-tbl (cons (names nn mm)
                                 (fresh-pool 1000 nn mm))))
            (*label* (labeller tbl model nn mm))
-           (got (landscape tbl)))
+           (got (acquire tbl)))
       (format t "~&best option found (one instance):~%")
       (instance tbl (first got) nn win)
       (format t "~&why? which x-ranges reach good goals:~%")

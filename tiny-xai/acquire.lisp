@@ -1,53 +1,66 @@
 ; vim: set lispwords+=loop,aif :
-;;;; Landscape sampling. The active learner. `active`
-;;;; labels a few rows, sorts the pool by `project`-ion
-;;;; onto the line joining two distant labelled poles,
-;;;; culls the third nearest the bad pole, repeats.
-;;;; `landscape` caps it at budget-check labels and returns
-;;;; them best-first.
+;;;; Acquire labels. `sway3` is the active learner: label a
+;;;; few rows off the good end, project the pool onto the
+;;;; line joining two poles (far rows at first; on later
+;;;; passes the best and worst labels so far), keep the
+;;;; keepf slice nearest the good pole, repeat; when the
+;;;; pool runs dry with budget unspent, redo on a fresh
+;;;; shuffle, labels accumulating across passes.
 
-; Row -> position on the east-west line (x=dist, y=goal)
-(defun project (rows x y)
+; Row -> position on the east-west line (x=dist, y=goal);
+; poles default to two far rows, else the given anchors
+(defun project (rows x y &optional east west)
   (labels ((far (r) (argmax (lambda (z) (funcall x z r)) rows)))
-    (let* ((east (far (first rows)))
-           (west (far east))
+    (let* ((east (or east (far (first rows))))
+           (west (or west (far east)))
            (c    (+ (funcall x east west) +tiny+)))
-      (when (< (funcall y east) (funcall y west))
+      (when (> (funcall y east) (funcall y west))
         (rotatef east west))
       (lambda (r)
         (/ (+ (expt (funcall x east r) 2) (* c c)
               (- (expt (funcall x west r) 2)))
            (* 2 c))))))
 
-; Label <= budget-check rows, best first
-(defun landscape (tbl)
+; All labelled rows, as a list
+(defun labs (lab &aux out)
+  (maphash (lambda (k v) (declare (ignore k)) (push v out))
+           lab)
+  out)
+
+; Label <= budget-check rows, best first; --acquire picks how
+(defun acquire (tbl)
   (labels ((y (r)   (disty tbl r))
            (x (a b) (distx tbl a b)))
-    (let ((cap  (- (? *my* --budget) (? *my* --check)))
-          (rows (shuffle (? tbl rows))))
-      (sort (if (equal (? *my* --landscape) "random")
-                (subseq rows 0 (min cap (length rows)))
-                (active rows cap #'x #'y))
+    (let ((cap (- (? *my* --budget) (? *my* --check))))
+      (sort (if (equal (? *my* --acquire) "random")
+                (few (? tbl rows) cap)
+                (sway3 (shuffle (? tbl rows)) #'y #'x cap))
             #'< :key #'y))))
 
-; Label pool heads; cull pool's bad third; repeat
-(defun active (pool cap x y &aux lab)
-  (labels ((known (r) (member r lab :test #'eq)))
-    (loop while (and (< (length lab) cap)
-                     (>= (length pool) (* 2 (? *my* --leaf))))
-          do
-      (let ((grown 0))
-        (dolist (r pool)
-          (when (and (< grown (? *my* --grow))
-                     (< (length lab) cap)
-                     (not (known r)))
-            (push r lab)
-            (incf grown))))
-      (when (< (length lab) cap)
-        (let ((here (remove-if-not #'known pool)))
-          (setf pool
-                (nthcdr (max 1 (floor (* (- 1 (? *my* --keepf))
-                                         (length pool))))
-                        (sort pool #'< :key
-                              (project here x y)))))))
-    lab))
+; Grow a few labels; keep the keepf slice nearest the good
+; pole; redo on a fresh shuffle when the pool runs dry
+(defun sway3 (rows y x cap &optional lab east west
+              &aux (b4 (copy-list rows)))
+  (setf lab (or lab (make-hash-table :test #'eq)))
+  (loop while (>= (length rows) (* 2 (? *my* --leaf))) do
+    (let ((more (min (? *my* --more)
+                     (- cap (hash-table-count lab))))
+          new)
+      (dolist (r rows)
+        (cond ((gethash r lab) (push r new))
+              ((>= (decf more) 0)
+               (push r new)
+               (setf (gethash r lab) r))))
+      (when (>= (hash-table-count lab) cap)
+        (return-from sway3 (labs lab)))       ; budget spent
+      (setf rows
+            (subseq (sort rows #'< :key
+                          (project (nreverse new) x y
+                                   east west))
+                    0 (floor (max 1 (* (? *my* --keepf)
+                                       (length rows))))))))
+  (if (< (hash-table-count lab) (length b4))
+      (let ((seen (sort (labs lab) #'< :key y)))
+        (sway3 (shuffle b4) y x cap lab       ; redo, anchored
+               (first seen) (car (last seen))))
+      (labs lab)))

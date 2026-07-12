@@ -12,7 +12,7 @@
     <div class='docs'><p align="center">
 <a href="https://timm.github.io/src/"><img alt="home" src="https://img.shields.io/badge/🏠-home-gold"></a>
 <a href="https://github.com/timm/src/tree/main/tiny-xai"><img alt="src" src="https://img.shields.io/badge/src-tiny--xai-black"></a>
-<a href="tiny-xai.html"><img alt="code" src="https://img.shields.io/badge/code-14%20files-2ea44f"></a>
+<a href="tiny-xai.html"><img alt="code" src="https://img.shields.io/badge/code-15%20files-2ea44f"></a>
 <a href="tiny-xai-eg.html"><img alt="tests" src="https://img.shields.io/badge/tests-13%20files-06b6d4"></a>
 <a href="https://github.com/timm/src/actions/workflows/tests-tiny-xai.yml"><img alt="ci" src="https://github.com/timm/src/actions/workflows/tests-tiny-xai.yml/badge.svg"></a>
 <a href="https://github.com/timm/src/issues"><img alt="issues" src="https://img.shields.io/badge/issues-report-red"></a>
@@ -20,7 +20,7 @@
 <img alt="language" src="https://img.shields.io/badge/language-common%20lisp-9558B2">
 <img alt="runs on" src="https://img.shields.io/badge/runs%20on-sbcl%20|%20clisp-EE4C2C">
 <a href="https://timm.fyi"><img alt="author" src="https://img.shields.io/badge/author-timm-blueviolet"></a>
-</p><p><a href="tiny-xai.html">tiny-xai</a> | <a href="macros.html">macros</a> | <a href="lib.html">lib</a> | <a href="rand.html">rand</a> | <a href="cols.html">cols</a> | <a href="query.html">query</a> | <a href="tbl.html">tbl</a> | <a href="dist.html">dist</a> | <a href="acquire.html">acquire</a> | <a href="bins.html">bins</a> | <a href="tree.html">tree</a> | <a href="stats.html">stats</a> | <b>main</b> | <a href="dtlz.html">dtlz</a></p><p><a href="stats.html">&lt; prev</a> | <a href="dtlz.html">next &gt;</a></p><h1><a href="https://github.com/timm/src/blob/main/tiny-xai/main.lisp">main.lisp</a></h1></div>
+</p><p><a href="tiny-xai.html">tiny-xai</a> | <a href="macros.html">macros</a> | <a href="lib.html">lib</a> | <a href="rand.html">rand</a> | <a href="cols.html">cols</a> | <a href="query.html">query</a> | <a href="tbl.html">tbl</a> | <a href="dist.html">dist</a> | <a href="acquire.html">acquire</a> | <a href="bins.html">bins</a> | <a href="tree.html">tree</a> | <a href="stats.html">stats</a> | <b>main</b> | <a href="report.html">report</a> | <a href="dtlz.html">dtlz</a></p><p><a href="stats.html">&lt; prev</a> | <a href="report.html">next &gt;</a></p><h1><a href="https://github.com/timm/src/blob/main/tiny-xai/main.lisp">main.lisp</a></h1></div>
   </div>
   <div class='clearall'>
   <div class='section' id='section-0'>
@@ -67,7 +67,7 @@ eg&ndash;/study&ndash; functions; <code>help</code> prints everything.</p>
       <div class='octowrap'>
         <a class='octothorpe' href='#section-2'>#</a>
       </div>
-      <p>Budget rig: landscape train -&gt; tree -&gt; best test row</p>
+      <p>Budget rig: acquire train -&gt; tree -&gt; best test row</p>
     </div>
     <div class='code'>
       <div class="highlight"><pre><span class="p">(</span><span class="nf">defun</span><span class="w"> </span><span class="nv">holdout</span><span class="w"> </span><span class="p">(</span><span class="nf">tbl</span><span class="p">)</span>
@@ -76,7 +76,7 @@ eg&ndash;/study&ndash; functions; <code>help</code> prints everything.</p>
 <span class="w">           </span><span class="p">(</span><span class="nf">half</span><span class="w">  </span><span class="p">(</span><span class="nb">floor</span><span class="w"> </span><span class="p">(</span><span class="nb">length</span><span class="w"> </span><span class="nv">rows</span><span class="p">)</span><span class="w"> </span><span class="mi">2</span><span class="p">))</span>
 <span class="w">           </span><span class="p">(</span><span class="nf">train</span><span class="w"> </span><span class="p">(</span><span class="nf">subseq</span><span class="w"> </span><span class="nv">rows</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="nv">half</span><span class="p">))</span>
 <span class="w">           </span><span class="p">(</span><span class="nf">test</span><span class="w">  </span><span class="p">(</span><span class="nf">nthcdr</span><span class="w"> </span><span class="nv">half</span><span class="w"> </span><span class="nv">rows</span><span class="p">))</span>
-<span class="w">           </span><span class="p">(</span><span class="nf">got</span><span class="w">   </span><span class="p">(</span><span class="nf">landscape</span><span class="w"> </span><span class="p">(</span><span class="nf">clone</span><span class="w"> </span><span class="nv">tbl</span><span class="w"> </span><span class="nv">train</span><span class="p">)))</span>
+<span class="w">           </span><span class="p">(</span><span class="nf">got</span><span class="w">   </span><span class="p">(</span><span class="nf">acquire</span><span class="w"> </span><span class="p">(</span><span class="nf">clone</span><span class="w"> </span><span class="nv">tbl</span><span class="w"> </span><span class="nv">train</span><span class="p">)))</span>
 <span class="w">           </span><span class="p">(</span><span class="nf">tr</span><span class="w">    </span><span class="p">(</span><span class="nf">tree</span><span class="w"> </span><span class="nv">tbl</span><span class="w"> </span><span class="nv">got</span><span class="w"> </span><span class="o">#</span><span class="ss">&#39;y</span><span class="p">)))</span>
 <span class="w">      </span><span class="p">(</span><span class="nf">argmin</span><span class="w"> </span><span class="o">#</span><span class="ss">&#39;y</span>
 <span class="w">              </span><span class="p">(</span><span class="nf">subseq</span><span class="w"> </span><span class="p">(</span><span class="nb">sort</span><span class="w"> </span><span class="nv">test</span><span class="w"> </span><span class="o">#</span><span class="ss">&#39;&lt;</span>

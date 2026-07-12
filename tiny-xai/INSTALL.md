@@ -11,6 +11,7 @@ FILES="tiny-xai.lisp
        tree.lisp
        stats.lisp
        main.lisp
+       report.lisp
        dtlz.lisp
        tiny-xai-eg.lisp
        lib-eg.lisp

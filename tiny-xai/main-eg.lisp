@@ -108,7 +108,7 @@ says two treatments tie, else the mean gap.
 (defun study--delta (&aux (i (make-tbl (? *my* --file))))
   "Rq2: active vs random labelling, budget 50"
   (setf (? i rows) (few (? i rows) (? *my* --cap)))
-  (deltas i '--landscape "active" "random"))
+  (deltas i '--acquire "active" "random"))
 
 (defun study--budgets (&aux (i (make-tbl (? *my* --file))))
   "Rq1: budget 50 vs 20, both active"
@@ -116,6 +116,6 @@ says two treatments tie, else the mean gap.
   (deltas i '--budget 50 20))
 
 (defun study--saturate (&aux (i (make-tbl (? *my* --file))))
-  "Rq1 caveat: budget 200 vs 50 (sampler stops near 40)"
+  "Rq1: budget 200 vs 50, both active"
   (setf (? i rows) (few (? i rows) (? *my* --cap)))
   (deltas i '--budget 200 50))
