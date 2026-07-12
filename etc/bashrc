@@ -38,5 +38,5 @@ export PATH="$PWD:/opt/homebrew/bin:$PATH"
 export MOOT="${MOOT:-$HOME/gits/moot}"
 EDITOR=nvim
 
-PROMPT_COMMAND='echo -ne "${meme}! $(git branch 2>/dev/null | grep '\''^*'\'' | colrm 1 2):";PS1="$(there ..)/$(there .):\!\e[m ▶ "'
+PROMPT_COMMAND='echo -ne "${meme}! $(git branch 2>/dev/null | grep '\''^*'\'' | colrm 1 2):";PS1="$(there ..)/$(there .):\!\[\e[m\] ▶ "'
 hi
