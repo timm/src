@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html;charset=utf-8">
+  <title>luamine: bob</title>
+  <link rel="stylesheet" href="pycco.css">
+</head>
+<body>
+<div id='container'>
+  <div id="background"></div>
+  <div class='section'>
+    <div class='docs'><p align="center">
+<a href="https://timm.github.io/src/"><img alt="home" src="https://img.shields.io/badge/🏠-home-gold"></a>
+<a href="https://github.com/timm/src/tree/main/luamine"><img alt="src" src="https://img.shields.io/badge/src-luamine-black"></a>
+<a href="lib.html"><img alt="code" src="https://img.shields.io/badge/code-29%20pages-2ea44f"></a>
+<a href="luamine-eg.html"><img alt="tests" src="https://img.shields.io/badge/tests-23%20pages-06b6d4"></a>
+<a href="https://github.com/timm/src/actions/workflows/tests-luamine.yml"><img alt="ci" src="https://github.com/timm/src/actions/workflows/tests-luamine.yml/badge.svg"></a>
+<a href="https://github.com/timm/src/issues"><img alt="issues" src="https://img.shields.io/badge/issues-report-red"></a>
+<a href="https://github.com/timm/src/blob/main/LICENSE.md"><img alt="license" src="https://img.shields.io/badge/license-MIT-brightgreen"></a>
+<img alt="language" src="https://img.shields.io/badge/language-lua-9558B2">
+<img alt="runs on" src="https://img.shields.io/badge/runs%20on-lua5.4-EE4C2C">
+<a href="https://timm.fyi"><img alt="author" src="https://img.shields.io/badge/author-timm-blueviolet"></a>
+</p><p><a href="lib.html">lib</a> | <a href="rand.html">rand</a> | <a href="list.html">list</a> | <a href="stats.html">stats</a> | <a href="confuse.html">confuse</a> | <a href="str.html">str</a> | <a href="cli.html">cli</a> | <a href="luamine.html">luamine</a> | <a href="cut.html">cut</a> | <a href="sym.html">sym</a> | <a href="num.html">num</a> | <a href="cols.html">cols</a> | <a href="data.html">data</a> | <a href="dist.html">dist</a> | <a href="bayes.html">bayes</a> | <a href="mutate.html">mutate</a> | <a href="tree.html">tree</a> | <a href="show.html">show</a> | <a href="lapps.html">lapps</a> | <a href="cluster.html">cluster</a> | <a href="classify.html">classify</a> | <a href="acquire.html">acquire</a> | <a href="sample.html">sample</a> | <b>bob</b> | <a href="race.html">race</a> | <a href="ga.html">ga</a> | <a href="de.html">de</a> | <a href="search.html">search</a> | <a href="tutchk.html">tutchk</a></p><p><a href="sample.html">&lt; prev</a> | <a href="race.html">next &gt;</a></p><h1><a href="https://github.com/timm/src/blob/main/luamine/lapps.lua">bob</a></h1></div>
+  </div>
+  <div class='clearall'>
+  <div class='section' id='section-0'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-0'>#</a>
+      </div>
+      <h2>bob</h2>
+<p>Bob. The whole pipeline: split, acquire labels on the
+train half, tree the labels, rank the unseen test half
+by leaf disty, check the top few; returns the best test
+row plus a dxdy view for grading.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span></span><span class="kd">local</span><span class="w"> </span><span class="nv">floor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">math.floor</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-1'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-1'>#</a>
+      </div>
+      <p>pipeline: split, acquire, tree, check top few;
+returns best test row + dxdy view</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="kr">function</span><span class="w"> </span><span class="nc">a</span><span class="p">.</span><span class="nf">bob</span><span class="p">(</span><span class="nv">data</span><span class="p">,</span><span class="nv">score</span><span class="p">,</span>
+<span class="w">               </span><span class="nv">d</span><span class="p">,</span><span class="nv">rows</span><span class="p">,</span><span class="nv">h</span><span class="p">,</span><span class="nv">trH</span><span class="p">,</span><span class="nv">teH</span><span class="p">,</span><span class="nv">lab</span><span class="p">,</span><span class="nv">tree</span><span class="p">,</span><span class="nv">sorted</span><span class="p">,</span><span class="nv">best</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">score</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">score</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="nv">a</span><span class="p">.</span><span class="py">acquireBayes</span>
+<span class="w">  </span><span class="nv">d</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="nv">data</span><span class="p">:</span><span class="nf">dxdy</span><span class="p">()</span>
+<span class="w">  </span><span class="nv">rows</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="nv">l</span><span class="p">.</span><span class="nf">shuffle</span><span class="p">(</span><span class="nv">l</span><span class="p">.</span><span class="nf">copy</span><span class="p">(</span><span class="nv">data</span><span class="p">.</span><span class="py">rows</span><span class="p">))</span>
+<span class="w">  </span><span class="nv">h</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="nf">floor</span><span class="p">(</span><span class="o">#</span><span class="nv">rows</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">trH</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="nv">l</span><span class="p">.</span><span class="nf">slice</span><span class="p">(</span><span class="nv">l</span><span class="p">.</span><span class="nf">slice</span><span class="p">(</span><span class="nv">rows</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="nv">h</span><span class="p">),</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="nv">the</span><span class="p">.</span><span class="py">few</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">teH</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="nv">l</span><span class="p">.</span><span class="nf">slice</span><span class="p">(</span><span class="nv">rows</span><span class="p">,</span><span class="w"> </span><span class="nv">h</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">lab</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="nv">a</span><span class="p">.</span><span class="nf">acquire</span><span class="p">(</span><span class="nv">data</span><span class="p">:</span><span class="nf">clone</span><span class="p">(</span><span class="nv">trH</span><span class="p">),</span><span class="w"> </span><span class="nv">score</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">tree</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="nv">lab</span><span class="p">:</span><span class="nf">tree</span><span class="p">()</span>
+<span class="w">  </span><span class="nv">sorted</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">l</span><span class="p">.</span><span class="nf">keysort</span><span class="p">(</span><span class="nv">teH</span><span class="p">,</span><span class="w"> </span><span class="kr">function</span><span class="p">(</span><span class="nv">r</span><span class="p">)</span>
+<span class="w">    </span><span class="kr">return</span><span class="w"> </span><span class="nv">m</span><span class="p">.</span><span class="nf">mu_disty</span><span class="p">(</span>
+<span class="w">      </span><span class="nv">lab</span><span class="p">.</span><span class="py">cols</span><span class="p">,</span><span class="w"> </span><span class="nv">m</span><span class="p">.</span><span class="nf">relevant</span><span class="p">(</span><span class="nv">tree</span><span class="p">,</span><span class="nv">r</span><span class="p">),</span><span class="w"> </span><span class="nv">the</span><span class="p">.</span><span class="py">p</span><span class="p">)</span><span class="w"> </span><span class="kr">end</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">best</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">l</span><span class="p">.</span><span class="nf">keysort</span><span class="p">(</span><span class="nv">l</span><span class="p">.</span><span class="nf">slice</span><span class="p">(</span><span class="nv">sorted</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="nv">the</span><span class="p">.</span><span class="py">check</span><span class="p">),</span><span class="w"> </span><span class="nv">d</span><span class="p">.</span><span class="py">y</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+<span class="w">  </span><span class="kr">return</span><span class="w"> </span><span class="nv">best</span><span class="p">,</span><span class="w"> </span><span class="nv">d</span><span class="w"> </span><span class="kr">end</span>
+
+</pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+</div>
+</body>

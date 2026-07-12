@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html;charset=utf-8">
+  <title>tiny-xai: macros-egs</title>
+  <link rel="stylesheet" href="pycco.css">
+</head>
+<body>
+<div id='container'>
+  <div id="background"></div>
+  <div class='section'>
+    <div class='docs'><p align="center">
+<a href="https://timm.github.io/src/"><img alt="home" src="https://img.shields.io/badge/🏠-home-gold"></a>
+<a href="https://github.com/timm/src/tree/main/tiny-xai"><img alt="src" src="https://img.shields.io/badge/src-tiny--xai-black"></a>
+<a href="tiny-xai.html"><img alt="code" src="https://img.shields.io/badge/code-18%20pages-2ea44f"></a>
+<a href="tiny-xai-eg.html"><img alt="tests" src="https://img.shields.io/badge/tests-13%20pages-06b6d4"></a>
+<a href="https://github.com/timm/src/actions/workflows/tests-tiny-xai.yml"><img alt="ci" src="https://github.com/timm/src/actions/workflows/tests-tiny-xai.yml/badge.svg"></a>
+<a href="https://github.com/timm/src/issues"><img alt="issues" src="https://img.shields.io/badge/issues-report-red"></a>
+<a href="https://github.com/timm/src/blob/main/LICENSE.md"><img alt="license" src="https://img.shields.io/badge/license-MIT-brightgreen"></a>
+<img alt="language" src="https://img.shields.io/badge/language-common%20lisp-9558B2">
+<img alt="runs on" src="https://img.shields.io/badge/runs%20on-sbcl%20|%20clisp-EE4C2C">
+<a href="https://timm.fyi"><img alt="author" src="https://img.shields.io/badge/author-timm-blueviolet"></a>
+</p><p><a href="tiny-xai-eg.html">tiny-xai-eg</a> | <a href="lib-egs.html">lib-egs</a> | <b>macros-egs</b> | <a href="cols-egs.html">cols-egs</a> | <a href="query-egs.html">query-egs</a> | <a href="rand-egs.html">rand-egs</a> | <a href="tbl-egs.html">tbl-egs</a> | <a href="dist-egs.html">dist-egs</a> | <a href="stats-egs.html">stats-egs</a> | <a href="acquire-egs.html">acquire-egs</a> | <a href="bins-egs.html">bins-egs</a> | <a href="tree-egs.html">tree-egs</a> | <a href="main-egs.html">main-egs</a></p><p><a href="lib-egs.html">&lt; prev</a> | <a href="cols-egs.html">next &gt;</a></p><h1><a href="https://github.com/timm/src/blob/main/tiny-xai/tiny-xai-eg.lisp">macros-egs</a></h1></div>
+  </div>
+  <div class='clearall'>
+  <div class='section' id='section-0'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-0'>#</a>
+      </div>
+      
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span></span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-1'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-1'>#</a>
+      </div>
+      <h2>Macros egs</h2>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-2'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-2'>#</a>
+      </div>
+      <h2>Little accessors</h2>
+<p>Everything else leans on one idea: <code>ats</code> reads hash keys
+and struct slots alike, <code>?</code> nests it, <code>ats!</code> fills a
+missing key on first touch, and <code>aif</code> remembers its test
+as <code>it</code>. Notice <code>?</code> walking two levels in one call.</p>
+<table>
+<thead>
+<tr>
+<th>call</th>
+<th>returns</th>
+<th>what</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>(ats x k)</code></td>
+<td>value</td>
+<td>hash key or struct slot</td>
+</tr>
+<tr>
+<td><code>(? x k1 k2 ..)</code></td>
+<td>value</td>
+<td>nested ats</td>
+</tr>
+<tr>
+<td><code>(ats! x k new)</code></td>
+<td>value</td>
+<td>get, else stash fresh (new)</td>
+</tr>
+<tr>
+<td><code>(aif test then else)</code></td>
+<td>&ndash;</td>
+<td><code>it</code> = the test value</td>
+</tr>
+</tbody>
+</table>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-3'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-3'>#</a>
+      </div>
+      <p>Hash/slot access: o, ats, ats!, ?, aif</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="p">(</span><span class="nf">defun</span><span class="w"> </span><span class="nv">eg--macros</span><span class="w"> </span><span class="p">(</span><span class="nf">&amp;aux</span><span class="w"> </span><span class="p">(</span><span class="nf">h</span><span class="w"> </span><span class="p">(</span><span class="nf">o</span><span class="w"> </span><span class="s">&quot;a&quot;</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="s">&quot;b&quot;</span><span class="w"> </span><span class="p">(</span><span class="nf">o</span><span class="w"> </span><span class="s">&quot;c&quot;</span><span class="w"> </span><span class="mi">2</span><span class="p">))))</span>
+<span class="w">  </span><span class="p">(</span><span class="nf">setf</span><span class="w"> </span><span class="p">(</span><span class="nf">ats</span><span class="w"> </span><span class="nv">h</span><span class="w"> </span><span class="s">&quot;d&quot;</span><span class="p">)</span><span class="w"> </span><span class="mi">3</span><span class="p">)</span>
+<span class="w">  </span><span class="p">(</span><span class="nb">format</span><span class="w"> </span><span class="nv">t</span><span class="w"> </span><span class="s">&quot;~&amp;a ~a b.c ~a d ~a seed ~a~%&quot;</span>
+<span class="w">          </span><span class="p">(</span><span class="nf">ats</span><span class="w"> </span><span class="nv">h</span><span class="w"> </span><span class="s">&quot;a&quot;</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="nf">?</span><span class="w"> </span><span class="nv">h</span><span class="w"> </span><span class="s">&quot;b&quot;</span><span class="w"> </span><span class="s">&quot;c&quot;</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="nf">ats</span><span class="w"> </span><span class="nv">h</span><span class="w"> </span><span class="s">&quot;d&quot;</span><span class="p">)</span>
+<span class="w">          </span><span class="p">(</span><span class="nf">?</span><span class="w"> </span><span class="nv">*my*</span><span class="w"> </span><span class="nv">--seed</span><span class="p">))</span>
+<span class="w">  </span><span class="p">(</span><span class="nf">assert</span><span class="w"> </span><span class="p">(</span><span class="nb">=</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="p">(</span><span class="nf">ats</span><span class="w"> </span><span class="nv">h</span><span class="w"> </span><span class="s">&quot;a&quot;</span><span class="p">)))</span>
+<span class="w">  </span><span class="p">(</span><span class="nf">assert</span><span class="w"> </span><span class="p">(</span><span class="nb">=</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="p">(</span><span class="nf">?</span><span class="w"> </span><span class="nv">h</span><span class="w"> </span><span class="s">&quot;b&quot;</span><span class="w"> </span><span class="s">&quot;c&quot;</span><span class="p">)))</span>
+<span class="w">  </span><span class="p">(</span><span class="nf">assert</span><span class="w"> </span><span class="p">(</span><span class="nb">=</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="p">(</span><span class="nf">ats</span><span class="w"> </span><span class="nv">h</span><span class="w"> </span><span class="s">&quot;d&quot;</span><span class="p">)))</span>
+<span class="w">  </span><span class="p">(</span><span class="nf">assert</span><span class="w"> </span><span class="p">(</span><span class="nb">=</span><span class="w"> </span><span class="mi">4</span><span class="w"> </span><span class="p">(</span><span class="nf">ats!</span><span class="w"> </span><span class="nv">h</span><span class="w"> </span><span class="s">&quot;e&quot;</span><span class="w"> </span><span class="p">(</span><span class="k">lambda</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="mi">4</span><span class="p">))))</span>
+<span class="w">  </span><span class="p">(</span><span class="nf">assert</span><span class="w"> </span><span class="p">(</span><span class="nb">=</span><span class="w"> </span><span class="mi">4</span><span class="w"> </span><span class="p">(</span><span class="nf">ats</span><span class="w"> </span><span class="nv">h</span><span class="w"> </span><span class="s">&quot;e&quot;</span><span class="p">)))</span>
+<span class="w">  </span><span class="p">(</span><span class="nf">assert</span><span class="w"> </span><span class="p">(</span><span class="nf">numberp</span><span class="w"> </span><span class="p">(</span><span class="nf">?</span><span class="w"> </span><span class="nv">*my*</span><span class="w"> </span><span class="nv">--seed</span><span class="p">)))</span>
+<span class="w">  </span><span class="p">(</span><span class="nf">assert</span><span class="w"> </span><span class="p">(</span><span class="nf">eq</span><span class="w"> </span><span class="ss">&#39;yes</span><span class="w"> </span><span class="p">(</span><span class="nf">aif</span><span class="w"> </span><span class="p">(</span><span class="nb">+</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="k">and</span><span class="w"> </span><span class="p">(</span><span class="nb">=</span><span class="w"> </span><span class="nv">it</span><span class="w"> </span><span class="mi">3</span><span class="p">)</span><span class="w"> </span><span class="ss">&#39;yes</span><span class="p">)))))</span>
+
+</pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+</div>
+</body>

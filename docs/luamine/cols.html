@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html;charset=utf-8">
+  <title>luamine: cols</title>
+  <link rel="stylesheet" href="pycco.css">
+</head>
+<body>
+<div id='container'>
+  <div id="background"></div>
+  <div class='section'>
+    <div class='docs'><p align="center">
+<a href="https://timm.github.io/src/"><img alt="home" src="https://img.shields.io/badge/🏠-home-gold"></a>
+<a href="https://github.com/timm/src/tree/main/luamine"><img alt="src" src="https://img.shields.io/badge/src-luamine-black"></a>
+<a href="lib.html"><img alt="code" src="https://img.shields.io/badge/code-29%20pages-2ea44f"></a>
+<a href="luamine-eg.html"><img alt="tests" src="https://img.shields.io/badge/tests-23%20pages-06b6d4"></a>
+<a href="https://github.com/timm/src/actions/workflows/tests-luamine.yml"><img alt="ci" src="https://github.com/timm/src/actions/workflows/tests-luamine.yml/badge.svg"></a>
+<a href="https://github.com/timm/src/issues"><img alt="issues" src="https://img.shields.io/badge/issues-report-red"></a>
+<a href="https://github.com/timm/src/blob/main/LICENSE.md"><img alt="license" src="https://img.shields.io/badge/license-MIT-brightgreen"></a>
+<img alt="language" src="https://img.shields.io/badge/language-lua-9558B2">
+<img alt="runs on" src="https://img.shields.io/badge/runs%20on-lua5.4-EE4C2C">
+<a href="https://timm.fyi"><img alt="author" src="https://img.shields.io/badge/author-timm-blueviolet"></a>
+</p><p><a href="lib.html">lib</a> | <a href="rand.html">rand</a> | <a href="list.html">list</a> | <a href="stats.html">stats</a> | <a href="confuse.html">confuse</a> | <a href="str.html">str</a> | <a href="cli.html">cli</a> | <a href="luamine.html">luamine</a> | <a href="cut.html">cut</a> | <a href="sym.html">sym</a> | <a href="num.html">num</a> | <b>cols</b> | <a href="data.html">data</a> | <a href="dist.html">dist</a> | <a href="bayes.html">bayes</a> | <a href="mutate.html">mutate</a> | <a href="tree.html">tree</a> | <a href="show.html">show</a> | <a href="lapps.html">lapps</a> | <a href="cluster.html">cluster</a> | <a href="classify.html">classify</a> | <a href="acquire.html">acquire</a> | <a href="sample.html">sample</a> | <a href="bob.html">bob</a> | <a href="race.html">race</a> | <a href="ga.html">ga</a> | <a href="de.html">de</a> | <a href="search.html">search</a> | <a href="tutchk.html">tutchk</a></p><p><a href="num.html">&lt; prev</a> | <a href="data.html">next &gt;</a></p><h1><a href="https://github.com/timm/src/blob/main/luamine/luamine.lua">cols</a></h1></div>
+  </div>
+  <div class='clearall'>
+  <div class='section' id='section-0'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-0'>#</a>
+      </div>
+      <h2>cols</h2>
+<p>Cols. Types header names into columns: leading uppercase
+= <code>Num</code>; trailing -,+,! = y goals (! = klass); X = skip.
+<code>add</code> routes one row&rsquo;s cells; <code>mid</code> = cached centroid.
+<code>adds</code> folds a list or iterator into any summary.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span></span><span class="kd">local</span><span class="w"> </span><span class="nv">Cols</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{}</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-1'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-1'>#</a>
+      </div>
+      <p>fold list or iterator into summary it (or Num)</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="kr">function</span><span class="w"> </span><span class="nc">m</span><span class="p">.</span><span class="nf">adds</span><span class="p">(</span><span class="nv">src</span><span class="p">,</span><span class="nv">it</span><span class="p">,</span><span class="nv">fn</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">it</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">it</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="nv">m</span><span class="p">.</span><span class="py">Num</span><span class="p">.</span><span class="nf">new</span><span class="p">()</span>
+<span class="w">  </span><span class="kr">if</span><span class="w">   </span><span class="nb">type</span><span class="p">(</span><span class="nv">src</span><span class="p">)</span><span class="o">==</span><span class="s2">&quot;function&quot;</span>
+<span class="w">  </span><span class="kr">then</span><span class="w"> </span><span class="kr">for</span><span class="w"> </span><span class="nv">x</span><span class="w"> </span><span class="kr">in</span><span class="w"> </span><span class="nv">src</span><span class="w"> </span><span class="kr">do</span><span class="w"> </span><span class="nv">it</span><span class="p">:</span><span class="nf">add</span><span class="p">(</span><span class="nv">fn</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="nf">fn</span><span class="p">(</span><span class="nv">x</span><span class="p">)</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="nv">x</span><span class="p">)</span><span class="w"> </span><span class="kr">end</span>
+<span class="w">  </span><span class="kr">else</span><span class="w"> </span><span class="kr">for</span><span class="w"> </span><span class="nv">_</span><span class="p">,</span><span class="nv">x</span><span class="w"> </span><span class="kr">in</span><span class="w"> </span><span class="nb">ipairs</span><span class="p">(</span><span class="nv">src</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="p">{})</span><span class="w"> </span><span class="kr">do</span>
+<span class="w">         </span><span class="nv">it</span><span class="p">:</span><span class="nf">add</span><span class="p">(</span><span class="nv">fn</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="nf">fn</span><span class="p">(</span><span class="nv">x</span><span class="p">)</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="nv">x</span><span class="p">)</span><span class="w"> </span><span class="kr">end</span><span class="w"> </span><span class="kr">end</span>
+<span class="w">  </span><span class="kr">return</span><span class="w"> </span><span class="nv">it</span><span class="w"> </span><span class="kr">end</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-2'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-2'>#</a>
+      </div>
+      <p>header names -&gt; {all,x,y,klass} typed columns</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="kr">function</span><span class="w"> </span><span class="nc">Cols</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="nv">names</span><span class="p">,</span><span class="w">    </span><span class="nv">i</span><span class="p">,</span><span class="nv">col</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">l</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="nv">Cols</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="nv">names</span><span class="o">=</span><span class="nv">names</span><span class="p">,</span><span class="w"> </span><span class="nv">all</span><span class="o">=</span><span class="p">{},</span><span class="w"> </span><span class="nv">x</span><span class="o">=</span><span class="p">{},</span><span class="w"> </span><span class="nv">y</span><span class="o">=</span><span class="p">{},</span>
+<span class="w">                   </span><span class="nv">klass</span><span class="o">=</span><span class="kc">nil</span><span class="p">,</span><span class="w"> </span><span class="nv">mids</span><span class="o">=</span><span class="kc">nil</span><span class="p">})</span>
+<span class="w">  </span><span class="kr">for</span><span class="w"> </span><span class="nv">at</span><span class="p">,</span><span class="nv">s</span><span class="w"> </span><span class="kr">in</span><span class="w"> </span><span class="nb">ipairs</span><span class="p">(</span><span class="nv">names</span><span class="p">)</span><span class="w"> </span><span class="kr">do</span>
+<span class="w">    </span><span class="nv">col</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="nv">s</span><span class="p">:</span><span class="py">match</span><span class="s2">&quot;^[A-Z]&quot;</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="nv">m</span><span class="p">.</span><span class="py">Num</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="nv">m</span><span class="p">.</span><span class="py">Sym</span><span class="p">).</span><span class="nf">new</span><span class="p">(</span><span class="nv">s</span><span class="p">,</span><span class="nv">at</span><span class="p">)</span>
+<span class="w">    </span><span class="nv">l</span><span class="p">.</span><span class="nf">push</span><span class="p">(</span><span class="nv">i</span><span class="p">.</span><span class="py">all</span><span class="p">,</span><span class="w"> </span><span class="nv">col</span><span class="p">)</span>
+<span class="w">    </span><span class="kr">if</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="nv">s</span><span class="p">:</span><span class="py">find</span><span class="s2">&quot;X$&quot;</span><span class="w"> </span><span class="kr">then</span>
+<span class="w">      </span><span class="nv">l</span><span class="p">.</span><span class="nf">push</span><span class="p">(</span><span class="nv">s</span><span class="p">:</span><span class="py">find</span><span class="s2">&quot;[-+!]$&quot;</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="nv">i</span><span class="p">.</span><span class="py">y</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="nv">i</span><span class="p">.</span><span class="py">x</span><span class="p">,</span><span class="w"> </span><span class="nv">col</span><span class="p">)</span>
+<span class="w">      </span><span class="kr">if</span><span class="w"> </span><span class="nv">s</span><span class="p">:</span><span class="py">find</span><span class="s2">&quot;!$&quot;</span><span class="w"> </span><span class="kr">then</span><span class="w"> </span><span class="nv">i</span><span class="p">.</span><span class="py">klass</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">col</span><span class="w"> </span><span class="kr">end</span><span class="w"> </span><span class="kr">end</span><span class="w"> </span><span class="kr">end</span>
+<span class="w">  </span><span class="kr">return</span><span class="w"> </span><span class="nv">i</span><span class="w"> </span><span class="kr">end</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-3'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-3'>#</a>
+      </div>
+      <p>update every column with row; wipe mid cache</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="kr">function</span><span class="w"> </span><span class="nc">Cols</span><span class="p">.</span><span class="nf">add</span><span class="p">(</span><span class="nv">i</span><span class="p">,</span><span class="nv">row</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">i</span><span class="p">.</span><span class="py">mids</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">nil</span>
+<span class="w">  </span><span class="kr">for</span><span class="w"> </span><span class="nv">_</span><span class="p">,</span><span class="nv">c</span><span class="w"> </span><span class="kr">in</span><span class="w"> </span><span class="nb">ipairs</span><span class="p">(</span><span class="nv">i</span><span class="p">.</span><span class="py">all</span><span class="p">)</span><span class="w"> </span><span class="kr">do</span><span class="w"> </span><span class="nv">c</span><span class="p">:</span><span class="nf">add</span><span class="p">(</span><span class="nv">row</span><span class="p">[</span><span class="nv">c</span><span class="p">.</span><span class="py">at</span><span class="p">])</span><span class="w"> </span><span class="kr">end</span>
+<span class="w">  </span><span class="kr">return</span><span class="w"> </span><span class="nv">row</span><span class="w"> </span><span class="kr">end</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-4'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-4'>#</a>
+      </div>
+      <p>centroid = mid of each column (cached)</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="kr">function</span><span class="w"> </span><span class="nc">Cols</span><span class="p">.</span><span class="nf">mid</span><span class="p">(</span><span class="nv">i</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">i</span><span class="p">.</span><span class="py">mids</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">i</span><span class="p">.</span><span class="py">mids</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="nv">l</span><span class="p">.</span><span class="nf">map</span><span class="p">(</span><span class="nv">i</span><span class="p">.</span><span class="py">all</span><span class="p">,</span><span class="kr">function</span><span class="p">(</span><span class="nv">c</span><span class="p">)</span><span class="w"> </span><span class="kr">return</span><span class="w"> </span><span class="nv">c</span><span class="p">:</span><span class="nf">mid</span><span class="p">()</span><span class="w"> </span><span class="kr">end</span><span class="p">)</span>
+<span class="w">  </span><span class="kr">return</span><span class="w"> </span><span class="nv">i</span><span class="p">.</span><span class="py">mids</span><span class="w"> </span><span class="kr">end</span>
+
+<span class="nv">m</span><span class="p">.</span><span class="py">Cols</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">Cols</span>
+
+</pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+</div>
+</body>

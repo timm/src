@@ -20,21 +20,23 @@ eg: ## run every project's examples/tests
 	cd tiny-xai && sbcl --script tiny-xai-eg.lisp --all
 	cd luamine  && lua luamine-eg.lua --all
 
-doc: ## pycco html into docs/<proj>/ for each project with an INSTALL.md
+doc: ## pycco html per ## section into docs/<proj>/
 	@for p in */; do p=$${p%/}; \
 	   [ -f $$p/INSTALL.md ] || continue; \
 	   mkdir -p docs/$$p; \
-	   ( cd $$p && \
-	     for f in $$(sh INSTALL.md list); do \
-	       b=$${f%.*}; e=$${f##*.}; \
+	   rm -f docs/$$p/*.html docs/$$p/*.part; \
+	   ( cd $$p && python3 ../etc/split.py && \
+	     while IFS="$$(printf '\t')" read -r b src grp; do \
+	       e=$${src##*.}; \
 	       case $$e in lisp) t=scm;; *) t=$$e;; esac; \
-	       awk -v ext=$$e -f ../etc/doc.awk $$f \
-	         > ../docs/$$p/$$b.$$t; \
+	       awk -v ext=$$e -f ../etc/doc.awk \
+	         ../docs/$$p/$$b.$$e.part > ../docs/$$p/$$b.$$t; \
+	       rm -f ../docs/$$p/$$b.$$e.part; \
 	       python3 ../etc/pyccot.py -d ../docs/$$p \
 	         ../docs/$$p/$$b.$$t >/dev/null; \
 	       rm -f ../docs/$$p/$$b.$$t; \
 	       python3 ../etc/nav.py ../docs/$$p/$$b.html; \
-	     done; \
+	     done < ../docs/$$p/.order; \
 	     python3 ../etc/toc.py ); \
 	   grep -q 'timm extras' docs/$$p/pycco.css || printf '%s\n' \
 	     '/* timm extras */' \

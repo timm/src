@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html;charset=utf-8">
+  <title>luamine: cols-eg</title>
+  <link rel="stylesheet" href="pycco.css">
+</head>
+<body>
+<div id='container'>
+  <div id="background"></div>
+  <div class='section'>
+    <div class='docs'><p align="center">
+<a href="https://timm.github.io/src/"><img alt="home" src="https://img.shields.io/badge/🏠-home-gold"></a>
+<a href="https://github.com/timm/src/tree/main/luamine"><img alt="src" src="https://img.shields.io/badge/src-luamine-black"></a>
+<a href="lib.html"><img alt="code" src="https://img.shields.io/badge/code-29%20pages-2ea44f"></a>
+<a href="luamine-eg.html"><img alt="tests" src="https://img.shields.io/badge/tests-23%20pages-06b6d4"></a>
+<a href="https://github.com/timm/src/actions/workflows/tests-luamine.yml"><img alt="ci" src="https://github.com/timm/src/actions/workflows/tests-luamine.yml/badge.svg"></a>
+<a href="https://github.com/timm/src/issues"><img alt="issues" src="https://img.shields.io/badge/issues-report-red"></a>
+<a href="https://github.com/timm/src/blob/main/LICENSE.md"><img alt="license" src="https://img.shields.io/badge/license-MIT-brightgreen"></a>
+<img alt="language" src="https://img.shields.io/badge/language-lua-9558B2">
+<img alt="runs on" src="https://img.shields.io/badge/runs%20on-lua5.4-EE4C2C">
+<a href="https://timm.fyi"><img alt="author" src="https://img.shields.io/badge/author-timm-blueviolet"></a>
+</p><p><a href="luamine-eg.html">luamine-eg</a> | <a href="list-eg.html">list-eg</a> | <a href="rand-eg.html">rand-eg</a> | <a href="stats-eg.html">stats-eg</a> | <a href="confuse-eg.html">confuse-eg</a> | <a href="str-eg.html">str-eg</a> | <a href="cli-eg.html">cli-eg</a> | <b>cols-eg</b> | <a href="data-eg.html">data-eg</a> | <a href="dist-eg.html">dist-eg</a> | <a href="cut-eg.html">cut-eg</a> | <a href="tree-eg.html">tree-eg</a> | <a href="bayes-eg.html">bayes-eg</a> | <a href="mutate-eg.html">mutate-eg</a> | <a href="cluster-eg.html">cluster-eg</a> | <a href="classify-eg.html">classify-eg</a> | <a href="acquire-eg.html">acquire-eg</a> | <a href="sample-eg.html">sample-eg</a> | <a href="bob-eg.html">bob-eg</a> | <a href="ga-eg.html">ga-eg</a> | <a href="de-eg.html">de-eg</a> | <a href="search-eg.html">search-eg</a> | <a href="race-eg.html">race-eg</a></p><p><a href="cli-eg.html">&lt; prev</a> | <a href="data-eg.html">next &gt;</a></p><h1><a href="https://github.com/timm/src/blob/main/luamine/luamine-eg.lua">cols-eg</a></h1></div>
+  </div>
+  <div class='clearall'>
+  <div class='section' id='section-0'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-0'>#</a>
+      </div>
+      <h2>cols-eg</h2>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span></span><span class="kd">local</span><span class="w"> </span><span class="nv">Sym</span><span class="p">,</span><span class="nv">Cols</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">m</span><span class="p">.</span><span class="py">Sym</span><span class="p">,</span><span class="w"> </span><span class="nv">m</span><span class="p">.</span><span class="py">Cols</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-1'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-1'>#</a>
+      </div>
+      <h2>Columns: the atoms</h2>
+<p>In any table of data there are columns of numbers and
+columns of symbols: numbers we can add and average; symbols
+we can only count and compare. Fold &ldquo;a a b a c&rdquo; into a
+<code>Sym</code>: mode a. Fold 1..5 into a <code>Num</code>: mean 3, sd 1.58.
+Then parse a header: uppercase leads make Nums, trailing
++/- mark goals, trailing X is ignored. Notice &ldquo;?&rdquo; cells
+pass through untouched.</p>
+<table>
+<thead>
+<tr>
+<th>call</th>
+<th>returns</th>
+<th>what</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Sym.new(s,at)</code></td>
+<td>sym</td>
+<td>counts in has{}</td>
+</tr>
+<tr>
+<td><code>Num.new(s,at)</code></td>
+<td>num</td>
+<td>Welford n,mu,m2</td>
+</tr>
+<tr>
+<td><code>i:add(v)</code></td>
+<td>v</td>
+<td>fold one value in</td>
+</tr>
+<tr>
+<td><code>i:mid()</code>, <code>i:spread()</code></td>
+<td>value</td>
+<td>mode/mean, ent/sd</td>
+</tr>
+<tr>
+<td><code>Cols.new(names)</code></td>
+<td>cols</td>
+<td>typed columns from header</td>
+</tr>
+</tbody>
+</table>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="nv">eg</span><span class="p">[</span><span class="s2">&quot;--cols&quot;</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">function</span><span class="p">(</span><span class="w">    </span><span class="nv">sym</span><span class="p">,</span><span class="nv">num</span><span class="p">,</span><span class="nv">cols</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">sym</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="nv">m</span><span class="p">.</span><span class="nf">adds</span><span class="p">({</span><span class="s2">&quot;a&quot;</span><span class="p">,</span><span class="s2">&quot;a&quot;</span><span class="p">,</span><span class="s2">&quot;b&quot;</span><span class="p">,</span><span class="s2">&quot;a&quot;</span><span class="p">,</span><span class="s2">&quot;c&quot;</span><span class="p">},</span><span class="w"> </span><span class="nv">Sym</span><span class="p">.</span><span class="nf">new</span><span class="p">())</span>
+<span class="w">  </span><span class="nv">num</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="nv">m</span><span class="p">.</span><span class="py">adds</span><span class="p">{</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">}</span>
+<span class="w">  </span><span class="nv">cols</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">Cols</span><span class="p">.</span><span class="py">new</span><span class="p">{</span><span class="s2">&quot;Age&quot;</span><span class="p">,</span><span class="s2">&quot;name&quot;</span><span class="p">,</span><span class="s2">&quot;Mpg+&quot;</span><span class="p">,</span><span class="s2">&quot;Wt-&quot;</span><span class="p">,</span><span class="s2">&quot;statusX&quot;</span><span class="p">}</span>
+<span class="w">  </span><span class="kr">return</span><span class="w"> </span><span class="nv">l</span><span class="p">.</span><span class="nf">chk</span><span class="p">({</span><span class="s2">&quot;sym mid&quot;</span><span class="p">,</span><span class="nv">sym</span><span class="p">:</span><span class="nf">mid</span><span class="p">(),</span><span class="s2">&quot;a&quot;</span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span><span class="s2">&quot;sym spread&gt;0&quot;</span><span class="p">,</span><span class="nv">sym</span><span class="p">:</span><span class="nf">spread</span><span class="p">()</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">,</span><span class="kc">true</span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span><span class="s2">&quot;num mid&quot;</span><span class="p">,</span><span class="nv">num</span><span class="p">:</span><span class="nf">mid</span><span class="p">(),</span><span class="mi">3</span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span><span class="s2">&quot;num sd&quot;</span><span class="p">,</span><span class="nv">num</span><span class="p">:</span><span class="nf">spread</span><span class="p">(),</span><span class="mf">1.5811</span><span class="p">,</span><span class="mf">1E-3</span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span><span class="s2">&quot;? skip&quot;</span><span class="p">,</span><span class="nv">num</span><span class="p">:</span><span class="nf">add</span><span class="p">(</span><span class="s2">&quot;?&quot;</span><span class="p">),</span><span class="s2">&quot;?&quot;</span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span><span class="s2">&quot;#x&quot;</span><span class="p">,</span><span class="o">#</span><span class="nv">cols</span><span class="p">.</span><span class="py">x</span><span class="p">,</span><span class="mi">2</span><span class="p">},</span><span class="w"> </span><span class="p">{</span><span class="s2">&quot;#y&quot;</span><span class="p">,</span><span class="o">#</span><span class="nv">cols</span><span class="p">.</span><span class="py">y</span><span class="p">,</span><span class="mi">2</span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span><span class="s2">&quot;goal+&quot;</span><span class="p">,</span><span class="nv">cols</span><span class="p">.</span><span class="py">all</span><span class="p">[</span><span class="mi">3</span><span class="p">].</span><span class="nv">goal</span><span class="p">,</span><span class="mi">1</span><span class="p">},</span><span class="w"> </span><span class="p">{</span><span class="s2">&quot;goal-&quot;</span><span class="p">,</span><span class="nv">cols</span><span class="p">.</span><span class="py">all</span><span class="p">[</span><span class="mi">4</span><span class="p">].</span><span class="nv">goal</span><span class="p">,</span><span class="mi">0</span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span><span class="s2">&quot;skipX&quot;</span><span class="p">,</span><span class="nv">cols</span><span class="p">.</span><span class="py">all</span><span class="p">[</span><span class="mi">5</span><span class="p">].</span><span class="nv">goal</span><span class="p">,</span><span class="kc">nil</span><span class="p">})</span><span class="w"> </span><span class="kr">end</span>
+
+</pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+</div>
+</body>

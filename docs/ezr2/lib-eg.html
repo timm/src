@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html;charset=utf-8">
+  <title>ezr2: lib-eg</title>
+  <link rel="stylesheet" href="pycco.css">
+</head>
+<body>
+<div id='container'>
+  <div id="background"></div>
+  <div class='section'>
+    <div class='docs'><p align="center">
+<a href="https://timm.github.io/src/"><img alt="home" src="https://img.shields.io/badge/🏠-home-gold"></a>
+<a href="https://github.com/timm/src/tree/main/ezr2"><img alt="src" src="https://img.shields.io/badge/src-ezr2-black"></a>
+<a href="ezr2.html"><img alt="code" src="https://img.shields.io/badge/code-17%20pages-2ea44f"></a>
+<a href="ezr2-eg.html"><img alt="tests" src="https://img.shields.io/badge/tests-12%20pages-06b6d4"></a>
+<a href="https://github.com/timm/src/actions/workflows/tests-ezr2.yml"><img alt="ci" src="https://github.com/timm/src/actions/workflows/tests-ezr2.yml/badge.svg"></a>
+<a href="https://github.com/timm/src/issues"><img alt="issues" src="https://img.shields.io/badge/issues-report-red"></a>
+<a href="https://github.com/timm/src/blob/main/LICENSE.md"><img alt="license" src="https://img.shields.io/badge/license-MIT-brightgreen"></a>
+<img alt="language" src="https://img.shields.io/badge/language-python-9558B2">
+<img alt="runs on" src="https://img.shields.io/badge/runs%20on-python3-EE4C2C">
+<a href="https://timm.fyi"><img alt="author" src="https://img.shields.io/badge/author-timm-blueviolet"></a>
+</p><p><a href="ezr2-eg.html">ezr2-eg</a> | <b>lib-eg</b> | <a href="rand-eg.html">rand-eg</a> | <a href="cols-eg.html">cols-eg</a> | <a href="tbl-eg.html">tbl-eg</a> | <a href="dist-eg.html">dist-eg</a> | <a href="stats-eg.html">stats-eg</a> | <a href="acquire-eg.html">acquire-eg</a> | <a href="bins-eg.html">bins-eg</a> | <a href="tree-eg.html">tree-eg</a> | <a href="show-eg.html">show-eg</a> | <a href="main-eg.html">main-eg</a></p><p><a href="ezr2-eg.html">&lt; prev</a> | <a href="rand-eg.html">next &gt;</a></p><h1><a href="https://github.com/timm/src/blob/main/ezr2/ezr2-eg.py">lib-eg</a></h1></div>
+  </div>
+  <div class='clearall'>
+  <div class='section' id='section-0'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-0'>#</a>
+      </div>
+      
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span></span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-1'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-1'>#</a>
+      </div>
+      <h2>lib-eg</h2>
+<pre><code class="language-text">
+Csv cells arrive as strings. `thing` coerces each one:
+&quot;23&quot; becomes an int, &quot;-1e2&quot; a float (csv cells can hide
+exponents), &quot;True&quot;/&quot;False&quot; become bools, &quot;?&quot; marks a
+missing value, anything else stays text.
+
+| call | returns | what |
+|------|---------|------|
+| `thing(s)` | int, float, bool, text | coerce one cell |
+</code></pre>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-2'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-2'>#</a>
+      </div>
+      <p>String coercion round-trip.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="k">def</span><span class="w"> </span><span class="nf">test_thing</span><span class="p">():</span>
+  <span class="n">got</span> <span class="o">=</span> <span class="p">[</span><span class="n">thing</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span>
+         <span class="p">[</span><span class="s2">&quot;23&quot;</span><span class="p">,</span> <span class="s2">&quot;3.14&quot;</span><span class="p">,</span> <span class="s2">&quot;-1e2&quot;</span><span class="p">,</span> <span class="s2">&quot;True&quot;</span><span class="p">,</span> <span class="s2">&quot;False&quot;</span><span class="p">,</span> <span class="s2">&quot;?&quot;</span><span class="p">,</span> <span class="s2">&quot;abc&quot;</span><span class="p">]]</span>
+  <span class="nb">print</span><span class="p">(</span><span class="n">got</span><span class="p">)</span>
+  <span class="k">assert</span> <span class="n">got</span> <span class="o">==</span> <span class="p">[</span><span class="mi">23</span><span class="p">,</span> <span class="mf">3.14</span><span class="p">,</span> <span class="o">-</span><span class="mf">100.0</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="s2">&quot;?&quot;</span><span class="p">,</span> <span class="s2">&quot;abc&quot;</span><span class="p">]</span>
+
+</pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+</div>
+</body>

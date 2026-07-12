@@ -13,7 +13,7 @@ This is how an outside user plugs their own (expensive) model into ezr2.
 import sys, random, ezr2
 from math import cos, sin, pi
 
-# -- the models --------------------------------------------------
+#-- the models --------------------------------------------------
 # Each maps x in [0,1]^N -> M objectives to MINIMIZE. k = N-M+1 of the
 # x's form the "distance" group xm; the rest shape the front.
 def _g1(xm):  return 100*(len(xm) + sum((v-.5)**2 - cos(20*pi*(v-.5)) for v in xm))
@@ -57,7 +57,7 @@ def dtlz7(x, M):                   # disconnected front
 
 MODELS = {k: v for k, v in globals().items() if k.startswith("dtlz")}
 
-# -- CLI knobs (model, M objectives, N decision vars) ------------
+#-- CLI knobs (model, M objectives, N decision vars) ------------
 arg = lambda k, d: next((ezr2.thing(a.split("=")[1]) for a in sys.argv
                          if a.startswith("--"+k+"=")), d)
 NAME = arg("model", "dtlz2"); MODEL = MODELS[NAME]
@@ -65,7 +65,7 @@ M    = arg("M", 2)
 N    = arg("N", 6)                 # >4 decision vars by default
 names = [f"X{i+1}" for i in range(N)] + [f"F{m+1}-" for m in range(M)]
 
-# -- the unlabelled pool + the label seam ------------------------
+#-- the unlabelled pool + the label seam ------------------------
 def fresh_pool(n=1000):
   return [[random.random() for _ in range(N)] + ["?"]*M for _ in range(n)]
 

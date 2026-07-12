@@ -1,19 +1,19 @@
 #!/usr/bin/env python3
 """
 toc.py: rewrite README.md's <!-- doc-toc --> block with
-links to the html doc pages, in `sh INSTALL.md list` order.
-Run from inside a project dir (make doc does).
+links to the html doc pages, in .order manifest order
+(one page per ## section; see split.py). Run from inside a
+project dir (make doc does).
 """
-import os, re, subprocess
+import os, re
 
-PROJ  = os.path.basename(os.getcwd())
-D     = f"https://timm.github.io/src/{PROJ}/docs"
-order = [os.path.splitext(f)[0] for f in subprocess.run(
-           ["sh", "INSTALL.md", "list"], text=True,
-           capture_output=True).stdout.split()
-         if f.endswith((".lisp", ".py", ".lua"))]
-code  = [p for p in order if not p.endswith("-eg")]
-tests = [p for p in order if p.endswith("-eg")]
+PROJ = os.path.basename(os.getcwd())
+D    = f"https://timm.github.io/src/{PROJ}/docs"
+rows = [l.split("\t") for l in
+        open(f"../docs/{PROJ}/.order").read().splitlines()
+        if l]
+code  = [r[0] for r in rows if r[2] == "code"]
+tests = [r[0] for r in rows if r[2] == "tests"]
 row   = lambda ps: " |\n".join(f"[{p}]({D}/{p}.html)"
                                for p in ps)
 block = ("<!-- doc-toc -->\n"
