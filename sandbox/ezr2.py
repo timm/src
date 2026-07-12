@@ -240,14 +240,15 @@ def project(rows, x, y, east=None, west=None):
 
 def acquire(tbl):
   y   = lambda r: disty(tbl, r)
+  x   = lambda r1, r2: distx(tbl, r1, r2)
   cap = the.budget - the.check
   if the.acquire == "random":
     return sorted(some(tbl.rows, cap), key=y)
-  return sorted(sway3(tbl, shuffle(tbl.rows), y, cap), key=y)
-
-def sway3(tbl, pool, y, cap, lab=None, east=None, west=None):
-  x   = lambda r1, r2: distx(tbl, r1, r2)
-  lab = {} if lab is None else lab
+  return sorted(sway3(tbl, shuffle(tbl.rows), y, x, cap),
+                key=y)
+def sway3(tbl, pool, y, x, cap,
+          lab=None, east=None, west=None):
+  lab = lab or {}
   while len(pool) >= 2*the.leaf:
     more = min(the.more, cap - len(lab))
     less = int(max(1, the.keepf * len(pool)))
@@ -258,11 +259,11 @@ def sway3(tbl, pool, y, cap, lab=None, east=None, west=None):
     if len(lab) >= cap: return lab.values()  # budget spent
     pool = sorted(pool,
                   key=project(new, x, y, east, west))[:less]
-  if not lab or len(lab) >= len(tbl.rows):
-    return lab.values()                      # nothing left
-  seen = sorted(lab.values(), key=y)         # redo: fresh pool,
-  return sway3(tbl, shuffle(tbl.rows), y, cap,  # anchored at
-               lab, seen[0], seen[-1])       # best+worst seen
+  if len(lab) < len(tbl.rows):               # redo: fresh pool,
+    seen = sorted(lab.values(), key=y)       # anchored at the
+    return sway3(tbl, shuffle(tbl.rows), y, x, cap,
+                 lab, seen[0], seen[-1])     # best+worst seen
+  return lab.values()
 
 
 #-- bins --------------------------------------------------------
