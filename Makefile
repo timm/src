@@ -51,7 +51,7 @@ doc: ## pycco html per ## section into docs/<proj>/
 
 Font ?= 4.5       # pdf font size
 Cols ?= 3         # pdf columns
-LPC  ?= 113       # lines per pdf column; packs sections
+LPC  ?= 120       # lines per pdf column; packs sections
 
 %.pdf: ## project dir -> ~/tmp/src/NAME.pdf via a2ps (make tiny-xai.pdf)
 	@src=$$(ls */$*.lisp */$*.py */$*.lua 2>/dev/null | head -1); \
@@ -61,12 +61,13 @@ LPC  ?= 113       # lines per pdf column; packs sections
 	 mkdir -p ~/tmp/src; \
 	 a2ps -Bj --landscape --line-numbers=1 --highlight-level=heavy \
 	   --borders=no --pro=color --right-footer="" --left-footer="" \
-	   --pretty-print=$$lang --footer="page %p." -M letter \
-	   --center-title="$$src" \
+	   --pretty-print=$$lang --footer="$$src :: page %p." \
+	   -M letter --center-title="" \
 	   --font-size=$(Font) --columns $(Cols) -o - \
 	   <(awk -v C=$(LPC) 'BEGIN{RS="\f"; ORS=""} \
 	      {n=split($$0,L,"\n")-1; \
+	       if($$0==""){printf "\f"; pos=0; next} \
 	       if(NR>1 && pos>0 && pos+n>C){printf "\f"; pos=0} \
-	       printf "%s",$$0; pos=(pos+n)%C}' $$src) \
+	       printf "%s",$$0; pos+=n}' $$src) \
 	 | ps2pdf - ~/tmp/src/$*.pdf; \
 	 open ~/tmp/src/$*.pdf 2>/dev/null || true
