@@ -6,8 +6,9 @@ help: ## show targets
 	@grep -hE '^[a-z-]+:.*## ' Makefile | \
 	  awk -F':.*## ' '{printf "  \033[36m%-8s\033[0m %s\n", $$1, $$2}'
 
-sh: ## bash tuned for this repo (etc/bashrc)
-	@here="$(CURDIR)" bash --rcfile etc/bashrc -i
+sh: ## tmux (etc/tmux.rc) running bash tuned by etc/bashrc
+	@here="$(CURDIR)" tmux -f etc/tmux.rc new-session \
+	  "here='$(CURDIR)' bash --rcfile etc/bashrc -i"
 
 push: ## add+commit+push+status
 	@git add -A
