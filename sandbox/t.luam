@@ -1,0 +1,20 @@
+-- every rule; sigils inside strings must survive: ^ := *t %t [x for y]
+pat := "^%s*(.-)%s*$"
+add := fun((t,x) t[1+#t]=x; ^x)
+nest:= fun((x) ^fun((y) ^x+y))
+sq  := [x*x for x in %{3,1,2}]
+ages:= [k|v*2 for k,v in *{tim=30, ann=20}]
+lines = 0
+for _ in ("a\nb\nc"):gmatch"[^\n]+" do lines = lines + 1 end
+
+fun keys(t,    u)
+  u := [k for k,_ in *t]
+  table.sort(u)
+  ^u end
+
+print(pat)
+print(add({}, 5), nest(40)(2))
+print(sq[1], sq[2], sq[3])
+print(ages.tim, ages.ann)
+print(table.concat(keys{b=1,a=2}, ","), lines)
+if true then ^"done" end
