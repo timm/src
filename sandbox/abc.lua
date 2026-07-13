@@ -3,6 +3,7 @@
 -- Polymorphic Num/Sym summaries feed distance, labelling,
 -- binning and tree code that never asks a column its type.
 local help = [[
+
 abc: explainable multi-objective optimization, tiny-ly
 (c) 2026 Tim Menzies <timm@ieee.org>, MIT license
 
@@ -11,6 +12,7 @@ grows a regression tree over the labels, then picks good
 rows and shows which x-ranges explain them.
 USAGE: local abc = require"abc"
 (demos and tests: lua abc-eg.lua [OPTIONS] [eg ...])
+       
 OPTIONS:
   --acquire=active  labelling: active or random
   --budget=50       labelling cap
@@ -21,7 +23,8 @@ OPTIONS:
   --leaf=3          tree min leaf size
   --more=4          labels added per round
   --p=2             minkowski exponent
-  --seed=1          random seed ]]
+  --seed=1          random seed 
+  -h                show this help ]]
 
 local abs,exp,floor,log =
       math.abs, math.exp, math.floor, math.log

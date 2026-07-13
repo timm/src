@@ -6,7 +6,10 @@ help: ## show targets
 	@grep -hE '^[a-z-]+:.*## ' Makefile | \
 	  awk -F':.*## ' '{printf "  \033[36m%-8s\033[0m %s\n", $$1, $$2}'
 
-sh: ## tmux (etc/tmux.rc) running bash tuned by etc/bashrc
+sh: ## bash tuned by etc/bashrc
+	@here="$(CURDIR)" bash --rcfile etc/bashrc -i
+
+tmux: ## tmux session running tuned bash
 	@here="$(CURDIR)" tmux -f etc/tmux.rc new-session \
 	  "here='$(CURDIR)' bash --rcfile etc/bashrc -i"
 
@@ -53,6 +56,7 @@ doc: ## pycco html per ## section into docs/<proj>/
 Font ?= 4.5       # pdf font size
 Cols ?= 3         # pdf columns
 LPC  ?= 120       # lines per pdf column; packs sections
+ETC  := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))etc
 
 %.pdf: ## project dir -> ~/tmp/src/NAME.pdf via a2ps (make tiny-xai.pdf)
 	@src=$$(ls */$*.lisp */$*.py */$*.lua 2>/dev/null | head -1); \
@@ -60,6 +64,10 @@ LPC  ?= 120       # lines per pdf column; packs sections
 	 case $${src##*.} in lisp) lang=clisp;; py) lang=python;; \
 	   lua) lang=lua;; esac; \
 	 mkdir -p ~/tmp/src; \
+	 cfg=$$(dirname $$(dirname $$(command -v a2ps)))/etc/a2ps.cfg; \
+	 rc=$$(mktemp); \
+	 printf 'Include: %s\nAppendLibraryPath: %s\n' "$$cfg" "$(ETC)" >"$$rc"; \
+	 A2PS_CONFIG=$$rc \
 	 a2ps -Bj --landscape --line-numbers=1 --highlight-level=heavy \
 	   --borders=no --pro=color --right-footer="" --left-footer="" \
 	   --pretty-print=$$lang --footer="$$src :: page %p." \
@@ -71,4 +79,5 @@ LPC  ?= 120       # lines per pdf column; packs sections
 	       if(NR>1 && pos>0 && pos+n>C){printf "\f"; pos=0} \
 	       printf "%s",$$0; pos+=n}' $$src) \
 	 | ps2pdf - ~/tmp/src/$*.pdf; \
+	 rm -f "$$rc"; \
 	 open ~/tmp/src/$*.pdf 2>/dev/null || true

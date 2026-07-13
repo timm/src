@@ -45,6 +45,8 @@ eg["--holdout"] = function(    t)
   t = Tbl.new(the.file)
   print("win", t:wins()(t:holdout())) end
 
+eg["-h"] = function() print(abc.help) end
+
 eg["--all"] = function()
   for _,k in ipairs{"--the","--tbl","--disty","--acquire",
                     "--tree","--same","--holdout"} do
@@ -52,6 +54,5 @@ eg["--all"] = function()
     rnd.seed(the.seed)
     eg[k]() end end
 
-for _,s in ipairs(arg) do str.settings(s) end
 for _,s in ipairs(arg) do
   if eg[s] then rnd.seed(the.seed); eg[s]() end end
