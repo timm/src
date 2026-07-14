@@ -31,7 +31,7 @@ eg["--acquire"] = function(    t,got)
 
 eg["--tree"] = function(    t)
   t = Tbl.new(the.file)
-  Tree.grow(t, acquire.top(t)):show() end
+  Tree.grow(t, acquire.top(t)):show(t) end
 
 eg["--same"] = function(    a,b,c)
   a, b, c = {}, {}, {}
@@ -53,6 +53,12 @@ eg["--all"] = function()
     print("\n-- " .. k)
     rnd.seed(the.seed)
     eg[k]() end end
+
+-- settings from all args first (unknown keys are errors)
+for _,s in ipairs(arg) do
+  for k,v in s:gmatch"%-%-(%w+)=(%S+)" do
+    if the[k] == nil then error("unknown option --" .. k) end
+    the[k] = str.what(v) end end
 
 for _,s in ipairs(arg) do
   if eg[s] then rnd.seed(the.seed); eg[s]() end end

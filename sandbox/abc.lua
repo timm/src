@@ -26,8 +26,7 @@ OPTIONS:
   --seed=1          random seed 
   -h                show this help ]]
 
-local abs,exp,floor,log =
-      math.abs, math.exp, math.floor, math.log
+local abs,exp,floor,log = math.abs, math.exp, math.floor,math.log
 local max,min,fmt = math.max, math.min, string.format
 local BIG,the     = 1e32, {}
 local lst,rnd,str = {},{},{}       -- lib; at end of file
@@ -36,7 +35,7 @@ local acquire,bins,stats    = {},{},{}
 
 -- new makes instances; shared metatables give polymorphism
 local function new(mt,t)
-  mt.__index = mt; return setmetatable(t,mt) end
+  mt.__index = mt return setmetatable(t,mt) end
 
 
 -- ## Num
@@ -45,9 +44,9 @@ local function new(mt,t)
 -- logistic z-score; `sub` = i's data without j's. A name
 -- ending "-" sets w=0 (minimize); else w=1 (maximize).
 
--- ctor; goal w=0 if the name ends "-", else w=1
+-- make; goal w=0 if the name ends "-", else w=1
 function Num.new(txt,at)
-  txt = txt or " "
+  txt = txt or ""
   return new(Num, {txt=txt, at=at or 1, n=0, mu=0, m2=0,
                    w = txt:find"-$" and 0 or 1}) end
 
@@ -68,14 +67,15 @@ function Num.mid(i) return i.mu end
 function Num.spread(i)
   return i.n < 2 and 0 or (max(0, i.m2)/(i.n - 1))^0.5 end
 
--- map v to 0..1 via a logistic over its z-score
+-- map v to 0..1 via a logistic over its z-score ("?" passes through)
 function Num.norm(i,v,    z)
+  if v == "?" then return v end
   z = (v - i.mu)/(i:spread() + 1E-32)
   return 1/(1 + exp(-1.7*max(-3, min(3, z)))) end
 
 -- Num summarizing i's data without j's: weighted add of
 -- -j.n values at j.mu, then j's own spread comes off m2
-function Num.sub(i,j,    k)
+function Num.without(i,j,    k)
   k = Num.new(i.txt, i.at)
   if j.n < i.n then
     k.n, k.mu, k.m2 = i.n, i.mu, i.m2
@@ -116,7 +116,7 @@ function Sym.spread(i,    e)
   return e end
 
 -- Sym summarizing i's data without j's
-function Sym.sub(i,j,    k)
+function Sym.without(i,j,    k)
   k = Sym.new(i.txt, i.at)
   for v,n in pairs(i.has) do k:add(v,  n) end
   for v,n in pairs(j.has) do k:add(v, -n) end
@@ -188,9 +188,8 @@ function Sym.dist(i,u,v)
 
 -- gap between two num values; missing = far pole
 function Num.dist(i,u,v)
+  u, v = i:norm(u), i:norm(v)
   if u == "?" and v == "?" then return 1 end
-  if u ~= "?" then u = i:norm(u) end
-  if v ~= "?" then v = i:norm(v) end
   if u == "?" then u = v < 0.5 and 1 or 0 end
   if v == "?" then v = u < 0.5 and 1 or 0 end
   return abs(u - v) end
@@ -270,7 +269,9 @@ function acquire.sway3(rows,y,x,cap,lab,east,west,
                        b4,more,fresh,seen)
   lab, b4 = lab or {}, rows
   while #rows >= 2*the.leaf do
-    more, fresh = min(the.more, cap - #lab), {}
+    more  = min(the.more, cap - #lab)
+    less  = max(1, floor(the.keepf * #rows))
+    fresh = {}
     for _,r in ipairs(rows) do
       if lab[r] then lst.push(fresh,r)
       elseif more > 0 then
@@ -280,8 +281,7 @@ function acquire.sway3(rows,y,x,cap,lab,east,west,
     if #lab >= cap then return lab end    -- budget spent
     rows = lst.slice(
              lst.keysort(rows,
-               acquire.project(fresh,x,y,east,west)),
-             1, max(1, floor(the.keepf * #rows))) end
+               acquire.project(fresh,x,y,east,west)),1,less) end
   if #lab < #b4 then                      -- redo, anchored
     seen = lst.keysort(lst.slice(lab), y)
     return acquire.sway3(rnd.shuffle(lst.slice(b4)), y, x,
@@ -300,12 +300,12 @@ function acquire.top(tbl,    y,x,cap,rows)
 
 
 -- ## Bins
--- One split = cheapest bin over all x cols; cost = size-
+-- One split = simplest bin over all x cols; simplicity = size-
 -- weighted spread of the two halves, the far half found by
--- `sub`, never a second pass. `bins.keep` (after
+-- `without`, never a second pass. `bins.keep` (after
 -- tiny-xai.lisp) is a closure holding the running best:
 -- offer it (this,ys,at,v); call it bare for the winner.
--- sum = Num.new regresses; sum = Sym.new classifies.
+-- yklass = Num.new regresses; yklass = Sym.new classifies.
 
 -- closure: offer (this,ys,at,v); call bare -> best bin
 function bins.keep(    lo,kept)
@@ -313,40 +313,40 @@ function bins.keep(    lo,kept)
   return function(this,ys,at,v,    there,c)
     if this and the.leaf <= this.n
             and this.n <= ys.n - the.leaf then
-      there = ys:sub(this)
+      there = ys:without(this)
       c = (this:spread()*this.n + there:spread()*there.n)
           / (ys.n + 1E-32)
       if c < lo then lo,kept = c,{c,at,v} end end
     return kept end end
 
 -- offer each value's y summary as a candidate bin
-function Sym.bins(i,rows,y,sum,keep,    ys,has,x)
-  ys, has = sum(), {}
+function Sym.bins(i,rows,y,yklass,keep,    ys,has,x)
+  ys, has = yklass(), {}
   for _,r in ipairs(rows) do
     x = r[i.at]
     if x ~= "?" then
-      has[x] = has[x] or sum()
+      has[x] = has[x] or yklass()
       has[x]:add(ys:add(y(r))) end end
   for v,this in pairs(has) do keep(this, ys, i.at, v) end end
 
 -- offer a candidate bin at each change in sorted x
-function Num.bins(i,rows,y,sum,keep,    xy,ys,this)
-  xy, ys = {}, sum()
+function Num.bins(i,rows,y,yklass,keep,    xy,ys,this)
+  xy, ys = {}, yklass()
   for _,r in ipairs(rows) do
     if r[i.at] ~= "?" then
       lst.push(xy, {r[i.at], ys:add(y(r))}) end end
   lst.sort(xy, function(a,b) return a[1] < b[1] end)
-  this = sum()
+  this = yklass()
   for j,p in ipairs(xy) do
     this:add(p[2])
     if xy[j+1] and p[1] ~= xy[j+1][1] then
       keep(this, ys, i.at, p[1]) end end end
 
 -- cheapest {cost,at,v} bin over all the x columns
-function bins.split(tbl,rows,y,sum,keep)
+function bins.split(tbl,rows,y,yklass,keep)
   keep = keep or bins.keep()
   for _,col in ipairs(tbl.cols.x) do
-    col:bins(rows, y, sum, keep) end
+    col:bins(rows, y, yklass, keep) end
   return keep() end
 
 
@@ -355,7 +355,8 @@ function bins.split(tbl,rows,y,sum,keep)
 -- depth allow; nodes keep their split col, their rows and
 -- a `mid` prediction. `holds` picks a row's side of a bin
 -- ("?" = yes); `leaf` routes a row down; `show` prints
--- branch conditions via each class's `ops`.
+-- win, size, y mids and branch conditions (via `ops`),
+-- flagging the best and worst leaves.
 
 -- does w sit on the yes-side of bin v? ("?" = yes)
 function Sym.holds(i,w,v) return w == "?" or w == v end
@@ -366,14 +367,14 @@ Sym.ops = {"==", "~="}
 Num.ops = {"<=", ">"}
 
 -- recursively split rows on the cheapest bin
-function Tree.grow(tbl,rows,y,sum,lvl,  i,bin,col,yes,no)
-  y   = y or function(r) return tbl:disty(r) end
-  sum = sum or Num.new
-  lvl = lvl or 0
-  i   = new(Tree, {n=#rows, rows=rows, col=nil,
-                   mid=adds(lst.map(rows,y), sum()):mid()})
+function Tree.grow(tbl,rows,y,yklass,lvl,  i,bin,col,yes,no)
+  y      = y or function(r) return tbl:disty(r) end
+  yklass = yklass or Num.new
+  lvl    = lvl or 0
+  i      = new(Tree, {n=#rows, rows=rows, col=nil,
+                      mid=adds(lst.map(rows,y), yklass()):mid()})
   if #rows >= 2*the.leaf and lvl < the.depth then
-    bin = bins.split(tbl, rows, y, sum)
+    bin = bins.split(tbl, rows, y, yklass)
     if bin then
       col, yes, no = tbl.cols.all[bin[2]], {}, {}
       for _,r in ipairs(rows) do
@@ -381,8 +382,8 @@ function Tree.grow(tbl,rows,y,sum,lvl,  i,bin,col,yes,no)
                  r) end
       if #yes > 0 and #no > 0 then
         i.col, i.v = col, bin[3]
-        i.yes = Tree.grow(tbl, yes, y, sum, lvl + 1)
-        i.no  = Tree.grow(tbl, no,  y, sum, lvl + 1) end end end
+        i.yes = Tree.grow(tbl, yes, y, yklass, lvl + 1)
+        i.no  = Tree.grow(tbl, no,  y, yklass, lvl + 1) end end end
   return i end
 
 -- walk a row down to its leaf; return the leaf's mid
@@ -391,35 +392,66 @@ function Tree.leaf(i,row)
     i = i.col:holds(row[i.col.at], i.v) and i.yes or i.no end
   return i.mid end
 
--- print tree: n, mid, indented branch conditions
-function Tree.show(i,pad,edge)
-  pad, edge = pad or "", edge or ""
-  print(fmt("%5d %8s  %s%s", i.n, str.o(i.mid), pad, edge))
-  if i.col then
-    pad = edge == "" and pad or pad .. "|  "
-    i.yes:show(pad, fmt("%s %s %s",
-      i.col.txt, i.col.ops[1], str.o(i.v)))
-    i.no:show(pad, fmt("%s %s %s",
-      i.col.txt, i.col.ops[2], str.o(i.v))) end end
+-- every leaf node below i
+function Tree.leaves(i,out)
+  out = out or {}
+  if i.col
+  then i.yes:leaves(out); i.no:leaves(out)
+  else lst.push(out, i) end
+  return out end
+
+-- print tree: win, n, per-goal mids (y names on top), then
+-- indented branch conditions, best kid first. Best leaf
+-- marked with a triangle up, worst down; marks built from
+-- ints since literal utf glyphs upset make-pdf (a2ps).
+function Tree.show(i,tbl,    up,down,W,win,ws,ymid,branch)
+  up, down = string.char(226,150,178), string.char(226,150,188)
+  W    = tbl:wins(i.rows)
+  win  = function(rows)
+           return floor(adds(lst.map(rows, W)):mid()) end
+  ws   = lst.sort(lst.map(i:leaves(),
+           function(leaf) return win(leaf.rows) end))
+  ymid = function(rows)
+           return table.concat(lst.map(tbl.cols.y,
+             function(c,    ys)
+               ys = getmetatable(c).new()
+               for _,r in ipairs(rows) do
+                 if r[c.at] ~= "?" then ys:add(r[c.at]) end end
+               return fmt("%8s", str.o(ys:mid())) end), " ") end
+  branch = function(t,pad,edge,    w,m,kids)
+    w = win(t.rows)
+    m = t.col and " "
+        or w == ws[#ws] and up
+        or w == ws[1] and down or " "
+    print((fmt("%s %4d %5d  %s  %s%s",
+           m, w, t.n, ymid(t.rows), pad, edge):gsub("%s+$","")))
+    if t.col then
+      pad  = edge == "" and pad or pad .. "|  "
+      kids = lst.keysort({{t.yes,1}, {t.no,2}},
+               function(p) return p[1].mid end)
+      for _,p in ipairs(kids) do
+        branch(p[1], pad, fmt("%s %s %s", t.col.txt,
+               t.col.ops[p[2]], str.o(t.v))) end end end
+  print(fmt("%s %4s %5s  %s", " ", "win", "n",
+        table.concat(lst.map(tbl.cols.y,
+          function(c) return fmt("%8s", c.txt) end), " ")))
+  branch(i, "", "") end
 
 
 -- ## Stats
 -- `same` = conservative equality: `cohen` AND `cliffs`
 -- AND `ks` must all agree before two sets are equal.
 
--- Cliff's delta effect size in 0..1 (0 = identical)
+-- Cliff's delta effect size in 0..1 (0 = identical); ys sorted
 function stats.cliffs(xs,ys,    m,gt,lt)
-  ys, m  = lst.sort(lst.slice(ys)), #ys
-  gt, lt = 0, 0
+  m, gt, lt = #ys, 0, 0
   for _,x in ipairs(xs) do
     gt = gt + lst.bisect(ys, x, true) - 1    -- # ys < x
     lt = lt + m - lst.bisect(ys, x) + 1 end  -- # ys > x
   return abs(gt - lt)/(#xs * m + 1E-32) end
 
--- Kolmogorov-Smirnov: max gap between the two CDFs
+-- Kolmogorov-Smirnov: max gap between the CDFs; xs,ys sorted
 function stats.ks(xs,ys,    cdf,d)
-  xs = lst.sort(lst.slice(xs))
-  ys = lst.sort(lst.slice(ys))
   cdf = function(v,t) return (lst.bisect(t,v) - 1)/#t end
   d = 0
   for _,t in ipairs{xs,ys} do
@@ -436,6 +468,8 @@ function stats.cohen(xs,ys,    a,b,sd)
 
 -- true if xs,ys are statistically indistinguishable
 function stats.same(xs,ys,    n,m)
+  xs = lst.sort(lst.slice(xs))
+  ys = lst.sort(lst.slice(ys))
   n, m = #xs, #ys
   return stats.cohen(xs,ys) and stats.cliffs(xs,ys)<=0.195
      and stats.ks(xs,ys) <= 1.36*((n + m)/(n*m))^0.5 end
@@ -453,15 +487,13 @@ function lst.sort(t,fn) table.sort(t,fn); return t end
 
 -- copy of t, each item passed through fn
 function lst.map(t,fn,    u)
-  u = {}
-  for _,v in ipairs(t) do u[1 + #u] = fn(v) end
+  u={}; for _,v in ipairs(t) do u[1 + #u] = fn(v) end
   return u end
 
 -- copy of items lo..hi of t (defaults: all)
 function lst.slice(t,lo,hi,    u)
-  u = {}
-  for j = lo or 1, min(hi or #t, #t) do
-    lst.push(u, t[j]) end
+  u={}; for j = lo or 1, min(hi or #t, #t) do
+          lst.push(u, t[j]) end
   return u end
 
 -- sort a copy of t by fn(item), computing fn once per item
@@ -541,17 +573,17 @@ function str.trim(s) return s:match"^%s*(.-)%s*$" end
 -- string -> true | false | number | trimmed string
 function str.what(s)
   s = str.trim(s)
-  return s == "true" or
-         (s ~= "false" and (tonumber(s) or s)) end
+  return s=="true" or (s ~= "false" and (tonumber(s) or s)) end
 
 -- set `the` from any "--key=val" patterns in s
 function str.settings(s)
   for k,v in s:gmatch"%-%-(%w+)=(%S+)" do
     the[k] = str.what(v) end end
 
--- expand a leading $MOOT (env, else ~/gits/moot)
+-- expand a leading ~ or $MOOT (env, else ~/gits/moot)
 function str.filename(s)
-  return (s:gsub("^%$MOOT", os.getenv"MOOT" or
+  return (s:gsub("^~", os.getenv"HOME")
+           :gsub("^%$MOOT", os.getenv"MOOT" or
                  os.getenv"HOME" .. "/gits/moot")) end
 
 -- iterate a csv's rows, cells trimmed and typed
@@ -560,16 +592,15 @@ function str.csv(file,    f)
   return function(    u)
     for s in f:lines() do
       if s:find"%S" then
-        u = {}
-        for x in s:gmatch"[^,]+" do
-          lst.push(u, str.what(x)) end
+        u={}
+        for x in s:gmatch"[^,]+" do lst.push(u,str.what(x)) end
         return u end end
     f:close() end end
 
--- pretty print: numbers rounded, lists spaced, dicts sorted
+-- pretty print: ints bare, floats %.3f, lists spaced, dicts sorted
 function str.o(x,    u)
   if type(x) == "number" then
-    return x == floor(x) and tostring(x)
+    return math.type(x) == "integer" and tostring(x)
            or fmt("%.3f", x) end
   if type(x) ~= "table" then return tostring(x) end
   u = {}
