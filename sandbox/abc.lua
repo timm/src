@@ -580,7 +580,7 @@ function rnd.pick(dct,    keys,s)
 
 -- Box-Muller bell: mean mu, sd sd (real tails)
 function rnd.gauss(mu,sd,    u1,u2)
-  mu, sd, u1. u2 = mu or 0, sd or 1. rnd.n(), rnd.n()
+  mu, sd, u1, u2 = mu or 0, sd or 1, rnd.n(), rnd.n()
   return mu + sd*sqrt(-2*log(u1))*math.cos(2*math.pi*u2) end
 
 

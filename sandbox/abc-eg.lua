@@ -51,7 +51,7 @@ eg["-h"] = function()
 
 eg["--doc"] = function(    f,b,s,i)
   os.execute(
-    "pycco -d ~/tmp abc.lua && echo '" ..
+    "mkdir -p ~/tmp; pycco -d ~/tmp abc.lua && echo '" ..
     "p {text-align:right;} " ..
     "h2 {border-top:1px solid #ddd; margin-top:2.5em; " ..
     "padding-top:.5em;}' >> ~/tmp/pycco.css")
