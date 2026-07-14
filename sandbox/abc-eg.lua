@@ -1,7 +1,7 @@
 #!/usr/bin/env lua
 -- abc-eg.lua: demos and tests for abc.lua, one eg per
--- library section. --name args run egs; --key=val args set
--- options; each eg is reseeded. E.g.
+-- library section. --name args run egs; --key=val (or
+-- -k val) args set options; each eg is reseeded. E.g.
 --   lua abc-eg.lua --seed=2 --tree --holdout
 local abc = require"abc"
 local the,lst,rnd,str = abc.the, abc.lst, abc.rnd, abc.str
@@ -45,7 +45,22 @@ eg["--holdout"] = function(    t)
   t = Tbl.new(the.file)
   print("win", t:wins()(t:holdout())) end
 
-eg["-h"] = function() print(abc.help) end
+eg["-h"] = function() 
+  print(abc.help,"\n\nExamples:\n")
+  for k,_ in lst.items(eg) do print("  lua abc-eg.lua "..k) end end
+
+eg["--doc"] = function(    f,b,s,i)
+  os.execute(
+    "pycco -d ~/tmp abc.lua && echo '" ..
+    "p {text-align:right;} " ..
+    "h2 {border-top:1px solid #ddd; margin-top:2.5em; " ..
+    "padding-top:.5em;}' >> ~/tmp/pycco.css")
+  b = io.open"badges.html"
+  if b then
+    f = io.open(str.filename"~/tmp/abc.html","r+"); s = f:read"*a"
+    i = s:find("<h1",1,true)
+    f:seek("set", i-1); f:write(b:read"*a", s:sub(i)):close()
+    b:close() end end
 
 eg["--all"] = function()
   for _,k in ipairs{"--the","--tbl","--disty","--acquire",
@@ -54,11 +69,16 @@ eg["--all"] = function()
     rnd.seed(the.seed)
     eg[k]() end end
 
--- settings from all args first (unknown keys are errors)
-for _,s in ipairs(arg) do
-  for k,v in s:gmatch"%-%-(%w+)=(%S+)" do
-    if the[k] == nil then error("unknown option --" .. k) end
-    the[k] = str.what(v) end end
-
-for _,s in ipairs(arg) do
+-- args run left to right: --key=val (or "-x v", x = an
+-- option's first letter) sets options; eg names run. So
+-- flags steer only the egs that follow them.
+for i,s in ipairs(arg) do
+  local k,v = s:match"^%-%-(%w+)=(%S+)$"
+  if v then
+    if the[k] == nil then error("unknown --" .. k) end
+    the[k] = str.what(v) end
+  for k,_ in pairs(the) do
+    if s == "-" .. k:sub(1,1) then
+      if not arg[i+1] or eg[arg[i+1]] then error(s.." arg?") end
+      the[k] = str.what(arg[i+1]) end end
   if eg[s] then rnd.seed(the.seed); eg[s]() end end

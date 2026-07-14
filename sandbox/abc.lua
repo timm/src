@@ -3,31 +3,33 @@
 -- Polymorphic Num/Sym summaries feed distance, labelling,
 -- binning and tree code that never asks a column its type.
 local help = [[
-
+   
 abc: explainable multi-objective optimization, tiny-ly
 (c) 2026 Tim Menzies <timm@ieee.org>, MIT license
 
 Samples a data landscape under a small labelling budget,
 grows a regression tree over the labels, then picks good
 rows and shows which x-ranges explain them.
-USAGE: local abc = require"abc"
-(demos and tests: lua abc-eg.lua [OPTIONS] [eg ...])
-       
+  
+USAGE: local abc = require"abc"      
+(demos and tests: lua abc-eg.lua [OPTIONS] [eg ...])   
+          
 OPTIONS:
-  --acquire=active  labelling: active or random
-  --budget=50       labelling cap
-  --check=5         rows checked by the tree
-  --depth=4         tree max depth
-  --file=$MOOT/optimize/misc/auto93.csv  data
-  --keepf=0.66      rows kept per cull
-  --leaf=3          tree min leaf size
-  --more=4          labels added per round
-  --p=2             minkowski exponent
-  --seed=1          random seed 
-  -h                show this help ]]
-
+  -a  --acquire=active  labelling: active or random
+  -b  --budget=50       labelling cap
+  -c  --check=5         rows checked by the tree
+  -d  --depth=4         tree max depth
+  -f  --file=$MOOT/optimize/misc/auto93.csv  data
+  -k  --keepf=0.66      rows kept per cull
+  -l  --leaf=3          tree min leaf size
+  -m  --more=4          labels added per round
+  -p  --p=2             minkowski exponent
+  -s  --seed=1          random seed
+  -h                    show this help ]]
+     
 local abs,exp,floor,log = math.abs, math.exp, math.floor,math.log
-local max,min,fmt = math.max, math.min, string.format
+local sqrt,max,min = math.sqrt, math.max, math.min
+local fmt = string.format
 local BIG,the     = 1e32, {}
 local lst,rnd,str = {},{},{}       -- lib; at end of file
 local Num,Sym,Cols,Tbl,Tree = {},{},{},{},{}
@@ -39,6 +41,7 @@ local function new(mt,t)
 
 
 -- ## Num
+
 -- One numeric column, summarized by Welford (n,mu,m2).
 -- `mid`/`spread` = mean/sd; `norm` squashes to 0..1 via a
 -- logistic z-score; `sub` = i's data without j's. A name
@@ -159,8 +162,8 @@ function Cols.add(i,row)
 function Tbl.new(src,    i)
   i = new(Tbl, {cols=nil, rows={}})
   if type(src) == "string"
-  then for row in str.csv(src) do i:add(row) end
-  else adds(src or {}, i) end
+  then for   row in str.csv(src)      do i:add(row) end
+  else for _,row in ipairs(src or {}) do i:add(row) end end
   return i end
 
 -- first row makes the cols; later rows update them
@@ -246,11 +249,11 @@ function Tbl.holdout(i,    rows,half,got,t,top)
 
 -- ## Acquire
 -- The active learner (after ezr2.py). `project` maps rows
--- onto the line joining two far labelled poles; `sway3`
+-- onto the line joining two far labelled poles; `descend`
 -- labels a few, culls the slice nearest the bad pole,
--- repeats; if the pool dries with budget unspent, redo on
--- a fresh shuffle, anchored at the best and worst labels
--- so far. `acquire` returns the labels, best first.
+-- repeats; `sway3` re-runs descend on fresh shuffles,
+-- anchored at the best and worst labels so far, till the
+-- budget spends. `top` returns the labels, best first.
 
 -- row -> position on the line east-west (x=dist, y=goal)
 function acquire.project(rows,x,y,east,west,    far,c)
@@ -264,10 +267,11 @@ function acquire.project(rows,x,y,east,west,    far,c)
   return function(r)
     return (x(east,r)^2 + c*c - x(west,r)^2)/(2*c) end end
 
--- lab doubles as set (lab[row]) and list (lab[1..n])
-function acquire.sway3(rows,y,x,cap,lab,east,west,
-                       b4,more,fresh,seen)
-  lab, b4 = lab or {}, rows
+-- one descent: label a few, cull toward the good pole, till
+-- the pool dries or the budget spends. lab doubles as set
+-- (lab[row]) and list (lab[1..n])
+function acquire.descend(rows,y,x,cap,lab,east,west,
+                         more,less,fresh)
   while #rows >= 2*the.leaf do
     more  = min(the.more, cap - #lab)
     less  = max(1, floor(the.keepf * #rows))
@@ -282,10 +286,16 @@ function acquire.sway3(rows,y,x,cap,lab,east,west,
     rows = lst.slice(
              lst.keysort(rows,
                acquire.project(fresh,x,y,east,west)),1,less) end
-  if #lab < #b4 then                      -- redo, anchored
+  return lab end
+
+-- descend on fresh shuffles, anchored at the best and worst
+-- labels so far, till the budget spends
+function acquire.sway3(rows,y,x,cap,    lab,seen)
+  lab = acquire.descend(lst.slice(rows), y, x, cap, {})
+  while #lab < cap and #lab < #rows do
     seen = lst.keysort(lst.slice(lab), y)
-    return acquire.sway3(rnd.shuffle(lst.slice(b4)), y, x,
-                         cap, lab, seen[1], seen[#seen]) end
+    lab  = acquire.descend(rnd.shuffle(lst.slice(rows)), y, x,
+                           cap, lab, seen[1], seen[#seen]) end
   return lab end
 
 -- label at most budget-check rows; best first
@@ -490,6 +500,11 @@ function lst.map(t,fn,    u)
   u={}; for _,v in ipairs(t) do u[1 + #u] = fn(v) end
   return u end
 
+-- copy of t, each keym item passed through fn
+function lst.kap(t,fn,    u)
+  u={}; for k,v in pairs(t) do u[1 + #u] = fn(k,v) end
+  return u end
+
 -- copy of items lo..hi of t (defaults: all)
 function lst.slice(t,lo,hi,    u)
   u={}; for j = lo or 1, min(hi or #t, #t) do
@@ -508,8 +523,7 @@ function lst.bisect(t,v,eq,    lo,hi,mid)
   lo, hi = 1, #t + 1
   while lo < hi do
     mid = floor((lo + hi)/2)
-    if eq and v <= t[mid] or v < t[mid]
-    then hi = mid
+    if v < t[mid] or eq and v == t[mid] then hi = mid
     else lo = mid + 1 end end
   return lo end
 
@@ -520,6 +534,12 @@ function lst.argmax(t,fn,    hi,v,out)
     v = fn(z)
     if v > hi then hi,out = v,z end end
   return out end
+
+-- iterate over key,items in sorted key order
+function lst.items(t,     i,keys)
+  i,keys = 0,lst.sort(lst.kap(t, function(k,_) return k end))
+  return function()
+    i=i+1; if keys[i] then return keys[i], t[keys[i]] end end end 
 
 
 -- ## Rnd
@@ -558,10 +578,10 @@ function rnd.pick(dct,    keys,s)
       r = r - dct[k]; if r <= 0 then return k end end
     return keys[#keys] end end
 
--- Irwin-Hall bell: mean mu, sd sd (tails clip at 3 sd)
-function rnd.gauss(mu,sd)
-  mu, sd = mu or 0, sd or 1
-  return mu + sd*2*(rnd.n() + rnd.n() + rnd.n() - 1.5) end
+-- Box-Muller bell: mean mu, sd sd (real tails)
+function rnd.gauss(mu,sd,    u1,u2)
+  mu, sd, u1. u2 = mu or 0, sd or 1. rnd.n(), rnd.n()
+  return mu + sd*sqrt(-2*log(u1))*math.cos(2*math.pi*u2) end
 
 
 -- ## Str
@@ -598,17 +618,14 @@ function str.csv(file,    f)
     f:close() end end
 
 -- pretty print: ints bare, floats %.3f, lists spaced, dicts sorted
-function str.o(x,    u)
+function str.o(x,    u,y)
   if type(x) == "number" then
-    return math.type(x) == "integer" and tostring(x)
-           or fmt("%.3f", x) end
+    y = floor(x)
+    return x == y and tostring(y) or fmt("%.3f",x) end
   if type(x) ~= "table" then return tostring(x) end
-  u = {}
-  for _,v in ipairs(x) do lst.push(u, str.o(v)) end
+  u = lst.map(x,str.o) -- for non-arrays, returns '{}'
   if #u == 0 then
-    for k,v in pairs(x) do
-      lst.push(u, k .. "=" .. str.o(v)) end
-    lst.sort(u) end
+    for k,v in lst.items(x) do u[1+#u] = k.."="..str.o(v) end end
   return "{" .. table.concat(u, " ") .. "}" end
 
 -- ## Start
