@@ -16,15 +16,15 @@ auto-anchors `## key` as `#key`).
 |  2 | Rnd     | `lua abc-eg.lua --rnd`     | [seed](#seed) [shuffle](#shuffle) [gauss](#gauss) [roulette](#roulette) |
 |  3 | Str     | `lua abc-eg.lua --str`     | [coerce](#coerce) [csv](#csv) [ssot](#ssot) |
 |  4 | Num     | `lua abc-eg.lua --num`     | [welford](#welford) [stream](#stream) [minus](#minus) |
-|  5 | Sym     | `lua abc-eg.lua --sym`     | [entropy](#entropy) [mode](#mode) [poly](#poly) |
+|  5 | Sym     | `lua abc-eg.lua --sym`     | [entropy](#entropy) [mode](#mode) [poly](#poly) [noir](#noir) |
 |  6 | Cols    | `lua abc-eg.lua --cols`    | [schema](#schema) [goals](#goals) [xy](#xy) |
 |  7 | Tbl     | `lua abc-eg.lua --tbl`     | [tables](#tables) [clone](#clone) |
-|  8 | Dist    | `lua abc-eg.lua --dist`    | [norm](#norm) [minkowski](#minkowski) [missing](#missing) [heaven](#heaven) |
+|  8 | Dist    | `lua abc-eg.lua --dist`    | [norm](#norm) [minkowski](#minkowski) [missing](#missing) [heaven](#heaven) [knn](#knn) [anomaly](#anomaly) |
 |  9 | Stats   | `lua abc-eg.lua --stats`   | [effect](#effect) [ks](#ks) [same](#same) |
-| 10 | Acquire | `lua abc-eg.lua --acquire` | [budget](#budget) [active](#active) [poles](#poles) |
+| 10 | Acquire | `lua abc-eg.lua --acquire` | [budget](#budget) [active](#active) [poles](#poles) [explore](#explore) |
 | 11 | Bins    | `lua abc-eg.lua --bins`    | [bins](#bins) [cost](#cost) [closure](#closure) |
 | 12 | Tree    | `lua abc-eg.lua --tree`    | [tree](#tree) [predict](#predict) [explain](#explain) |
-| 13 | Score   | `lua abc-eg.lua --score`   | [holdout](#holdout) [win](#win) [baseline](#baseline) |
+| 13 | Score   | `lua abc-eg.lua --score`   | [holdout](#holdout) [win](#win) [baseline](#baseline) [bets](#bets) [variability](#variability) |
 
 ## Glossary
 
@@ -36,12 +36,25 @@ choose by projecting the unlabelled pool onto a line
 between two [poles](#poles) and keeping the good end.
 Spend the [budget](#budget) where it teaches most.
 
+## anomaly
+
+A row far from even its own nearest neighbor. Once
+distance exists, outlier detection is one argmax: find
+who is loneliest (lesson 8, `--near`).
+
 ## baseline
 
 Before crediting a clever method, beat a dumb one under
 the same rules. Ours: random labelling with the same
 [budget](#budget). If [same](#same) can't tell them
 apart, the cleverness is decoration (lessons 10, 13).
+
+## bets
+
+Every learner and optimizer is a falsifiable bet about
+the shape of your data: in recent optimizer tournaments
+the winner changed with the evaluation budget. So run the
+cheap experiment; don't trust the brand name (lesson 13).
 
 ## bins
 
@@ -127,6 +140,13 @@ data's own vocabulary, leaves small enough to inspect.
 This system prefers models that explain themselves over
 models that merely score well (lesson 12).
 
+## explore
+
+Explore vs exploit: spend labels learning the landscape,
+or harvesting its best-known corner? Acquisition policies
+(lesson 10) balance the two; pure exploit gets trapped,
+pure explore wastes the [budget](#budget).
+
 ## gauss
 
 The bell curve. Box-Muller turns two uniform draws into
@@ -151,6 +171,12 @@ worst), so optimization is just "find rows near heaven"
 Judge on rows never seen in training: shuffle, train on
 half under the [budget](#budget), let the tree rank the
 other half, check only the top few (lesson 13).
+
+## knn
+
+k-nearest-neighbors: sort everything by distance to a
+query, let the closest few answer. No training step --
+the data IS the model (lesson 8, `--near`).
 
 ## ks
 
@@ -189,6 +215,13 @@ gaps rather than hiding them (lesson 8).
 
 The most common symbol in a bag: Sym's middle, and the
 prediction at a classification leaf (lessons 5, 12).
+
+## noir
+
+Stevens' scale ladder: Nominal, Ordinal, Interval, Ratio.
+This system keeps just the two ends -- symbols get
+counted, numbers get averaged -- which is why two column
+summaries suffice (lesson 5).
 
 ## norm
 
@@ -275,6 +308,12 @@ rows and depth allow. Leaves keep their rows and a mid
 prediction; branches read as English-ish tests
 (lesson 12).
 
+## variability
+
+Learner variability: rerun with a new seed and the answer
+moves. So report distributions, never single runs, and
+judge gaps with [same](#same) (lesson 13, `--seeds`).
+
 ## welford
 
 Incremental mean and variance in three slots (n, mu, m2),
@@ -293,6 +332,67 @@ The x columns describe a thing (cheap to read); the y
 columns judge it (dear to measure). That asymmetry is the
 economics behind the whole second half of the course
 (lessons 6, 10, 13).
+
+## Scope: the larger concept space
+
+An audit (2026-07) of the ideas this course family wants
+to explain, pooled from abc-doc.md, luamine/tut.md's
+glossary, the seai26spr lectures and reviews, guru26spr's
+rules.md, and the standing SE/AI rules-of-thumb lists.
+**Bold** = covered by abc-eg.lua lessons (and defined
+above). The rest live in the other courses, or await
+future lessons.
+
+1. Code craft:
+   **lists**, **dsu**, **bisect**, **closure**,
+   **poly**, **coerce**, **csv**, **ssot**, **schema**,
+   little languages, idioms, short functions,
+   function-oriented over OO, streaming-over-loading,
+   pipe-and-filter, no magic numbers, code needs doco,
+   code needs tests, rogue globals, fail fast.
+2. SE design rules and laws:
+   SoC, SRP, DRY/WET, KISS, YAGNI, SOLID, GRASP, Law of
+   Demeter, CQS, POLA, design by contract, composition
+   over inheritance, mechanism vs policy, convention over
+   configuration, tell don't ask, cohesion/coupling, boy
+   scout rule, rule of three, Postel, Brooks, Conway,
+   Occam, Chesterton's fence, Hyrum, Parkinson, 90-90,
+   big ball of mud, Zawinski, Gall, premature
+   optimization, coding for teams, PEP 8.
+3. Data and statistics:
+   **welford**, **stream**, **minus**, **entropy**,
+   **mode**, **noir**, **norm**, **effect**, **ks**,
+   cohen, **same**, **seed**, **gauss**, **shuffle**,
+   **roulette**, **baseline**, **variability**,
+   m-estimates, percentile spreads, cross-validation,
+   temporal validation, overfitting, order effects,
+   best/rest ranking, accuracy/FPR, sampling.
+4. Distance, clustering, trees (XAI):
+   **minkowski**, **heaven**, **missing**, **knn**,
+   **anomaly**, **poles**, **bins**, **cost**, **tree**,
+   **predict**, **explain**, kmeans/kmeans++, medoids,
+   interpolation, synthesis, naive bayes, like/likes,
+   black-box to small tree.
+5. Search and optimization:
+   **budget**, **bets**, **explore**, SBSE, GA, DE, SA,
+   (1+1)/local search, GP, metropolis-hastings, pareto,
+   zitzler, chebyshev/MOEA-D, IGD/spread/hypervolume,
+   surrogates, multi-fidelity, racing, mutation and
+   extrapolation, tournament-of-optimizers, no free
+   lunch.
+6. Labels and active learning:
+   **active**, **xy**, **holdout**, **win**, acquisition
+   functions, informativeness, representativeness,
+   diversity, perversity, cold vs warm start, pool- vs
+   stream-based, model-query synthesis, Thompson
+   sampling, smart labeling, label-starved domains,
+   semi-supervised labeling.
+7. LLM-era SE and automation:
+   AI agents, MCP, A2A, audit trails, reasoning traces,
+   tools over agents, least privilege, automation layer
+   cake, sync vs async AI, APR, fuzzing, differential
+   oracles, oracle problem, evals, architecture beats
+   scale, specification writing.
 
 ## References
 

@@ -246,7 +246,7 @@ eg.num = {}
 -- - **Num.new(txt,at)** summarizes one numeric column; a name
 --   ending "-" sets goal w=0 (minimize), else w=1.
 -- - **Num.add(i,v,w)** folds v in by Welford (w<0 folds out).
--- - **Num.mid(i)**, **Num.spread(i)** = mean, standard deviation.
+-- - **Num.mid(i)**, **Num.spread(i)** = mean, std deviation.
 -- - **adds(t,i)** folds a whole list into any summary.
 eg.num["--welford"] = function(    n)
   n = adds{10,20,30,40}
@@ -296,10 +296,13 @@ bag. The lesson's real point is the shared interface: Num
 and Sym both answer add, mid, spread, without. Code that
 talks only to that interface (all of lessons 11-13) never
 asks a column its type. That is polymorphism doing the
-work of a design pattern, in twenty lines.
+work of a design pattern, in twenty lines. (Measurement
+theory calls Num and Sym the two ends of the NOIR ladder:
+nominal things get counted, ratio things get averaged.)
 
 **Core ideas:** [entropy](abc-doc.md#entropy),
-[mode](abc-doc.md#mode), [poly](abc-doc.md#poly)
+[mode](abc-doc.md#mode), [poly](abc-doc.md#poly),
+[noir](abc-doc.md#noir)
 ]]
 eg.sym = {}
 
@@ -453,7 +456,8 @@ needs.
 
 **Core ideas:** [norm](abc-doc.md#norm),
 [minkowski](abc-doc.md#minkowski),
-[missing](abc-doc.md#missing), [heaven](abc-doc.md#heaven)
+[missing](abc-doc.md#missing), [heaven](abc-doc.md#heaven),
+[knn](abc-doc.md#knn), [anomaly](abc-doc.md#anomaly)
 ]]
 eg.dist = {}
 
@@ -479,6 +483,29 @@ eg.dist["--disty"] = function(    t,ds)
   print("disty lo mid hi:", str.o(ds[1]),
         str.o(ds[#ds // 2]), str.o(ds[#ds]))
   assert(ds[1] >= 0 and ds[#ds] <= 1 and ds[1] < ds[#ds]) end
+
+-- - **Tbl.distx** + **lst.keysort** = k nearest neighbors: no
+--   training step, the data IS the model. And a row far from
+--   even its own nearest neighbor is an anomaly: once you
+--   have distance, outlier detection is one argmax.
+eg.dist["--near"] = function(    t,rows,near,r,lone)
+  t    = Tbl.new(the.file)
+  rows = rnd.some(t.rows, 64)
+  near = function(r1)
+           return lst.keysort(rows, function(r2)
+             return r1 == r2 and 2 or t:distx(r1, r2) end)[1] end
+  r = rows[1]
+  print("row:     ", str.o(r))
+  print("neighbor:", str.o(near(r)))
+  assert(near(r) ~= r)
+  assert(t:distx(r, near(r)) <= t:distx(r, rows[2]) or
+         near(r) == rows[2])
+  lone = lst.argmax(rows, function(r1)
+           return t:distx(r1, near(r1)) end)
+  print("loneliest (anomaly?):", str.o(lone),
+        "gap", str.o(t:distx(lone, near(lone))))
+  assert(t:distx(lone, near(lone)) >=
+         t:distx(r,    near(r))) end
 
 --[[
 **Exercises (lesson 8).**
@@ -560,10 +587,13 @@ the thing). So the game is to find good rows while LOOKING
 AT as few y values as possible. The tactic here: project
 rows onto a line between two far poles, keep the slice
 nearest the good pole, repeat. A whole tree's worth of
-labels for the price of a few dozen.
+labels for the price of a few dozen. The deeper game is
+explore vs exploit: spend labels learning the landscape,
+or harvesting its best-known corner?
 
 **Core ideas:** [budget](abc-doc.md#budget),
-[active](abc-doc.md#active), [poles](abc-doc.md#poles)
+[active](abc-doc.md#active), [poles](abc-doc.md#poles),
+[explore](abc-doc.md#explore)
 ]]
 eg.acquire = {}
 
@@ -736,10 +766,16 @@ lets the tree RANK the never-labelled test half, then
 checks just the top few. `wins` grades the result: 100
 means we found something as good as the best row in the
 table; 0 means no better than the median. One number, tiny
-budget, and every lesson of this course is inside it.
+budget, and every lesson of this course is inside it. Two
+cautions: never trust one run (rerun across seeds, report
+the spread), and remember that any such rig is a
+falsifiable bet about your data's shape -- in recent
+optimizer tournaments the winner changed with the budget.
 
 **Core ideas:** [holdout](abc-doc.md#holdout),
-[win](abc-doc.md#win), [baseline](abc-doc.md#baseline)
+[win](abc-doc.md#win), [baseline](abc-doc.md#baseline),
+[bets](abc-doc.md#bets),
+[variability](abc-doc.md#variability)
 ]]
 eg.score = {}
 
@@ -755,6 +791,22 @@ eg.score["--holdout"] = function(    t,w)
   assert(w >= -100 and w <= 100)
   if the.file:find"auto93" and the.seed == 1 then
     assert(w > 50) end end
+
+-- - **Tbl.holdout/Tbl.wins** again, across five seeds: any
+--   single run is a bet; the spread over reruns is the
+--   learner's variability. Report distributions, not runs.
+eg.score["--seeds"] = function(    t,num,w)
+  t   = Tbl.new(the.file)
+  num = Num.new()
+  for seed = 1, 5 do
+    rnd.seed(seed)
+    w = t:wins()(t:holdout())
+    io.write(w, " ")
+    num:add(w) end
+  print("| mu", str.o(num:mid()), "sd", str.o(num:spread()))
+  assert(num.n == 5)
+  assert(num:spread() >= 0)
+  assert(num:mid() >= -100 and num:mid() <= 100) end
 
 --[[
 **Exercises (lesson 13).**
