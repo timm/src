@@ -139,12 +139,15 @@ local function adds(t,i)
 
 -- header names -> {names, all, x, y} typed columns
 function Cols.new(names,    i,col)
-  i = new(Cols, {names=names, all={}, x={}, y={}})
+  i = new(Cols, {names=names, all={}, x={}, y={}, 
+                 klass=nil, protect={}})
   for at,s in ipairs(names) do
     col = (s:find"^%u" and Num or Sym).new(s,at)
     lst.push(i.all, col)
     if not s:find"X$" then
-      lst.push(s:find"[-+!]$" and i.y or i.x, col) end end
+      lst.push(s:find"[-+!]$" and i.y or i.x, col) 
+      if s:find"!$" then i.klass=col end
+      if s:find"~$" then lst.push(i.protect, col) end end end
   return i end
 
 -- route one row's cells to their columns ("?" skipped)

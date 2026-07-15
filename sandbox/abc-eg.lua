@@ -1,84 +1,876 @@
 #!/usr/bin/env lua
--- abc-eg.lua: demos and tests for abc.lua, one eg per
--- library section. --name args run egs; --key=val (or
--- -k val) args set options; each eg is reseeded. E.g.
---   lua abc-eg.lua --seed=2 --tree --holdout
+-- abc-eg.lua: demos and tests for abc.lua. One eg sub-table
+-- per library section, ordered simplest to hardest (lib
+-- first, then the AI code). On the command line:
+--
+--   --key=val, -k val    set an option
+--   --lst, --tree, ...   run one section's tests
+--   --csv, --grow, ...   run one test
+--   --all                run every section
+--
+-- Each test is reseeded, prints something a tutor can point
+-- at, then asserts it: no crash = pass.
+--
+--   lua abc-eg.lua --seed=2 --tree --score
+--
 local abc = require"abc"
 local the,lst,rnd,str = abc.the, abc.lst, abc.rnd, abc.str
+local stats,acquire   = abc.stats, abc.acquire
+local bins,adds       = abc.bins, abc.adds
+local Num,Sym,Cols    = abc.Num, abc.Sym, abc.Cols
 local Tbl,Tree        = abc.Tbl, abc.Tree
-local acquire         = abc.acquire
-local eg = {}
 
-eg["--the"] = function() print(str.o(the)) end
+local eg    = {}
+local order = {"lst","rnd","str","num","sym","cols","tbl",
+               "dist","stats","acquire","bins","tree","score"}
 
-eg["--tbl"] = function(    t)
+-- ## Lst
+--[[
+### Lesson 1: lists are all you need
+
+This system has one data structure: the Lua table, used as
+a list. No classes of container, no iterators, no streams
+library -- just a dozen ten-line verbs over lists. The deep
+point of lesson 1 is that a tiny vocabulary, if the verbs
+compose (push returns its item; sort returns its list),
+covers everything the next twelve lessons need. Two verbs
+deserve early respect: `keysort` computes its sort key once
+per item (the decorate-sort-undecorate trick -- vital when
+the key is an expensive distance calc), and `bisect` finds
+positions in sorted lists in log time (lesson 9's statistics
+lean on it).
+
+**Core ideas:** [lists](abc-doc.md#lists),
+[dsu](abc-doc.md#dsu), [bisect](abc-doc.md#bisect)
+]]
+eg.lst = {}
+
+-- - **lst.push(t,x)** appends x to t and returns x, so pushes
+--   can sit inside larger expressions.
+-- - **lst.sort(t,fn)** sorts in place and returns t, so sorts
+--   chain into the next call.
+-- - **lst.map(t,fn)** copies t, each item through fn.
+-- - **lst.slice(t,lo,hi)** copies items lo..hi (defaults: all).
+eg.lst["--basics"] = function(    t,u)
+  t = {}
+  for j = 5, 1, -1 do lst.push(t, j) end
+  u = lst.map(lst.sort(t), function(x) return 10*x end)
+  print("sorted, x10:", str.o(u))
+  assert(u[1] == 10 and u[5] == 50)
+  assert(#lst.slice(u, 2, 4) == 3) end
+
+-- - **lst.keysort(t,fn)** sorts a copy by fn(item), computing
+--   fn just once per item.
+-- - **lst.argmax(t,fn)** returns the item maximizing fn.
+-- - **lst.bisect(t,v,eq)** binary search of sorted t: smallest
+--   j with v < t[j] (eq: v <= t[j]); so bisect-1 counts <= v.
+eg.lst["--search"] = function(    t)
+  t = lst.keysort({3,1,2}, function(x) return -x end)
+  print("keysort by -x:", str.o(t))
+  assert(t[1] == 3 and t[3] == 1)
+  assert(lst.argmax({3,9,4}, function(x) return x end) == 9)
+  t = {1,2,2,2,5}
+  assert(lst.bisect(t, 2)       == 5)  -- 4 items <= 2
+  assert(lst.bisect(t, 2, true) == 2)  -- 1 item  <  2
+  assert(lst.bisect(t, 9)       == 6) end
+
+--[[
+**Exercises (lesson 1).**
+
+0. In your own favorite language (not lua), write
+   just enough code to implement this section's
+   examples.
+1. (simple) Using only `lst.map`, `lst.sort` and
+   `lst.slice`, print the three largest squares of
+   {7,2,9,4,5}. Predict the answer before running.
+2. Write `argmin(t,fn)` as a one-liner that reuses
+   `lst.argmax`. Then show `lst.bisect(t, argmin(t,id))`
+   equals 1 on any sorted list (id = identity function).
+]]
+
+-- ## Rnd
+--[[
+### Lesson 2: reproducible randomness
+
+Science requires rerunnable experiments, so this system
+never calls the platform random. Instead: a 10-line Lehmer
+generator (multiply by 16807, mod 2^31-1) that yields the
+SAME stream on any machine, any lua. Everything stochastic
+downstream -- shuffles, samples, mutation -- inherits
+reproducibility from this one seed. Also here: turning
+uniform bits into other shapes (Box-Muller for bells,
+roulette wheels for weighted choice), which is most of what
+"simulation" means.
+
+**Core ideas:** [seed](abc-doc.md#seed),
+[shuffle](abc-doc.md#shuffle), [gauss](abc-doc.md#gauss),
+[roulette](abc-doc.md#roulette)
+]]
+eg.rnd = {}
+
+-- - **rnd.seed(n)** resets the 16807 Lehmer generator (0 is
+--   nudged to 1), so any run repeats on any lua.
+-- - **rnd.n()** next float 0..1; **rnd.n(k)** integer 1..k.
+eg.rnd["--lehmer"] = function(    a,b)
+  rnd.seed(1); a = rnd.n()
+  rnd.seed(1); b = rnd.n()
+  print("same seed, same draw:", str.o(a), str.o(b))
+  assert(a == b and a > 0 and a < 1)
+  a = rnd.n(10)
+  assert(a >= 1 and a <= 10 and a == a // 1) end
+
+-- - **rnd.shuffle(t)** Fisher-Yates, in place.
+-- - **rnd.some(t,k)** k items at random; t untouched.
+eg.rnd["--some"] = function(    t,u)
+  t = {10,20,30,40,50,60,70,80,90,100}
+  u = rnd.some(t, 3)
+  print("3 of 10:", str.o(u))
+  assert(#u == 3 and #t == 10 and t[1] == 10)
+  u = rnd.shuffle{1,2,3,4,5}          -- same members, new order
+  assert(#u == 5 and lst.sort(u)[5] == 5) end
+
+-- - **rnd.pick(dct)** returns a sampler weighted by the dict's
+--   key -> weight pairs.
+-- - **rnd.gauss(mu,sd)** Box-Muller bell (real tails).
+eg.rnd["--gauss"] = function(    f,num)
+  f = rnd.pick{a=1, b=0}
+  assert(f() == "a")                     -- all weight on "a"
+  num = Num.new()
+  for _ = 1, 1000 do num:add(rnd.gauss(10, 2)) end
+  print("1000 x gauss(10,2): mu", str.o(num:mid()),
+        "sd", str.o(num:spread()))
+  assert(9.5 < num:mid()    and num:mid()    < 10.5)
+  assert(1.5 < num:spread() and num:spread() < 2.5) end
+
+--[[
+**Exercises (lesson 2).**
+
+0. In your own favorite language (not lua), write
+   just enough code to implement this section's
+   examples.
+1. (simple) Run `--lehmer` with `--seed=7`, twice. Then
+   without the flag, twice. Explain the difference in one
+   sentence.
+2. Using `rnd.pick` over {win=7, lose=2, draw=1},
+   draw 10,000 samples and count each key (a plain table
+   of counts). How close are the ratios to 7:2:1, and why
+   does rerunning give the exact same counts?
+]]
+
+-- ## Str
+--[[
+### Lesson 3: strings to things
+
+Files hold strings; programs want things. One tiny coercer
+(`what`) turns "42" into a number and "true" into a
+boolean, and then two conventions do a lot of work. First:
+settings live in the help text, so documentation and
+defaults cannot drift apart (one source of truth). Second:
+data files describe themselves -- lesson 6 will read column
+roles straight out of the csv header. When parsing is this
+cheap, there is no excuse for config files, schemas, or
+YAML.
+
+**Core ideas:** [coerce](abc-doc.md#coerce),
+[csv](abc-doc.md#csv), [ssot](abc-doc.md#ssot)
+]]
+eg.str = {}
+
+-- - **str.trim(s)** strips outer whitespace.
+-- - **str.what(s)** coerces to true | false | number, else the
+--   trimmed string.
+-- - **str.settings(s)** pulls any --key=val pairs into `the`.
+eg.str["--coerce"] = function(    old)
+  print("what:", str.what" 42 ", str.what"true", str.what" x ")
+  assert(str.trim"  x  " == "x")
+  assert(str.what" 42 "  == 42)
+  assert(str.what"true"  == true)
+  assert(str.what"false" == false)
+  old = the.p
+  str.settings"--p=4"
+  assert(the.p == 4)
+  the.p = old end
+
+-- - **str.filename(s)** expands a leading $MOOT (env var, else
+--   ~/gits/moot).
+-- - **str.csv(file)** iterates a csv's rows, cells trimmed and
+--   typed by str.what.
+eg.str["--csv"] = function(    n,row1)
+  assert(not str.filename(the.file):find"%$")
+  n = 0
+  for row in str.csv(the.file) do
+    n = n + 1; row1 = row1 or row end
+  print("rows (with header):", n, "header:", str.o(row1))
+  assert(n > 1 and type(row1[1]) == "string")
+  if the.file:find"auto93" then assert(n == 399) end end
+
+-- - **str.o(x)** pretty print: numbers rounded to 3 decimals,
+--   lists space-separated, dict keys sorted.
+eg.str["--o"] = function()
+  print("o:", str.o{3.14159, "hi", {b=2, a=1}})
+  assert(str.o(3.14159)   == "3.142")
+  assert(str.o{b=2, a=1}  == "{a=1 b=2}") end
+
+--[[
+**Exercises (lesson 3).**
+
+0. In your own favorite language (not lua), write
+   just enough code to implement this section's
+   examples.
+1. (simple) `str.settings"--p=1 --seed=42"` -- print `the`
+   before and after with `str.o`. Which keys changed?
+   Restore them.
+2. With `str.csv` and a plain counting table, report
+   how many "?" cells appear in each column of auto93.csv
+   (name the columns via the header row).
+]]
+
+-- ## Num
+--[[
+### Lesson 4: incremental statistics
+
+Mean and sd without keeping the data: Welford's update
+folds each value into three slots (n, mu, m2). Why care?
+Streams -- a million numbers summarize in constant space.
+And one more trick that pays off in lesson 11: summaries
+built this way can be UN-folded, so `without` returns "all
+of i's data except j's" in constant time, no second pass
+over the rows. Columns also carry their goal here: a name
+ending "-" means lower is better.
+
+**Core ideas:** [welford](abc-doc.md#welford),
+[stream](abc-doc.md#stream), [minus](abc-doc.md#minus)
+]]
+eg.num = {}
+
+-- - **Num.new(txt,at)** summarizes one numeric column; a name
+--   ending "-" sets goal w=0 (minimize), else w=1.
+-- - **Num.add(i,v,w)** folds v in by Welford (w<0 folds out).
+-- - **Num.mid(i)**, **Num.spread(i)** = mean, standard deviation.
+-- - **adds(t,i)** folds a whole list into any summary.
+eg.num["--welford"] = function(    n)
+  n = adds{10,20,30,40}
+  print("mu:", n:mid(), "sd:", str.o(n:spread()))
+  assert(n:mid() == 25)
+  assert(12.9 < n:spread() and n:spread() < 13)
+  n:add(40, -1)                       -- fold the 40 back out
+  assert(n.n == 3 and n:mid() == 20)
+  assert(Num.new("Lbs-").w == 0 and Num.new("Mpg+").w == 1) end
+
+-- - **Num.without(i,j)** Num of i's data without j's: weighted
+--   add of -j.n values at j.mu, then j's spread comes off m2.
+--   This trick lets bin scoring skip a second data pass.
+-- - **Num.norm(i,v)** logistic z-score squash to 0..1, so the
+--   mean lands near 0.5.
+eg.num["--without"] = function(    a,b,c)
+  a, b = adds{1,2,3,4,5,6}, adds{4,5,6}
+  c = a:without(b)
+  print("{1..6} minus {4,5,6}: mu", c:mid(),
+        "sd", str.o(c:spread()))
+  assert(c.n == 3 and c:mid() == 2 and c:spread() == 1)
+  assert(a:norm(a:mid()) > 0.49 and a:norm(a:mid()) < 0.51) end
+
+--[[
+**Exercises (lesson 4).**
+
+0. In your own favorite language (not lua), write
+   just enough code to implement this section's
+   examples.
+1. (simple) Change `--welford`'s list to {10,20,30,400}.
+   Predict mu and sd before running (hint: sd is hurt more
+   than mu by one outlier). Then check with `adds`.
+2. Write `merge(i,j)` -- the inverse of `without` --
+   using only `Num.new` and `Num.add`. Prove it: for any
+   two lists, `merge(a:without(b), b)` must match `a` on
+   n, mu and m2 (to ten significant digits).
+]]
+
+-- ## Sym
+--[[
+### Lesson 5: counting and entropy
+
+Not everything is a number. Symbolic columns summarize as
+counts; their "middle" is the mode and their "spread" is
+entropy -- the effort needed to describe what is in the
+bag. The lesson's real point is the shared interface: Num
+and Sym both answer add, mid, spread, without. Code that
+talks only to that interface (all of lessons 11-13) never
+asks a column its type. That is polymorphism doing the
+work of a design pattern, in twenty lines.
+
+**Core ideas:** [entropy](abc-doc.md#entropy),
+[mode](abc-doc.md#mode), [poly](abc-doc.md#poly)
+]]
+eg.sym = {}
+
+-- - **Sym.new(txt,at)** summarizes one symbolic column: counts
+--   in has{}.
+-- - **Sym.add(i,v,w)** counts v in (w<0: out; dead keys die).
+-- - **Sym.mid(i)** = mode; **Sym.spread(i)** = entropy.
+eg.sym["--mode"] = function(    s)
+  s = adds({"a","a","a","b","b","c"}, Sym.new())
+  print("mode:", s:mid(), "entropy:", str.o(s:spread()))
+  assert(s:mid() == "a")
+  assert(1.45 < s:spread() and s:spread() < 1.47)
+  s:add("c", -1)                      -- fold the c back out
+  assert(s.n == 5 and s.has.c == nil) end
+
+-- - **Sym.without(i,j)** counts of i without j's, same shape
+--   as Num.without: bin scoring never asks a column its type.
+eg.sym["--minus"] = function(    a,b,c)
+  a = adds({"a","a","b"}, Sym.new())
+  b = adds({"b"},         Sym.new())
+  c = a:without(b)
+  print("aab minus b:", str.o(c.has))
+  assert(c.n == 2 and c.has.a == 2 and c.has.b == nil) end
+
+--[[
+**Exercises (lesson 5).**
+
+0. In your own favorite language (not lua), write
+   just enough code to implement this section's
+   examples.
+1. (simple) Build two Syms with `adds`: a fair coin
+   {h,t,h,t} and a loaded one {h,h,h,t}. Predict which has
+   higher entropy, then print both spreads.
+2. Entropy of {a,a,b,b,c,c,d,d} is exactly 2 bits.
+   Show this with `adds` + `Sym.spread`, then explain (three
+   sentences max) why doubling every count leaves entropy
+   unchanged -- checking your claim with `Sym.add(i,v,w)`
+   and w=2.
+]]
+
+-- ## Cols
+--[[
+### Lesson 6: the header is the schema
+
+Data should explain itself. In this system a csv header
+line IS the schema: leading uppercase means numeric; a
+trailing "-", "+" or "!" marks a goal to minimize,
+maximize, or classify; trailing "X" means ignore. One
+30-line factory reads those names and builds typed column
+summaries, split into x (inputs) and y (goals). No config
+file, no schema language -- rename a column and the
+system's whole view of the data changes.
+
+**Core ideas:** [schema](abc-doc.md#schema),
+[goals](abc-doc.md#goals), [xy](abc-doc.md#xy)
+]]
+eg.cols = {}
+
+-- - **Cols.new(names)** types a header: leading uppercase =
+--   Num; -,+,! suffix = y goal; X suffix = skip; else x.
+-- - **Cols.add(i,row)** routes one row's cells to their
+--   columns ("?" cells skipped).
+eg.cols["--types"] = function(    c)
+  c = Cols.new{"Age", "job", "SkipX", "Weight-"}
+  print("all x y:", #c.all, #c.x, #c.y,
+        " goal(Weight-):", c.all[4].w)
+  assert(#c.all == 4 and #c.x == 2 and #c.y == 1)
+  assert(c.all[4].w == 0)
+  c:add{20, "cook", "?", 80}
+  assert(c.all[1].mu == 20 and c.all[2].has.cook == 1) end
+
+--[[
+**Exercises (lesson 6).**
+
+0. In your own favorite language (not lua), write
+   just enough code to implement this section's
+   examples.
+1. (simple) Write a header for a used-car lot: two numeric
+   inputs, one symbolic input, one column to ignore, price
+   to minimize. Check x/y sizes with `Cols.new`.
+2. Feed `Cols.add` ten rows where one numeric cell
+   is "?" half the time. Show (via the col's n) that
+   missing cells never corrupt the count, and say why that
+   matters for the lesson-4 subtraction trick.
+]]
+
+-- ## Tbl
+--[[
+### Lesson 7: tables and clones
+
+A Tbl is just rows plus the lesson-6 columns: the first row
+builds the schema, every later row updates per-column
+summaries as it is stored. The one non-obvious verb is
+`clone`: a fresh, empty table wearing the same header.
+Grow different row subsets inside clones and each subset
+gets its own honest statistics -- which is how lesson 13
+keeps its train and test data from contaminating each
+other.
+
+**Core ideas:** [tables](abc-doc.md#tables),
+[clone](abc-doc.md#clone)
+]]
+eg.tbl = {}
+
+-- - **Tbl.new(src)** table from a csv file name or a list of
+--   rows; first row makes the cols (**Tbl.add** does the rest).
+eg.tbl["--load"] = function(    t)
   t = Tbl.new(the.file)
-  print(#t.rows, str.o(lst.map(t.cols.y,
-                  function(c) return c.txt end))) end
+  print("rows:", #t.rows, "y:", str.o(lst.map(t.cols.y,
+        function(c) return c.txt end)))
+  assert(#t.rows > 0 and #t.cols.y > 0)
+  if the.file:find"auto93" then assert(#t.rows == 398) end end
 
-eg["--disty"] = function(    t,rows)
-  t    = Tbl.new(the.file)
-  rows = lst.keysort(t.rows,
-                     function(r) return t:disty(r) end)
-  for j = 1, 5 do print(str.o(rows[j])) end
-  print""
-  for j = #rows - 4, #rows do print(str.o(rows[j])) end end
-
-eg["--acquire"] = function(    t,got)
-  t   = Tbl.new(the.file)
-  got = acquire.top(t)
-  print(#got, str.o(t:disty(got[1]))) end
-
-eg["--tree"] = function(    t)
+-- - **Tbl.clone(i,rows)** fresh Tbl over new rows, reusing the
+--   header, so subsets get their own column summaries.
+eg.tbl["--clone"] = function(    t,u)
   t = Tbl.new(the.file)
-  Tree.grow(t, acquire.top(t)):show(t) end
+  u = t:clone(lst.slice(t.rows, 1, 10))
+  print("clone of first 10 rows:", #u.rows)
+  assert(#u.rows == 10)
+  assert(u.cols.names == t.cols.names) end
 
-eg["--same"] = function(    a,b,c)
+--[[
+**Exercises (lesson 7).**
+
+0. In your own favorite language (not lua), write
+   just enough code to implement this section's
+   examples.
+1. (simple) Clone the first 50 rows of auto93. Compare the
+   clone's first y column mid to the full table's. Why do
+   they differ?
+2. Using `rnd.some` (lesson 2) and `Tbl.clone`, show
+   that the mid of a 100-row random clone sits closer to
+   the full table's mid than the first-50 clone from
+   exercise 1. One sentence: why?
+]]
+
+-- ## Dist
+--[[
+### Lesson 8: distance is all you need
+
+Once every value maps to 0..1 (`norm`), any two rows are a
+number apart (`distx`, a Minkowski sum over x columns) and
+any single row is a number from perfection (`disty`,
+distance to the ideal goal corner -- "heaven"). Missing
+values get the pessimistic treatment: assume the worst.
+With just these two rulers we get clustering, nearest
+neighbors, anomaly detection, and (lessons 10-13) cheap
+optimization. Distance really is most of what "learning"
+needs.
+
+**Core ideas:** [norm](abc-doc.md#norm),
+[minkowski](abc-doc.md#minkowski),
+[missing](abc-doc.md#missing), [heaven](abc-doc.md#heaven)
+]]
+eg.dist = {}
+
+-- - **Sym.dist/Num.dist(i,u,v)** gap 0..1 between two values of
+--   one column; "?" gets the pessimistic, far-away treatment.
+-- - **Tbl.distx(i,r1,r2)** p-norm of those gaps over the x cols.
+eg.dist["--distx"] = function(    t,r,d)
+  t = Tbl.new(the.file)
+  r = t.rows[1]
+  d = t:distx(r, t.rows[2])
+  print("d(r1,r1):", t:distx(r,r), " d(r1,r2):", str.o(d))
+  assert(t:distx(r, r) == 0)
+  assert(d > 0 and d <= 1)
+  assert(Sym.new():dist("a", "b") == 1)
+  assert(Num.new():dist("?", "?") == 1) end -- "?" = far away
+
+-- - **Tbl.disty(i,row)** distance to the ideal y goals;
+--   0 = heaven, 1 = worst possible row.
+eg.dist["--disty"] = function(    t,ds)
+  t  = Tbl.new(the.file)
+  ds = lst.sort(lst.map(t.rows,
+                        function(r) return t:disty(r) end))
+  print("disty lo mid hi:", str.o(ds[1]),
+        str.o(ds[#ds // 2]), str.o(ds[#ds]))
+  assert(ds[1] >= 0 and ds[#ds] <= 1 and ds[1] < ds[#ds]) end
+
+--[[
+**Exercises (lesson 8).**
+
+0. In your own favorite language (not lua), write
+   just enough code to implement this section's
+   examples.
+1. (simple) Rerun `--distx` with `--p=1` then `--p=4`.
+   Which p makes distances bigger, and why (look at what
+   the exponent does to sub-1 gaps)?
+2. Write `near(t,row)`: the closest OTHER row, via
+   `lst.keysort` over `Tbl.distx`. Print the best row by
+   `disty` and its nearest neighbor -- are the neighbor's
+   goals also good? Should they be?
+]]
+
+-- ## Stats
+--[[
+### Lesson 9: when are two results the same?
+
+Lessons 10-13 will claim "method A beats method B". Such
+claims need a stopping rule. This system calls two result
+sets "the same" only when three cheap tests all agree: a
+small effect size (Cohen), a small rank shift (Cliff's
+delta), and close CDFs (Kolmogorov-Smirnov). Demanding
+all three makes the equality conservative: we only shout
+"different!" when it would take real effort to argue
+otherwise. Note the lesson-1 payoff: all three run fast off
+sorted lists and `bisect`.
+
+**Core ideas:** [effect](abc-doc.md#effect),
+[ks](abc-doc.md#ks), [same](abc-doc.md#same)
+]]
+eg.stats = {}
+
+-- - **stats.cliffs(xs,ys)** effect size 0..1 via lst.bisect
+--   over pre-sorted lists (0 = identical).
+-- - **stats.cohen(xs,ys)** |mean gap| <= 0.35 pooled sd?
+-- - **stats.ks(xs,ys)** max gap between two sorted CDFs.
+-- - **stats.same(xs,ys)** conservative equality: sorts copies
+--   once, then all three of the above must agree.
+eg.stats["--same"] = function(    a,b,c)
   a, b, c = {}, {}, {}
   for _ = 1, 32 do
     lst.push(a, rnd.n())
     lst.push(b, rnd.n())
     lst.push(c, 2 + rnd.n()) end
-  print(abc.stats.same(a,b), abc.stats.same(a,c)) end
+  print("same(a,b):", stats.same(a,b),
+        " same(a,c):", stats.same(a,c))
+  assert(stats.same(a, b) and not stats.same(a, c))
+  a = lst.sort(a)                    -- cliffs,ks want sorted
+  assert(stats.cohen(a, a))
+  assert(stats.cliffs(a, a) == 0)
+  assert(stats.ks(a, a) == 0) end
 
-eg["--holdout"] = function(    t)
+--[[
+**Exercises (lesson 9).**
+
+0. In your own favorite language (not lua), write
+   just enough code to implement this section's
+   examples.
+1. (simple) Two 32-item samples of `rnd.n()`, the second
+   shifted by +0.1, +0.5, +2. At which shift does
+   `stats.same` first say false?
+2. Repeat the previous exercise, but hunt the flip point: loop
+   the shift from 0 upward in steps of 0.02 and report the
+   smallest shift where same() fails, at n=32 and again at
+   n=256. What does the difference teach about sample size?
+]]
+
+-- ## Acquire
+--[[
+### Lesson 10: labels cost money
+
+The central economic fact of lesson 10: in most real tables,
+the x values are cheap (they describe a thing) but the y
+values are dear (someone must build, benchmark, or survey
+the thing). So the game is to find good rows while LOOKING
+AT as few y values as possible. The tactic here: project
+rows onto a line between two far poles, keep the slice
+nearest the good pole, repeat. A whole tree's worth of
+labels for the price of a few dozen.
+
+**Core ideas:** [budget](abc-doc.md#budget),
+[active](abc-doc.md#active), [poles](abc-doc.md#poles)
+]]
+eg.acquire = {}
+
+-- - **acquire.project(rows,x,y)** maps rows onto the line
+--   joining two far poles (good pole first): the heart of
+--   every descent.
+eg.acquire["--project"] = function(    t,x,y,rows,pr,p)
+  t    = Tbl.new(the.file)
+  y    = function(r) return t:disty(r) end
+  x    = function(a,b) return t:distx(a,b) end
+  rows = rnd.some(t.rows, 32)
+  pr   = acquire.project(rows, x, y)
+  p    = lst.keysort(rows, pr)
+  print("y at the line's ends:", str.o(y(p[1])),
+        str.o(y(p[#p])))
+  assert(pr(p[1]) <= pr(p[#p])) end
+
+-- - **acquire.top(tbl)** the labels, best first, spending at
+--   most budget-check; inside, `sway3` repeats `descend`
+--   (label a few, cull the slice nearest the bad pole) over
+--   fresh shuffles till the budget spends.
+eg.acquire["--top"] = function(    t,got,ys)
+  t   = Tbl.new(the.file)
+  got = acquire.top(t)
+  ys  = lst.map(got, function(r) return t:disty(r) end)
+  print("labels:", #got, " best:", str.o(ys[1]),
+        " worst:", str.o(ys[#ys]))
+  assert(#got <= the.budget - the.check)
+  assert(ys[1] <= ys[#ys]) end
+
+-- - **acquire.top(tbl)** with the.acquire=random is the
+--   baseline: same budget, no steering.
+eg.acquire["--random"] = function(    t,got,old)
+  old, the.acquire = the.acquire, "random"
+  t   = Tbl.new(the.file)
+  got = acquire.top(t)
+  print("random labels:", #got)
+  assert(#got <= the.budget - the.check)
+  the.acquire = old end
+
+--[[
+**Exercises (lesson 10).**
+
+0. In your own favorite language (not lua), write
+   just enough code to implement this section's
+   examples.
+1. (simple) Run `--top` with `--budget=20`, then 50, then
+   100. Tabulate best disty against budget. Where do the
+   gains flatten?
+2. Twenty runs each (vary `--seed`): best disty from
+   `--top` active vs `the.acquire=random`. Feed both lists
+   to lesson 9's `stats.same`. Verdict: does steering beat
+   luck on auto93, at budget 50?
+]]
+
+-- ## Bins
+--[[
+### Lesson 11: cut where it gets simpler
+
+To explain y we chop x columns into bins, and score each
+candidate chop by the size-weighted spread of the two
+sides -- lower means the split made y easier to describe.
+Two earlier ideas make this near-free: the lesson-4/5
+`without` gives the far side of any cut in constant time,
+and a tiny closure (`bins.keep`) remembers the best bin
+seen so far, so all columns share one running competition.
+Swap the y summary from Num to Sym and the same code stops
+regressing and starts classifying.
+
+**Core ideas:** [bins](abc-doc.md#bins),
+[cost](abc-doc.md#cost), [closure](abc-doc.md#closure)
+]]
+eg.bins = {}
+
+-- - **bins.keep()** closure holding the running cheapest bin:
+--   offer it (this,ys,at,v); call it bare for the winner.
+-- - **Sym.bins/Num.bins(i,rows,y,yklass,keep)** offer bins
+--   from one column (cost = size-weighted spread of the two
+--   halves, the far half via `without`, never a second pass).
+-- - **bins.split(tbl,rows,y,yklass)** cheapest {cost,at,v}
+--   bin over all the x columns.
+eg.bins["--split"] = function(    t,y,bin,col,keep,b1)
+  t   = Tbl.new(the.file)
+  y   = function(r) return t:disty(r) end
+  bin = bins.split(t, t.rows, y, Num.new)
+  col = t.cols.all[bin[2]]
+  print("best bin:", col.txt, "at", str.o(bin[3]),
+        "cost", str.o(bin[1]))
+  assert(bin[1] >= 0 and col.at == bin[2])
+  keep = bins.keep()             -- one column's private best
+  t.cols.x[1]:bins(t.rows, y, Num.new, keep)
+  b1 = keep()
+  print("x1's own best:", t.cols.x[1].txt,
+        "at", str.o(b1[3]), "cost", str.o(b1[1]))
+  assert(b1[2] == t.cols.x[1].at)
+  assert(bin[1] <= b1[1] + 1E-32) end  -- winner is no worse
+
+--[[
+**Exercises (lesson 11).**
+
+0. In your own favorite language (not lua), write
+   just enough code to implement this section's
+   examples.
+1. (simple) Call `col:bins(...)` per x column with a fresh
+   `bins.keep()` each, printing every column's private best
+   bin. Which column's winner matches `bins.split`'s?
+2. Write `keep2()`, a closure like `bins.keep` that
+   remembers the best TWO bins. Report whether first and
+   second place come from the same column, and what that
+   says about that column's importance.
+]]
+
+-- ## Tree
+--[[
+### Lesson 12: explanation as recursion
+
+Apply lesson 11 once and rows split in two; apply it
+recursively and a tree grows -- each node a readable test
+(Volume <= 112), each leaf a small crowd of rows with a
+prediction. Trees here serve two masters: prediction
+(route a new row to a leaf, report its mid) and
+EXPLANATION (print the branch conditions; a human can now
+argue with the model). Note what we did not need: no
+gradients, no pruning theory, just distance, bins, and
+recursion.
+
+**Core ideas:** [tree](abc-doc.md#tree),
+[predict](abc-doc.md#predict), [explain](abc-doc.md#explain)
+]]
+eg.tree = {}
+
+-- - **Tree.grow(tbl,rows,y,yklass)** recurses on the cheapest
+--   bin while rows and depth allow; yklass=Num.new regresses,
+--   yklass=Sym.new classifies.
+-- - **Tree.leaf(i,row)** routes a row down to its leaf's mid.
+-- - **Tree.leaves(i)** collects every leaf node.
+-- - **Tree.show(i,tbl)** prints win, n, per-goal mids, then
+--   indented branch conditions, best leaf flagged.
+eg.tree["--grow"] = function(    t,tr)
+  t  = Tbl.new(the.file)
+  tr = Tree.grow(t, acquire.top(t))
+  tr:show(t)
+  assert(tr.col)                             -- root did split
+  assert(#tr:leaves() > 1)
+  assert(type(tr:leaf(t.rows[1])) == "number") end
+
+--[[
+**Exercises (lesson 12).**
+
+0. In your own favorite language (not lua), write
+   just enough code to implement this section's
+   examples.
+1. (simple) Grow with `--depth=2`, then `--depth=6`. Count
+   leaves via `Tree.leaves`. Which tree would you hand to a
+   manager, and what did the deeper one buy?
+2. Write `path(tree,row)`: the list of "col op v"
+   strings met walking a row to its leaf (reuse the node's
+   col.txt, col.ops and v, as `Tree.show` does). Print the
+   path of the best-disty row. That string IS the model's
+   explanation of a good car.
+]]
+
+-- ## Score
+--[[
+### Lesson 13: grading the whole story
+
+Capstone. `holdout` shuffles the rows, labels only the
+train half under lesson 10's budget, grows lesson 12's tree,
+lets the tree RANK the never-labelled test half, then
+checks just the top few. `wins` grades the result: 100
+means we found something as good as the best row in the
+table; 0 means no better than the median. One number, tiny
+budget, and every lesson of this course is inside it.
+
+**Core ideas:** [holdout](abc-doc.md#holdout),
+[win](abc-doc.md#win), [baseline](abc-doc.md#baseline)
+]]
+eg.score = {}
+
+-- - **Tbl.wins(i)** grader: row -> % of the median-to-best gap
+--   closed (100 = best seen, 0 = median).
+-- - **Tbl.holdout(i)** the full rig: acquire labels on half the
+--   rows, grow a tree, let it rank the unseen half, check only
+--   the top few, return the best found.
+eg.score["--holdout"] = function(    t,w)
   t = Tbl.new(the.file)
-  print("win", t:wins()(t:holdout())) end
+  w = t:wins()(t:holdout())
+  print("holdout win:", w)
+  assert(w >= -100 and w <= 100)
+  if the.file:find"auto93" and the.seed == 1 then
+    assert(w > 50) end end
 
-eg["-h"] = function() 
-  print(abc.help,"\n\nExamples:\n")
-  for k,_ in lst.items(eg) do print("  lua abc-eg.lua "..k) end end
+--[[
+**Exercises (lesson 13).**
 
-eg["--doc"] = function(    f,b,s,i)
-  os.execute(
-    "mkdir -p ~/tmp; pycco -d ~/tmp abc.lua && echo '" ..
-    "p {text-align:right;} " ..
-    "h2 {border-top:1px solid #ddd; margin-top:2.5em; " ..
-    "padding-top:.5em;}' >> ~/tmp/pycco.css")
-  b = io.open"badges.html"
-  if b then
-    f = io.open(str.filename"~/tmp/abc.html","r+"); s = f:read"*a"
-    i = s:find("<h1",1,true)
-    f:seek("set", i-1); f:write(b:read"*a", s:sub(i)):close()
-    b:close() end end
+0. In your own favorite language (not lua), write
+   just enough code to implement this section's
+   examples.
+1. (simple) Run `--holdout` at five seeds. Report the five
+   wins. Stable? Fragile? One sentence on why holdouts
+   need repeats.
+2. The final exam: 20 holdout wins with active
+   acquisition vs 20 with `the.acquire=random`. Compare via
+   `stats.same` and print one verdict line, e.g.
+   "active 88 random 74 DIFFERENT". Defend the verdict in
+   a paragraph, citing lessons 9 and 10.
+]]
 
-eg["--all"] = function()
-  for _,k in ipairs{"--the","--tbl","--disty","--acquire",
-                    "--tree","--same","--holdout"} do
+-- ## Main
+eg.main = {}
+
+-- run one test, reseeded
+local function run(fn) rnd.seed(the.seed); fn() end
+
+-- run one section's tests, sorted by flag name
+local function section(name,    keys)
+  keys = {}
+  for k in pairs(eg[name]) do lst.push(keys, k) end
+  for _,k in ipairs(lst.sort(keys)) do
     print("\n-- " .. k)
-    rnd.seed(the.seed)
-    eg[k]() end end
+    run(eg[name][k]) end end
 
--- args run left to right: --key=val (or "-x v", x = an
--- option's first letter) sets options; eg names run. So
--- flags steer only the egs that follow them.
-for i,s in ipairs(arg) do
-  local k,v = s:match"^%-%-(%w+)=(%S+)$"
-  if v then
-    if the[k] == nil then error("unknown --" .. k) end
-    the[k] = str.what(v) end
-  for k,_ in pairs(the) do
-    if s == "-" .. k:sub(1,1) then
-      if not arg[i+1] or eg[arg[i+1]] then error(s.." arg?") end
-      the[k] = str.what(arg[i+1]) end end
-  if eg[s] then rnd.seed(the.seed); eg[s]() end end
+eg.main["-h"] = function(    keys)
+  print(abc.help .. "\nSections (and their tests):\n")
+  for _,n in ipairs(order) do
+    keys = {}
+    for k in pairs(eg[n]) do lst.push(keys, k) end
+    print("  lua abc-eg.lua --" .. n .. "   # or: " ..
+          table.concat(lst.sort(keys), " ")) end
+  print("\nAlso: --all -h --doc") end
+
+eg.main["--all"] = function()
+  for _,n in ipairs(order) do
+    print("\n---- " .. n .. " " .. ("-"):rep(40))
+    section(n) end
+  print("\nall pass") end
+
+-- files to html, and each one's prose alignment
+local docs = {abc="right", ["abc-eg"]="left"}
+
+-- pycco only knows "--" line comments, so lift --[[ prose ]]
+-- blocks to "-- " lines; drop shebang and formfeeds. pycco
+-- pairs a comment run with the NEXT code, so when a "-- ##"
+-- heading directly follows prose (e.g. the exercises of the
+-- section before), emit a lone ";" code line between them:
+-- that closes the old section, and the heading starts fresh.
+local function prose(file,    out,md,last)
+  out = {}
+  for s in io.lines(file) do
+    if     s:find"^%-%-%[%[" then md = true
+    elseif s:find"^%]%]"     then md = false
+    elseif not (s:find"^#!" or s:find"^\f") then
+      if s:find"^%-%- ##" and last == "prose" then
+        lst.push(out, ";") end
+      lst.push(out, md and "-- " .. s or s)
+      if s ~= "" then
+        last = (md or s:find"^%-%-") and "prose" or "code"
+      end end end
+  return table.concat(out, "\n") end
+
+eg.main["--doc"] = function(    tmp,b,badges,f,s,i)
+  tmp = os.getenv"HOME" .. "/tmp"
+  os.execute("mkdir -p " .. tmp .. "/eg")
+  b = io.open"badges.html"
+  badges = b and b:read"*a" or ""
+  if b then b:close() end
+  for name,align in pairs(docs) do
+    f = io.open(tmp .. "/eg/" .. name .. ".lua", "w")
+    f:write(prose(name .. ".lua"))
+    f:close()
+    os.execute("pycco -d " .. tmp .. " " ..
+               tmp .. "/eg/" .. name .. ".lua")
+    f = io.open(tmp .. "/" .. name .. ".html")
+    s = f:read"*a"; f:close()
+    s = s:gsub('href="abc%-doc%.md',         -- glossary links
+          'href="https://github.com/timm/src/blob/main/'
+          .. 'sandbox/abc-doc.md')
+    s = s:gsub("</head>",                    -- per-page style
+          "<style>h2 {border-top:1px solid #ddd; " ..
+          "margin-top:2.5em; padding-top:.5em} " ..
+          "p {text-align:" .. align .. "}</style></head>", 1)
+    i = s:find("<h1", 1, true)               -- badges
+    if i then s = s:sub(1, i - 1) .. badges .. s:sub(i) end
+    f = io.open(tmp .. "/" .. name .. ".html", "w")
+    f:write(s); f:close() end end
+
+-- cli, args left to right: --key=val (or "-x v", x = an
+-- option's first letter) sets an option; --name runs a
+-- section; other names run one test (--all, -h and --doc
+-- are just tests in eg.main). Flags steer only the egs
+-- that follow them.
+local function cli(    k,v)
+  for i,s in ipairs(arg) do
+    k,v = s:match"^%-%-(%w+)=(%S+)$"
+    if v then
+      if the[k] == nil then error("unknown --" .. k) end
+      the[k] = str.what(v) end
+    for key,_ in pairs(the) do
+      if s == "-" .. key:sub(1,1) then
+        if not arg[i+1] then error(s .. " arg?") end
+        the[key] = str.what(arg[i+1]) end end
+    if eg[s:sub(3)] then section(s:sub(3))
+    else
+      for _,sect in pairs(eg) do
+        if sect[s] then run(sect[s]) end end end end end
+
+-- lua's "if __name__ == __main__": when run from the shell,
+-- arg[0] is this script; when require'd, it is the caller's.
+if arg and arg[0] and arg[0]:find"abc%-eg" then cli() end
+return eg

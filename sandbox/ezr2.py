@@ -155,8 +155,7 @@ def pick(col, v=None):
       if (n := n - c) <= 0: return k
     return k
   mu = mu_(col) if v is None or v == "?" else v  # bell at v|mu
-  r  = random.random
-  return mu + sd(col)*2*(r()+r()+r()-1.5)
+  return random.gauss(mu, sd(col))
 
 #-- tbl --------------------------------------------------------
 def Tbl(src):

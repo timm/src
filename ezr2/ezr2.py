@@ -125,7 +125,7 @@ def some(lst, k): return random.sample(lst, min(k, len(lst)))
 # `welford`; `Sym` is a dict of counts. `mid`/`var` =
 # centrality and dispersion for either; `mix` merges two
 # summaries (inc=-1 subtracts); `pick` samples one value
-# (roulette or Irwin-Hall bell).
+# (roulette or gaussian bell).
 
 Sym = dict
 def Num(n=0, mu=0, m2=0): return (n, mu, m2)
@@ -174,15 +174,14 @@ def mix(i, j, inc=1):
   return Num(n, mu, max(0, m2))  # subtraction can underflow m2
 
 def pick(col, v=None):
-  "Sample one value: roulette for a Sym, Irwin-Hall for a Num"
+  "Sample one value: roulette for a Sym, gaussian for a Num"
   if is_sym(col):                  # roulette wheel over counts
     n = sum(col.values()) * random.random()
     for k, c in col.items():
       if (n := n - c) <= 0: return k
     return k
   mu = mu_(col) if v is None or v == "?" else v  # bell at v|mu
-  r  = random.random
-  return mu + sd(col)*2*(r()+r()+r()-1.5)
+  return random.gauss(mu, sd(col))
 
 
 #-- tbl ---------------------------------------------------------

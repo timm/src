@@ -40,7 +40,8 @@ recreate them.
   file sprawl; the doc pipeline renders markers as
   headings either way.
 - `-eg` files are executable transcripts: running them IS
-  the tutorial; their asserts ARE the tests.
+  the tutorial; their asserts ARE the tests (full shape:
+  see "-eg and -doc" below).
 - No subdirs inside an idea dir. Uniform shape keeps all
   tooling a single loop over dirs; guard it jealously.
 
@@ -63,6 +64,47 @@ ones before markers. Prose stanzas (block comments / bare
 python block opening `word: ...` (e.g. `ezr2.py: ...`,
 `INSTALL: ...`) is help text and doc.awk renders it
 fenced verbatim.
+
+## -eg and -doc: tutorials that are tests
+
+Language agnostic (exemplars: sandbox/abc-eg.lua,
+ezr2/ezr2-eg.py). Every idea dir pairs xx.ext with
+xx-eg.ext and, when taught as a course, xx-doc.md.
+The doc pipeline pyccos BOTH xx.ext and xx-eg.ext
+(block-comment prose stanzas lift into the docs column;
+see doc.awk, or abc-eg's local `prose`).
+
+Shape of xx-eg.ext:
+
+- Sections mirror xx.ext's `## sections`, reordered
+  simplest to hardest: lib sections first, then the
+  domain code. One eg sub-table per section.
+- Each section is one lesson: an opening markdown stanza
+  (a few lines of background, ending in
+  `**Core ideas:** [key](xx-doc.md#key)` join keys --
+  keys short, github auto-anchors the headings); then
+  dot-lists (`- **fn(sig)** one-two lines`, naming ONLY
+  functions the tests call); then demos that print a
+  tutor-pointable line BEFORE 1+ asserts (no crash =
+  pass); then a closing stanza of exercises:
+  0 = port this section's examples to another language,
+  1 = (simple) tweak, predict, rerun,
+  2 = write new code against this section's verbs.
+- Runners derive from the structure: a section name runs
+  its tests, --all walks the sections, -h prints the map.
+  The file returns the eg table; its cli fires only when
+  run as main.
+- xx-doc.md is the lecture notes: one short `## key`
+  entry per join key (glossary style, 2-4 lines), plus
+  contents, recaps, quiz, references.
+
+Maintenance: -eg and -doc files are AUDITED, never
+regenerated. If absent, create; ever after, edits only
+ADD missing bits (new function -> dot-list line + test;
+new idea -> glossary key). Deleting or rewriting existing
+-eg/-doc content needs explicit per-item signoff from the
+author: these files accrete hand-tuned teaching material
+that regeneration would destroy (cf. luamine/tut.md).
 
 ## versions: tags, never dirs
 
