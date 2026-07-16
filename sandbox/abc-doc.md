@@ -6,7 +6,8 @@ Companion to [abc.lua](abc.lua) (the code) and
 [abc-eg.lua](abc-eg.lua) (the lessons: demos, tests,
 exercises). Each lesson's stanza ends in **Core ideas**
 whose links land on the glossary headings below (github
-auto-anchors `## key` as `#key`).
+auto-anchors `## key` as `#key`). Glossary order = the
+order the ideas first appear in the lessons.
 
 ## Contents
 
@@ -28,41 +29,21 @@ auto-anchors `## key` as `#key`).
 
 ## Glossary
 
-## active
+## lists
 
-Active learning: the learner chooses which rows to label
-next, instead of labelling at random. Here (lesson 10),
-choose by projecting the unlabelled pool onto a line
-between two [poles](#poles) and keeping the good end.
-Spend the [budget](#budget) where it teaches most.
+The only container in this system: Lua tables used as
+lists, served by a dozen ten-line verbs that compose
+(push returns its item, sort its list). A small
+vocabulary covers thirteen lessons (lesson 1).
 
-## anomaly
 
-A row far from even its own nearest neighbor. Once
-distance exists, outlier detection is one argmax: find
-who is loneliest (lesson 8, `--near`).
+## dsu
 
-## baseline
+Decorate-sort-undecorate: compute each item's sort key
+once, sort the (key,item) pairs, strip the keys. Vital
+when keys are expensive (a distance calc per row), as in
+`keysort` (lessons 1, 8, 10).
 
-Before crediting a clever method, beat a dumb one under
-the same rules. Ours: random labelling with the same
-[budget](#budget). If [same](#same) can't tell them
-apart, the cleverness is decoration (lessons 10, 13).
-
-## bets
-
-Every learner and optimizer is a falsifiable bet about
-the shape of your data: in recent optimizer tournaments
-the winner changed with the evaluation budget. So run the
-cheap experiment; don't trust the brand name (lesson 13).
-
-## bins
-
-Chopping an x column into ranges that simplify y
-(lesson 11). Numeric bins come from breaks in sorted
-values, symbolic bins from each value seen; every
-candidate is scored by [cost](#cost). One bin is a
-readable test like `Volume <= 112`.
 
 ## bisect
 
@@ -72,25 +53,35 @@ counts items <= v — which is a CDF, which is why the
 lesson 9 statistics ([ks](#ks), [effect](#effect)) run
 fast off sorted lists.
 
-## budget
 
-The number of y-labels we may buy. In real tables the x
-values are cheap and the y values dear (a benchmark, a
-build, a survey), so methods are judged by result per
-label spent (lessons 10-13).
+## seed
 
-## clone
+Where a random number generator starts. A fixed seed
+(here: a 16807 Lehmer generator, identical on any lua)
+makes every stochastic experiment rerunnable — so results
+are checkable by diff (lesson 2).
 
-A fresh table wearing an existing header, given new rows.
-Each subset then owns honest column summaries, keeping
-train and test data uncontaminated (lessons 7, 13).
 
-## closure
+## shuffle
 
-A function plus the variables it captured. `bins.keep`
-(lesson 11) is a closure holding the cheapest bin seen so
-far, so every column's candidates compete in one running
-contest without any global state.
+Fisher-Yates: walk the list backwards, swapping each item
+with a random earlier one; every ordering equally likely,
+in linear time (lesson 2).
+
+
+## gauss
+
+The bell curve. Box-Muller turns two uniform draws into
+one normal draw with real (unclipped) tails; used to
+sample plausible numeric values (lesson 2).
+
+
+## roulette
+
+Weighted random choice: pick a key with probability
+proportional to its weight, by walking counts until a
+random slice of the total is spent (lesson 2).
+
 
 ## coerce
 
@@ -99,12 +90,6 @@ boolean, anything else a trimmed string. The whole edge
 of the system where files meet data is one tiny function
 (lesson 3).
 
-## cost
-
-Split cost: the size-weighted spread of the two halves a
-bin creates. Lower cost = y is simpler to describe after
-the cut. The far half comes from [minus](#minus), so
-scoring never re-reads the rows (lesson 11).
 
 ## csv
 
@@ -112,91 +97,27 @@ Comma-separated values, self-describing: the first line
 is the [schema](#schema). Streamed one row at a time
 (lesson 3), so file size never matters.
 
-## dsu
 
-Decorate-sort-undecorate: compute each item's sort key
-once, sort the (key,item) pairs, strip the keys. Vital
-when keys are expensive (a distance calc per row), as in
-`keysort` (lessons 1, 8, 10).
+## ssot
 
-## effect
+Single source of truth: the option defaults live in the
+help text and are parsed out of it, so the docs and the
+program cannot disagree (lesson 3).
 
-Effect size: how BIG a difference is, not merely whether
-one exists. Here Cliff's delta: from sorted lists, how
-often items of one sample out-rank the other's. Small
-delta = who cares (lesson 9).
 
-## entropy
+## welford
 
-The effort needed to describe what is in a bag of
-symbols: -sum p log2 p. Low entropy = one symbol
-dominates = easy to summarize. Sym's spread, and the
-classification flavor of [cost](#cost) (lessons 5, 11).
+Incremental mean and variance in three slots (n, mu, m2),
+one update per value, numerically stable — and reversible
+(see [minus](#minus)) (lesson 4).
 
-## explain
 
-A model a human can argue with: branch tests in the
-data's own vocabulary, leaves small enough to inspect.
-This system prefers models that explain themselves over
-models that merely score well (lesson 12).
+## stream
 
-## explore
+Process values one at a time, constant memory, no second
+pass. [welford](#welford) streams; so do csv reads; so
+does bin scoring via [minus](#minus) (lessons 3, 4).
 
-Explore vs exploit: spend labels learning the landscape,
-or harvesting its best-known corner? Acquisition policies
-(lesson 10) balance the two; pure exploit gets trapped,
-pure explore wastes the [budget](#budget).
-
-## gauss
-
-The bell curve. Box-Muller turns two uniform draws into
-one normal draw with real (unclipped) tails; used to
-sample plausible numeric values (lesson 2).
-
-## goals
-
-The y columns: names ending "+" (maximize), "-"
-(minimize), "!" (classify). Goals plus [norm](#norm)
-define [heaven](#heaven) (lessons 6, 8).
-
-## heaven
-
-The ideal point where every goal is at its best value.
-`disty` = a row's distance to heaven (0 = ideal, 1 =
-worst), so optimization is just "find rows near heaven"
-(lesson 8).
-
-## holdout
-
-Judge on rows never seen in training: shuffle, train on
-half under the [budget](#budget), let the tree rank the
-other half, check only the top few (lesson 13).
-
-## knn
-
-k-nearest-neighbors: sort everything by distance to a
-query, let the closest few answer. No training step --
-the data IS the model (lesson 8, `--near`).
-
-## ks
-
-Kolmogorov-Smirnov: the biggest gap between two samples'
-CDFs. Distribution-free, no normality assumed, and via
-[bisect](#bisect) nearly free to compute (lesson 9).
-
-## lists
-
-The only container in this system: Lua tables used as
-lists, served by a dozen ten-line verbs that compose
-(push returns its item, sort its list). A small
-vocabulary covers thirteen lessons (lesson 1).
-
-## minkowski
-
-The p-norm: aggregate per-column gaps as
-`(sum gap^p / n)^(1/p)`. p=1 city-block, p=2
-euclidean-ish; one exponent tunes the geometry of both
-`distx` and `disty` (lesson 8).
 
 ## minus
 
@@ -205,36 +126,20 @@ The subtraction trick: Welford summaries un-fold, so
 time. This is why scoring every candidate [bin](#bins)
 needs only one pass over the rows (lessons 4, 5, 11).
 
-## missing
 
-"?" cells. Distance treats them pessimistically — assume
-the unknown value is far away — so missing data widens
-gaps rather than hiding them (lesson 8).
+## entropy
+
+The effort needed to describe what is in a bag of
+symbols: -sum p log2 p. Low entropy = one symbol
+dominates = easy to summarize. Sym's spread, and the
+classification flavor of [cost](#cost) (lessons 5, 11).
+
 
 ## mode
 
 The most common symbol in a bag: Sym's middle, and the
 prediction at a classification leaf (lessons 5, 12).
 
-## noir
-
-Stevens' scale ladder: Nominal, Ordinal, Interval, Ratio.
-This system keeps just the two ends -- symbols get
-counted, numbers get averaged -- which is why two column
-summaries suffice (lesson 5).
-
-## norm
-
-Map a raw number to 0..1 via a logistic over its z-score,
-so a column of grams and a column of years contribute
-fairly to one distance (lesson 8).
-
-## poles
-
-Two far-apart rows. Projecting everything onto the line
-joining them gives a cheap one-dimensional view of
-n-dimensional data (after FastMap); walking toward the
-good pole is lesson 10's whole tactic.
 
 ## poly
 
@@ -243,17 +148,110 @@ spread, without, dist, bins, holds), so distance, binning
 and tree code never ask a column its type. Twenty lines
 of metatables replace a design pattern (lesson 5).
 
-## predict
 
-Route a row down the tree by its branch tests; report the
-leaf's mid (mean or [mode](#mode)). Same tree, two uses:
-predict and [explain](#explain) (lesson 12).
+## noir
 
-## roulette
+Stevens' scale ladder: Nominal, Ordinal, Interval, Ratio.
+This system keeps just the two ends -- symbols get
+counted, numbers get averaged -- which is why two column
+summaries suffice (lesson 5).
 
-Weighted random choice: pick a key with probability
-proportional to its weight, by walking counts until a
-random slice of the total is spent (lesson 2).
+
+## schema
+
+The csv header IS the schema: leading uppercase = number;
+suffixes mark [goals](#goals) and columns to skip. Rename
+a column and the system's whole view of the data changes;
+no config files (lessons 3, 6).
+
+
+## goals
+
+The y columns: names ending "+" (maximize), "-"
+(minimize), "!" (classify). Goals plus [norm](#norm)
+define [heaven](#heaven) (lessons 6, 8).
+
+
+## xy
+
+The x columns describe a thing (cheap to read); the y
+columns judge it (dear to measure). That asymmetry is the
+economics behind the whole second half of the course
+(lessons 6, 10, 13).
+
+
+## tables
+
+Rows plus typed column summaries: the first row builds
+the [schema](#schema), later rows update per-column
+stats as they are stored (lesson 7).
+
+
+## clone
+
+A fresh table wearing an existing header, given new rows.
+Each subset then owns honest column summaries, keeping
+train and test data uncontaminated (lessons 7, 13).
+
+
+## norm
+
+Map a raw number to 0..1 via a logistic over its z-score,
+so a column of grams and a column of years contribute
+fairly to one distance (lesson 8).
+
+
+## minkowski
+
+The p-norm: aggregate per-column gaps as
+`(sum gap^p / n)^(1/p)`. p=1 city-block, p=2
+euclidean-ish; one exponent tunes the geometry of both
+`distx` and `disty` (lesson 8).
+
+
+## missing
+
+"?" cells. Distance treats them pessimistically — assume
+the unknown value is far away — so missing data widens
+gaps rather than hiding them (lesson 8).
+
+
+## heaven
+
+The ideal point where every goal is at its best value.
+`disty` = a row's distance to heaven (0 = ideal, 1 =
+worst), so optimization is just "find rows near heaven"
+(lesson 8).
+
+
+## knn
+
+k-nearest-neighbors: sort everything by distance to a
+query, let the closest few answer. No training step --
+the data IS the model (lesson 8, `--near`).
+
+
+## anomaly
+
+A row far from even its own nearest neighbor. Once
+distance exists, outlier detection is one argmax: find
+who is loneliest (lesson 8, `--near`).
+
+
+## effect
+
+Effect size: how BIG a difference is, not merely whether
+one exists. Here Cliff's delta: from sorted lists, how
+often items of one sample out-rank the other's. Small
+delta = who cares (lesson 9).
+
+
+## ks
+
+Kolmogorov-Smirnov: the biggest gap between two samples'
+CDFs. Distribution-free, no normality assumed, and via
+[bisect](#bisect) nearly free to compute (lesson 9).
+
 
 ## same
 
@@ -263,43 +261,64 @@ are called alike. Demanding all three means "different!"
 is only shouted when it would be hard to argue otherwise
 (lesson 9).
 
-## schema
 
-The csv header IS the schema: leading uppercase = number;
-suffixes mark [goals](#goals) and columns to skip. Rename
-a column and the system's whole view of the data changes;
-no config files (lessons 3, 6).
+## budget
 
-## seed
+The number of y-labels we may buy. In real tables the x
+values are cheap and the y values dear (a benchmark, a
+build, a survey), so methods are judged by result per
+label spent (lessons 10-13).
 
-Where a random number generator starts. A fixed seed
-(here: a 16807 Lehmer generator, identical on any lua)
-makes every stochastic experiment rerunnable — so results
-are checkable by diff (lesson 2).
 
-## shuffle
+## active
 
-Fisher-Yates: walk the list backwards, swapping each item
-with a random earlier one; every ordering equally likely,
-in linear time (lesson 2).
+Active learning: the learner chooses which rows to label
+next, instead of labelling at random. Here (lesson 10),
+choose by projecting the unlabelled pool onto a line
+between two [poles](#poles) and keeping the good end.
+Spend the [budget](#budget) where it teaches most.
 
-## ssot
 
-Single source of truth: the option defaults live in the
-help text and are parsed out of it, so the docs and the
-program cannot disagree (lesson 3).
+## poles
 
-## stream
+Two far-apart rows. Projecting everything onto the line
+joining them gives a cheap one-dimensional view of
+n-dimensional data (after FastMap); walking toward the
+good pole is lesson 10's whole tactic.
 
-Process values one at a time, constant memory, no second
-pass. [welford](#welford) streams; so do csv reads; so
-does bin scoring via [minus](#minus) (lessons 3, 4).
 
-## tables
+## explore
 
-Rows plus typed column summaries: the first row builds
-the [schema](#schema), later rows update per-column
-stats as they are stored (lesson 7).
+Explore vs exploit: spend labels learning the landscape,
+or harvesting its best-known corner? Acquisition policies
+(lesson 10) balance the two; pure exploit gets trapped,
+pure explore wastes the [budget](#budget).
+
+
+## bins
+
+Chopping an x column into ranges that simplify y
+(lesson 11). Numeric bins come from breaks in sorted
+values, symbolic bins from each value seen; every
+candidate is scored by [cost](#cost). One bin is a
+readable test like `Volume <= 112`.
+
+
+## cost
+
+Split cost: the size-weighted spread of the two halves a
+bin creates. Lower cost = y is simpler to describe after
+the cut. The far half comes from [minus](#minus), so
+scoring never re-reads the rows (lesson 11).
+
+
+## closure
+
+A function plus the variables it captured. `bins.keep`
+(lesson 11) is a closure holding the cheapest bin seen so
+far, so every column's candidates compete in one running
+contest without any global state.
+
 
 ## tree
 
@@ -308,17 +327,28 @@ rows and depth allow. Leaves keep their rows and a mid
 prediction; branches read as English-ish tests
 (lesson 12).
 
-## variability
 
-Learner variability: rerun with a new seed and the answer
-moves. So report distributions, never single runs, and
-judge gaps with [same](#same) (lesson 13, `--seeds`).
+## predict
 
-## welford
+Route a row down the tree by its branch tests; report the
+leaf's mid (mean or [mode](#mode)). Same tree, two uses:
+predict and [explain](#explain) (lesson 12).
 
-Incremental mean and variance in three slots (n, mu, m2),
-one update per value, numerically stable — and reversible
-(see [minus](#minus)) (lesson 4).
+
+## explain
+
+A model a human can argue with: branch tests in the
+data's own vocabulary, leaves small enough to inspect.
+This system prefers models that explain themselves over
+models that merely score well (lesson 12).
+
+
+## holdout
+
+Judge on rows never seen in training: shuffle, train on
+half under the [budget](#budget), let the tree rank the
+other half, check only the top few (lesson 13).
+
 
 ## win
 
@@ -326,12 +356,28 @@ A grade for any row: 100 = as good as the best row in the
 table, 0 = no better than the median, computed from the
 distance-to-[heaven](#heaven) distribution (lesson 13).
 
-## xy
 
-The x columns describe a thing (cheap to read); the y
-columns judge it (dear to measure). That asymmetry is the
-economics behind the whole second half of the course
-(lessons 6, 10, 13).
+## baseline
+
+Before crediting a clever method, beat a dumb one under
+the same rules. Ours: random labelling with the same
+[budget](#budget). If [same](#same) can't tell them
+apart, the cleverness is decoration (lessons 10, 13).
+
+
+## bets
+
+Every learner and optimizer is a falsifiable bet about
+the shape of your data: in recent optimizer tournaments
+the winner changed with the evaluation budget. So run the
+cheap experiment; don't trust the brand name (lesson 13).
+
+
+## variability
+
+Learner variability: rerun with a new seed and the answer
+moves. So report distributions, never single runs, and
+judge gaps with [same](#same) (lesson 13, `--seeds`).
 
 ## Scope: the larger concept space
 
