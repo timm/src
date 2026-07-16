@@ -2,8 +2,8 @@
 """
 toc.py: rewrite README.md's <!-- doc-toc --> block with
 links to the html doc pages, in .order manifest order
-(one page per ## section; see split.py). Run from inside a
-project dir (make doc does).
+(one page per source file). Run from inside a project dir
+(make doc does).
 """
 import os, re
 

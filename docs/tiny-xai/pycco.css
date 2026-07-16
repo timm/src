@@ -189,8 +189,6 @@ body .vg { color: #19469D }                     /* Name.Variable.Global */
 body .vi { color: #19469D }                     /* Name.Variable.Instance */
 body .il { color: #666666 }                     /* Literal.Number.Integer.Long */
 /* timm extras */
-p { text-align: right; }
-#section-0 p, #section-1 p { text-align: left; }
 .docs pre { font-size: .7em; line-height: 1.45; }
 .docs table { border-collapse: collapse; margin: 1em 0 1em auto; }
 .docs th, .docs td { border: 1px solid #ccc; padding: 2px 8px; font-size: .85em; }

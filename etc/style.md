@@ -67,7 +67,9 @@ Signature convention (the big newcomer trap): in lua and
 awk, parameters after the wide gap in a parameter list are
 LOCALS, not arguments — `function f(a,b,    c,d)` takes
 two arguments; c,d are scratch space. Callers never pass
-them. Prose stanzas (block comments / bare
+them.
+
+Prose stanzas (block comments / bare
 `"""` blocks) open with a sentence, never a blank line; a
 python block opening `word: ...` (e.g. `ezr2.py: ...`,
 `INSTALL: ...`) is help text and doc.awk renders it
@@ -147,11 +149,15 @@ browsable, marked dead by location.
   etc/doc.awk turns each source file into pycco input;
   etc/pyccot.py runs pycco with markdown tables enabled;
   etc/nav.py injects badges (home, src, code, tests, live
-  per-dir ci, license, ...), a grouped toc (code pages on
-  code pages, test pages on test pages), prev/next in
-  INSTALL.md order, and links the title to the file on
-  github; etc/toc.py rewrites README's <!-- doc-toc -->
-  block. Output: docs/<dir>/*.html, COMMITTED to main
+  per-dir ci, license, ...), prev/next in INSTALL.md
+  order, per-page prose alignment (code pages right,
+  tests/tutorial pages left) and links the title to the
+  file on github; etc/toc.py rewrites README's
+  <!-- doc-toc --> block. One page per SOURCE FILE
+  (we tried one page per ## section, and a grouped toc
+  atop each page, and reverted both: whole-file pages
+  are simpler and the markers still render as headings).
+  Output: docs/<dir>/*.html, COMMITTED to main
   (the site action only runs doc.py, not pycco).
 - etc/doc.py builds the markdown site into _site/; the
   docs.yml action force-pushes it to gh-pages on every main

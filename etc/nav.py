@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
 """
-nav.py docs/<proj>/NAME.html: inject badges, a grouped TOC
-and <prev | next> links into a pycco page, before its first
+nav.py docs/<proj>/NAME.html: inject badges and
+<prev | next> links into a pycco page, before its first
 <h1>.
 
-Pages are per-##-section (see split.py); order, source file
-and code/tests grouping come from the .order manifest beside
-the page. The <h1> becomes the section name linking to its
-source file on github.
+One page per source file; order and code/tests grouping
+come from the .order manifest beside the page (written by
+make doc from `sh INSTALL.md list`). The <h1> links to the
+source file on github. Code pages right-align their prose
+(dense margin notes); tests/tutorial pages read left.
 """
 import os, sys
 
@@ -27,6 +28,7 @@ order = [r[0] for r in rows]
 code  = [r[0] for r in rows if r[2] == "code"]
 tests = [r[0] for r in rows if r[2] == "tests"]
 src   = dict((r[0], r[1]) for r in rows).get(name, name)
+group = dict((r[0], r[2]) for r in rows).get(name, "code")
 lang, runs = LANG[os.path.splitext(src)[1]]
 
 def badge(alt, img, url=None):
@@ -55,20 +57,7 @@ BADGES = '<p align="center">\n' + "\n".join([
         "https://timm.fyi"),
 ]) + "\n</p>"
 
-def link(p):
-  return (f"<b>{p}</b>" if p == name
-          else f'<a href="{p}.html">{p}</a>')
-
-# toc: one line per source file (newline at file jumps)
-mine  = tests if name in tests else code
-srcOf = dict((r[0], r[1]) for r in rows)
-lines, cur = [], None
-for p in mine:
-  if srcOf[p] != cur:
-    cur = srcOf[p]; lines.append([])
-  lines[-1].append(link(p))
-toc = "<br>\n".join(" | ".join(l) for l in lines)
-nav  = ""
+nav = ""
 if name in order:
   i    = order.index(name)
   prev = (f'<a href="{order[i-1]}.html">&lt; prev</a>'
@@ -76,15 +65,17 @@ if name in order:
   nxt  = (f'<a href="{order[i+1]}.html">next &gt;</a>'
           if i + 1 < len(order) else "next &gt;")
   nav  = f"<p>{prev} | {nxt}</p>"
-top = (BADGES +
-       f'<p style="text-align:left">{toc}</p>' +
-       nav)
+align = "right" if group == "code" else "left"
+style = ("<style>p {text-align:%s} "
+         "#section-0 p, #section-1 p {text-align:left}"
+         "</style></head>" % align)
 ext = os.path.splitext(src)[1]
 old = name + (".scm" if ext == ".lisp" else ext)
 h1  = (f'<h1><a href="{REPO}/blob/main/{PROJ}/{src}">'
        f'{src}</a></h1>')
 s = open(page).read()
+s = s.replace("</head>", style, 1)
 s = s.replace(f"<title>{old}</title>",
-              f"<title>{src}: {name}</title>")
+              f"<title>{src}</title>")
 s = s.replace(f"<h1>{old}</h1>", h1)
-open(page, "w").write(s.replace("<h1", top + "<h1", 1))
+open(page, "w").write(s.replace("<h1", BADGES + nav + "<h1", 1))
