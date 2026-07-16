@@ -59,7 +59,9 @@ recreate them.
 
 No figlet banners. Section markers (`-- ##` etc) divide
 the library file into topics; the ONLY form feeds are the
-ones before markers.
+ones before markers (a DOUBLED form feed `\f\f` before a
+marker forces a hard column break in `make xx.pdf`; the
+single ones just pack greedily).
 
 Signature convention (the big newcomer trap): in lua and
 awk, parameters after the wide gap in a parameter list are
@@ -101,8 +103,20 @@ Shape of xx-eg.ext:
   The file returns the eg table; its cli fires only when
   run as main.
 - xx-doc.md is the lecture notes: one short `## key`
-  entry per join key (glossary style, 2-4 lines), plus
-  contents, recaps, quiz, references.
+  entry per join key (glossary style, 2-4 lines, in the
+  ORDER the lessons introduce them), plus contents,
+  recaps, quiz, references.
+- Doc claims are executable (exemplar: abc-eg.lua):
+  `--join` verifies lesson links land on doc headings,
+  headings are all linked, and dot-list signatures
+  resolve in the module (reflection) -- plus a coverage
+  line, taught/exported verbs. `--transcript` freezes the
+  printed `--all` output to xx-eg.out (from a real run,
+  never hand-edited; needs deterministic ties -- stable
+  keysort, lexical tie-break on mode); `--check` diffs a
+  fresh run against it. Lesson 2's exercise 0 pins the
+  16807 generator (pseudocode + first three seeds), so
+  student ports self-grade against xx-eg.out by diff.
 
 Maintenance: -eg and -doc files are AUDITED, never
 regenerated. If absent, create; ever after, edits only

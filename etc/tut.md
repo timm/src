@@ -62,6 +62,31 @@ Stanza skeleton, every stanza:
 - Arc: zero -> someplace cool. Last demo = the whole rig;
   studies after; runners and CLI entry live in xx-eg.
 
+Lesson-course variant (exemplar: sandbox/abc-eg.lua; full
+spec in style.md "-eg and -doc"). When the -eg is taught
+as a weekly course, each section additionally gets:
+
+- an opening stanza `### Lesson N: title` ending in
+  `**Core ideas:** [key](xx-doc.md#key)` join keys;
+- dot-lists (`- **fn(sig)** 1-2 lines`) naming ONLY the
+  functions that section's tests call;
+- a closing exercises stanza: 0 = port these examples to
+  another language (lesson 2's exercise 0 pins the 16807
+  generator + its first three seeds, so ports self-grade
+  by diff against xx-eg.out), 1 = (simple) tweak+predict,
+  2 = write code against the section's verbs;
+- one eg sub-table per section; runners, --all and -h are
+  DERIVED from that structure, never hand-listed; the
+  file returns the eg table, cli fires only when main.
+
+## 2b. The lecture notes (xx-doc.md)
+
+One `## key` glossary entry per join key (2-4 lines, in
+lesson order -- reading top-to-bottom replays the course),
+plus a contents table (lesson | section | run | ideas), a
+scope map of the wider concept space, references. Audited,
+never regenerated (style.md maintenance rule).
+
 ## 3. Wire into the shared tooling
 
 - .github/workflows/tests-<dir>.yml: copy an existing one;
@@ -87,8 +112,14 @@ Stanza skeleton, every stanza:
     replay checker (exemplar: luamine/tutchk.lua) and add it
     to the dir's tests workflow -- every [n]> event
     re-executed, outputs diffed, env-specific events skipped
+    if the dir carries a lesson course: --join passes (all
+    doc links land, all headings linked, all dot-list
+    signatures resolve) and --check passes (a fresh --all
+    reproduces the frozen xx-eg.out transcript); both are
+    eg verbs, exemplar sandbox/abc-eg.lua
     TODO not yet built: output splicing the other way --
     run each demo, paste its output back under the stanza
+    (xx-eg.out now captures the output; the splice remains)
 
 ## Voice calibration
 
