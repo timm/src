@@ -145,9 +145,15 @@ eg.rnd["--gauss"] = function(    f,num)
 --[[
 **Exercises (lesson 2).**
 
-0. In your own favorite language (not lua), write
-   just enough code to implement this section's
-   examples.
+0. In your own favorite language (not lua), implement the
+   generator: seed = (16807 * seed) % 2147483647, and
+   rnd() = seed / 2147483647 (plain floats are exact here:
+   16807 * 2^31 < 2^53). Self-check: from seed 1 the next
+   three seeds are 16807, 282475249, 1622650073. Match
+   that, then implement this section's examples -- and
+   from now on every lesson's exercise 0 can self-grade by
+   diffing its printed output (3 decimals) against the
+   frozen transcript abc-eg.out.
 1. (simple) Run `--lehmer` with `--seed=7`, twice. Then
    without the flag, twice. Explain the difference in one
    sentence.
@@ -845,13 +851,70 @@ eg.main["-h"] = function(    keys)
     for k in pairs(eg[n]) do lst.push(keys, k) end
     print("  lua abc-eg.lua --" .. n .. "   # or: " ..
           table.concat(lst.sort(keys), " ")) end
-  print("\nAlso: --all -h --doc") end
+  print("\nAlso: --all -h --doc --join --transcript --check")
+  end
 
 eg.main["--all"] = function()
   for _,n in ipairs(order) do
     print("\n---- " .. n .. " " .. ("-"):rep(40))
     section(n) end
   print("\nall pass") end
+
+-- freeze the printed pedagogy: capture --all to abc-eg.out
+-- (generated from a real run, never hand-edited). Student
+-- ports self-grade against it; CI diffs it via --check.
+eg.main["--transcript"] = function()
+  assert(os.execute("lua abc-eg.lua --all > abc-eg.out"))
+  print("abc-eg.out frozen") end
+
+-- a fresh --all must reproduce the frozen transcript, so
+-- any refactor that moves a graded number fails here first
+eg.main["--check"] = function(    ok)
+  ok = os.execute("lua abc-eg.lua --all | diff - abc-eg.out")
+  print(ok and "transcript ok" or "TRANSCRIPT DRIFT")
+  assert(ok) end
+
+-- join checker: make the doc claims executable. Verifies
+-- (1) every glossary link in a lesson lands on a matching
+-- heading in the doc file, (2) every heading there is
+-- linked from some lesson, (3) every dot-list signature
+-- names a function that exists in the module. Also prints
+-- coverage: taught verbs / exported verbs.
+eg.main["--join"] = function(    doc,src,keys,used,taught,
+                                ok,n,total,f)
+  doc = io.open"abc-doc.md":read"*a"
+  src = io.open"abc-eg.lua":read"*a"
+  keys, used, taught, ok = {}, {}, {}, true
+  for k in doc:gmatch"\n## ([a-z]+)\n" do keys[k] = true end
+  for k in src:gmatch"abc%-doc%.md#([a-z]+)" do
+    used[k] = true
+    if not keys[k] then ok=false; print("no heading:",k) end end
+  for k in pairs(keys) do
+    if not used[k] then
+      ok = false; print("unlinked heading:", k) end end
+  for line in src:gmatch"[^\n]+" do
+    if line:find"^%-%- %- %*%*" then
+      for sig in line:gmatch"%*%*([%w_./]+)%(" do
+        for name in sig:gmatch"[%w_.]+" do
+          f = abc
+          for w in name:gmatch"[%w_]+" do
+            f = type(f) == "table" and f[w] end
+          taught[name] = true
+          if not f then
+            ok = false
+            print("dot-list names missing fn:", name)
+          end end end end end
+  n, total = 0, 0
+  for _ in pairs(taught) do n = n + 1 end
+  for _,v in pairs(abc) do
+    if type(v) == "function" then total = total + 1 end
+    if type(v) == "table" and v ~= abc.the then
+      for _,f2 in pairs(v) do
+        if type(f2) == "function" then
+          total = total + 1 end end end end
+  print(("coverage: %s taught / %s exported verbs"):format(
+        n, total))
+  assert(ok) end
 
 -- files to html, and each one's prose alignment
 local docs = {abc="right", ["abc-eg"]="left"}

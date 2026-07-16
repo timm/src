@@ -104,11 +104,14 @@ function Sym.add(i,v,w,    c)
   i.has[v] = c > 0 and c or nil
   return v end
 
--- mid of a Sym = its mode
+-- mid of a Sym = its mode (ties: lexically first, so the
+-- answer never depends on hash iteration order)
 function Sym.mid(i,    most,out)
   most = 0
   for k,n in pairs(i.has) do
-    if n > most then most,out = n,k end end
+    if n > most or
+       (n == most and tostring(k) < tostring(out)) then
+      most,out = n,k end end
   return out end
 
 -- spread of a Sym = entropy of its counts
@@ -514,11 +517,15 @@ function lst.slice(t,lo,hi,    u)
           lst.push(u, t[j]) end
   return u end
 
--- sort a copy of t by fn(item), computing fn once per item
+-- sort a copy of t by fn(item), computing fn once per item.
+-- Ties keep arrival order (stable), so runs repeat exactly.
 function lst.keysort(t,fn,    u)
-  u = lst.map(t, function(v) return {fn(v), v} end)
-  lst.sort(u, function(a,b) return a[1] < b[1] end)
-  return lst.map(u, function(p) return p[2] end) end
+  u = {}
+  for j,v in ipairs(t) do u[j] = {fn(v), j, v} end
+  lst.sort(u, function(a,b)
+    return a[1] < b[1] or
+           (a[1] == b[1] and a[2] < b[2]) end)
+  return lst.map(u, function(p) return p[3] end) end
 
 -- t ascending; smallest j with v < t[j] (eq: v <= t[j]).
 -- So count(t <= v) = bisect(t,v)-1; count(t < v) via eq.

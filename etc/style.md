@@ -59,7 +59,13 @@ recreate them.
 
 No figlet banners. Section markers (`-- ##` etc) divide
 the library file into topics; the ONLY form feeds are the
-ones before markers. Prose stanzas (block comments / bare
+ones before markers.
+
+Signature convention (the big newcomer trap): in lua and
+awk, parameters after the wide gap in a parameter list are
+LOCALS, not arguments — `function f(a,b,    c,d)` takes
+two arguments; c,d are scratch space. Callers never pass
+them. Prose stanzas (block comments / bare
 `"""` blocks) open with a sentence, never a blank line; a
 python block opening `word: ...` (e.g. `ezr2.py: ...`,
 `INSTALL: ...`) is help text and doc.awk renders it
