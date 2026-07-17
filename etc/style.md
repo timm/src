@@ -91,7 +91,7 @@ Shape of xx-eg.ext:
   domain code. One eg sub-table per section.
 - Each section is one lesson: an opening markdown stanza
   (a few lines of background, ending in
-  `**Core ideas:** [key](xx-doc.md#key)` join keys --
+  `**Core ideas:** [key](../glossary.md#key)` join keys --
   keys short, github auto-anchors the headings); then
   dot-lists (`- **fn(sig)** one-two lines`, naming ONLY
   functions the tests call); then demos that print a
@@ -104,10 +104,19 @@ Shape of xx-eg.ext:
   its tests, --all walks the sections, -h prints the map.
   The file returns the eg table; its cli fires only when
   run as main.
-- xx-doc.md is the lecture notes: one short `## key`
-  entry per join key (glossary style, 2-4 lines, in the
-  ORDER the lessons introduce them), plus contents,
-  recaps, quiz, references.
+- glossary.md (REPO ROOT, shared by every course --
+  concepts are repo-level, courses sample them) holds one
+  short `## key` entry per idea: grouped into coarse
+  regions (coding / se / data / distance / optimize /
+  labels / llm-era), alphabetical within a region, each
+  entry opening with a *taught in* line pointing back at
+  every lesson that links it, each region closing with
+  the concepts still awaiting entries. Nobody reads it
+  top to bottom: arrive by Core-ideas link, leave by
+  back-pointer.
+- xx-doc.md keeps only the course-specific views: the
+  contents table (the lesson order, linking into the
+  glossary) and the references (recaps/quiz later).
 - Doc claims are executable (exemplar: abc-eg.lua):
   `--join` verifies lesson links land on doc headings,
   headings are all linked, and dot-list signatures

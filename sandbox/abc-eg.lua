@@ -29,45 +29,19 @@ local order = {"lua","lst","rnd","str","num","sym","cols",
 --[[
 ### Lesson 0: lua for the impatient pythonista
 
-You know python; time to make some small adjustments for Lua.  
-   
-- Only `nil` and
-`false` are falsy 
-- -- 0 and "" are TRUE. 
-- Array indexes start at
-1, so `for i=1,10` includes the 10. 
-- There is ONE data
-structure: the table is your list, dict, object and
-module (a list is just the consecutive integer keys;
-everything else rides in the hash part). 
-- `pairs` walks
-every key in NO fixed order (want sorted? this lesson
-builds `lst.items`, a home-made for loop);
-- `ipairs` walks 1,2,3.. and
-stops at the first gap.
-- for loops are customizable: any function that returns
-"the next thing" can drive one. Such iterator functions
-are closures: functions that remember variables from
-where they were born.
-- Patterns are not standard regexes: `%w`
-not `\w`, and there is no `|`. 
-- Variables are global
-unless marked `local` or added as extra fucntion args
-(see last item, below)
-- `x and y or z` is the ternary
-(and, warning, breaks if y is false); 
-- `x = x or default` fills
-defaults; 
-- `..` concatenates; 
-- `~=` is not-equals. 
-- And one
-house rule: params after the wide gap in a signature are
-function locals, not arguments -- callers never pass them.
+You know python; lua needs a few small adjustments, all
+listed under [lua](../glossary.md#lua) in the glossary.
+The demos below are the ones that bite hardest: what
+counts as false, the one-table-fits-all data structure,
+home-made for loops (which is where closures enter),
+patterns that are not regexes -- and a first SE rule,
+checked against our own source code.
 
-**Core ideas:** [truthy](abc-doc.md#truthy),
-[onetable](abc-doc.md#onetable),
-[closure](abc-doc.md#closure),
-[patterns](abc-doc.md#patterns), [bob](abc-doc.md#bob)
+**Core ideas:** [lua](../glossary.md#lua),
+[truthy](../glossary.md#truthy),
+[onetable](../glossary.md#onetable),
+[closure](../glossary.md#closure),
+[patterns](../glossary.md#patterns), [bob](../glossary.md#bob)
 ]]
 eg.lua = {}
 
@@ -170,8 +144,8 @@ the key is an expensive distance calc), and `bisect` finds
 positions in sorted lists in log time (lesson 9's statistics
 lean on it).
 
-**Core ideas:** [lists](abc-doc.md#lists),
-[dsu](abc-doc.md#dsu), [bisect](abc-doc.md#bisect)
+**Core ideas:** [lists](../glossary.md#lists),
+[dsu](../glossary.md#dsu), [bisect](../glossary.md#bisect)
 ]]
 eg.lst = {}
 
@@ -232,9 +206,9 @@ uniform bits into other shapes (Box-Muller for bells,
 roulette wheels for weighted choice), which is most of what
 "simulation" means.
 
-**Core ideas:** [seed](abc-doc.md#seed),
-[shuffle](abc-doc.md#shuffle), [gauss](abc-doc.md#gauss),
-[roulette](abc-doc.md#roulette)
+**Core ideas:** [seed](../glossary.md#seed),
+[shuffle](../glossary.md#shuffle), [gauss](../glossary.md#gauss),
+[roulette](../glossary.md#roulette)
 ]]
 eg.rnd = {}
 
@@ -307,8 +281,8 @@ roles straight out of the csv header. When parsing is this
 cheap, there is no excuse for config files, schemas, or
 YAML.
 
-**Core ideas:** [coerce](abc-doc.md#coerce),
-[csv](abc-doc.md#csv), [ssot](abc-doc.md#ssot)
+**Core ideas:** [coerce](../glossary.md#coerce),
+[csv](../glossary.md#csv), [ssot](../glossary.md#ssot)
 ]]
 eg.str = {}
 
@@ -374,8 +348,8 @@ of i's data except j's" in constant time, no second pass
 over the rows. Columns also carry their goal here: a name
 ending "-" means lower is better.
 
-**Core ideas:** [welford](abc-doc.md#welford),
-[stream](abc-doc.md#stream), [minus](abc-doc.md#minus)
+**Core ideas:** [welford](../glossary.md#welford),
+[stream](../glossary.md#stream), [minus](../glossary.md#minus)
 ]]
 eg.num = {}
 
@@ -436,9 +410,9 @@ work of a design pattern, in twenty lines. (Measurement
 theory calls Num and Sym the two ends of the NOIR ladder:
 nominal things get counted, ratio things get averaged.)
 
-**Core ideas:** [entropy](abc-doc.md#entropy),
-[mode](abc-doc.md#mode), [poly](abc-doc.md#poly),
-[noir](abc-doc.md#noir)
+**Core ideas:** [entropy](../glossary.md#entropy),
+[mode](../glossary.md#mode), [poly](../glossary.md#poly),
+[noir](../glossary.md#noir)
 ]]
 eg.sym = {}
 
@@ -492,8 +466,8 @@ summaries, split into x (inputs) and y (goals). No config
 file, no schema language -- rename a column and the
 system's whole view of the data changes.
 
-**Core ideas:** [schema](abc-doc.md#schema),
-[goals](abc-doc.md#goals), [xy](abc-doc.md#xy)
+**Core ideas:** [schema](../glossary.md#schema),
+[goals](../glossary.md#goals), [xy](../glossary.md#xy)
 ]]
 eg.cols = {}
 
@@ -538,8 +512,8 @@ gets its own honest statistics -- which is how lesson 13
 keeps its train and test data from contaminating each
 other.
 
-**Core ideas:** [tables](abc-doc.md#tables),
-[clone](abc-doc.md#clone)
+**Core ideas:** [tables](../glossary.md#tables),
+[clone](../glossary.md#clone)
 ]]
 eg.tbl = {}
 
@@ -590,10 +564,10 @@ neighbors, anomaly detection, and (lessons 10-13) cheap
 optimization. Distance really is most of what "learning"
 needs.
 
-**Core ideas:** [norm](abc-doc.md#norm),
-[minkowski](abc-doc.md#minkowski),
-[missing](abc-doc.md#missing), [heaven](abc-doc.md#heaven),
-[knn](abc-doc.md#knn), [anomaly](abc-doc.md#anomaly)
+**Core ideas:** [norm](../glossary.md#norm),
+[minkowski](../glossary.md#minkowski),
+[missing](../glossary.md#missing), [heaven](../glossary.md#heaven),
+[knn](../glossary.md#knn), [anomaly](../glossary.md#anomaly)
 ]]
 eg.dist = {}
 
@@ -669,8 +643,8 @@ all three makes the equality conservative: we only shout
 otherwise. Note the lesson-1 payoff: all three run fast off
 sorted lists and `bisect`.
 
-**Core ideas:** [effect](abc-doc.md#effect),
-[ks](abc-doc.md#ks), [same](abc-doc.md#same)
+**Core ideas:** [effect](../glossary.md#effect),
+[ks](../glossary.md#ks), [same](../glossary.md#same)
 ]]
 eg.stats = {}
 
@@ -724,9 +698,9 @@ labels for the price of a few dozen. The deeper game is
 explore vs exploit: spend labels learning the landscape,
 or harvesting its best-known corner?
 
-**Core ideas:** [budget](abc-doc.md#budget),
-[active](abc-doc.md#active), [poles](abc-doc.md#poles),
-[explore](abc-doc.md#explore)
+**Core ideas:** [budget](../glossary.md#budget),
+[active](../glossary.md#active), [poles](../glossary.md#poles),
+[explore](../glossary.md#explore)
 ]]
 eg.acquire = {}
 
@@ -796,8 +770,8 @@ seen so far, so all columns share one running competition.
 Swap the y summary from Num to Sym and the same code stops
 regressing and starts classifying.
 
-**Core ideas:** [bins](abc-doc.md#bins),
-[cost](abc-doc.md#cost), [closure](abc-doc.md#closure)
+**Core ideas:** [bins](../glossary.md#bins),
+[cost](../glossary.md#cost), [closure](../glossary.md#closure)
 ]]
 eg.bins = {}
 
@@ -853,8 +827,8 @@ argue with the model). Note what we did not need: no
 gradients, no pruning theory, just distance, bins, and
 recursion.
 
-**Core ideas:** [tree](abc-doc.md#tree),
-[predict](abc-doc.md#predict), [explain](abc-doc.md#explain)
+**Core ideas:** [tree](../glossary.md#tree),
+[predict](../glossary.md#predict), [explain](../glossary.md#explain)
 ]]
 eg.tree = {}
 
@@ -905,10 +879,10 @@ the spread), and remember that any such rig is a
 falsifiable bet about your data's shape -- in recent
 optimizer tournaments the winner changed with the budget.
 
-**Core ideas:** [holdout](abc-doc.md#holdout),
-[win](abc-doc.md#win), [baseline](abc-doc.md#baseline),
-[bets](abc-doc.md#bets),
-[variability](abc-doc.md#variability)
+**Core ideas:** [holdout](../glossary.md#holdout),
+[win](../glossary.md#win), [baseline](../glossary.md#baseline),
+[bets](../glossary.md#bets),
+[variability](../glossary.md#variability)
 ]]
 eg.score = {}
 
@@ -1015,11 +989,11 @@ local function deref(root, name)
 
 eg.main["--join"] = function(    doc,src,keys,used,taught,
                                 ok,n,total)
-  doc = io.open"abc-doc.md":read"*a"
+  doc = io.open"../glossary.md":read"*a"
   src = io.open"abc-eg.lua":read"*a"
   keys, used, taught, ok = {}, {}, {}, true
   for k in doc:gmatch"\n## ([a-z]+)\n" do keys[k] = true end
-  for k in src:gmatch"abc%-doc%.md#([a-z]+)" do
+  for k in src:gmatch"glossary%.md#([a-z]+)" do
     used[k] = true
     if not keys[k] then ok=false; print("no heading:",k) end end
   for k in pairs(keys) do
@@ -1083,9 +1057,9 @@ eg.main["--doc"] = function(    tmp,b,badges,f,s,i)
                tmp .. "/eg/" .. name .. ".lua")
     f = io.open(tmp .. "/" .. name .. ".html")
     s = f:read"*a"; f:close()
-    s = s:gsub('href="abc%-doc%.md',         -- glossary links
+    s = s:gsub('href="%.%./glossary%.md',    -- glossary links
           'href="https://github.com/timm/src/blob/main/'
-          .. 'sandbox/abc-doc.md')
+          .. 'glossary.md')
     s = s:gsub("</head>",                    -- per-page style
           "<style>h2 {border-top:1px solid #ddd; " ..
           "margin-top:2.5em; padding-top:.5em} " ..

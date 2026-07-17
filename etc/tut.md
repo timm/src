@@ -67,7 +67,8 @@ spec in style.md "-eg and -doc"). When the -eg is taught
 as a weekly course, each section additionally gets:
 
 - an opening stanza `### Lesson N: title` ending in
-  `**Core ideas:** [key](xx-doc.md#key)` join keys;
+  `**Core ideas:** [key](../glossary.md#key)` join keys
+  into the repo-root shared glossary;
 - dot-lists (`- **fn(sig)** 1-2 lines`) naming ONLY the
   functions that section's tests call;
 - a closing exercises stanza: 0 = port these examples to
@@ -79,13 +80,16 @@ as a weekly course, each section additionally gets:
   DERIVED from that structure, never hand-listed; the
   file returns the eg table, cli fires only when main.
 
-## 2b. The lecture notes (xx-doc.md)
+## 2b. The lecture notes (glossary.md + xx-doc.md)
 
-One `## key` glossary entry per join key (2-4 lines, in
-lesson order -- reading top-to-bottom replays the course),
-plus a contents table (lesson | section | run | ideas), a
-scope map of the wider concept space, references. Audited,
-never regenerated (style.md maintenance rule).
+Definitions live in the REPO-ROOT glossary.md, shared by
+every course: one `## key` entry per idea, region-grouped,
+alphabetical within a region, each entry carrying a
+*taught in* back-pointer line and each region listing the
+concepts still awaiting entries. Per course, xx-doc.md
+keeps just the contents table (lesson | section | run |
+ideas, in lesson order) and the references. All of it
+audited, never regenerated (style.md maintenance rule).
 
 ## 3. Wire into the shared tooling
 
