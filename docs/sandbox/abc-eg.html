@@ -38,6 +38,30 @@ first, then the AI code). On the command line:</p>
 at, then asserts it: no crash = pass.</p>
 <pre><code> lua abc-eg.lua --seed=2 --tree --score
 </code></pre>
+<h3>How to run this course</h3>
+<p>Install <a href="https://lua.org">lua 5.4+</a> (mac:
+<code>brew install lua</code>), then fetch the code and its data:</p>
+<pre><code>git clone https://github.com/timm/src
+git clone https://github.com/timm/moot ~/gits/moot
+cd src/sandbox
+lua abc-eg.lua --all      # a minute; ends "all pass"
+</code></pre>
+<p>Then four levels of read, per lesson:</p>
+<ol>
+<li>(skim) Read a lesson here beside its printed output in
+   <a href="abc-eg.out">abc-eg.out</a>. Can you tell what is going
+   on?</li>
+<li>(run) Run that lesson&rsquo;s tests from the command line,
+   e.g. <code>lua abc-eg.lua --items</code>. Change an input; rerun.</li>
+<li>(dive) Fire up the REPL: <code>lua -i</code>, then
+   <code>abc = require"abc"</code>, then retype any demo, line by
+   line, printing as you go.</li>
+<li>(deep dive) Port a lesson to your own favorite
+   language (not lua) and reproduce its slice of
+   abc-eg.out. Slow work, so start with the shorter
+   lessons &ndash; and lesson 2&rsquo;s generator is what makes
+   your numbers match ours exactly.</li>
+</ol>
     </div>
     <div class='code'>
       <div class="highlight"><pre><span></span><span class="kd">local</span><span class="w"> </span><span class="nv">abc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">require</span><span class="s2">&quot;abc&quot;</span>
@@ -840,7 +864,8 @@ gets its own honest statistics &ndash; which is how lesson 13
 keeps its train and test data from contaminating each
 other.</p>
 <p><strong>Core ideas:</strong> <a href="https://github.com/timm/src/blob/main/glossary.md#tables">tables</a>,
-<a href="https://github.com/timm/src/blob/main/glossary.md#clone">clone</a></p>
+<a href="https://github.com/timm/src/blob/main/glossary.md#clone">clone</a>,
+<a href="https://github.com/timm/src/blob/main/glossary.md#centroid">centroid</a></p>
     </div>
     <div class='code'>
       <div class="highlight"><pre><span class="nv">eg</span><span class="p">.</span><span class="py">tbl</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{}</span></pre></div>
@@ -892,6 +917,30 @@ other.</p>
       <div class='octowrap'>
         <a class='octothorpe' href='#section-36'>#</a>
       </div>
+      <ul>
+<li><strong>Tbl.mids(i)</strong> the table&rsquo;s centroid: every column&rsquo;s
+  mid, computed once then cached &ndash; and any <code>add</code> wipes
+  the cache, since new rows move the middle.</li>
+</ul>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="nv">eg</span><span class="p">.</span><span class="py">tbl</span><span class="p">[</span><span class="s2">&quot;--mids&quot;</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">function</span><span class="p">(</span><span class="w">    </span><span class="nv">t</span><span class="p">,</span><span class="nv">u</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">t</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">Tbl</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="nv">the</span><span class="p">.</span><span class="py">file</span><span class="p">)</span>
+<span class="w">  </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;centroid:    &quot;</span><span class="p">,</span><span class="w"> </span><span class="nv">str</span><span class="p">.</span><span class="nf">o</span><span class="p">(</span><span class="nv">t</span><span class="p">:</span><span class="nf">mids</span><span class="p">()))</span>
+<span class="w">  </span><span class="nv">u</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">t</span><span class="p">:</span><span class="nf">clone</span><span class="p">(</span><span class="nv">lst</span><span class="p">.</span><span class="nf">slice</span><span class="p">(</span><span class="nv">t</span><span class="p">.</span><span class="py">rows</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">20</span><span class="p">))</span>
+<span class="w">  </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;20-row clone:&quot;</span><span class="p">,</span><span class="w"> </span><span class="nv">str</span><span class="p">.</span><span class="nf">o</span><span class="p">(</span><span class="nv">u</span><span class="p">:</span><span class="nf">mids</span><span class="p">()))</span>
+<span class="w">  </span><span class="nb">assert</span><span class="p">(</span><span class="o">#</span><span class="nv">t</span><span class="p">:</span><span class="nf">mids</span><span class="p">()</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="o">#</span><span class="nv">t</span><span class="p">.</span><span class="py">cols</span><span class="p">.</span><span class="py">all</span><span class="p">)</span>
+<span class="w">  </span><span class="nb">assert</span><span class="p">(</span><span class="nv">t</span><span class="p">.</span><span class="py">middle</span><span class="p">)</span><span class="w">                    </span><span class="c1">-- cached...</span>
+<span class="w">  </span><span class="nv">t</span><span class="p">:</span><span class="nf">add</span><span class="p">(</span><span class="nv">t</span><span class="p">.</span><span class="py">rows</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+<span class="w">  </span><span class="nb">assert</span><span class="p">(</span><span class="nv">t</span><span class="p">.</span><span class="py">middle</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="kc">nil</span><span class="p">)</span><span class="w"> </span><span class="kr">end</span><span class="w">         </span><span class="c1">-- ...until an add</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-37'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-37'>#</a>
+      </div>
       <p><strong>Exercises (lesson 7).</strong></p>
 <ol>
 <li>In your own favorite language (not lua), write
@@ -911,10 +960,10 @@ other.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-37'>
+  <div class='section' id='section-38'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-37'>#</a>
+        <a class='octothorpe' href='#section-38'>#</a>
       </div>
       <h2>Dist</h2>
 <h3>Lesson 8: distance is all you need</h3>
@@ -937,10 +986,10 @@ needs.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-38'>
+  <div class='section' id='section-39'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-38'>#</a>
+        <a class='octothorpe' href='#section-39'>#</a>
       </div>
       <ul>
 <li><strong>Sym.dist/Num.dist(i,u,v)</strong> gap 0..1 between two values of
@@ -961,10 +1010,10 @@ needs.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-39'>
+  <div class='section' id='section-40'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-39'>#</a>
+        <a class='octothorpe' href='#section-40'>#</a>
       </div>
       <ul>
 <li><strong>Tbl.disty(i,row)</strong> distance to the ideal y goals;
@@ -982,10 +1031,10 @@ needs.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-40'>
+  <div class='section' id='section-41'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-40'>#</a>
+        <a class='octothorpe' href='#section-41'>#</a>
       </div>
       <ul>
 <li><strong>Tbl.distx</strong> + <strong>lst.keysort</strong> = k nearest neighbors: no
@@ -1013,10 +1062,10 @@ needs.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-41'>
+  <div class='section' id='section-42'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-41'>#</a>
+        <a class='octothorpe' href='#section-42'>#</a>
       </div>
       <p><strong>Exercises (lesson 8).</strong></p>
 <ol>
@@ -1037,10 +1086,10 @@ needs.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-42'>
+  <div class='section' id='section-43'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-42'>#</a>
+        <a class='octothorpe' href='#section-43'>#</a>
       </div>
       <h2>Stats</h2>
 <h3>Lesson 9: when are two results the same?</h3>
@@ -1061,10 +1110,10 @@ sorted lists and <code>bisect</code>.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-43'>
+  <div class='section' id='section-44'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-43'>#</a>
+        <a class='octothorpe' href='#section-44'>#</a>
       </div>
       <ul>
 <li><strong>stats.cliffs(xs,ys)</strong> effect size 0..1 via lst.bisect
@@ -1092,10 +1141,10 @@ sorted lists and <code>bisect</code>.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-44'>
+  <div class='section' id='section-45'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-44'>#</a>
+        <a class='octothorpe' href='#section-45'>#</a>
       </div>
       <p><strong>Exercises (lesson 9).</strong></p>
 <ol>
@@ -1116,10 +1165,10 @@ sorted lists and <code>bisect</code>.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-45'>
+  <div class='section' id='section-46'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-45'>#</a>
+        <a class='octothorpe' href='#section-46'>#</a>
       </div>
       <h2>Acquire</h2>
 <h3>Lesson 10: labels cost money</h3>
@@ -1142,10 +1191,10 @@ or harvesting its best-known corner?</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-46'>
+  <div class='section' id='section-47'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-46'>#</a>
+        <a class='octothorpe' href='#section-47'>#</a>
       </div>
       <ul>
 <li><strong>acquire.project(rows,x,y)</strong> maps rows onto the line
@@ -1167,10 +1216,10 @@ or harvesting its best-known corner?</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-47'>
+  <div class='section' id='section-48'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-47'>#</a>
+        <a class='octothorpe' href='#section-48'>#</a>
       </div>
       <ul>
 <li><strong>acquire.top(tbl)</strong> the labels, best first, spending at
@@ -1191,10 +1240,10 @@ or harvesting its best-known corner?</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-48'>
+  <div class='section' id='section-49'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-48'>#</a>
+        <a class='octothorpe' href='#section-49'>#</a>
       </div>
       <ul>
 <li><strong>acquire.top(tbl)</strong> with the.acquire=random is the
@@ -1212,10 +1261,10 @@ or harvesting its best-known corner?</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-49'>
+  <div class='section' id='section-50'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-49'>#</a>
+        <a class='octothorpe' href='#section-50'>#</a>
       </div>
       <p><strong>Exercises (lesson 10).</strong></p>
 <ol>
@@ -1236,10 +1285,10 @@ or harvesting its best-known corner?</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-50'>
+  <div class='section' id='section-51'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-50'>#</a>
+        <a class='octothorpe' href='#section-51'>#</a>
       </div>
       <h2>Bins</h2>
 <h3>Lesson 11: cut where it gets simpler</h3>
@@ -1260,10 +1309,10 @@ regressing and starts classifying.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-51'>
+  <div class='section' id='section-52'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-51'>#</a>
+        <a class='octothorpe' href='#section-52'>#</a>
       </div>
       <ul>
 <li><strong>bins.keep()</strong> closure holding the running cheapest bin:
@@ -1294,10 +1343,10 @@ regressing and starts classifying.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-52'>
+  <div class='section' id='section-53'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-52'>#</a>
+        <a class='octothorpe' href='#section-53'>#</a>
       </div>
       <p><strong>Exercises (lesson 11).</strong></p>
 <ol>
@@ -1318,10 +1367,10 @@ regressing and starts classifying.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-53'>
+  <div class='section' id='section-54'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-53'>#</a>
+        <a class='octothorpe' href='#section-54'>#</a>
       </div>
       <h2>Tree</h2>
 <h3>Lesson 12: explanation as recursion</h3>
@@ -1342,10 +1391,10 @@ recursion.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-54'>
+  <div class='section' id='section-55'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-54'>#</a>
+        <a class='octothorpe' href='#section-55'>#</a>
       </div>
       <ul>
 <li><strong>Tree.grow(tbl,rows,y,yklass)</strong> recurses on the cheapest
@@ -1368,10 +1417,10 @@ recursion.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-55'>
+  <div class='section' id='section-56'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-55'>#</a>
+        <a class='octothorpe' href='#section-56'>#</a>
       </div>
       <p><strong>Exercises (lesson 12).</strong></p>
 <ol>
@@ -1393,10 +1442,10 @@ recursion.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-56'>
+  <div class='section' id='section-57'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-56'>#</a>
+        <a class='octothorpe' href='#section-57'>#</a>
       </div>
       <h2>Score</h2>
 <h3>Lesson 13: grading the whole story</h3>
@@ -1421,10 +1470,10 @@ optimizer tournaments the winner changed with the budget.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-57'>
+  <div class='section' id='section-58'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-57'>#</a>
+        <a class='octothorpe' href='#section-58'>#</a>
       </div>
       <ul>
 <li><strong>Tbl.wins(i)</strong> grader: row -&gt; % of the median-to-best gap
@@ -1445,10 +1494,10 @@ optimizer tournaments the winner changed with the budget.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-58'>
+  <div class='section' id='section-59'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-58'>#</a>
+        <a class='octothorpe' href='#section-59'>#</a>
       </div>
       <ul>
 <li><strong>Tbl.holdout/Tbl.wins</strong> again, across five seeds: any
@@ -1472,10 +1521,10 @@ optimizer tournaments the winner changed with the budget.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-59'>
+  <div class='section' id='section-60'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-59'>#</a>
+        <a class='octothorpe' href='#section-60'>#</a>
       </div>
       <p><strong>Exercises (lesson 13).</strong></p>
 <ol>
@@ -1497,10 +1546,10 @@ optimizer tournaments the winner changed with the budget.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-60'>
+  <div class='section' id='section-61'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-60'>#</a>
+        <a class='octothorpe' href='#section-61'>#</a>
       </div>
       <h2>Main</h2>
     </div>
@@ -1509,10 +1558,10 @@ optimizer tournaments the winner changed with the budget.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-61'>
+  <div class='section' id='section-62'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-61'>#</a>
+        <a class='octothorpe' href='#section-62'>#</a>
       </div>
       <p>run one test, reseeded</p>
     </div>
@@ -1521,10 +1570,10 @@ optimizer tournaments the winner changed with the budget.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-62'>
+  <div class='section' id='section-63'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-62'>#</a>
+        <a class='octothorpe' href='#section-63'>#</a>
       </div>
       <p>run one section&rsquo;s tests, sorted by flag name</p>
     </div>
@@ -1554,10 +1603,10 @@ optimizer tournaments the winner changed with the budget.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-63'>
+  <div class='section' id='section-64'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-63'>#</a>
+        <a class='octothorpe' href='#section-64'>#</a>
       </div>
       <p>freeze the printed pedagogy: capture &ndash;all to abc-eg.out
 (generated from a real run, never hand-edited). Student
@@ -1570,10 +1619,10 @@ ports self-grade against it; CI diffs it via &ndash;check.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-64'>
+  <div class='section' id='section-65'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-64'>#</a>
+        <a class='octothorpe' href='#section-65'>#</a>
       </div>
       <p>a fresh &ndash;all must reproduce the frozen transcript, so
 any refactor that moves a graded number fails here first</p>
@@ -1586,10 +1635,10 @@ any refactor that moves a graded number fails here first</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-65'>
+  <div class='section' id='section-66'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-65'>#</a>
+        <a class='octothorpe' href='#section-66'>#</a>
       </div>
       <p>join checker: make the doc claims executable. Verifies
 (1) every glossary link in a lesson lands on a matching
@@ -1640,10 +1689,10 @@ walk &ldquo;lst.push&rdquo; through a table of tables; nil if absent</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-66'>
+  <div class='section' id='section-67'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-66'>#</a>
+        <a class='octothorpe' href='#section-67'>#</a>
       </div>
       <p>files to html, and each one&rsquo;s prose alignment</p>
     </div>
@@ -1652,10 +1701,10 @@ walk &ldquo;lst.push&rdquo; through a table of tables; nil if absent</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-67'>
+  <div class='section' id='section-68'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-67'>#</a>
+        <a class='octothorpe' href='#section-68'>#</a>
       </div>
       <p>pycco only knows &ldquo;&ndash;&rdquo; line comments, so lift &ndash; <a href="prose .html"> prose </a>
 blocks to &ldquo;&ndash; &rdquo; lines; drop shebang and formfeeds. pycco
@@ -1708,10 +1757,10 @@ that closes the old section, and the heading starts fresh.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-68'>
+  <div class='section' id='section-69'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-68'>#</a>
+        <a class='octothorpe' href='#section-69'>#</a>
       </div>
       <p>cli, args left to right: &ndash;key=val (or &ldquo;-x v&rdquo;, x = an
 option&rsquo;s first letter) sets an option; &ndash;name runs a
@@ -1737,10 +1786,10 @@ that follow them.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-69'>
+  <div class='section' id='section-70'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-69'>#</a>
+        <a class='octothorpe' href='#section-70'>#</a>
       </div>
       <p>lua&rsquo;s &ldquo;if <strong>name</strong> == <strong>main</strong>&rdquo;: when run from the shell,
 arg[0] is this script; when require&rsquo;d, it is the caller&rsquo;s.</p>

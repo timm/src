@@ -11,8 +11,35 @@
 -- Each test is reseeded, prints something a tutor can point
 -- at, then asserts it: no crash = pass.
 --
---      lua abc-eg.lua --seed=2 --tree --score   
+--      lua abc-eg.lua --seed=2 --tree --score
 --
+--[[
+### How to run this course
+
+Install [lua 5.4+](https://lua.org) (mac:
+`brew install lua`), then fetch the code and its data:
+
+    git clone https://github.com/timm/src
+    git clone https://github.com/timm/moot ~/gits/moot
+    cd src/sandbox
+    lua abc-eg.lua --all      # a minute; ends "all pass"
+
+Then four levels of read, per lesson:
+
+1. (skim) Read a lesson here beside its printed output in
+   [abc-eg.out](abc-eg.out). Can you tell what is going
+   on?
+2. (run) Run that lesson's tests from the command line,
+   e.g. `lua abc-eg.lua --items`. Change an input; rerun.
+3. (dive) Fire up the REPL: `lua -i`, then
+   `abc = require"abc"`, then retype any demo, line by
+   line, printing as you go.
+4. (deep dive) Port a lesson to your own favorite
+   language (not lua) and reproduce its slice of
+   abc-eg.out. Slow work, so start with the shorter
+   lessons -- and lesson 2's generator is what makes
+   your numbers match ours exactly.
+]]
 local abc = require"abc"
 local the,lst,rnd,str = abc.the, abc.lst, abc.rnd, abc.str
 local stats,acquire   = abc.stats, abc.acquire
@@ -513,7 +540,8 @@ keeps its train and test data from contaminating each
 other.
 
 **Core ideas:** [tables](../glossary.md#tables),
-[clone](../glossary.md#clone)
+[clone](../glossary.md#clone),
+[centroid](../glossary.md#centroid)
 ]]
 eg.tbl = {}
 
@@ -534,6 +562,19 @@ eg.tbl["--clone"] = function(    t,u)
   print("clone of first 10 rows:", #u.rows)
   assert(#u.rows == 10)
   assert(u.cols.names == t.cols.names) end
+
+-- - **Tbl.mids(i)** the table's centroid: every column's
+--   mid, computed once then cached -- and any `add` wipes
+--   the cache, since new rows move the middle.
+eg.tbl["--mids"] = function(    t,u)
+  t = Tbl.new(the.file)
+  print("centroid:    ", str.o(t:mids()))
+  u = t:clone(lst.slice(t.rows, 1, 20))
+  print("20-row clone:", str.o(u:mids()))
+  assert(#t:mids() == #t.cols.all)
+  assert(t.middle)                    -- cached...
+  t:add(t.rows[1])
+  assert(t.middle == nil) end         -- ...until an add
 
 --[[
 **Exercises (lesson 7).**
@@ -566,7 +607,8 @@ needs.
 
 **Core ideas:** [norm](../glossary.md#norm),
 [minkowski](../glossary.md#minkowski),
-[missing](../glossary.md#missing), [heaven](../glossary.md#heaven),
+[missing](../glossary.md#missing),
+[heaven](../glossary.md#heaven),
 [knn](../glossary.md#knn), [anomaly](../glossary.md#anomaly)
 ]]
 eg.dist = {}
@@ -828,7 +870,8 @@ gradients, no pruning theory, just distance, bins, and
 recursion.
 
 **Core ideas:** [tree](../glossary.md#tree),
-[predict](../glossary.md#predict), [explain](../glossary.md#explain)
+[predict](../glossary.md#predict),
+[explain](../glossary.md#explain)
 ]]
 eg.tree = {}
 

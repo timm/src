@@ -104,7 +104,7 @@ For the impatient pythonista:
   system. That buys [poly](#poly)morphism, not
   inheritance; for fuller OO see
   [PIL ch 16](https://www.lua.org/pil/16.html)
-- functions are plain values, so higher-order style is
+- functions are plain values that can be passed around like any other value; so higher-order style is
   everywhere: `table.sort(t)` sorts ascending;
   `table.sort(t, function(a,b) return a > b end)`
   descending; pass any comparator (must be a strict
@@ -339,6 +339,16 @@ one update per value, numerically stable — and reversible
 A row far from even its own nearest neighbor. Once
 distance exists, outlier detection is one argmax: find
 who is loneliest (lesson 8, `--near`).
+
+## centroid
+
+*taught in:* [abc-eg, lesson 7](sandbox/abc-eg.lua)
+
+A table's middle: every column's mid, in column order.
+Computed lazily and cached; any add wipes the cache,
+since new rows move the middle. Compare a subset
+[clone](#clone)'s centroid to the full table's to see
+sampling error with your own eyes.
 
 ## clone
 

@@ -22,7 +22,7 @@ lesson order) and the references.
 |  4 | Num     | `lua abc-eg.lua --num`     | [welford](../glossary.md#welford) [stream](../glossary.md#stream) [minus](../glossary.md#minus) |
 |  5 | Sym     | `lua abc-eg.lua --sym`     | [entropy](../glossary.md#entropy) [mode](../glossary.md#mode) [poly](../glossary.md#poly) [noir](../glossary.md#noir) |
 |  6 | Cols    | `lua abc-eg.lua --cols`    | [schema](../glossary.md#schema) [goals](../glossary.md#goals) [xy](../glossary.md#xy) |
-|  7 | Tbl     | `lua abc-eg.lua --tbl`     | [tables](../glossary.md#tables) [clone](../glossary.md#clone) |
+|  7 | Tbl     | `lua abc-eg.lua --tbl`     | [tables](../glossary.md#tables) [clone](../glossary.md#clone) [centroid](../glossary.md#centroid) |
 |  8 | Dist    | `lua abc-eg.lua --dist`    | [norm](../glossary.md#norm) [minkowski](../glossary.md#minkowski) [missing](../glossary.md#missing) [heaven](../glossary.md#heaven) [knn](../glossary.md#knn) [anomaly](../glossary.md#anomaly) |
 |  9 | Stats   | `lua abc-eg.lua --stats`   | [effect](../glossary.md#effect) [ks](../glossary.md#ks) [same](../glossary.md#same) |
 | 10 | Acquire | `lua abc-eg.lua --acquire` | [budget](../glossary.md#budget) [active](../glossary.md#active) [poles](../glossary.md#poles) [explore](../glossary.md#explore) |
