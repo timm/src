@@ -211,6 +211,25 @@ the same rules. Ours: random labelling with the same
 [budget](#budget). If [same](#same) can't tell them
 apart, the cleverness is decoration (lessons 10, 13).
 
+## bayes
+
+*taught in:* [xaiplus, lesson 4](xai/xaiplus-eg.lua) · [xaiplus, lesson 5](xai/xaiplus-eg.lua)
+
+Naive Bayes: score a row under a klass by multiplying its
+columns' likelihoods -- a [gauss](#gauss)ian pdf for
+numbers, a smoothed frequency for symbols (log-summed, so
+underflow never bites). "Naive" = assumes the columns
+independent; cheap, incremental, a strong baseline.
+
+## confusion
+
+*taught in:* [xaiplus, lesson 5](xai/xaiplus-eg.lua)
+
+A confusion matrix counts predictions by (actual, guessed)
+klass. Its diagonal is the hits; accuracy is the diagonal
+over the total. Off-diagonal cells show which klasses a
+learner keeps mixing up.
+
 ## effect
 
 *taught in:* [xai-eg, lesson 9](xai/xai-eg.lua)
@@ -458,7 +477,7 @@ Rows plus typed column summaries: the first row builds
 the [schema](#schema), later rows update per-column
 stats as they are stored (lesson 7).
 
-*Awaiting entries:* medoids, interpolation, synthesis, naive bayes, black-box to small tree.
+*Awaiting entries:* medoids, interpolation, synthesis, black-box to small tree.
 
 
 # search and optimize
@@ -508,6 +527,16 @@ Explore vs exploit: spend labels learning the landscape,
 or harvesting its best-known corner? Acquisition policies
 (lesson 10) balance the two; pure exploit gets trapped,
 pure explore wastes the [budget](#budget).
+
+## mutate
+
+*taught in:* [xaiplus, lesson 6](xai/xaiplus-eg.lua)
+
+Making new rows from old: nudge one cell (a [gauss](#gauss)
+for numbers, a frequency draw for symbols), or blend three
+rows the differential-evolution way (a + F*(b - c), one
+column always kept from the base). The raw material every
+optimizer searches over.
 
 ## predict
 

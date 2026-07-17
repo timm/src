@@ -14,4 +14,22 @@
 -- --seed
 5 kmeans++ seeds, mean pair distance:	0.436
 
+---- bayes ----------------------------------------
+
+-- --like
+like at mean vs 3sd out:	0.142	0.002
+
+---- classify ----------------------------------------
+
+-- --acc
+naive Bayes accuracy on breast.w:	0.957
+
+---- mutate ----------------------------------------
+
+-- --picks
+cells changed by picks(n=3):	3	of	9
+
+-- --extrapolate
+x cols kept from base a:	7	of	9
+
 all pass

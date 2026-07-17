@@ -45,8 +45,10 @@ Tbl. require&rdquo;xai&rdquo; for the engine; require&rdquo;xaiplus&rdquo; here.
 
 <span class="s1">local xai = require&quot;xai&quot;</span>
 <span class="s1">local the,lst,rnd,str = xai.the, xai.lst, xai.rnd, xai.str</span>
-<span class="s1">local Sym,adds = xai.Sym, xai.adds</span>
-<span class="s1">local BIG,min = 1E32, math.min</span>
+<span class="s1">local Sym,adds,new = xai.Sym, xai.adds, xai.new</span>
+<span class="s1">local BIG = 1E32</span>
+<span class="s1">local exp,log,pi = math.exp, math.log, math.pi</span>
+<span class="s1">local min,max = math.min, math.max</span>
 <span class="s1">--DIVIDER</span>
 <span class="s1">local function addopts(s)</span>
 <span class="s1">  for k,v in s:gmatch&quot;%-%-(%w+)=(%S+)&quot; do</span>
@@ -124,6 +126,90 @@ Tbl. require&rdquo;xai&rdquo; for the engine; require&rdquo;xaiplus&rdquo; here.
 <span class="s1">    lst.push(cents, farther(data, cents, few)) end</span>
 <span class="s1">  return cents end</span>
 <span class="s1">--DIVIDER</span>
+
+<span class="s1">xp.bayes = {}</span>
+<span class="s1">--DIVIDER</span>
+<span class="s1">function xp.bayes.like(col,v,prior,    z)</span>
+<span class="s1">  if not col.mu then</span>
+<span class="s1">    return ((col.has[v] or 0)+the.k*prior)/(col.n+the.k) end</span>
+<span class="s1">  z = 2*(col:spread() + 1E-32)^2</span>
+<span class="s1">  return exp(-(v - col.mu)^2/z)/(pi*z)^0.5 end</span>
+<span class="s1">--DIVIDER</span>
+<span class="s1">function xp.bayes.likes(h,row,nrows,nh,    prior,out,v)</span>
+<span class="s1">  prior = (#h.rows + the.m)/(nrows + the.m*nh)</span>
+<span class="s1">  out   = log(prior)</span>
+<span class="s1">  for _,c in ipairs(h.cols.x) do</span>
+<span class="s1">    v = row[c.at]</span>
+<span class="s1">    if v ~= &quot;?&quot; then</span>
+<span class="s1">      v = xp.bayes.like(c, v, prior)</span>
+<span class="s1">      if v &gt; 0 then out = out + log(v) end end end</span>
+<span class="s1">  return out end</span>
+<span class="s1">--DIVIDER</span>
+
+<span class="s1">--DIVIDER</span>
+<span class="s1">local Confuse = {}</span>
+<span class="s1">function Confuse.new()</span>
+<span class="s1">  return new(Confuse, {n=0, ok=0, cells={}}) end</span>
+<span class="s1">function Confuse.add(i,want,got,    key)</span>
+<span class="s1">  i.n = i.n + 1</span>
+<span class="s1">  if want == got then i.ok = i.ok + 1 end</span>
+<span class="s1">  key = want .. &quot;|&quot; .. got</span>
+<span class="s1">  i.cells[key] = (i.cells[key] or 0) + 1</span>
+<span class="s1">  return got end</span>
+<span class="s1">function Confuse.acc(i) return i.ok/(i.n + 1E-32) end</span>
+<span class="s1">--DIVIDER</span>
+<span class="s1">function xp.classify(data,wait,    h,cf,nh,at,want,best,bs,s)</span>
+<span class="s1">  wait, at  = wait or the.wait, data.cols.klass.at</span>
+<span class="s1">  h, cf, nh = {}, Confuse.new(), 0</span>
+<span class="s1">  for i,row in ipairs(data.rows) do</span>
+<span class="s1">    want = row[at]</span>
+<span class="s1">    if i &gt;= wait and nh &gt; 0 then</span>
+<span class="s1">      best, bs = nil, -BIG</span>
+<span class="s1">      for k,hk in lst.items(h) do</span>
+<span class="s1">        s = xp.bayes.likes(hk, row, #data.rows, nh)</span>
+<span class="s1">        if s &gt; bs then bs,best = s,k end end</span>
+<span class="s1">      cf:add(want, best) end</span>
+<span class="s1">    if not h[want] then h[want]=data:clone(); nh=nh+1 end</span>
+<span class="s1">    h[want]:add(row) end</span>
+<span class="s1">  return cf end</span>
+<span class="s1">--DIVIDER</span>
+
+<span class="s1">xp.mutate = {}</span>
+<span class="s1">--DIVIDER</span>
+<span class="s1">local function lohi(col,k,    s)</span>
+<span class="s1">  s = col:spread(); return col.mu - k*s, col.mu + k*s end</span>
+<span class="s1">--DIVIDER</span>
+<span class="s1">function xp.mutate.pick(col,v,    lo,hi,val)</span>
+<span class="s1">  if not col.mu then return rnd.pick(col.has)() end</span>
+<span class="s1">  v      = (v ~= &quot;?&quot; and v) or col.mu</span>
+<span class="s1">  lo, hi = lohi(col, 3)</span>
+<span class="s1">  val    = v + col:spread()*rnd.gauss(0,1)</span>
+<span class="s1">  return max(lo, min(hi, val)) end</span>
+<span class="s1">--DIVIDER</span>
+<span class="s1">function xp.mutate.picks(data,row,n,    out,xs)</span>
+<span class="s1">  out, xs = lst.slice(row), rnd.shuffle(lst.slice(data.cols.x))</span>
+<span class="s1">  for j = 1, min(n, #xs) do</span>
+<span class="s1">    out[xs[j].at] = xp.mutate.pick(xs[j], out[xs[j].at]) end</span>
+<span class="s1">  return out end</span>
+<span class="s1">--DIVIDER</span>
+<span class="s1">function xp.mutate.extrapolate(cols,a,b,c,F,cr,</span>
+<span class="s1">                        out,keep,va,vb,vc,v,lo,hi,span)</span>
+<span class="s1">  F, cr     = F or the.F, cr or the.cr</span>
+<span class="s1">  out, keep = lst.slice(a), cols[rnd.n(#cols)]</span>
+<span class="s1">  for _,col in ipairs(cols) do</span>
+<span class="s1">    if col ~= keep and rnd.n() &lt; cr then</span>
+<span class="s1">      va,vb,vc = a[col.at], b[col.at], c[col.at]</span>
+<span class="s1">      if     va == &quot;?&quot; then out[col.at] = &quot;?&quot;</span>
+<span class="s1">      elseif not col.mu then</span>
+<span class="s1">        out[col.at] = (rnd.n() &lt; F) and vb or va</span>
+<span class="s1">      elseif vb == &quot;?&quot; or vc == &quot;?&quot; then out[col.at] = va</span>
+<span class="s1">      else</span>
+<span class="s1">        v      = va + F*(vb - vc)</span>
+<span class="s1">        lo, hi = lohi(col, 4)</span>
+<span class="s1">        span   = hi - lo + 1E-32</span>
+<span class="s1">        out[col.at] = lo + (v - lo) % span end end end</span>
+<span class="s1">  return out end</span>
+<span class="s1">--DIVIDER</span>
 <span class="s1">xp.help = help</span>
 <span class="s1">return xp</span>
 
@@ -139,7 +225,12 @@ Tbl. require&rdquo;xai&rdquo; for the engine; require&rdquo;xaiplus&rdquo; here.
       <p>knn=3       neighbors for the knn classifier
 kluster=8   clusters for kmeans / kmeans++
 iter=10     kmeans passes
-few=128     sample pool for kmeans++ seeding ]]</p>
+few=128     sample pool for kmeans++ seeding
+k=1         naive-bayes Laplace smoothing
+m=2         naive-bayes m-estimate prior weight
+wait=10     rows seen before naive bayes scores
+F=0.5       DE extrapolation factor
+cr=0.3      DE crossover rate ]]</p>
     </div>
     <div class='code'>
       <div class="highlight"><pre></pre></div>
@@ -354,6 +445,155 @@ d^2 trick). Returns the seed rows, not clusters.</p>
     <div class='docs'>
       <div class='octowrap'>
         <a class='octothorpe' href='#section-18'>#</a>
+      </div>
+      <h2>Bayes</h2>
+<p>naive Bayes likelihoods. <code>like</code> = P(v | col): a Sym
+m-estimate, or a Num gaussian pdf. <code>likes</code> = the log-sum
+likelihood of a whole row under one klass&rsquo;s model (a xai
+Tbl holding just that klass&rsquo;s rows). Enough for the
+classifier in the next section.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-19'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-19'>#</a>
+      </div>
+      <p>P(v | col): Sym m-estimate, else Num gaussian pdf</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-20'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-20'>#</a>
+      </div>
+      <p>log-likelihood of a row under klass model h (a xai Tbl)</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-21'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-21'>#</a>
+      </div>
+      <h2>Classify</h2>
+<p>Incremental naive Bayes, test-then-train: for each row,
+predict its klass from the models seen so far, score the
+guess in a Confuse matrix, then train the true klass&rsquo;s
+model. One pass, no held-out split needed.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-22'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-22'>#</a>
+      </div>
+      <p>confusion matrix: add(want,got) tallies each cell;
+<code>acc</code> = the fraction landing on the diagonal</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-23'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-23'>#</a>
+      </div>
+      <p>test-then-train naive Bayes; returns the Confuse matrix</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-24'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-24'>#</a>
+      </div>
+      <h2>Mutate</h2>
+<p>Mutators for the optimizers. <code>pick</code> samples one fresh
+value for a column (Sym by frequency, Num a gaussian nudge
+clamped to mu +-3sd); <code>picks</code> mutates n random x cells;
+<code>extrapolate</code> is DE&rsquo;s a + F*(b - c), with one column always
+kept from a, so a kid never fully forgets its base.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-25'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-25'>#</a>
+      </div>
+      <p>lo,hi = mu -+ k spreads of a Num column</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-26'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-26'>#</a>
+      </div>
+      <p>fresh value for col: Sym by frequency, Num gaussian nudge</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-27'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-27'>#</a>
+      </div>
+      <p>copy row; mutate n of its x columns via pick</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-28'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-28'>#</a>
+      </div>
+      <p>DE blend a + F*(b - c) per x col with chance cr; one col
+always kept from a; Nums wrap to mu +-4sd, Syms flip to b
+with chance F, and &ldquo;?&rdquo; in a is left as &ldquo;?&rdquo;</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-29'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-29'>#</a>
       </div>
       <h2>Start</h2>
     </div>

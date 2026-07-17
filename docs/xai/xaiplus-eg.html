@@ -84,6 +84,21 @@ in the <a href="../glossary.md">glossary</a>. Run
 <td>Kmeanspp</td>
 <td><a href="../glossary.md#kmeanspp">kmeanspp</a> <a href="../glossary.md#centroid">centroid</a></td>
 </tr>
+<tr>
+<td>4</td>
+<td>Bayes</td>
+<td><a href="../glossary.md#bayes">bayes</a> <a href="../glossary.md#gauss">gauss</a></td>
+</tr>
+<tr>
+<td>5</td>
+<td>Classify</td>
+<td><a href="../glossary.md#bayes">bayes</a> <a href="../glossary.md#confusion">confusion</a> <a href="../glossary.md#mode">mode</a></td>
+</tr>
+<tr>
+<td>6</td>
+<td>Mutate</td>
+<td><a href="../glossary.md#mutate">mutate</a> <a href="../glossary.md#gauss">gauss</a></td>
+</tr>
 </tbody>
 </table>
     </div>
@@ -94,7 +109,8 @@ in the <a href="../glossary.md">glossary</a>. Run
 <span class="kd">local</span><span class="w"> </span><span class="nv">Tbl</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">xai</span><span class="p">.</span><span class="py">Tbl</span>
 
 <span class="kd">local</span><span class="w"> </span><span class="nv">eg</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="p">{}</span>
-<span class="kd">local</span><span class="w"> </span><span class="nv">order</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="s2">&quot;knn&quot;</span><span class="p">,</span><span class="s2">&quot;kmeans&quot;</span><span class="p">,</span><span class="s2">&quot;kmeanspp&quot;</span><span class="p">}</span></pre></div>
+<span class="kd">local</span><span class="w"> </span><span class="nv">order</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="s2">&quot;knn&quot;</span><span class="p">,</span><span class="s2">&quot;kmeans&quot;</span><span class="p">,</span><span class="s2">&quot;kmeanspp&quot;</span><span class="p">,</span><span class="s2">&quot;bayes&quot;</span><span class="p">,</span>
+<span class="w">               </span><span class="s2">&quot;classify&quot;</span><span class="p">,</span><span class="s2">&quot;mutate&quot;</span><span class="p">}</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -318,10 +334,20 @@ lesson 2&rsquo;s kmeans.</p>
       <div class='octowrap'>
         <a class='octothorpe' href='#section-11'>#</a>
       </div>
-      <h2>Main</h2>
+      <h2>Bayes</h2>
+<h3>Lesson 4: likelihoods, the Bayes way</h3>
+<p>Before classifying, learn to score. <code>like</code> answers P(v|col):
+for a Num column it is the gaussian bell (peak at the mean,
+thin tails), for a Sym a smoothed frequency. <code>likes</code>
+multiplies a row&rsquo;s per-column likelihoods (in log space, so
+it sums) to score a whole row under one klass&rsquo;s model. A
+value at the column mean is far likelier than one three sd
+out &ndash; exactly the signal the classifier leans on.</p>
+<p><strong>Core ideas:</strong> <a href="../glossary.md#bayes">bayes</a>,
+<a href="../glossary.md#gauss">gauss</a></p>
     </div>
     <div class='code'>
-      <div class="highlight"><pre><span class="nv">eg</span><span class="p">.</span><span class="py">main</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{}</span></pre></div>
+      <div class="highlight"><pre><span class="nv">eg</span><span class="p">.</span><span class="py">bayes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{}</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -330,10 +356,22 @@ lesson 2&rsquo;s kmeans.</p>
       <div class='octowrap'>
         <a class='octothorpe' href='#section-12'>#</a>
       </div>
-      <p>run one test, reseeded</p>
+      <ul>
+<li><strong>xp.bayes.like(col,v,prior)</strong> P(v|col): Sym m-estimate, Num
+  gaussian pdf.</li>
+<li><strong>xp.bayes.likes(h,row,n,nh)</strong> log-likelihood of a row under a
+  klass model h (a Tbl of that klass&rsquo;s rows).</li>
+</ul>
     </div>
     <div class='code'>
-      <div class="highlight"><pre><span class="kd">local</span><span class="w"> </span><span class="kr">function</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="nv">fn</span><span class="p">)</span><span class="w"> </span><span class="nv">rnd</span><span class="p">.</span><span class="nf">seed</span><span class="p">(</span><span class="nv">the</span><span class="p">.</span><span class="py">seed</span><span class="p">);</span><span class="w"> </span><span class="nf">fn</span><span class="p">()</span><span class="w"> </span><span class="kr">end</span></pre></div>
+      <div class="highlight"><pre><span class="nv">eg</span><span class="p">.</span><span class="py">bayes</span><span class="p">[</span><span class="s2">&quot;--like&quot;</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">function</span><span class="p">(</span><span class="w">    </span><span class="nv">d</span><span class="p">,</span><span class="nv">c</span><span class="p">,</span><span class="nv">near</span><span class="p">,</span><span class="nv">far</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">d</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="nv">Tbl</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="nv">DATA</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">c</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="nv">d</span><span class="p">.</span><span class="py">cols</span><span class="p">.</span><span class="py">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="w">                    </span><span class="c1">-- a numeric feature</span>
+<span class="w">  </span><span class="nv">near</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">xp</span><span class="p">.</span><span class="py">bayes</span><span class="p">.</span><span class="nf">like</span><span class="p">(</span><span class="nv">c</span><span class="p">,</span><span class="w"> </span><span class="nv">c</span><span class="p">.</span><span class="py">mu</span><span class="p">,</span><span class="w"> </span><span class="mf">0.5</span><span class="p">)</span><span class="w">          </span><span class="c1">-- value at the mean</span>
+<span class="w">  </span><span class="nv">far</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="nv">xp</span><span class="p">.</span><span class="py">bayes</span><span class="p">.</span><span class="nf">like</span><span class="p">(</span><span class="nv">c</span><span class="p">,</span><span class="w"> </span><span class="nv">c</span><span class="p">.</span><span class="py">mu</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">3</span><span class="o">*</span><span class="nv">c</span><span class="p">:</span><span class="nf">spread</span><span class="p">(),</span><span class="w"> </span><span class="mf">0.5</span><span class="p">)</span><span class="w">   </span><span class="c1">-- 3 sd out</span>
+<span class="w">  </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;like at mean vs 3sd out:&quot;</span><span class="p">,</span><span class="w"> </span><span class="nv">str</span><span class="p">.</span><span class="nf">o</span><span class="p">(</span><span class="nv">near</span><span class="p">),</span><span class="w"> </span><span class="nv">str</span><span class="p">.</span><span class="nf">o</span><span class="p">(</span><span class="nv">far</span><span class="p">))</span>
+<span class="w">  </span><span class="nb">assert</span><span class="p">(</span><span class="nv">near</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="nv">far</span><span class="p">)</span><span class="w">                    </span><span class="c1">-- typical = likelier</span>
+<span class="w">  </span><span class="nb">assert</span><span class="p">(</span><span class="nv">near</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="kr">end</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -341,6 +379,196 @@ lesson 2&rsquo;s kmeans.</p>
     <div class='docs'>
       <div class='octowrap'>
         <a class='octothorpe' href='#section-13'>#</a>
+      </div>
+      <p><strong>Exercises (lesson 4).</strong></p>
+<ol>
+<li>In your own favorite language (not lua), write <code>like</code> for
+   Num and Sym columns and reproduce this line.</li>
+<li>(simple) Print <code>xp.bayes.like</code> for a klass Sym at <code>--k=1</code> then
+   <code>--k=1000</code>. What does heavy smoothing do to rare values?</li>
+<li>Split breast.w by klass into two Tbls; show <code>xp.bayes.likes</code>
+   scores a benign row higher under the benign model than
+   under the malignant one.</li>
+</ol>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-14'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-14'>#</a>
+      </div>
+      <h2>Classify</h2>
+<h3>Lesson 5: naive Bayes, test-then-train</h3>
+<p>Now the classifier. Walk the rows once: for each, first
+PREDICT its klass (whichever model gives the highest
+<a href="../glossary.md#bayes">likes</a>), score that guess in a
+confusion matrix, and only THEN train the true klass&rsquo;s
+model. So every row is tested on models that never saw it &ndash;
+an honest running accuracy from a single pass. On breast.w
+that lands in the mid-90s.</p>
+<p><strong>Core ideas:</strong> <a href="../glossary.md#bayes">bayes</a>,
+<a href="../glossary.md#confusion">confusion</a>,
+<a href="../glossary.md#mode">mode</a></p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="nv">eg</span><span class="p">.</span><span class="py">classify</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{}</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-15'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-15'>#</a>
+      </div>
+      <ul>
+<li><strong>xp.classify(data,wait)</strong> incremental naive Bayes;
+  returns a Confuse matrix (<code>:acc()</code> = its accuracy).</li>
+</ul>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="nv">eg</span><span class="p">.</span><span class="py">classify</span><span class="p">[</span><span class="s2">&quot;--acc&quot;</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">function</span><span class="p">(</span><span class="w">    </span><span class="nv">d</span><span class="p">,</span><span class="nv">cf</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">d</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="nv">Tbl</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="nv">DATA</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">cf</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">xp</span><span class="p">.</span><span class="nf">classify</span><span class="p">(</span><span class="nv">d</span><span class="p">)</span>
+<span class="w">  </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;naive Bayes accuracy on breast.w:&quot;</span><span class="p">,</span><span class="w"> </span><span class="nv">str</span><span class="p">.</span><span class="nf">o</span><span class="p">(</span><span class="nv">cf</span><span class="p">:</span><span class="nf">acc</span><span class="p">()))</span>
+<span class="w">  </span><span class="nb">assert</span><span class="p">(</span><span class="nv">cf</span><span class="p">:</span><span class="nf">acc</span><span class="p">()</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mf">0.9</span><span class="p">)</span>
+<span class="w">  </span><span class="nb">assert</span><span class="p">(</span><span class="nv">cf</span><span class="p">.</span><span class="py">n</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">600</span><span class="p">)</span><span class="w"> </span><span class="kr">end</span><span class="w">                </span><span class="c1">-- scored most rows</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-16'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-16'>#</a>
+      </div>
+      <p><strong>Exercises (lesson 5).</strong></p>
+<ol>
+<li>In your own favorite language (not lua), write the
+   test-then-train loop and reproduce the accuracy.</li>
+<li>(simple) Vary <code>--wait</code> (10, 50, 200). Does a longer
+   warm-up before scoring raise or lower the reported acc,
+   and why?</li>
+<li>From the Confuse <code>cells</code>, print the two most common
+   mistakes (want|got pairs off the diagonal). Which klass
+   is hardest to tell apart?</li>
+</ol>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-17'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-17'>#</a>
+      </div>
+      <h2>Mutate</h2>
+<h3>Lesson 6: making new rows</h3>
+<p>The optimizers coming next must INVENT rows, not just pick
+them. Three mutators do it. <code>pick</code> samples one new cell (a
+Sym by frequency, a Num nudged by a <a href="../glossary.md#gauss">gauss</a>
+and clamped near its mean); <code>picks</code> mutates a few cells of a
+copied row; <code>extrapolate</code> is differential evolution&rsquo;s move
+&ndash; blend three rows as a + F*(b - c) &ndash; but it always keeps
+at least one column straight from <code>a</code>, so a child never
+wholly forgets its base.</p>
+<p><strong>Core ideas:</strong> <a href="../glossary.md#mutate">mutate</a>,
+<a href="../glossary.md#gauss">gauss</a></p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="nv">eg</span><span class="p">.</span><span class="py">mutate</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{}</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-18'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-18'>#</a>
+      </div>
+      <ul>
+<li><strong>xp.mutate.pick(col,v)</strong> one fresh value for a column.</li>
+<li><strong>xp.mutate.picks(data,row,n)</strong> copy row, mutate n of its x cells.</li>
+<li><strong>xp.mutate.extrapolate(cols,a,b,c)</strong> DE blend a+F*(b-c); one
+  column always kept from a.</li>
+</ul>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="nv">eg</span><span class="p">.</span><span class="py">mutate</span><span class="p">[</span><span class="s2">&quot;--picks&quot;</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">function</span><span class="p">(</span><span class="w">    </span><span class="nv">d</span><span class="p">,</span><span class="nv">r</span><span class="p">,</span><span class="nv">m</span><span class="p">,</span><span class="nv">diff</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">d</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="nv">Tbl</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="nv">DATA</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">r</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="nv">d</span><span class="p">.</span><span class="py">rows</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="w">  </span><span class="nv">m</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="nv">xp</span><span class="p">.</span><span class="py">mutate</span><span class="p">.</span><span class="nf">picks</span><span class="p">(</span><span class="nv">d</span><span class="p">,</span><span class="w"> </span><span class="nv">r</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">)</span><span class="w">              </span><span class="c1">-- mutate 3 x cells</span>
+<span class="w">  </span><span class="nv">diff</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span>
+<span class="w">  </span><span class="kr">for</span><span class="w"> </span><span class="nv">_</span><span class="p">,</span><span class="nv">c</span><span class="w"> </span><span class="kr">in</span><span class="w"> </span><span class="nb">ipairs</span><span class="p">(</span><span class="nv">d</span><span class="p">.</span><span class="py">cols</span><span class="p">.</span><span class="py">x</span><span class="p">)</span><span class="w"> </span><span class="kr">do</span>
+<span class="w">    </span><span class="kr">if</span><span class="w"> </span><span class="nv">m</span><span class="p">[</span><span class="nv">c</span><span class="p">.</span><span class="py">at</span><span class="p">]</span><span class="w"> </span><span class="o">~=</span><span class="w"> </span><span class="nv">r</span><span class="p">[</span><span class="nv">c</span><span class="p">.</span><span class="py">at</span><span class="p">]</span><span class="w"> </span><span class="kr">then</span><span class="w"> </span><span class="nv">diff</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">diff</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="kr">end</span><span class="w"> </span><span class="kr">end</span>
+<span class="w">  </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;cells changed by picks(n=3):&quot;</span><span class="p">,</span><span class="w"> </span><span class="nv">diff</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;of&quot;</span><span class="p">,</span><span class="w"> </span><span class="o">#</span><span class="nv">d</span><span class="p">.</span><span class="py">cols</span><span class="p">.</span><span class="py">x</span><span class="p">)</span>
+<span class="w">  </span><span class="nb">assert</span><span class="p">(</span><span class="o">#</span><span class="nv">m</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="o">#</span><span class="nv">r</span><span class="p">)</span>
+<span class="w">  </span><span class="nb">assert</span><span class="p">(</span><span class="nv">diff</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="mi">3</span><span class="p">)</span><span class="w"> </span><span class="kr">end</span><span class="w">                 </span><span class="c1">-- at most n changed</span>
+
+<span class="nv">eg</span><span class="p">.</span><span class="py">mutate</span><span class="p">[</span><span class="s2">&quot;--extrapolate&quot;</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">function</span><span class="p">(</span><span class="w">    </span><span class="nv">d</span><span class="p">,</span><span class="nv">a</span><span class="p">,</span><span class="nv">b</span><span class="p">,</span><span class="nv">c</span><span class="p">,</span><span class="nv">kid</span><span class="p">,</span><span class="nv">same</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">d</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">Tbl</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="nv">DATA</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">a</span><span class="p">,</span><span class="w"> </span><span class="nv">b</span><span class="p">,</span><span class="w"> </span><span class="nv">c</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">d</span><span class="p">.</span><span class="py">rows</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="w"> </span><span class="nv">d</span><span class="p">.</span><span class="py">rows</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span><span class="w"> </span><span class="nv">d</span><span class="p">.</span><span class="py">rows</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+<span class="w">  </span><span class="nv">kid</span><span class="p">,</span><span class="w"> </span><span class="nv">same</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">xp</span><span class="p">.</span><span class="py">mutate</span><span class="p">.</span><span class="nf">extrapolate</span><span class="p">(</span><span class="nv">d</span><span class="p">.</span><span class="py">cols</span><span class="p">.</span><span class="py">x</span><span class="p">,</span><span class="w"> </span><span class="nv">a</span><span class="p">,</span><span class="w"> </span><span class="nv">b</span><span class="p">,</span><span class="w"> </span><span class="nv">c</span><span class="p">),</span><span class="w"> </span><span class="mi">0</span>
+<span class="w">  </span><span class="kr">for</span><span class="w"> </span><span class="nv">_</span><span class="p">,</span><span class="nv">col</span><span class="w"> </span><span class="kr">in</span><span class="w"> </span><span class="nb">ipairs</span><span class="p">(</span><span class="nv">d</span><span class="p">.</span><span class="py">cols</span><span class="p">.</span><span class="py">x</span><span class="p">)</span><span class="w"> </span><span class="kr">do</span>
+<span class="w">    </span><span class="kr">if</span><span class="w"> </span><span class="nv">kid</span><span class="p">[</span><span class="nv">col</span><span class="p">.</span><span class="py">at</span><span class="p">]</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="nv">a</span><span class="p">[</span><span class="nv">col</span><span class="p">.</span><span class="py">at</span><span class="p">]</span><span class="w"> </span><span class="kr">then</span><span class="w"> </span><span class="nv">same</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">same</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="kr">end</span><span class="w"> </span><span class="kr">end</span>
+<span class="w">  </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;x cols kept from base a:&quot;</span><span class="p">,</span><span class="w"> </span><span class="nv">same</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;of&quot;</span><span class="p">,</span><span class="w"> </span><span class="o">#</span><span class="nv">d</span><span class="p">.</span><span class="py">cols</span><span class="p">.</span><span class="py">x</span><span class="p">)</span>
+<span class="w">  </span><span class="nb">assert</span><span class="p">(</span><span class="o">#</span><span class="nv">kid</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="o">#</span><span class="nv">a</span><span class="p">)</span>
+<span class="w">  </span><span class="nb">assert</span><span class="p">(</span><span class="nv">same</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="kr">end</span><span class="w">                 </span><span class="c1">-- keep guarantees &gt;=1</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-19'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-19'>#</a>
+      </div>
+      <p><strong>Exercises (lesson 6).</strong></p>
+<ol>
+<li>In your own favorite language (not lua), write the three
+   mutators and reproduce these lines.</li>
+<li>(simple) Rerun <code>--extrapolate</code> with <code>--cr=0.1</code> then 0.9.
+   How does the crossover rate change how many columns the
+   child keeps from a?</li>
+<li>Show <code>xp.mutate.picks</code> never leaves a Num cell outside mu +-3sd:
+   mutate one column 1000 times and check the range.</li>
+</ol>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-20'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-20'>#</a>
+      </div>
+      <h2>Main</h2>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="nv">eg</span><span class="p">.</span><span class="py">main</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{}</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-21'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-21'>#</a>
+      </div>
+      <p>run one test, reseeded</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="kd">local</span><span class="w"> </span><span class="kr">function</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="nv">fn</span><span class="p">)</span><span class="w"> </span><span class="nv">rnd</span><span class="p">.</span><span class="nf">seed</span><span class="p">(</span><span class="nv">the</span><span class="p">.</span><span class="py">seed</span><span class="p">);</span><span class="w"> </span><span class="nf">fn</span><span class="p">()</span><span class="w"> </span><span class="kr">end</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-22'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-22'>#</a>
       </div>
       <p>flags of one section in SOURCE order, parsed from this
 file (pairs() loses definition order).</p>
@@ -359,10 +587,10 @@ file (pairs() loses definition order).</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-14'>
+  <div class='section' id='section-23'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-14'>#</a>
+        <a class='octothorpe' href='#section-23'>#</a>
       </div>
       <p>run one section&rsquo;s tests, in source (reading) order</p>
     </div>
@@ -388,10 +616,10 @@ file (pairs() loses definition order).</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-15'>
+  <div class='section' id='section-24'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-15'>#</a>
+        <a class='octothorpe' href='#section-24'>#</a>
       </div>
       <p>freeze the printed pedagogy to xaiplus-eg.out (from a real
 run, never hand-edited); &ndash;check diffs a fresh run to it</p>
@@ -410,10 +638,10 @@ run, never hand-edited); &ndash;check diffs a fresh run to it</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-16'>
+  <div class='section' id='section-25'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-16'>#</a>
+        <a class='octothorpe' href='#section-25'>#</a>
       </div>
       <p>join checker (per-course half): every glossary link in a
 lesson lands on a heading, and every dot-list signature
@@ -446,10 +674,10 @@ walk &ldquo;xp.knn&rdquo; through nested tables; nil if absent</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-17'>
+  <div class='section' id='section-26'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-17'>#</a>
+        <a class='octothorpe' href='#section-26'>#</a>
       </div>
       <p>cli: &ndash;key=val sets an option, &ndash;name runs a section, other
 names run one test. Flags steer only the egs that follow.</p>

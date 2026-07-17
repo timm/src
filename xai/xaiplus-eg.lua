@@ -49,6 +49,9 @@ in the [glossary](../glossary.md). Run
 | 1 | Knn      | [knn](../glossary.md#knn) [mode](../glossary.md#mode) |
 | 2 | Kmeans   | [kmeans](../glossary.md#kmeans) [centroid](../glossary.md#centroid) |
 | 3 | Kmeanspp | [kmeanspp](../glossary.md#kmeanspp) [centroid](../glossary.md#centroid) |
+| 4 | Bayes    | [bayes](../glossary.md#bayes) [gauss](../glossary.md#gauss) |
+| 5 | Classify | [bayes](../glossary.md#bayes) [confusion](../glossary.md#confusion) [mode](../glossary.md#mode) |
+| 6 | Mutate   | [mutate](../glossary.md#mutate) [gauss](../glossary.md#gauss) |
 ]]
 local xai = require"xai"
 local xp  = require"xaiplus"
@@ -56,7 +59,8 @@ local the,lst,rnd,str = xai.the, xai.lst, xai.rnd, xai.str
 local Tbl = xai.Tbl
 
 local eg    = {}
-local order = {"knn","kmeans","kmeanspp"}
+local order = {"knn","kmeans","kmeanspp","bayes",
+               "classify","mutate"}
 
 -- the shared running dataset: a small numeric classification
 -- table (9 cell-measurement x cols, a benign/malignant klass)
@@ -187,6 +191,143 @@ eg.kmeanspp["--seed"] = function(    d,cs,spread,gap)
 2. Feed `xp.kpp`'s seeds to `xp.kmeans` as its start (add a
    `cents` argument). Does a kmeans++ start lower the final
    assignment error versus a random start?
+]]
+
+-- ## Bayes
+--[[
+### Lesson 4: likelihoods, the Bayes way
+
+Before classifying, learn to score. `like` answers P(v|col):
+for a Num column it is the gaussian bell (peak at the mean,
+thin tails), for a Sym a smoothed frequency. `likes`
+multiplies a row's per-column likelihoods (in log space, so
+it sums) to score a whole row under one klass's model. A
+value at the column mean is far likelier than one three sd
+out -- exactly the signal the classifier leans on.
+
+**Core ideas:** [bayes](../glossary.md#bayes),
+[gauss](../glossary.md#gauss)
+]]
+eg.bayes = {}
+
+-- - **xp.bayes.like(col,v,prior)** P(v|col): Sym m-estimate, Num
+--   gaussian pdf.
+-- - **xp.bayes.likes(h,row,n,nh)** log-likelihood of a row under a
+--   klass model h (a Tbl of that klass's rows).
+eg.bayes["--like"] = function(    d,c,near,far)
+  d    = Tbl.new(DATA)
+  c    = d.cols.x[1]                    -- a numeric feature
+  near = xp.bayes.like(c, c.mu, 0.5)          -- value at the mean
+  far  = xp.bayes.like(c, c.mu + 3*c:spread(), 0.5)   -- 3 sd out
+  print("like at mean vs 3sd out:", str.o(near), str.o(far))
+  assert(near > far)                    -- typical = likelier
+  assert(near > 0) end
+
+--[[
+**Exercises (lesson 4).**
+
+0. In your own favorite language (not lua), write `like` for
+   Num and Sym columns and reproduce this line.
+1. (simple) Print `xp.bayes.like` for a klass Sym at `--k=1` then
+   `--k=1000`. What does heavy smoothing do to rare values?
+2. Split breast.w by klass into two Tbls; show `xp.bayes.likes`
+   scores a benign row higher under the benign model than
+   under the malignant one.
+]]
+
+-- ## Classify
+--[[
+### Lesson 5: naive Bayes, test-then-train
+
+Now the classifier. Walk the rows once: for each, first
+PREDICT its klass (whichever model gives the highest
+[likes](../glossary.md#bayes)), score that guess in a
+confusion matrix, and only THEN train the true klass's
+model. So every row is tested on models that never saw it --
+an honest running accuracy from a single pass. On breast.w
+that lands in the mid-90s.
+
+**Core ideas:** [bayes](../glossary.md#bayes),
+[confusion](../glossary.md#confusion),
+[mode](../glossary.md#mode)
+]]
+eg.classify = {}
+
+-- - **xp.classify(data,wait)** incremental naive Bayes;
+--   returns a Confuse matrix (`:acc()` = its accuracy).
+eg.classify["--acc"] = function(    d,cf)
+  d  = Tbl.new(DATA)
+  cf = xp.classify(d)
+  print("naive Bayes accuracy on breast.w:", str.o(cf:acc()))
+  assert(cf:acc() > 0.9)
+  assert(cf.n > 600) end                -- scored most rows
+
+--[[
+**Exercises (lesson 5).**
+
+0. In your own favorite language (not lua), write the
+   test-then-train loop and reproduce the accuracy.
+1. (simple) Vary `--wait` (10, 50, 200). Does a longer
+   warm-up before scoring raise or lower the reported acc,
+   and why?
+2. From the Confuse `cells`, print the two most common
+   mistakes (want|got pairs off the diagonal). Which klass
+   is hardest to tell apart?
+]]
+
+-- ## Mutate
+--[[
+### Lesson 6: making new rows
+
+The optimizers coming next must INVENT rows, not just pick
+them. Three mutators do it. `pick` samples one new cell (a
+Sym by frequency, a Num nudged by a [gauss](../glossary.md#gauss)
+and clamped near its mean); `picks` mutates a few cells of a
+copied row; `extrapolate` is differential evolution's move
+-- blend three rows as a + F*(b - c) -- but it always keeps
+at least one column straight from `a`, so a child never
+wholly forgets its base.
+
+**Core ideas:** [mutate](../glossary.md#mutate),
+[gauss](../glossary.md#gauss)
+]]
+eg.mutate = {}
+
+-- - **xp.mutate.pick(col,v)** one fresh value for a column.
+-- - **xp.mutate.picks(data,row,n)** copy row, mutate n of its x cells.
+-- - **xp.mutate.extrapolate(cols,a,b,c)** DE blend a+F*(b-c); one
+--   column always kept from a.
+eg.mutate["--picks"] = function(    d,r,m,diff)
+  d    = Tbl.new(DATA)
+  r    = d.rows[1]
+  m    = xp.mutate.picks(d, r, 3)              -- mutate 3 x cells
+  diff = 0
+  for _,c in ipairs(d.cols.x) do
+    if m[c.at] ~= r[c.at] then diff = diff + 1 end end
+  print("cells changed by picks(n=3):", diff, "of", #d.cols.x)
+  assert(#m == #r)
+  assert(diff <= 3) end                 -- at most n changed
+
+eg.mutate["--extrapolate"] = function(    d,a,b,c,kid,same)
+  d = Tbl.new(DATA)
+  a, b, c = d.rows[1], d.rows[2], d.rows[3]
+  kid, same = xp.mutate.extrapolate(d.cols.x, a, b, c), 0
+  for _,col in ipairs(d.cols.x) do
+    if kid[col.at] == a[col.at] then same = same + 1 end end
+  print("x cols kept from base a:", same, "of", #d.cols.x)
+  assert(#kid == #a)
+  assert(same >= 1) end                 -- keep guarantees >=1
+
+--[[
+**Exercises (lesson 6).**
+
+0. In your own favorite language (not lua), write the three
+   mutators and reproduce these lines.
+1. (simple) Rerun `--extrapolate` with `--cr=0.1` then 0.9.
+   How does the crossover rate change how many columns the
+   child keeps from a?
+2. Show `xp.mutate.picks` never leaves a Num cell outside mu +-3sd:
+   mutate one column 1000 times and check the range.
 ]]
 
 -- ## Main
