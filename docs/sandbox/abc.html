@@ -368,7 +368,8 @@ Num; trailing -,+,! = y goals; X = skip; else x.
         <a class='octothorpe' href='#section-20'>#</a>
       </div>
       <h2>Tbl</h2>
-<p>Rows plus a Cols. First row makes the cols; later rows
+<p>Rows plus a Cols, plus centroid <code>mids</code>.
+First row makes the cols; later rows
 update them. <code>clone</code> reuses a header over new rows.</p>
     </div>
     <div class='code'>
@@ -385,7 +386,7 @@ update them. <code>clone</code> reuses a header over new rows.</p>
     </div>
     <div class='code'>
       <div class="highlight"><pre><span class="kr">function</span><span class="w"> </span><span class="nc">Tbl</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="nv">src</span><span class="p">,</span><span class="w">    </span><span class="nv">i</span><span class="p">)</span>
-<span class="w">  </span><span class="nv">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">new</span><span class="p">(</span><span class="nv">Tbl</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="nv">cols</span><span class="o">=</span><span class="kc">nil</span><span class="p">,</span><span class="w"> </span><span class="nv">rows</span><span class="o">=</span><span class="p">{}})</span>
+<span class="w">  </span><span class="nv">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">new</span><span class="p">(</span><span class="nv">Tbl</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="nv">cols</span><span class="o">=</span><span class="kc">nil</span><span class="p">,</span><span class="w"> </span><span class="nv">rows</span><span class="o">=</span><span class="p">{},</span><span class="w"> </span><span class="nv">mids</span><span class="o">=</span><span class="kc">nil</span><span class="p">})</span>
 <span class="w">  </span><span class="kr">if</span><span class="w"> </span><span class="nb">type</span><span class="p">(</span><span class="nv">src</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
 <span class="w">  </span><span class="kr">then</span><span class="w"> </span><span class="kr">for</span><span class="w">   </span><span class="nv">row</span><span class="w"> </span><span class="kr">in</span><span class="w"> </span><span class="nv">str</span><span class="p">.</span><span class="nf">csv</span><span class="p">(</span><span class="nv">src</span><span class="p">)</span><span class="w">      </span><span class="kr">do</span><span class="w"> </span><span class="nv">i</span><span class="p">:</span><span class="nf">add</span><span class="p">(</span><span class="nv">row</span><span class="p">)</span><span class="w"> </span><span class="kr">end</span>
 <span class="w">  </span><span class="kr">else</span><span class="w"> </span><span class="kr">for</span><span class="w"> </span><span class="nv">_</span><span class="p">,</span><span class="nv">row</span><span class="w"> </span><span class="kr">in</span><span class="w"> </span><span class="nb">ipairs</span><span class="p">(</span><span class="nv">src</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="p">{})</span><span class="w"> </span><span class="kr">do</span><span class="w"> </span><span class="nv">i</span><span class="p">:</span><span class="nf">add</span><span class="p">(</span><span class="nv">row</span><span class="p">)</span><span class="w"> </span><span class="kr">end</span><span class="w"> </span><span class="kr">end</span>
@@ -398,22 +399,6 @@ update them. <code>clone</code> reuses a header over new rows.</p>
       <div class='octowrap'>
         <a class='octothorpe' href='#section-22'>#</a>
       </div>
-      <p>first row makes the cols; later rows update them</p>
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre><span class="kr">function</span><span class="w"> </span><span class="nc">Tbl</span><span class="p">.</span><span class="nf">add</span><span class="p">(</span><span class="nv">i</span><span class="p">,</span><span class="nv">row</span><span class="p">)</span>
-<span class="w">  </span><span class="kr">if</span><span class="w"> </span><span class="nv">i</span><span class="p">.</span><span class="py">cols</span>
-<span class="w">  </span><span class="kr">then</span><span class="w"> </span><span class="nv">lst</span><span class="p">.</span><span class="nf">push</span><span class="p">(</span><span class="nv">i</span><span class="p">.</span><span class="py">rows</span><span class="p">,</span><span class="w"> </span><span class="nv">i</span><span class="p">.</span><span class="py">cols</span><span class="p">:</span><span class="nf">add</span><span class="p">(</span><span class="nv">row</span><span class="p">))</span>
-<span class="w">  </span><span class="kr">else</span><span class="w"> </span><span class="nv">i</span><span class="p">.</span><span class="py">cols</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">Cols</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="nv">row</span><span class="p">)</span><span class="w"> </span><span class="kr">end</span>
-<span class="w">  </span><span class="kr">return</span><span class="w"> </span><span class="nv">row</span><span class="w"> </span><span class="kr">end</span></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-23'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-23'>#</a>
-      </div>
       <p>fresh Tbl, same header, over new rows</p>
     </div>
     <div class='code'>
@@ -422,10 +407,41 @@ update them. <code>clone</code> reuses a header over new rows.</p>
     </div>
   </div>
   <div class='clearall'></div>
+  <div class='section' id='section-23'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-23'>#</a>
+      </div>
+      <p>first row makes the cols; later rows update them</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="kr">function</span><span class="w"> </span><span class="nc">Tbl</span><span class="p">.</span><span class="nf">add</span><span class="p">(</span><span class="nv">i</span><span class="p">,</span><span class="nv">row</span><span class="p">)</span>
+<span class="w">  </span><span class="kr">if</span><span class="w"> </span><span class="nv">i</span><span class="p">.</span><span class="py">cols</span>
+<span class="w">  </span><span class="kr">then</span><span class="w"> </span><span class="nv">i</span><span class="p">.</span><span class="py">mids</span><span class="o">=</span><span class="kc">nil</span><span class="w"> </span><span class="c1">-- centroid is not out0dated</span>
+<span class="w">        </span><span class="nv">lst</span><span class="p">.</span><span class="nf">push</span><span class="p">(</span><span class="nv">i</span><span class="p">.</span><span class="py">rows</span><span class="p">,</span><span class="w"> </span><span class="nv">i</span><span class="p">.</span><span class="py">cols</span><span class="p">:</span><span class="nf">add</span><span class="p">(</span><span class="nv">row</span><span class="p">))</span>
+<span class="w">  </span><span class="kr">else</span><span class="w"> </span><span class="nv">i</span><span class="p">.</span><span class="py">cols</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">Cols</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="nv">row</span><span class="p">)</span><span class="w"> </span><span class="kr">end</span>
+<span class="w">  </span><span class="kr">return</span><span class="w"> </span><span class="nv">row</span><span class="w"> </span><span class="kr">end</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
   <div class='section' id='section-24'>
     <div class='docs'>
       <div class='octowrap'>
         <a class='octothorpe' href='#section-24'>#</a>
+      </div>
+      <p>return the current centroid</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="kr">function</span><span class="w"> </span><span class="nc">Tbl</span><span class="p">.</span><span class="nf">mids</span><span class="p">(</span><span class="nv">i</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">i</span><span class="p">.</span><span class="py">mids</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">i</span><span class="p">.</span><span class="py">mids</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="nv">lst</span><span class="p">.</span><span class="nf">map</span><span class="p">(</span><span class="nv">i</span><span class="p">.</span><span class="py">cols</span><span class="p">.</span><span class="py">all</span><span class="p">,</span><span class="w"> </span><span class="nv">mid</span><span class="p">)</span><span class="w"> </span>
+<span class="w">  </span><span class="kr">return</span><span class="w"> </span><span class="nv">i</span><span class="p">.</span><span class="py">mids</span><span class="w"> </span><span class="kr">end</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-25'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-25'>#</a>
       </div>
       <h2>Dist</h2>
 <p><code>dist</code> = gap 0..1 between two values of one column (each
@@ -438,10 +454,10 @@ over the x cols; <code>disty</code> = distance to the ideal y goals
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-25'>
+  <div class='section' id='section-26'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-25'>#</a>
+        <a class='octothorpe' href='#section-26'>#</a>
       </div>
       <p>gap between two sym values (0 = same, 1 = not)</p>
     </div>
@@ -452,10 +468,10 @@ over the x cols; <code>disty</code> = distance to the ideal y goals
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-26'>
+  <div class='section' id='section-27'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-26'>#</a>
+        <a class='octothorpe' href='#section-27'>#</a>
       </div>
       <p>gap between two num values; missing = far pole</p>
     </div>
@@ -469,10 +485,10 @@ over the x cols; <code>disty</code> = distance to the ideal y goals
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-27'>
+  <div class='section' id='section-28'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-27'>#</a>
+        <a class='octothorpe' href='#section-28'>#</a>
       </div>
       <p>p-norm of fn(col) over cols; nil results are skipped</p>
     </div>
@@ -486,10 +502,10 @@ over the x cols; <code>disty</code> = distance to the ideal y goals
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-28'>
+  <div class='section' id='section-29'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-28'>#</a>
+        <a class='octothorpe' href='#section-29'>#</a>
       </div>
       <p>distance between two rows over the x columns</p>
     </div>
@@ -500,10 +516,10 @@ over the x cols; <code>disty</code> = distance to the ideal y goals
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-29'>
+  <div class='section' id='section-30'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-29'>#</a>
+        <a class='octothorpe' href='#section-30'>#</a>
       </div>
       <p>row&rsquo;s distance to the ideal y goals (0 = best)</p>
     </div>
@@ -515,10 +531,10 @@ over the x cols; <code>disty</code> = distance to the ideal y goals
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-30'>
+  <div class='section' id='section-31'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-30'>#</a>
+        <a class='octothorpe' href='#section-31'>#</a>
       </div>
       <h2>Score</h2>
 <p><code>wins</code> grades a row: 100 = best seen, 0 = no better
@@ -532,10 +548,10 @@ unseen half, check only the top few, return the best.
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-31'>
+  <div class='section' id='section-32'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-31'>#</a>
+        <a class='octothorpe' href='#section-32'>#</a>
       </div>
       <p>grader: row -&gt; % of the median-to-best gap closed</p>
     </div>
@@ -550,10 +566,10 @@ unseen half, check only the top few, return the best.
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-32'>
+  <div class='section' id='section-33'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-32'>#</a>
+        <a class='octothorpe' href='#section-33'>#</a>
       </div>
       <p>budget rig: acquire train -&gt; tree -&gt; best test row</p>
     </div>
@@ -572,10 +588,10 @@ unseen half, check only the top few, return the best.
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-33'>
+  <div class='section' id='section-34'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-33'>#</a>
+        <a class='octothorpe' href='#section-34'>#</a>
       </div>
       <h2>Acquire</h2>
 <p>The active learner (after ezr2.py). <code>project</code> maps rows
@@ -590,10 +606,10 @@ budget spends. <code>top</code> returns the labels, best first.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-34'>
+  <div class='section' id='section-35'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-34'>#</a>
+        <a class='octothorpe' href='#section-35'>#</a>
       </div>
       <p>row -&gt; position on the line east-west (x=dist, y=goal)</p>
     </div>
@@ -611,10 +627,10 @@ budget spends. <code>top</code> returns the labels, best first.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-35'>
+  <div class='section' id='section-36'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-35'>#</a>
+        <a class='octothorpe' href='#section-36'>#</a>
       </div>
       <p>one descent: label a few, cull toward the good pole, till
 the pool dries or the budget spends. lab doubles as set
@@ -641,10 +657,10 @@ the pool dries or the budget spends. lab doubles as set
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-36'>
+  <div class='section' id='section-37'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-36'>#</a>
+        <a class='octothorpe' href='#section-37'>#</a>
       </div>
       <p>descend on fresh shuffles, anchored at the best and worst
 labels so far, till the budget spends</p>
@@ -660,10 +676,10 @@ labels so far, till the budget spends</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-37'>
+  <div class='section' id='section-38'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-37'>#</a>
+        <a class='octothorpe' href='#section-38'>#</a>
       </div>
       <p>label at most budget-check rows; best first</p>
     </div>
@@ -679,10 +695,10 @@ labels so far, till the budget spends</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-38'>
+  <div class='section' id='section-39'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-38'>#</a>
+        <a class='octothorpe' href='#section-39'>#</a>
       </div>
       <h2>Bins</h2>
 <p>One split = simplest bin over all x cols; simplicity = size-
@@ -697,10 +713,10 @@ yklass = Num.new regresses; yklass = Sym.new classifies.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-39'>
+  <div class='section' id='section-40'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-39'>#</a>
+        <a class='octothorpe' href='#section-40'>#</a>
       </div>
       <p>closure: offer (this,ys,at,v); call bare -&gt; best bin</p>
     </div>
@@ -718,10 +734,10 @@ yklass = Num.new regresses; yklass = Sym.new classifies.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-40'>
+  <div class='section' id='section-41'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-40'>#</a>
+        <a class='octothorpe' href='#section-41'>#</a>
       </div>
       <p>offer each value&rsquo;s y summary as a candidate bin</p>
     </div>
@@ -737,10 +753,10 @@ yklass = Num.new regresses; yklass = Sym.new classifies.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-41'>
+  <div class='section' id='section-42'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-41'>#</a>
+        <a class='octothorpe' href='#section-42'>#</a>
       </div>
       <p>offer a candidate bin at each change in sorted x</p>
     </div>
@@ -759,10 +775,10 @@ yklass = Num.new regresses; yklass = Sym.new classifies.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-42'>
+  <div class='section' id='section-43'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-42'>#</a>
+        <a class='octothorpe' href='#section-43'>#</a>
       </div>
       <p>cheapest {cost,at,v} bin over all the x columns</p>
     </div>
@@ -775,10 +791,10 @@ yklass = Num.new regresses; yklass = Sym.new classifies.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-43'>
+  <div class='section' id='section-44'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-43'>#</a>
+        <a class='octothorpe' href='#section-44'>#</a>
       </div>
       <h2>Tree</h2>
 <p><code>Tree.grow</code> recurses on the best bin while rows and
@@ -793,10 +809,10 @@ flagging the best and worst leaves.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-44'>
+  <div class='section' id='section-45'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-44'>#</a>
+        <a class='octothorpe' href='#section-45'>#</a>
       </div>
       <p>does w sit on the yes-side of bin v? (&ldquo;?&rdquo; = yes)</p>
     </div>
@@ -806,10 +822,10 @@ flagging the best and worst leaves.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-45'>
+  <div class='section' id='section-46'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-45'>#</a>
+        <a class='octothorpe' href='#section-46'>#</a>
       </div>
       <p>printable ops: [1] = yes side, [2] = no side</p>
     </div>
@@ -819,10 +835,10 @@ flagging the best and worst leaves.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-46'>
+  <div class='section' id='section-47'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-46'>#</a>
+        <a class='octothorpe' href='#section-47'>#</a>
       </div>
       <p>recursively split rows on the cheapest bin</p>
     </div>
@@ -848,10 +864,10 @@ flagging the best and worst leaves.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-47'>
+  <div class='section' id='section-48'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-47'>#</a>
+        <a class='octothorpe' href='#section-48'>#</a>
       </div>
       <p>walk a row down to its leaf; return the leaf&rsquo;s mid</p>
     </div>
@@ -863,10 +879,10 @@ flagging the best and worst leaves.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-48'>
+  <div class='section' id='section-49'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-48'>#</a>
+        <a class='octothorpe' href='#section-49'>#</a>
       </div>
       <p>every leaf node below i</p>
     </div>
@@ -880,10 +896,10 @@ flagging the best and worst leaves.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-49'>
+  <div class='section' id='section-50'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-49'>#</a>
+        <a class='octothorpe' href='#section-50'>#</a>
       </div>
       <p>print tree: win, n, per-goal mids (y names on top), then
 indented branch conditions, best kid first. Best leaf
@@ -926,10 +942,10 @@ ints since literal utf glyphs upset make-pdf (a2ps).</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-50'>
+  <div class='section' id='section-51'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-50'>#</a>
+        <a class='octothorpe' href='#section-51'>#</a>
       </div>
       <h2>Stats</h2>
 <p><code>same</code> = conservative equality: <code>cohen</code> AND <code>cliffs</code>
@@ -940,10 +956,10 @@ AND <code>ks</code> must all agree before two sets are equal.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-51'>
+  <div class='section' id='section-52'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-51'>#</a>
+        <a class='octothorpe' href='#section-52'>#</a>
       </div>
       <p>Cliff&rsquo;s delta effect size in 0..1 (0 = identical); ys sorted</p>
     </div>
@@ -957,10 +973,10 @@ AND <code>ks</code> must all agree before two sets are equal.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-52'>
+  <div class='section' id='section-53'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-52'>#</a>
+        <a class='octothorpe' href='#section-53'>#</a>
       </div>
       <p>Kolmogorov-Smirnov: max gap between the CDFs; xs,ys sorted</p>
     </div>
@@ -975,10 +991,10 @@ AND <code>ks</code> must all agree before two sets are equal.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-53'>
+  <div class='section' id='section-54'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-53'>#</a>
+        <a class='octothorpe' href='#section-54'>#</a>
       </div>
       <p>small effect: |mean gap| &lt;= 0.35 * pooled sd</p>
     </div>
@@ -991,10 +1007,10 @@ AND <code>ks</code> must all agree before two sets are equal.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-54'>
+  <div class='section' id='section-55'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-54'>#</a>
+        <a class='octothorpe' href='#section-55'>#</a>
       </div>
       <p>true if xs,ys are statistically indistinguishable</p>
     </div>
@@ -1008,10 +1024,10 @@ AND <code>ks</code> must all agree before two sets are equal.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-55'>
+  <div class='section' id='section-56'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-55'>#</a>
+        <a class='octothorpe' href='#section-56'>#</a>
       </div>
       <h2>Lst</h2>
 <p>List basics. Lib (lst, rnd, str) comes last so the AI
@@ -1022,10 +1038,10 @@ code above reads unobstructed.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-56'>
+  <div class='section' id='section-57'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-56'>#</a>
+        <a class='octothorpe' href='#section-57'>#</a>
       </div>
       <p>append x to t; return x</p>
     </div>
@@ -1034,10 +1050,10 @@ code above reads unobstructed.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-57'>
+  <div class='section' id='section-58'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-57'>#</a>
+        <a class='octothorpe' href='#section-58'>#</a>
       </div>
       <p>sort t in place; return t</p>
     </div>
@@ -1046,10 +1062,10 @@ code above reads unobstructed.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-58'>
+  <div class='section' id='section-59'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-58'>#</a>
+        <a class='octothorpe' href='#section-59'>#</a>
       </div>
       <p>copy of t, each item passed through fn</p>
     </div>
@@ -1060,10 +1076,10 @@ code above reads unobstructed.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-59'>
+  <div class='section' id='section-60'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-59'>#</a>
+        <a class='octothorpe' href='#section-60'>#</a>
       </div>
       <p>copy of t, each keym item passed through fn</p>
     </div>
@@ -1074,10 +1090,10 @@ code above reads unobstructed.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-60'>
+  <div class='section' id='section-61'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-60'>#</a>
+        <a class='octothorpe' href='#section-61'>#</a>
       </div>
       <p>copy of items lo..hi of t (defaults: all)</p>
     </div>
@@ -1089,10 +1105,10 @@ code above reads unobstructed.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-61'>
+  <div class='section' id='section-62'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-61'>#</a>
+        <a class='octothorpe' href='#section-62'>#</a>
       </div>
       <p>sort a copy of t by fn(item), computing fn once per item.
 Ties keep arrival order (stable), so runs repeat exactly.</p>
@@ -1108,10 +1124,10 @@ Ties keep arrival order (stable), so runs repeat exactly.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-62'>
+  <div class='section' id='section-63'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-62'>#</a>
+        <a class='octothorpe' href='#section-63'>#</a>
       </div>
       <p>t ascending; smallest j with v &lt; t[j] (eq: v &lt;= t[j]).
 So count(t &lt;= v) = bisect(t,v)-1; count(t &lt; v) via eq.</p>
@@ -1127,10 +1143,10 @@ So count(t &lt;= v) = bisect(t,v)-1; count(t &lt; v) via eq.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-63'>
+  <div class='section' id='section-64'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-63'>#</a>
+        <a class='octothorpe' href='#section-64'>#</a>
       </div>
       <p>item of t maximizing fn(item)</p>
     </div>
@@ -1144,10 +1160,10 @@ So count(t &lt;= v) = bisect(t,v)-1; count(t &lt; v) via eq.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-64'>
+  <div class='section' id='section-65'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-64'>#</a>
+        <a class='octothorpe' href='#section-65'>#</a>
       </div>
       <p>iterate over key,items in sorted key order</p>
     </div>
@@ -1159,10 +1175,10 @@ So count(t &lt;= v) = bisect(t,v)-1; count(t &lt; v) via eq.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-65'>
+  <div class='section' id='section-66'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-65'>#</a>
+        <a class='octothorpe' href='#section-66'>#</a>
       </div>
       <h2>Rnd</h2>
 <p>Seeded random, so runs reproduce on any lua.</p>
@@ -1172,10 +1188,10 @@ So count(t &lt;= v) = bisect(t,v)-1; count(t &lt; v) via eq.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-66'>
+  <div class='section' id='section-67'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-66'>#</a>
+        <a class='octothorpe' href='#section-67'>#</a>
       </div>
       <p>reset the generator (0 nudged to 1)</p>
     </div>
@@ -1186,10 +1202,10 @@ So count(t &lt;= v) = bisect(t,v)-1; count(t &lt; v) via eq.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-67'>
+  <div class='section' id='section-68'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-67'>#</a>
+        <a class='octothorpe' href='#section-68'>#</a>
       </div>
       <p>16807 Lehmer generator: same runs on any lua.
 rnd.n() = float 0..1; rnd.n(n) = integer 1..n</p>
@@ -1202,10 +1218,10 @@ rnd.n() = float 0..1; rnd.n(n) = integer 1..n</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-68'>
+  <div class='section' id='section-69'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-68'>#</a>
+        <a class='octothorpe' href='#section-69'>#</a>
       </div>
       <p>Fisher-Yates, in place; return t</p>
     </div>
@@ -1217,10 +1233,10 @@ rnd.n() = float 0..1; rnd.n(n) = integer 1..n</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-69'>
+  <div class='section' id='section-70'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-69'>#</a>
+        <a class='octothorpe' href='#section-70'>#</a>
       </div>
       <p>k items picked at random (t untouched)</p>
     </div>
@@ -1230,10 +1246,10 @@ rnd.n() = float 0..1; rnd.n(n) = integer 1..n</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-70'>
+  <div class='section' id='section-71'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-70'>#</a>
+        <a class='octothorpe' href='#section-71'>#</a>
       </div>
       <p>weighted sampler over a dict of key -&gt; weight</p>
     </div>
@@ -1249,10 +1265,10 @@ rnd.n() = float 0..1; rnd.n(n) = integer 1..n</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-71'>
+  <div class='section' id='section-72'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-71'>#</a>
+        <a class='octothorpe' href='#section-72'>#</a>
       </div>
       <p>Box-Muller bell: mean mu, sd sd (real tails)</p>
     </div>
@@ -1263,10 +1279,10 @@ rnd.n() = float 0..1; rnd.n(n) = integer 1..n</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-72'>
+  <div class='section' id='section-73'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-72'>#</a>
+        <a class='octothorpe' href='#section-73'>#</a>
       </div>
       <h2>Str</h2>
 <p>Strings and files.</p>
@@ -1276,10 +1292,10 @@ rnd.n() = float 0..1; rnd.n(n) = integer 1..n</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-73'>
+  <div class='section' id='section-74'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-73'>#</a>
+        <a class='octothorpe' href='#section-74'>#</a>
       </div>
       <p>strip leading and trailing whitespace</p>
     </div>
@@ -1288,10 +1304,10 @@ rnd.n() = float 0..1; rnd.n(n) = integer 1..n</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-74'>
+  <div class='section' id='section-75'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-74'>#</a>
+        <a class='octothorpe' href='#section-75'>#</a>
       </div>
       <p>string -&gt; true | false | number | trimmed string</p>
     </div>
@@ -1302,10 +1318,10 @@ rnd.n() = float 0..1; rnd.n(n) = integer 1..n</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-75'>
+  <div class='section' id='section-76'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-75'>#</a>
+        <a class='octothorpe' href='#section-76'>#</a>
       </div>
       <p>set <code>the</code> from any &ldquo;&ndash;key=val&rdquo; patterns in s</p>
     </div>
@@ -1316,10 +1332,10 @@ rnd.n() = float 0..1; rnd.n(n) = integer 1..n</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-76'>
+  <div class='section' id='section-77'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-76'>#</a>
+        <a class='octothorpe' href='#section-77'>#</a>
       </div>
       <p>expand a leading ~ or $MOOT (env, else ~/gits/moot)</p>
     </div>
@@ -1331,10 +1347,10 @@ rnd.n() = float 0..1; rnd.n(n) = integer 1..n</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-77'>
+  <div class='section' id='section-78'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-77'>#</a>
+        <a class='octothorpe' href='#section-78'>#</a>
       </div>
       <p>iterate a csv&rsquo;s rows, cells trimmed and typed</p>
     </div>
@@ -1351,10 +1367,10 @@ rnd.n() = float 0..1; rnd.n(n) = integer 1..n</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-78'>
+  <div class='section' id='section-79'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-78'>#</a>
+        <a class='octothorpe' href='#section-79'>#</a>
       </div>
       <p>pretty print: ints bare, floats %.3f, lists spaced, dicts sorted</p>
     </div>
@@ -1371,10 +1387,10 @@ rnd.n() = float 0..1; rnd.n(n) = integer 1..n</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-79'>
+  <div class='section' id='section-80'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-79'>#</a>
+        <a class='octothorpe' href='#section-80'>#</a>
       </div>
       <h2>Start</h2>
 <p>Parse help&rsquo;s &ndash;key=val defaults into <code>the</code>, seed, and

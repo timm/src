@@ -161,27 +161,34 @@ function Cols.add(i,row)
 
 
 -- ## Tbl
--- Rows plus a Cols. First row makes the cols; later rows
+-- Rows plus a Cols, plus centroid `mids`.
+-- First row makes the cols; later rows
 -- update them. `clone` reuses a header over new rows.
 
 -- table from a csv file name or a list of rows
 function Tbl.new(src,    i)
-  i = new(Tbl, {cols=nil, rows={}})
+  i = new(Tbl, {cols=nil, rows={}, mids=nil})
   if type(src) == "string"
   then for   row in str.csv(src)      do i:add(row) end
   else for _,row in ipairs(src or {}) do i:add(row) end end
   return i end
 
--- first row makes the cols; later rows update them
-function Tbl.add(i,row)
-  if i.cols
-  then lst.push(i.rows, i.cols:add(row))
-  else i.cols = Cols.new(row) end
-  return row end
-
 -- fresh Tbl, same header, over new rows
 function Tbl.clone(i,rows)
   return adds(rows or {}, Tbl.new{i.cols.names}) end
+
+-- first row makes the cols; later rows update them
+function Tbl.add(i,row)
+  if i.cols
+  then i.mids=nil -- centroid is not out0dated
+        lst.push(i.rows, i.cols:add(row))
+  else i.cols = Cols.new(row) end
+  return row end
+
+-- return the current centroid
+function Tbl.mids(i)
+  i.mids = i.mids or lst.map(i.cols.all, mid) 
+  return i.mids end
 
 
 -- ## Dist

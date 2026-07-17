@@ -84,13 +84,47 @@ For the impatient pythonista:
   1,2,3.. and stops at the first gap
 - for loops are customizable: any iterator function can
   drive one, and iterators are [closures](#closure)
-- patterns are not regexes (see [patterns](#patterns))
-- variables are global unless marked `local`
+- Lua's texet matching patterns are not quite standard regexes (see [patterns](#patterns))
 - `x and y or z` is the ternary (breaks when y is false);
   `x = x or default` fills defaults
 - `..` concatenates; `~=` is not-equals
+- variables are global unless marked `local` (but see next point about function locals).
 - house rule: params after the wide gap in a signature
   are locals, not arguments; callers never pass them
+- comments: `-- line` and `--[[ block ]]` (this repo
+  lifts block comments into tutorial prose)
+- call sugar: parens are optional for a single string or
+  table argument -- `s:find"-$"`, `Tbl.new{names}`
+  (house style everywhere)
+- `i:add(x)` is sugar for `Num.add(i, x)`: the colon
+  passes the receiver as the first argument
+- metatables are lua's magic methods. Setting `__index`
+  on a shared table gives python-style method lookup --
+  see `new` in abc.lua: two lines make the whole class
+  system. That buys [poly](#poly)morphism, not
+  inheritance; for fuller OO see
+  [PIL ch 16](https://www.lua.org/pil/16.html)
+- functions are plain values, so higher-order style is
+  everywhere: `table.sort(t)` sorts ascending;
+  `table.sort(t, function(a,b) return a > b end)`
+  descending; pass any comparator (must be a strict
+  less-than)
+- multiple return values: `("ab"):find"b"` returns start
+  AND finish; unwanted extras vanish silently
+- no exceptions: `error` throws, `pcall` catches --
+  crash early by default
+- proper tail calls: `return f(x)` reuses the current
+  stack frame, so deep recursion cannot overflow
+  (python has no TCO)
+
+Lua: quick refs (quickest to read, shown first):
+
+- Lua cheatsheet:            https://devhints.io/lua
+- Learn X in Y minutes:      https://learnxinyminutes.com/docs/lua/
+- Lua demo (run in browser): https://www.lua.org/demo.html
+- lua-users wiki tutorials:  http://lua-users.org/wiki/TutorialDirectory
+- Lua 5.4 Reference Manual:  https://www.lua.org/manual/5.4/
+- PIL (Programming in Lua):  https://www.lua.org/pil/contents.html   (1st ed, free)
 
 ## onetable
 
