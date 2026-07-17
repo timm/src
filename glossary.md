@@ -98,11 +98,13 @@ For the impatient pythonista:
   (house style everywhere)
 - `i:add(x)` is sugar for `Num.add(i, x)`: the colon
   passes the receiver as the first argument
-- metatables are lua's magic methods. Setting `__index`
-  on a shared table gives python-style method lookup --
-  see `new` in abc.lua: two lines make the whole class
-  system. That buys [poly](#poly)morphism, not
-  inheritance; for fuller OO see
+- metatables are lua's magic methods (the full list:
+  [metatable events](http://lua-users.org/wiki/MetatableEvents)
+  -- __index, __call, __add, __tostring, ...). Setting
+  `__index` on a shared table gives python-style method
+  lookup -- see `new` in abc.lua: two lines make the
+  whole class system. That buys [poly](#poly)morphism,
+  not inheritance; for fuller OO see
   [PIL ch 16](https://www.lua.org/pil/16.html)
 - functions are plain values that can be passed around like any other value; so higher-order style is
   everywhere: `table.sort(t)` sorts ascending;
