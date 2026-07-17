@@ -29,7 +29,7 @@ local order = {"lua","lst","rnd","str","num","sym","cols",
 --[[
 ### Lesson 0: lua for the impatient pythonista
 
-You know python; here is what bites. Only `nil` and
+You know python; time to make some small adjustments for Lua.  Only `nil` and
 `false` are falsy -- 0 and "" are TRUE. Indexes start at
 1, and `for i=1,10` includes the 10. There is ONE data
 structure: the table is your list, dict, object and
@@ -85,29 +85,25 @@ eg.lua["--patterns"] = function(    s)
 
 -- - **io.lines(file)** plus patterns plus one counting
 --   table = a tiny static analyzer. Uncle Bob's rule says
---   keep functions small; strip comments and blanks, count
---   lines per paragraph, histogram in bins of 3. Does
---   abc.lua practice what this lesson preaches?
-eg.lua["--bob"] = function(    n,sizes,fin,keys,small,big)
+--   keep functions small. Count code lines per paragraph
+--   of abc.lua (comments and blanks end a paragraph):
+--   does that code practice what this lesson preaches?
+eg.lua["--bob"] = function(    n,sizes,small,big)
   n, sizes = 0, {}
-  fin = function(    b)
-    if n > 0 then
-      b = (n - 1) // 3                 -- 0 = 1-3 lines, ..
-      sizes[b] = (sizes[b] or 0) + 1
-      n = 0 end end
   for s in io.lines"abc.lua" do
-    if s:find"^%s*%-%-" or not s:find"%S"
-    then fin()
-    else n = n + 1 end end
-  fin()
-  keys, small, big = {}, 0, 0
-  for b in pairs(sizes) do lst.push(keys, b) end
-  for _,b in ipairs(lst.sort(keys)) do
-    print(("%2s-%2s lines: %s paragraphs"):format(
-          3*b + 1, 3*b + 3, sizes[b]))
-    if b < 2 then small = small + sizes[b]
-    else big = big + sizes[b] end end
-  print("small (<=6 lines) vs big:", small, big)
+    if s:find"%S" and not s:find"^%s*%-%-"
+    then n = n + 1
+    elseif n > 0 then
+      sizes[n] = (sizes[n] or 0) + 1
+      n = 0 end end
+  if n > 0 then sizes[n] = (sizes[n] or 0) + 1 end
+  small, big = 0, 0
+  for size = 1, 99 do
+    if sizes[size] then
+      print(("%2d %s"):format(size, ("*"):rep(sizes[size])))
+      if size <= 6 then small = small + sizes[size]
+      else big = big + sizes[size] end end end
+  print("small (<=6 lines):", small, " bigger:", big)
   assert(small > big) end              -- Bob would approve
 
 --[[
@@ -595,24 +591,21 @@ eg.dist["--disty"] = function(    t,ds)
 --   training step, the data IS the model. And a row far from
 --   even its own nearest neighbor is an anomaly: once you
 --   have distance, outlier detection is one argmax.
-eg.dist["--near"] = function(    t,rows,near,r,lone)
+eg.dist["--near"] = function(    t,rows,near,gap,r,lone)
   t    = Tbl.new(the.file)
   rows = rnd.some(t.rows, 64)
-  near = function(r1)
+  near = function(r1)               -- closest OTHER row
            return lst.keysort(rows, function(r2)
-             return r1 == r2 and 2 or t:distx(r1, r2) end)[1] end
-  r = rows[1]
+             return r1 == r2 and 2 or t:distx(r1,r2) end)[1] end
+  gap  = function(r1) return t:distx(r1, near(r1)) end
+  r    = rows[1]
   print("row:     ", str.o(r))
   print("neighbor:", str.o(near(r)))
   assert(near(r) ~= r)
-  assert(t:distx(r, near(r)) <= t:distx(r, rows[2]) or
-         near(r) == rows[2])
-  lone = lst.argmax(rows, function(r1)
-           return t:distx(r1, near(r1)) end)
+  lone = lst.argmax(rows, gap)
   print("loneliest (anomaly?):", str.o(lone),
-        "gap", str.o(t:distx(lone, near(lone))))
-  assert(t:distx(lone, near(lone)) >=
-         t:distx(r,    near(r))) end
+        "gap", str.o(gap(lone)))
+  assert(gap(lone) >= gap(r)) end
 
 --[[
 **Exercises (lesson 8).**
@@ -981,8 +974,14 @@ eg.main["--check"] = function(    ok)
 -- linked from some lesson, (3) every dot-list signature
 -- names a function that exists in the module. Also prints
 -- coverage: taught verbs / exported verbs.
+-- walk "lst.push" through a table of tables; nil if absent
+local function deref(root, name)
+  for w in name:gmatch"[%w_]+" do
+    root = type(root) == "table" and root[w] end
+  return root end
+
 eg.main["--join"] = function(    doc,src,keys,used,taught,
-                                ok,n,total,f)
+                                ok,n,total)
   doc = io.open"abc-doc.md":read"*a"
   src = io.open"abc-eg.lua":read"*a"
   keys, used, taught, ok = {}, {}, {}, true
@@ -997,14 +996,8 @@ eg.main["--join"] = function(    doc,src,keys,used,taught,
     if line:find"^%-%- %- %*%*" then
       for sig in line:gmatch"%*%*([%w_./]+)%(" do
         for name in sig:gmatch"[%w_.]+" do
-          for _,root in ipairs{abc, _G} do  -- module, else lua
-            f = root
-            for w in name:gmatch"[%w_]+" do
-              f = type(f) == "table" and f[w] end
-            if f then
-              if root == abc then taught[name] = true end
-              break end end
-          if not f then
+          if deref(abc, name) then taught[name] = true
+          elseif not deref(_G, name) then    -- lua builtin?
             ok = false
             print("dot-list names missing fn:", name)
           end end end end end
@@ -1013,8 +1006,8 @@ eg.main["--join"] = function(    doc,src,keys,used,taught,
   for _,v in pairs(abc) do
     if type(v) == "function" then total = total + 1 end
     if type(v) == "table" and v ~= abc.the then
-      for _,f2 in pairs(v) do
-        if type(f2) == "function" then
+      for _,f in pairs(v) do
+        if type(f) == "function" then
           total = total + 1 end end end end
   print(("coverage: %s taught / %s exported verbs"):format(
         n, total))
