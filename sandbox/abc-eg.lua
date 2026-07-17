@@ -3,15 +3,15 @@
 -- per library section, ordered simplest to hardest (lib
 -- first, then the AI code). On the command line:
 --
---   --key=val, -k val    set an option
---   --lst, --tree, ...   run one section's tests
---   --csv, --grow, ...   run one test
---   --all                run every section
+--     --key=val, -k val    set an option   
+--     --lst, --tree, ...   run one section's tests   
+--     --csv, --grow, ...   run one test   
+--     --all                run every section   
 --
 -- Each test is reseeded, prints something a tutor can point
 -- at, then asserts it: no crash = pass.
 --
---   lua abc-eg.lua --seed=2 --tree --score
+--      lua abc-eg.lua --seed=2 --tree --score   
 --
 local abc = require"abc"
 local the,lst,rnd,str = abc.the, abc.lst, abc.rnd, abc.str
@@ -1043,19 +1043,20 @@ local function prose(file,    out,md,last)
       end end end
   return table.concat(out, "\n") end
 
-eg.main["--doc"] = function(    tmp,b,badges,f,s,i)
-  tmp = os.getenv"HOME" .. "/tmp"
-  os.execute("mkdir -p " .. tmp .. "/eg")
+eg.main["--doc"] = function(    tmp,out,b,badges,f,s,i)
+  tmp = os.getenv"HOME" .. "/tmp/eg"
+  out = "../docs/sandbox"    -- committed; doc.py sites it
+  os.execute("mkdir -p " .. tmp .. " " .. out)
   b = io.open"badges.html"
   badges = b and b:read"*a" or ""
   if b then b:close() end
   for name,align in pairs(docs) do
-    f = io.open(tmp .. "/eg/" .. name .. ".lua", "w")
+    f = io.open(tmp .. "/" .. name .. ".lua", "w")
     f:write(prose(name .. ".lua"))
     f:close()
-    os.execute("pycco -d " .. tmp .. " " ..
-               tmp .. "/eg/" .. name .. ".lua")
-    f = io.open(tmp .. "/" .. name .. ".html")
+    os.execute("pycco -d " .. out .. " " ..
+               tmp .. "/" .. name .. ".lua")
+    f = io.open(out .. "/" .. name .. ".html")
     s = f:read"*a"; f:close()
     s = s:gsub('href="%.%./glossary%.md',    -- glossary links
           'href="https://github.com/timm/src/blob/main/'
@@ -1066,7 +1067,7 @@ eg.main["--doc"] = function(    tmp,b,badges,f,s,i)
           "p {text-align:" .. align .. "}</style></head>", 1)
     i = s:find("<h1", 1, true)               -- badges
     if i then s = s:sub(1, i - 1) .. badges .. s:sub(i) end
-    f = io.open(tmp .. "/" .. name .. ".html", "w")
+    f = io.open(out .. "/" .. name .. ".html", "w")
     f:write(s); f:close() end end
 
 -- cli, args left to right: --key=val (or "-x v", x = an

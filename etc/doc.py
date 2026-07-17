@@ -125,8 +125,10 @@ def main(site="_site"):
       order = subprocess.run(         # index them, reading order
         ["sh", "INSTALL.md", "list"], cwd=d, text=True,
         capture_output=True).stdout.split()
-      files = [f"- [{b}](docs/{b}.html)"
-               for b in (os.path.splitext(f)[0] for f in order)]
+      names = [os.path.splitext(f)[0] for f in order] or \
+              sorted(os.path.basename(f)[:-5] for f in    # no
+                glob.glob(f"docs/{d}/*.html"))  # INSTALL.md
+      files = [f"- [{b}](docs/{b}.html)" for b in names]
     else:                             # no pycco: render md pages
       for f in srcs:
         base = os.path.basename(f)
