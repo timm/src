@@ -1,6 +1,18 @@
 
 ---- lua ----------------------------------------
 
+-- --truthy
+0 is truthy:	yes
+
+-- --onetable
+ipairs sees	4	 pairs sees	5
+
+-- --items
+sorted walk:	a1b2c3
+
+-- --patterns
+goal col?	minimize
+
 -- --bob
  1 *******
  2 *********
@@ -19,18 +31,6 @@
 32 *
 small (<=6 lines):	52	 bigger:	23
 
--- --items
-sorted walk:	a1b2c3
-
--- --onetable
-ipairs sees	4	 pairs sees	5
-
--- --patterns
-goal col?	minimize
-
--- --truthy
-0 is truthy:	yes
-
 ---- lst ----------------------------------------
 
 -- --basics
@@ -41,14 +41,14 @@ keysort by -x:	{3 2 1}
 
 ---- rnd ----------------------------------------
 
--- --gauss
-1000 x gauss(10,2): mu	9.917	sd	2.021
-
 -- --lehmer
 same seed, same draw:	0.000	0.000
 
 -- --some
 3 of 10:	{60 50 30}
+
+-- --gauss
+1000 x gauss(10,2): mu	9.917	sd	2.021
 
 ---- str ----------------------------------------
 
@@ -71,11 +71,11 @@ mu:	25.0	sd:	12.910
 
 ---- sym ----------------------------------------
 
--- --minus
-aab minus b:	{a=2}
-
 -- --mode
 mode:	a	entropy:	1.459
+
+-- --minus
+aab minus b:	{a=2}
 
 ---- cols ----------------------------------------
 
@@ -84,11 +84,11 @@ all x y:	4	2	1	 goal(Weight-):	0
 
 ---- tbl ----------------------------------------
 
--- --clone
-clone of first 10 rows:	10
-
 -- --load
 rows:	398	y:	{Lbs- Acc+ Mpg+}
+
+-- --clone
+clone of first 10 rows:	10
 
 -- --mids
 centroid:    	{5.455 193.426 104.469 76.010 1 2970.425 15.568 23.844}
@@ -117,11 +117,11 @@ same(a,b):	true	 same(a,c):	false
 -- --project
 y at the line's ends:	0.346	0.874
 
--- --random
-random labels:	45
-
 -- --top
 labels:	45	 best:	0.093	 worst:	0.901
+
+-- --random
+random labels:	45
 
 ---- bins ----------------------------------------
 

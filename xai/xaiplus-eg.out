@@ -1,0 +1,17 @@
+
+---- knn ----------------------------------------
+
+-- --acc
+3-NN accuracy on breast.w:	0.967
+
+---- kmeans ----------------------------------------
+
+-- --cluster
+5 clusters, sizes:	{44 57 136 183 279}
+
+---- kmeanspp ----------------------------------------
+
+-- --seed
+5 kmeans++ seeds, mean pair distance:	0.436
+
+all pass

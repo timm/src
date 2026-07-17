@@ -1010,21 +1010,31 @@ eg.main = {}
 -- run one test, reseeded
 local function run(fn) rnd.seed(the.seed); fn() end
 
--- run one section's tests, sorted by flag name
-local function section(name,    keys)
-  keys = {}
-  for k in pairs(eg[name]) do lst.push(keys, k) end
-  for _,k in ipairs(lst.sort(keys)) do
+-- flags of one section in SOURCE order, parsed from this
+-- file: pairs() loses definition order, so tests would
+-- otherwise run alphabetically, not in reading order.
+local egsrc
+local function keysof(name,    seen,out)
+  egsrc = egsrc or io.open"xai-eg.lua":read"*a"
+  seen, out = {}, {}
+  for k in egsrc:gmatch('eg%.'..name..'%["(%-%-%w+)"%]') do
+    if eg[name][k] and not seen[k] then
+      seen[k] = true; lst.push(out, k) end end
+  for k in pairs(eg[name]) do          -- any not found: append
+    if not seen[k] then lst.push(out, k) end end
+  return out end
+
+-- run one section's tests, in source (reading) order
+local function section(name)
+  for _,k in ipairs(keysof(name)) do
     print("\n-- " .. k)
     run(eg[name][k]) end end
 
-eg.main["-h"] = function(    keys)
+eg.main["-h"] = function()
   print(xai.help .. "\nSections (and their tests):\n")
   for _,n in ipairs(order) do
-    keys = {}
-    for k in pairs(eg[n]) do lst.push(keys, k) end
     print("  lua xai-eg.lua --" .. n .. "   # or: " ..
-          table.concat(lst.sort(keys), " ")) end
+          table.concat(keysof(n), " ")) end
   print("\nAlso: --all -h --join --transcript --check")
   end
 
@@ -1050,28 +1060,25 @@ eg.main["--check"] = function(    ok)
 
 -- join checker: make the doc claims executable. Verifies
 -- (1) every glossary link in a lesson lands on a matching
--- heading in the doc file, (2) every heading there is
--- linked from some lesson, (3) every dot-list signature
--- names a function that exists in the module. Also prints
--- coverage: taught verbs / exported verbs.
+-- heading, and (2) every dot-list signature names a function
+-- that exists in the module. The repo-wide "is every heading
+-- taught by SOME course" check now lives in `make check`
+-- (etc/join.py), since the glossary is shared across courses.
+-- Also prints coverage: taught verbs / exported verbs.
 -- walk "lst.push" through a table of tables; nil if absent
 local function deref(root, name)
   for w in name:gmatch"[%w_]+" do
     root = type(root) == "table" and root[w] end
   return root end
 
-eg.main["--join"] = function(    doc,src,keys,used,taught,
+eg.main["--join"] = function(    doc,src,keys,taught,
                                 ok,n,total)
   doc = io.open"../glossary.md":read"*a"
   src = io.open"xai-eg.lua":read"*a"
-  keys, used, taught, ok = {}, {}, {}, true
+  keys, taught, ok = {}, {}, true
   for k in doc:gmatch"\n## ([a-z]+)\n" do keys[k] = true end
   for k in src:gmatch"glossary%.md#([a-z]+)" do
-    used[k] = true
     if not keys[k] then ok=false; print("no heading:",k) end end
-  for k in pairs(keys) do
-    if not used[k] then
-      ok = false; print("unlinked heading:", k) end end
   for line in src:gmatch"[^\n]+" do
     if line:find"^%-%- %- %*%*" then
       for sig in line:gmatch"%*%*([%w_./]+)%(" do

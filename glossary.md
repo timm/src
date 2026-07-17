@@ -385,13 +385,33 @@ The ideal point where every goal is at its best value.
 worst), so optimization is just "find rows near heaven"
 (lesson 8).
 
+## kmeans
+
+*taught in:* [xaiplus, lesson 2](xai/xaiplus-eg.lua)
+
+k clusters found by repetition: drop each row into its
+nearest centroid, move every centroid to its members'
+[centroid](#centroid), repeat. Cheap, but a random start
+scatters the result -- which is why [kmeanspp](#kmeanspp)
+seeds smarter.
+
+## kmeanspp
+
+*taught in:* [xaiplus, lesson 3](xai/xaiplus-eg.lua)
+
+kmeans++ seeding: draw each new centroid from a small pool
+with probability proportional to its squared distance to
+the nearest centroid so far, so far-apart rows win. A better
+start than random, so [kmeans](#kmeans) settles faster.
+
 ## knn
 
-*taught in:* [xai-eg, lesson 8](xai/xai-eg.lua)
+*taught in:* [xai-eg, lesson 8](xai/xai-eg.lua) · [xaiplus, lesson 1](xai/xaiplus-eg.lua)
 
 k-nearest-neighbors: sort everything by distance to a
 query, let the closest few answer. No training step --
-the data IS the model (lesson 8, `--near`).
+the data IS the model (lesson 8, `--near`; a klass-voting
+classifier in xaiplus lesson 1).
 
 ## minkowski
 
@@ -438,7 +458,7 @@ Rows plus typed column summaries: the first row builds
 the [schema](#schema), later rows update per-column
 stats as they are stored (lesson 7).
 
-*Awaiting entries:* kmeans, kmeans++, medoids, interpolation, synthesis, naive bayes, black-box to small tree.
+*Awaiting entries:* medoids, interpolation, synthesis, naive bayes, black-box to small tree.
 
 
 # search and optimize

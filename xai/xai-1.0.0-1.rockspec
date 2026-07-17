@@ -23,6 +23,7 @@ dependencies = {
 build = {
   type = "builtin",
   modules = {
-    xai = "xai/xai.lua"
+    xai     = "xai/xai.lua",
+    xaiplus = "xai/xaiplus.lua"
   }
 }

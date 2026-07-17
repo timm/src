@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html;charset=utf-8">
+  <title>xaiplus.lua</title>
+  <link rel="stylesheet" href="pycco.css">
+<style>p {text-align:right} #section-0 p, #section-1 p {text-align:left}</style></head>
+<body>
+<div id='container'>
+  <div id="background"></div>
+  <div class='section'>
+    <div class='docs'><p align="center">
+<a href="https://timm.github.io/src/"><img alt="home" src="https://img.shields.io/badge/🏠-home-gold"></a>
+<a href="https://github.com/timm/src/tree/main/xai"><img alt="src" src="https://img.shields.io/badge/src-xai-black"></a>
+<a href="https://github.com/timm/src/actions/workflows/tests-xai.yml"><img alt="ci" src="https://github.com/timm/src/actions/workflows/tests-xai.yml/badge.svg"></a>
+<img alt="purpose" src="https://img.shields.io/badge/purpose-xai,optimization-ffb300">
+<img alt="language" src="https://img.shields.io/badge/language-lua-9558B2">
+<a href="https://github.com/timm/src/blob/main/LICENSE.md"><img alt="license" src="https://img.shields.io/badge/license-MIT-brightgreen"></a>
+<a href="https://timm.fyi"><img alt="author" src="https://img.shields.io/badge/author-timm-blueviolet"></a>
+</p><p><a href="xai-eg.html">&lt; prev</a> | <a href="xaiplus-eg.html">next &gt;</a></p><h1><a href="https://github.com/timm/src/blob/main/xai/xaiplus.lua">xaiplus.lua</a></h1></div>
+  </div>
+  <div class='clearall'>
+  <div class='section' id='section-0'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-0'>#</a>
+      </div>
+      <p>xaiplus.lua: an applications layer over xai.lua (which it
+never edits). Each learner and optimizer &ndash; knn, kmeans,
+naive bayes, GA, DE, SA, local search, racing, synthesis,
+anomaly &ndash; is a plain self-contained function over a xai
+Tbl. require&rdquo;xai&rdquo; for the engine; require&rdquo;xaiplus&rdquo; here.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span></span><span class="kd">local</span><span class="w"> </span><span class="nv">help</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[[</span>
+
+<span class="nv">xaiplus</span><span class="p">:</span><span class="w"> </span><span class="py">learners</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="nv">optimizers</span><span class="w"> </span><span class="nv">layered</span><span class="w"> </span><span class="nv">on</span><span class="w"> </span><span class="nf">xai</span>
+<span class="p">(</span><span class="nv">c</span><span class="p">)</span><span class="w"> </span><span class="mi">2026</span><span class="w"> </span><span class="nv">Tim</span><span class="w"> </span><span class="nv">Menzies</span><span class="w"> </span><span class="o">&lt;</span><span class="nv">timm</span><span class="err">@</span><span class="nv">ieee</span><span class="p">.</span><span class="py">org</span><span class="o">&gt;</span><span class="p">,</span><span class="w"> </span><span class="nv">MIT</span><span class="w"> </span><span class="nv">license</span>
+
+<span class="nv">USAGE</span><span class="p">:</span><span class="w"> </span><span class="py">local</span><span class="w"> </span><span class="nv">xp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">require</span><span class="s2">&quot;xaiplus&quot;</span>
+<span class="p">(</span><span class="nv">demos</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="nv">tests</span><span class="p">:</span><span class="w"> </span><span class="py">lua</span><span class="w"> </span><span class="nv">xaiplus</span><span class="o">-</span><span class="nv">eg</span><span class="p">.</span><span class="py">lua</span><span class="w"> </span><span class="p">[</span><span class="nv">OPTIONS</span><span class="p">]</span><span class="w"> </span><span class="p">[</span><span class="nv">eg</span><span class="w"> </span><span class="o">..</span><span class="p">.])</span>
+
+<span class="nf">OPTIONS</span><span class="w"> </span><span class="p">(</span><span class="nv">added</span><span class="w"> </span><span class="nv">to</span><span class="w"> </span><span class="nv">xai</span><span class="s1">&#39;s `the`):</span>
+<span class="s1">--DIVIDER</span>
+
+<span class="s1">local xai = require&quot;xai&quot;</span>
+<span class="s1">local the,lst,rnd,str = xai.the, xai.lst, xai.rnd, xai.str</span>
+<span class="s1">local Sym,adds = xai.Sym, xai.adds</span>
+<span class="s1">local BIG,min = 1E32, math.min</span>
+<span class="s1">--DIVIDER</span>
+<span class="s1">local function addopts(s)</span>
+<span class="s1">  for k,v in s:gmatch&quot;%-%-(%w+)=(%S+)&quot; do</span>
+<span class="s1">    assert(the[k] == nil, &quot;xaiplus reuses xai option: &quot; .. k)</span>
+<span class="s1">    the[k] = str.what(v) end end</span>
+<span class="s1">addopts(help)</span>
+
+<span class="s1">local xp = {}</span>
+<span class="s1">--DIVIDER</span>
+
+<span class="s1">--DIVIDER</span>
+<span class="s1">local function argmini(t,fn,    lo,v,out)</span>
+<span class="s1">  lo = BIG</span>
+<span class="s1">  for i,z in ipairs(t) do</span>
+<span class="s1">    v = fn(z); if v &lt; lo then lo,out = v,i end end</span>
+<span class="s1">  return out end</span>
+<span class="s1">--DIVIDER</span>
+<span class="s1">local function wpick(ws,    s,r)</span>
+<span class="s1">  s = 0; for _,w in ipairs(ws) do s = s + w end</span>
+<span class="s1">  r = rnd.n() * s</span>
+<span class="s1">  for i,w in ipairs(ws) do</span>
+<span class="s1">    r = r - w; if r &lt;= 0 then return i end end</span>
+<span class="s1">  return #ws end</span>
+<span class="s1">--DIVIDER</span>
+
+<span class="s1">--DIVIDER</span>
+<span class="s1">local function near(data,r0,k)</span>
+<span class="s1">  return lst.slice(lst.keysort(data.rows,</span>
+<span class="s1">    function(r) return data:distx(r0,r) end), 1, k or the.knn) end</span>
+<span class="s1">--DIVIDER</span>
+<span class="s1">function xp.knn(data,r0,k,    at)</span>
+<span class="s1">  at = data.cols.klass.at</span>
+<span class="s1">  return adds(lst.map(near(data,r0,k),</span>
+<span class="s1">    function(r) return r[at] end), Sym.new()):mid() end</span>
+<span class="s1">--DIVIDER</span>
+
+<span class="s1">--DIVIDER</span>
+<span class="s1">local function nearest(data,cents,r)</span>
+<span class="s1">  return argmini(cents, function(c) return data:distx(c,r) end) end</span>
+<span class="s1">--DIVIDER</span>
+<span class="s1">local function assign(data,cents,    out)</span>
+<span class="s1">  out = lst.map(cents, function() return data:clone() end)</span>
+<span class="s1">  for _,r in ipairs(data.rows) do</span>
+<span class="s1">    out[nearest(data,cents,r)]:add(r) end</span>
+<span class="s1">  return out end</span>
+<span class="s1">--DIVIDER</span>
+<span class="s1">local function recentre(clusters,    cents)</span>
+<span class="s1">  cents = {}</span>
+<span class="s1">  for _,c in ipairs(clusters) do</span>
+<span class="s1">    if #c.rows &gt; 0 then lst.push(cents, c:mids()) end end</span>
+<span class="s1">  return cents end</span>
+<span class="s1">--DIVIDER</span>
+<span class="s1">function xp.kmeans(data,k,iter,    cents)</span>
+<span class="s1">  cents = rnd.some(data.rows, k or the.kluster)</span>
+<span class="s1">  for _ = 1, iter or the.iter do</span>
+<span class="s1">    cents = recentre(assign(data, cents)) end</span>
+<span class="s1">  return assign(data, cents) end</span>
+<span class="s1">--DIVIDER</span>
+
+<span class="s1">--DIVIDER</span>
+<span class="s1">local function d2(data,cents,r,    lo,d)</span>
+<span class="s1">  lo = BIG</span>
+<span class="s1">  for _,c in ipairs(cents) do</span>
+<span class="s1">    d = data:distx(r,c); lo = min(lo, d*d) end</span>
+<span class="s1">  return lo end</span>
+<span class="s1">--DIVIDER</span>
+<span class="s1">local function farther(data,cents,few,    pool,ws)</span>
+<span class="s1">  pool = rnd.some(data.rows, min(few or the.few, #data.rows))</span>
+<span class="s1">  ws   = lst.map(pool, function(r) return d2(data,cents,r) end)</span>
+<span class="s1">  return pool[wpick(ws)] end</span>
+<span class="s1">--DIVIDER</span>
+<span class="s1">function xp.kpp(data,k,few,    cents)</span>
+<span class="s1">  cents = {rnd.some(data.rows, 1)[1]}</span>
+<span class="s1">  while #cents &lt; (k or the.kluster) do</span>
+<span class="s1">    lst.push(cents, farther(data, cents, few)) end</span>
+<span class="s1">  return cents end</span>
+<span class="s1">--DIVIDER</span>
+<span class="s1">xp.help = help</span>
+<span class="s1">return xp</span>
+
+</pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-1'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-1'>#</a>
+      </div>
+      <p>knn=3       neighbors for the knn classifier
+kluster=8   clusters for kmeans / kmeans++
+iter=10     kmeans passes
+few=128     sample pool for kmeans++ seeding ]]</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-2'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-2'>#</a>
+      </div>
+      <p>add my &ndash;key=val defaults to xai&rsquo;s <code>the</code>, erroring if one
+would shadow a key xai already set (new fields, never old)</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-3'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-3'>#</a>
+      </div>
+      <h2>Lib</h2>
+<p>The two list verbs xai does not already export.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-4'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-4'>#</a>
+      </div>
+      <p>index of t minimizing fn(item) (mirror of lst.argmax)</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-5'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-5'>#</a>
+      </div>
+      <p>index of ws, chance proportional to its weight</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-6'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-6'>#</a>
+      </div>
+      <h2>Knn</h2>
+<p>k-nearest-neighbor classifier: a row&rsquo;s klass is the mode
+of its k closest rows&rsquo; klasses (distx from xai). No fit
+step &ndash; the data IS the model. Needs a &ldquo;!&rdquo; klass column.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-7'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-7'>#</a>
+      </div>
+      <p>the k rows of data nearest r0, by distx</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-8'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-8'>#</a>
+      </div>
+      <p>predict r0&rsquo;s klass = mode of its k neighbors&rsquo; klasses</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-9'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-9'>#</a>
+      </div>
+      <h2>Kmeans</h2>
+<p>k clusters: drop each row into its nearest centroid, move
+the centroids to their members&rsquo; middle, repeat. A centroid
+is just a <code>mids</code> row; a cluster is a xai Tbl clone.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-10'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-10'>#</a>
+      </div>
+      <p>index of the centroid nearest row r</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-11'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-11'>#</a>
+      </div>
+      <p>one pass: each row into its nearest centroid&rsquo;s clone</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-12'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-12'>#</a>
+      </div>
+      <p>centroids = the middle of each non-empty cluster</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-13'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-13'>#</a>
+      </div>
+      <p>k clusters: iter rounds of assign then recentre</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-14'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-14'>#</a>
+      </div>
+      <h2>Kmeanspp</h2>
+<p>kmeans++ seeding: centroids far apart. Each new centroid is
+drawn from a small random pool, with chance proportional to
+its squared distance to the nearest centroid so far (the
+d^2 trick). Returns the seed rows, not clusters.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-15'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-15'>#</a>
+      </div>
+      <p>squared distance from r to its nearest centroid in cents</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-16'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-16'>#</a>
+      </div>
+      <p>one more centroid: d^2-weighted pick from a random pool</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-17'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-17'>#</a>
+      </div>
+      <p>k centroids by kmeans++ seeding</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-18'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-18'>#</a>
+      </div>
+      <h2>Start</h2>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+</div>
+</body>

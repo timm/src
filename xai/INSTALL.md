@@ -1,6 +1,9 @@
 FILES="xai.lua
        xai-eg.lua
-       xai-eg.out"
+       xai-eg.out
+       xaiplus.lua
+       xaiplus-eg.lua
+       xaiplus-eg.out"
 : <<'DOCS'
 
 # xai

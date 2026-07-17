@@ -26,3 +26,10 @@ jobs:
       - run: cd xai && lua xai-eg.lua --check
         env:
           MOOT: ${{ github.workspace }}/moot
+      - run: cd xai && lua xaiplus-eg.lua --all
+        env:
+          MOOT: ${{ github.workspace }}/moot
+      - run: cd xai && lua xaiplus-eg.lua --join
+      - run: cd xai && lua xaiplus-eg.lua --check
+        env:
+          MOOT: ${{ github.workspace }}/moot

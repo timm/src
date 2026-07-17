@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html;charset=utf-8">
+  <title>xaiplus-eg.lua</title>
+  <link rel="stylesheet" href="pycco.css">
+<style>p {text-align:left} #section-0 p, #section-1 p {text-align:left}</style></head>
+<body>
+<div id='container'>
+  <div id="background"></div>
+  <div class='section'>
+    <div class='docs'><p align="center">
+<a href="https://timm.github.io/src/"><img alt="home" src="https://img.shields.io/badge/🏠-home-gold"></a>
+<a href="https://github.com/timm/src/tree/main/xai"><img alt="src" src="https://img.shields.io/badge/src-xai-black"></a>
+<a href="https://github.com/timm/src/actions/workflows/tests-xai.yml"><img alt="ci" src="https://github.com/timm/src/actions/workflows/tests-xai.yml/badge.svg"></a>
+<img alt="purpose" src="https://img.shields.io/badge/purpose-xai,optimization-ffb300">
+<img alt="language" src="https://img.shields.io/badge/language-lua-9558B2">
+<a href="https://github.com/timm/src/blob/main/LICENSE.md"><img alt="license" src="https://img.shields.io/badge/license-MIT-brightgreen"></a>
+<a href="https://timm.fyi"><img alt="author" src="https://img.shields.io/badge/author-timm-blueviolet"></a>
+</p><p><a href="xaiplus.html">&lt; prev</a> | next &gt;</p><h1><a href="https://github.com/timm/src/blob/main/xai/xaiplus-eg.lua">xaiplus-eg.lua</a></h1></div>
+  </div>
+  <div class='clearall'>
+  <div class='section' id='section-0'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-0'>#</a>
+      </div>
+      <p>xaiplus-eg.lua: demos and tests for xaiplus.lua, the
+applications layer over xai. One eg sub-table per app,
+ordered simplest to hardest. On the command line:</p>
+<pre><code>--key=val, -k val    set an option
+--knn, --kmeans ...  run one app's tests
+--all                run every app
+</code></pre>
+<p>Each test is reseeded, prints something a tutor can point
+at, then asserts it: no crash = pass.</p>
+<pre><code>lua xaiplus-eg.lua --seed=2 --kmeans
+</code></pre>
+<h3>How to run this course</h3>
+<p>xaiplus is the applications layer over <a href="xai.lua">xai</a>: the
+core stays tiny, the learners and optimizers live here.</p>
+<p>(Easier read: this file, rendered &ndash;
+<a href="https://timm.github.io/src/xai/docs/xaiplus-eg.html">xaiplus-eg.html</a>;
+its library
+<a href="https://timm.github.io/src/xai/docs/xaiplus.html">xaiplus.html</a>;
+the shared dictionary
+<a href="https://timm.github.io/src/glossary.html">glossary</a>.)</p>
+<p>Install <a href="https://lua.org">lua 5.4+</a> (mac:
+<code>brew install lua</code>), then fetch the code and its data:</p>
+<pre><code>git clone https://github.com/timm/src
+git clone https://github.com/timm/moot ~/gits/moot
+cd src/xai
+lua xaiplus-eg.lua --all      # ends "all pass"
+</code></pre>
+<p>Then read a lesson here beside its printed output in
+<a href="xaiplus-eg.out">xaiplus-eg.out</a>, run its tests
+(<code>lua xaiplus-eg.lua --kmeans</code>), then retype a demo at the
+REPL (<code>lua -i</code>, <code>xp = require"xaiplus"</code>).</p>
+<h3>Contents</h3>
+<p>The apps in order, simplest first, and the ideas each lands
+in the <a href="../glossary.md">glossary</a>. Run
+<code>lua xaiplus-eg.lua -h</code> for the section/test map.</p>
+<table>
+<thead>
+<tr>
+<th>lesson</th>
+<th>app</th>
+<th>core ideas</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Knn</td>
+<td><a href="../glossary.md#knn">knn</a> <a href="../glossary.md#mode">mode</a></td>
+</tr>
+<tr>
+<td>2</td>
+<td>Kmeans</td>
+<td><a href="../glossary.md#kmeans">kmeans</a> <a href="../glossary.md#centroid">centroid</a></td>
+</tr>
+<tr>
+<td>3</td>
+<td>Kmeanspp</td>
+<td><a href="../glossary.md#kmeanspp">kmeanspp</a> <a href="../glossary.md#centroid">centroid</a></td>
+</tr>
+</tbody>
+</table>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span></span><span class="kd">local</span><span class="w"> </span><span class="nv">xai</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">require</span><span class="s2">&quot;xai&quot;</span>
+<span class="kd">local</span><span class="w"> </span><span class="nv">xp</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="nb">require</span><span class="s2">&quot;xaiplus&quot;</span>
+<span class="kd">local</span><span class="w"> </span><span class="nv">the</span><span class="p">,</span><span class="nv">lst</span><span class="p">,</span><span class="nv">rnd</span><span class="p">,</span><span class="nv">str</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">xai</span><span class="p">.</span><span class="py">the</span><span class="p">,</span><span class="w"> </span><span class="nv">xai</span><span class="p">.</span><span class="py">lst</span><span class="p">,</span><span class="w"> </span><span class="nv">xai</span><span class="p">.</span><span class="py">rnd</span><span class="p">,</span><span class="w"> </span><span class="nv">xai</span><span class="p">.</span><span class="py">str</span>
+<span class="kd">local</span><span class="w"> </span><span class="nv">Tbl</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">xai</span><span class="p">.</span><span class="py">Tbl</span>
+
+<span class="kd">local</span><span class="w"> </span><span class="nv">eg</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="p">{}</span>
+<span class="kd">local</span><span class="w"> </span><span class="nv">order</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="s2">&quot;knn&quot;</span><span class="p">,</span><span class="s2">&quot;kmeans&quot;</span><span class="p">,</span><span class="s2">&quot;kmeanspp&quot;</span><span class="p">}</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-1'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-1'>#</a>
+      </div>
+      <p>the shared running dataset: a small numeric classification
+table (9 cell-measurement x cols, a benign/malignant klass)</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="kd">local</span><span class="w"> </span><span class="nv">DATA</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;$MOOT/classify/breast.w.csv&quot;</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-2'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-2'>#</a>
+      </div>
+      <h2>Knn</h2>
+<h3>Lesson 1: nearest-neighbor classification</h3>
+<p>The simplest learner has no training step at all: to label
+a new row, find the rows most like it and let them vote. Ask
+<code>distx</code> (from xai) for the k closest rows, take the mode of
+their klasses, done. The data IS the model. On breast.w &ndash;
+nine cell measurements, a benign/malignant klass &ndash; a bare
+3-NN already scores in the high 90s.</p>
+<p><strong>Core ideas:</strong> <a href="../glossary.md#knn">knn</a>,
+<a href="../glossary.md#mode">mode</a></p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="nv">eg</span><span class="p">.</span><span class="py">knn</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{}</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-3'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-3'>#</a>
+      </div>
+      <ul>
+<li><strong>xp.knn(data,r0,k)</strong> predicts r0&rsquo;s klass as the mode of
+  the klasses of its k nearest rows (distx, then Sym mode).</li>
+</ul>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="nv">eg</span><span class="p">.</span><span class="py">knn</span><span class="p">[</span><span class="s2">&quot;--acc&quot;</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">function</span><span class="p">(</span><span class="w">    </span><span class="nv">d</span><span class="p">,</span><span class="nv">rows</span><span class="p">,</span><span class="nv">h</span><span class="p">,</span><span class="nv">tr</span><span class="p">,</span><span class="nv">te</span><span class="p">,</span><span class="nv">at</span><span class="p">,</span><span class="nv">ok</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">d</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="nv">Tbl</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="nv">DATA</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">rows</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">rnd</span><span class="p">.</span><span class="nf">shuffle</span><span class="p">(</span><span class="nv">lst</span><span class="p">.</span><span class="nf">slice</span><span class="p">(</span><span class="nv">d</span><span class="p">.</span><span class="py">rows</span><span class="p">))</span>
+<span class="w">  </span><span class="nv">h</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="mi">490</span><span class="w">                            </span><span class="c1">-- ~70% train</span>
+<span class="w">  </span><span class="nv">tr</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="nv">d</span><span class="p">:</span><span class="nf">clone</span><span class="p">(</span><span class="nv">lst</span><span class="p">.</span><span class="nf">slice</span><span class="p">(</span><span class="nv">rows</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="nv">h</span><span class="p">))</span>
+<span class="w">  </span><span class="nv">te</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="nv">lst</span><span class="p">.</span><span class="nf">slice</span><span class="p">(</span><span class="nv">rows</span><span class="p">,</span><span class="w"> </span><span class="nv">h</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">at</span><span class="p">,</span><span class="w"> </span><span class="nv">ok</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">d</span><span class="p">.</span><span class="py">cols</span><span class="p">.</span><span class="py">klass</span><span class="p">.</span><span class="py">at</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span>
+<span class="w">  </span><span class="kr">for</span><span class="w"> </span><span class="nv">_</span><span class="p">,</span><span class="nv">r</span><span class="w"> </span><span class="kr">in</span><span class="w"> </span><span class="nb">ipairs</span><span class="p">(</span><span class="nv">te</span><span class="p">)</span><span class="w"> </span><span class="kr">do</span>
+<span class="w">    </span><span class="kr">if</span><span class="w"> </span><span class="nv">xp</span><span class="p">.</span><span class="nf">knn</span><span class="p">(</span><span class="nv">tr</span><span class="p">,</span><span class="w"> </span><span class="nv">r</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="nv">r</span><span class="p">[</span><span class="nv">at</span><span class="p">]</span><span class="w"> </span><span class="kr">then</span><span class="w"> </span><span class="nv">ok</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">ok</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="kr">end</span><span class="w"> </span><span class="kr">end</span>
+<span class="w">  </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;3-NN accuracy on breast.w:&quot;</span><span class="p">,</span><span class="w"> </span><span class="nv">str</span><span class="p">.</span><span class="nf">o</span><span class="p">(</span><span class="nv">ok</span><span class="o">/#</span><span class="nv">te</span><span class="p">))</span>
+<span class="w">  </span><span class="nb">assert</span><span class="p">(</span><span class="nv">ok</span><span class="o">/#</span><span class="nv">te</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mf">0.9</span><span class="p">)</span><span class="w">                  </span><span class="c1">-- easy data, easy win</span>
+<span class="w">  </span><span class="nb">assert</span><span class="p">(</span><span class="nv">xp</span><span class="p">.</span><span class="nf">knn</span><span class="p">(</span><span class="nv">tr</span><span class="p">,</span><span class="w"> </span><span class="nv">tr</span><span class="p">.</span><span class="py">rows</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="w"> </span><span class="o">~=</span><span class="w"> </span><span class="kc">nil</span><span class="p">)</span><span class="w"> </span><span class="kr">end</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-4'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-4'>#</a>
+      </div>
+      <p><strong>Exercises (lesson 1).</strong></p>
+<ol>
+<li>In your own favorite language (not lua), write a knn
+   classifier over this section&rsquo;s split and reproduce the
+   accuracy line.</li>
+<li>(simple) Rerun <code>--acc</code> with <code>--knn=1</code>, then 7, then 15.
+   Which k is best on breast.w, and does bigger always help?</li>
+<li>Weight each neighbor&rsquo;s vote by 1/dist (closer = louder)
+   using <code>Sym.add(i,v,w)</code>. Does weighting beat the plain
+   mode at k=15?</li>
+</ol>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-5'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-5'>#</a>
+      </div>
+      <h2>Kmeans</h2>
+<h3>Lesson 2: clustering by repetition</h3>
+<p>No labels this time &ndash; just group similar rows. Seed k
+centroids at random, drop every row into its nearest one,
+move each centroid to its members&rsquo; middle (<code>mids</code>), and
+repeat. A cluster is just a xai Tbl clone, so each one
+carries its own honest column summaries for free. The catch
+is the random seed: a bad start makes bad clusters, which is
+what lesson 3 fixes.</p>
+<p><strong>Core ideas:</strong> <a href="../glossary.md#kmeans">kmeans</a>,
+<a href="../glossary.md#centroid">centroid</a></p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="nv">eg</span><span class="p">.</span><span class="py">kmeans</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{}</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-6'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-6'>#</a>
+      </div>
+      <ul>
+<li><strong>xp.kmeans(data,k,iter)</strong> returns k clusters (Tbl
+  clones); iter passes of assign-then-recentre.</li>
+</ul>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="nv">eg</span><span class="p">.</span><span class="py">kmeans</span><span class="p">[</span><span class="s2">&quot;--cluster&quot;</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">function</span><span class="p">(</span><span class="w">    </span><span class="nv">d</span><span class="p">,</span><span class="nv">cl</span><span class="p">,</span><span class="nv">tot</span><span class="p">,</span><span class="nv">ns</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">d</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="nv">Tbl</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="nv">DATA</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">cl</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">xp</span><span class="p">.</span><span class="nf">kmeans</span><span class="p">(</span><span class="nv">d</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">tot</span><span class="p">,</span><span class="w"> </span><span class="nv">ns</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="p">{}</span>
+<span class="w">  </span><span class="kr">for</span><span class="w"> </span><span class="nv">_</span><span class="p">,</span><span class="nv">c</span><span class="w"> </span><span class="kr">in</span><span class="w"> </span><span class="nb">ipairs</span><span class="p">(</span><span class="nv">cl</span><span class="p">)</span><span class="w"> </span><span class="kr">do</span>
+<span class="w">    </span><span class="nv">tot</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">tot</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="o">#</span><span class="nv">c</span><span class="p">.</span><span class="py">rows</span><span class="p">;</span><span class="w"> </span><span class="nv">lst</span><span class="p">.</span><span class="nf">push</span><span class="p">(</span><span class="nv">ns</span><span class="p">,</span><span class="w"> </span><span class="o">#</span><span class="nv">c</span><span class="p">.</span><span class="py">rows</span><span class="p">)</span><span class="w"> </span><span class="kr">end</span>
+<span class="w">  </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;5 clusters, sizes:&quot;</span><span class="p">,</span><span class="w"> </span><span class="nv">str</span><span class="p">.</span><span class="nf">o</span><span class="p">(</span><span class="nv">lst</span><span class="p">.</span><span class="nf">sort</span><span class="p">(</span><span class="nv">ns</span><span class="p">)))</span>
+<span class="w">  </span><span class="nb">assert</span><span class="p">(</span><span class="o">#</span><span class="nv">cl</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="o">#</span><span class="nv">cl</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="mi">5</span><span class="p">)</span>
+<span class="w">  </span><span class="nb">assert</span><span class="p">(</span><span class="nv">tot</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="o">#</span><span class="nv">d</span><span class="p">.</span><span class="py">rows</span><span class="p">)</span><span class="w"> </span><span class="kr">end</span><span class="w">            </span><span class="c1">-- every row placed once</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-7'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-7'>#</a>
+      </div>
+      <p><strong>Exercises (lesson 2).</strong></p>
+<ol>
+<li>In your own favorite language (not lua), implement kmeans
+   and print your cluster sizes.</li>
+<li>(simple) Rerun with <code>--kluster=3</code> then 12. How do the
+   sizes spread, and does <code>--iter=1</code> differ much from 20?</li>
+<li>Report each cluster&rsquo;s purity: the fraction of its rows
+   sharing the majority klass (reuse <code>Sym</code>). Do the
+   unsupervised clusters line up with the real classes?</li>
+</ol>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-8'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-8'>#</a>
+      </div>
+      <h2>Kmeanspp</h2>
+<h3>Lesson 3: seeding clusters far apart</h3>
+<p>Random seeds clump; kmeans++ spreads them. Draw the first
+centroid at random, then each next one from a small pool
+with probability proportional to its SQUARED distance to the
+nearest centroid so far &ndash; so far-away rows are far likelier
+to be picked. Better seeds mean fewer wasted iterations for
+lesson 2&rsquo;s kmeans.</p>
+<p><strong>Core ideas:</strong> <a href="../glossary.md#kmeanspp">kmeanspp</a>,
+<a href="../glossary.md#centroid">centroid</a></p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="nv">eg</span><span class="p">.</span><span class="py">kmeanspp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{}</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-9'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-9'>#</a>
+      </div>
+      <ul>
+<li><strong>xp.kpp(data,k,few)</strong> returns k seed rows chosen by
+  kmeans++ (d^2-weighted picks from a <code>few</code>-row pool).</li>
+</ul>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="nv">eg</span><span class="p">.</span><span class="py">kmeanspp</span><span class="p">[</span><span class="s2">&quot;--seed&quot;</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">function</span><span class="p">(</span><span class="w">    </span><span class="nv">d</span><span class="p">,</span><span class="nv">cs</span><span class="p">,</span><span class="nv">spread</span><span class="p">,</span><span class="nv">gap</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">d</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="nv">Tbl</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="nv">DATA</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">cs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">xp</span><span class="p">.</span><span class="nf">kpp</span><span class="p">(</span><span class="nv">d</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">spread</span><span class="p">,</span><span class="w"> </span><span class="nv">gap</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span>
+<span class="w">  </span><span class="kr">for</span><span class="w"> </span><span class="nv">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="o">#</span><span class="nv">cs</span><span class="w"> </span><span class="kr">do</span><span class="w"> </span><span class="kr">for</span><span class="w"> </span><span class="nv">j</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="o">#</span><span class="nv">cs</span><span class="w"> </span><span class="kr">do</span>
+<span class="w">    </span><span class="nv">gap</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">gap</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w"> </span><span class="nv">spread</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">spread</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nv">d</span><span class="p">:</span><span class="nf">distx</span><span class="p">(</span><span class="nv">cs</span><span class="p">[</span><span class="nv">i</span><span class="p">],</span><span class="w"> </span><span class="nv">cs</span><span class="p">[</span><span class="nv">j</span><span class="p">])</span><span class="w"> </span><span class="kr">end</span><span class="w"> </span><span class="kr">end</span>
+<span class="w">  </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;5 kmeans++ seeds, mean pair distance:&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nv">str</span><span class="p">.</span><span class="nf">o</span><span class="p">(</span><span class="nv">spread</span><span class="o">/</span><span class="nv">gap</span><span class="p">))</span>
+<span class="w">  </span><span class="nb">assert</span><span class="p">(</span><span class="o">#</span><span class="nv">cs</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">5</span><span class="p">)</span>
+<span class="w">  </span><span class="nb">assert</span><span class="p">(</span><span class="nv">spread</span><span class="o">/</span><span class="nv">gap</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="kr">end</span><span class="w">            </span><span class="c1">-- seeds are distinct</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-10'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-10'>#</a>
+      </div>
+      <p><strong>Exercises (lesson 3).</strong></p>
+<ol>
+<li>In your own favorite language (not lua), write the d^2
+   seeding and print the mean pair distance.</li>
+<li>(simple) Compare the mean pair distance of <code>xp.kpp</code> seeds
+   against 5 random rows (<code>rnd.some</code>). By how much does
+   kmeans++ spread them?</li>
+<li>Feed <code>xp.kpp</code>&rsquo;s seeds to <code>xp.kmeans</code> as its start (add a
+   <code>cents</code> argument). Does a kmeans++ start lower the final
+   assignment error versus a random start?</li>
+</ol>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-11'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-11'>#</a>
+      </div>
+      <h2>Main</h2>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="nv">eg</span><span class="p">.</span><span class="py">main</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{}</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-12'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-12'>#</a>
+      </div>
+      <p>run one test, reseeded</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="kd">local</span><span class="w"> </span><span class="kr">function</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="nv">fn</span><span class="p">)</span><span class="w"> </span><span class="nv">rnd</span><span class="p">.</span><span class="nf">seed</span><span class="p">(</span><span class="nv">the</span><span class="p">.</span><span class="py">seed</span><span class="p">);</span><span class="w"> </span><span class="nf">fn</span><span class="p">()</span><span class="w"> </span><span class="kr">end</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-13'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-13'>#</a>
+      </div>
+      <p>flags of one section in SOURCE order, parsed from this
+file (pairs() loses definition order).</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="kd">local</span><span class="w"> </span><span class="nv">egsrc</span>
+<span class="kd">local</span><span class="w"> </span><span class="kr">function</span><span class="w"> </span><span class="nf">keysof</span><span class="p">(</span><span class="nv">name</span><span class="p">,</span><span class="w">    </span><span class="nv">seen</span><span class="p">,</span><span class="nv">out</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">egsrc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">egsrc</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="nb">io.open</span><span class="s2">&quot;xaiplus-eg.lua&quot;</span><span class="p">:</span><span class="nv">read</span><span class="s2">&quot;*a&quot;</span>
+<span class="w">  </span><span class="nv">seen</span><span class="p">,</span><span class="w"> </span><span class="nv">out</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{},</span><span class="w"> </span><span class="p">{}</span>
+<span class="w">  </span><span class="kr">for</span><span class="w"> </span><span class="nv">k</span><span class="w"> </span><span class="kr">in</span><span class="w"> </span><span class="nv">egsrc</span><span class="p">:</span><span class="nf">gmatch</span><span class="p">(</span><span class="s1">&#39;eg%.&#39;</span><span class="o">..</span><span class="nv">name</span><span class="o">..</span><span class="s1">&#39;%[&quot;(%-%-%w+)&quot;%]&#39;</span><span class="p">)</span><span class="w"> </span><span class="kr">do</span>
+<span class="w">    </span><span class="kr">if</span><span class="w"> </span><span class="nv">eg</span><span class="p">[</span><span class="nv">name</span><span class="p">][</span><span class="nv">k</span><span class="p">]</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="nv">seen</span><span class="p">[</span><span class="nv">k</span><span class="p">]</span><span class="w"> </span><span class="kr">then</span>
+<span class="w">      </span><span class="nv">seen</span><span class="p">[</span><span class="nv">k</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">true</span><span class="p">;</span><span class="w"> </span><span class="nv">lst</span><span class="p">.</span><span class="nf">push</span><span class="p">(</span><span class="nv">out</span><span class="p">,</span><span class="w"> </span><span class="nv">k</span><span class="p">)</span><span class="w"> </span><span class="kr">end</span><span class="w"> </span><span class="kr">end</span>
+<span class="w">  </span><span class="kr">for</span><span class="w"> </span><span class="nv">k</span><span class="w"> </span><span class="kr">in</span><span class="w"> </span><span class="nb">pairs</span><span class="p">(</span><span class="nv">eg</span><span class="p">[</span><span class="nv">name</span><span class="p">])</span><span class="w"> </span><span class="kr">do</span>
+<span class="w">    </span><span class="kr">if</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="nv">seen</span><span class="p">[</span><span class="nv">k</span><span class="p">]</span><span class="w"> </span><span class="kr">then</span><span class="w"> </span><span class="nv">lst</span><span class="p">.</span><span class="nf">push</span><span class="p">(</span><span class="nv">out</span><span class="p">,</span><span class="w"> </span><span class="nv">k</span><span class="p">)</span><span class="w"> </span><span class="kr">end</span><span class="w"> </span><span class="kr">end</span>
+<span class="w">  </span><span class="kr">return</span><span class="w"> </span><span class="nv">out</span><span class="w"> </span><span class="kr">end</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-14'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-14'>#</a>
+      </div>
+      <p>run one section&rsquo;s tests, in source (reading) order</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="kd">local</span><span class="w"> </span><span class="kr">function</span><span class="w"> </span><span class="nf">section</span><span class="p">(</span><span class="nv">name</span><span class="p">)</span>
+<span class="w">  </span><span class="kr">for</span><span class="w"> </span><span class="nv">_</span><span class="p">,</span><span class="nv">k</span><span class="w"> </span><span class="kr">in</span><span class="w"> </span><span class="nb">ipairs</span><span class="p">(</span><span class="nf">keysof</span><span class="p">(</span><span class="nv">name</span><span class="p">))</span><span class="w"> </span><span class="kr">do</span>
+<span class="w">    </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">-- &quot;</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="nv">k</span><span class="p">)</span>
+<span class="w">    </span><span class="nf">run</span><span class="p">(</span><span class="nv">eg</span><span class="p">[</span><span class="nv">name</span><span class="p">][</span><span class="nv">k</span><span class="p">])</span><span class="w"> </span><span class="kr">end</span><span class="w"> </span><span class="kr">end</span>
+
+<span class="nv">eg</span><span class="p">.</span><span class="py">main</span><span class="p">[</span><span class="s2">&quot;-h&quot;</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">function</span><span class="p">()</span>
+<span class="w">  </span><span class="nb">print</span><span class="p">(</span><span class="nv">xp</span><span class="p">.</span><span class="py">help</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Apps (and their tests):</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="w">  </span><span class="kr">for</span><span class="w"> </span><span class="nv">_</span><span class="p">,</span><span class="nv">n</span><span class="w"> </span><span class="kr">in</span><span class="w"> </span><span class="nb">ipairs</span><span class="p">(</span><span class="nv">order</span><span class="p">)</span><span class="w"> </span><span class="kr">do</span>
+<span class="w">    </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  lua xaiplus-eg.lua --&quot;</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="nv">n</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="s2">&quot;   # or: &quot;</span><span class="w"> </span><span class="o">..</span>
+<span class="w">          </span><span class="nb">table.concat</span><span class="p">(</span><span class="nf">keysof</span><span class="p">(</span><span class="nv">n</span><span class="p">),</span><span class="w"> </span><span class="s2">&quot; &quot;</span><span class="p">))</span><span class="w"> </span><span class="kr">end</span>
+<span class="w">  </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Also: --all -h --join --transcript --check&quot;</span><span class="p">)</span>
+<span class="w">  </span><span class="kr">end</span>
+
+<span class="nv">eg</span><span class="p">.</span><span class="py">main</span><span class="p">[</span><span class="s2">&quot;--all&quot;</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">function</span><span class="p">()</span>
+<span class="w">  </span><span class="kr">for</span><span class="w"> </span><span class="nv">_</span><span class="p">,</span><span class="nv">n</span><span class="w"> </span><span class="kr">in</span><span class="w"> </span><span class="nb">ipairs</span><span class="p">(</span><span class="nv">order</span><span class="p">)</span><span class="w"> </span><span class="kr">do</span>
+<span class="w">    </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">---- &quot;</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="nv">n</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="s2">&quot; &quot;</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="p">):</span><span class="nf">rep</span><span class="p">(</span><span class="mi">40</span><span class="p">))</span>
+<span class="w">    </span><span class="nf">section</span><span class="p">(</span><span class="nv">n</span><span class="p">)</span><span class="w"> </span><span class="kr">end</span>
+<span class="w">  </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">all pass&quot;</span><span class="p">)</span><span class="w"> </span><span class="kr">end</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-15'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-15'>#</a>
+      </div>
+      <p>freeze the printed pedagogy to xaiplus-eg.out (from a real
+run, never hand-edited); &ndash;check diffs a fresh run to it</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="nv">eg</span><span class="p">.</span><span class="py">main</span><span class="p">[</span><span class="s2">&quot;--transcript&quot;</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">function</span><span class="p">()</span>
+<span class="w">  </span><span class="nb">assert</span><span class="p">(</span><span class="nb">os.execute</span><span class="p">(</span>
+<span class="w">    </span><span class="s2">&quot;lua xaiplus-eg.lua --all &gt; xaiplus-eg.out&quot;</span><span class="p">))</span>
+<span class="w">  </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;xaiplus-eg.out frozen&quot;</span><span class="p">)</span><span class="w"> </span><span class="kr">end</span>
+
+<span class="nv">eg</span><span class="p">.</span><span class="py">main</span><span class="p">[</span><span class="s2">&quot;--check&quot;</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">function</span><span class="p">(</span><span class="w">    </span><span class="nv">ok</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">ok</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">os.execute</span><span class="p">(</span>
+<span class="w">    </span><span class="s2">&quot;lua xaiplus-eg.lua --all | diff - xaiplus-eg.out&quot;</span><span class="p">)</span>
+<span class="w">  </span><span class="nb">print</span><span class="p">(</span><span class="nv">ok</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="s2">&quot;transcript ok&quot;</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="s2">&quot;TRANSCRIPT DRIFT&quot;</span><span class="p">)</span>
+<span class="w">  </span><span class="nb">assert</span><span class="p">(</span><span class="nv">ok</span><span class="p">)</span><span class="w"> </span><span class="kr">end</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-16'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-16'>#</a>
+      </div>
+      <p>join checker (per-course half): every glossary link in a
+lesson lands on a heading, and every dot-list signature
+names a real function (in xp or xai). The repo-wide &ldquo;is
+every heading taught&rdquo; check is <code>make check</code> (etc/join.py).
+walk &ldquo;xp.knn&rdquo; through nested tables; nil if absent</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="kd">local</span><span class="w"> </span><span class="kr">function</span><span class="w"> </span><span class="nf">deref</span><span class="p">(</span><span class="nv">root</span><span class="p">,</span><span class="w"> </span><span class="nv">name</span><span class="p">,</span><span class="w">    </span><span class="nv">r</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">r</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">root</span>
+<span class="w">  </span><span class="kr">for</span><span class="w"> </span><span class="nv">w</span><span class="w"> </span><span class="kr">in</span><span class="w"> </span><span class="nv">name</span><span class="p">:</span><span class="py">gmatch</span><span class="s2">&quot;[%w_]+&quot;</span><span class="w"> </span><span class="kr">do</span>
+<span class="w">    </span><span class="nv">r</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">type</span><span class="p">(</span><span class="nv">r</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s2">&quot;table&quot;</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="nv">r</span><span class="p">[</span><span class="nv">w</span><span class="p">]</span><span class="w"> </span><span class="kr">end</span>
+<span class="w">  </span><span class="kr">return</span><span class="w"> </span><span class="nv">r</span><span class="w"> </span><span class="kr">end</span>
+
+<span class="nv">eg</span><span class="p">.</span><span class="py">main</span><span class="p">[</span><span class="s2">&quot;--join&quot;</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">function</span><span class="p">(</span><span class="w">    </span><span class="nv">doc</span><span class="p">,</span><span class="nv">src</span><span class="p">,</span><span class="nv">keys</span><span class="p">,</span><span class="nv">ok</span><span class="p">,</span><span class="nv">ns</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">doc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">io.open</span><span class="s2">&quot;../glossary.md&quot;</span><span class="p">:</span><span class="nv">read</span><span class="s2">&quot;*a&quot;</span>
+<span class="w">  </span><span class="nv">src</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">io.open</span><span class="s2">&quot;xaiplus-eg.lua&quot;</span><span class="p">:</span><span class="nv">read</span><span class="s2">&quot;*a&quot;</span>
+<span class="w">  </span><span class="nv">keys</span><span class="p">,</span><span class="w"> </span><span class="nv">ok</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{},</span><span class="w"> </span><span class="kc">true</span>
+<span class="w">  </span><span class="nv">ns</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="nv">xp</span><span class="o">=</span><span class="nv">xp</span><span class="p">,</span><span class="w"> </span><span class="nv">xai</span><span class="o">=</span><span class="nv">xai</span><span class="p">}</span><span class="w">                  </span><span class="c1">-- resolve xp.* / xai.*</span>
+<span class="w">  </span><span class="kr">for</span><span class="w"> </span><span class="nv">k</span><span class="w"> </span><span class="kr">in</span><span class="w"> </span><span class="nv">doc</span><span class="p">:</span><span class="py">gmatch</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">## ([a-z]+)</span><span class="se">\n</span><span class="s2">&quot;</span><span class="w"> </span><span class="kr">do</span><span class="w"> </span><span class="nv">keys</span><span class="p">[</span><span class="nv">k</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">true</span><span class="w"> </span><span class="kr">end</span>
+<span class="w">  </span><span class="kr">for</span><span class="w"> </span><span class="nv">k</span><span class="w"> </span><span class="kr">in</span><span class="w"> </span><span class="nv">src</span><span class="p">:</span><span class="py">gmatch</span><span class="s2">&quot;glossary%.md#([a-z]+)&quot;</span><span class="w"> </span><span class="kr">do</span>
+<span class="w">    </span><span class="kr">if</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="nv">keys</span><span class="p">[</span><span class="nv">k</span><span class="p">]</span><span class="w"> </span><span class="kr">then</span><span class="w"> </span><span class="nv">ok</span><span class="o">=</span><span class="kc">false</span><span class="p">;</span><span class="w"> </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;no heading:&quot;</span><span class="p">,</span><span class="nv">k</span><span class="p">)</span><span class="w"> </span><span class="kr">end</span><span class="w"> </span><span class="kr">end</span>
+<span class="w">  </span><span class="kr">for</span><span class="w"> </span><span class="nv">line</span><span class="w"> </span><span class="kr">in</span><span class="w"> </span><span class="nv">src</span><span class="p">:</span><span class="py">gmatch</span><span class="s2">&quot;[^</span><span class="se">\n</span><span class="s2">]+&quot;</span><span class="w"> </span><span class="kr">do</span>
+<span class="w">    </span><span class="kr">if</span><span class="w"> </span><span class="nv">line</span><span class="p">:</span><span class="py">find</span><span class="s2">&quot;^%-%- %- %*%*&quot;</span><span class="w"> </span><span class="kr">then</span>
+<span class="w">      </span><span class="kr">for</span><span class="w"> </span><span class="nv">sig</span><span class="w"> </span><span class="kr">in</span><span class="w"> </span><span class="nv">line</span><span class="p">:</span><span class="py">gmatch</span><span class="s2">&quot;%*%*([%w_./]+)%(&quot;</span><span class="w"> </span><span class="kr">do</span>
+<span class="w">        </span><span class="kr">for</span><span class="w"> </span><span class="nv">nm</span><span class="w"> </span><span class="kr">in</span><span class="w"> </span><span class="nv">sig</span><span class="p">:</span><span class="py">gmatch</span><span class="s2">&quot;[%w_.]+&quot;</span><span class="w"> </span><span class="kr">do</span>
+<span class="w">          </span><span class="kr">if</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="p">(</span><span class="nf">deref</span><span class="p">(</span><span class="nv">ns</span><span class="p">,</span><span class="nv">nm</span><span class="p">)</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="nf">deref</span><span class="p">(</span><span class="nb">_G</span><span class="p">,</span><span class="nv">nm</span><span class="p">))</span><span class="w"> </span><span class="kr">then</span>
+<span class="w">            </span><span class="nv">ok</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">false</span><span class="p">;</span><span class="w"> </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;missing fn:&quot;</span><span class="p">,</span><span class="w"> </span><span class="nv">nm</span><span class="p">)</span><span class="w"> </span><span class="kr">end</span><span class="w"> </span><span class="kr">end</span><span class="w"> </span><span class="kr">end</span><span class="w"> </span><span class="kr">end</span><span class="w"> </span><span class="kr">end</span>
+<span class="w">  </span><span class="nb">assert</span><span class="p">(</span><span class="nv">ok</span><span class="p">)</span><span class="w"> </span><span class="kr">end</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-17'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-17'>#</a>
+      </div>
+      <p>cli: &ndash;key=val sets an option, &ndash;name runs a section, other
+names run one test. Flags steer only the egs that follow.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="kd">local</span><span class="w"> </span><span class="kr">function</span><span class="w"> </span><span class="nf">cli</span><span class="p">(</span><span class="w">    </span><span class="nv">k</span><span class="p">,</span><span class="nv">v</span><span class="p">)</span>
+<span class="w">  </span><span class="kr">for</span><span class="w"> </span><span class="nv">i</span><span class="p">,</span><span class="nv">s</span><span class="w"> </span><span class="kr">in</span><span class="w"> </span><span class="nb">ipairs</span><span class="p">(</span><span class="nv">arg</span><span class="p">)</span><span class="w"> </span><span class="kr">do</span>
+<span class="w">    </span><span class="nv">k</span><span class="p">,</span><span class="nv">v</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">s</span><span class="p">:</span><span class="py">match</span><span class="s2">&quot;^%-%-(%w+)=(%S+)$&quot;</span>
+<span class="w">    </span><span class="kr">if</span><span class="w"> </span><span class="nv">v</span><span class="w"> </span><span class="kr">then</span>
+<span class="w">      </span><span class="kr">if</span><span class="w"> </span><span class="nv">the</span><span class="p">[</span><span class="nv">k</span><span class="p">]</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="kc">nil</span><span class="w"> </span><span class="kr">then</span><span class="w"> </span><span class="nb">error</span><span class="p">(</span><span class="s2">&quot;unknown --&quot;</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="nv">k</span><span class="p">)</span><span class="w"> </span><span class="kr">end</span>
+<span class="w">      </span><span class="nv">the</span><span class="p">[</span><span class="nv">k</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">str</span><span class="p">.</span><span class="nf">what</span><span class="p">(</span><span class="nv">v</span><span class="p">)</span><span class="w"> </span><span class="kr">end</span>
+<span class="w">    </span><span class="kr">for</span><span class="w"> </span><span class="nv">key</span><span class="p">,</span><span class="nv">_</span><span class="w"> </span><span class="kr">in</span><span class="w"> </span><span class="nb">pairs</span><span class="p">(</span><span class="nv">the</span><span class="p">)</span><span class="w"> </span><span class="kr">do</span>
+<span class="w">      </span><span class="kr">if</span><span class="w"> </span><span class="nv">s</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s2">&quot;-&quot;</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="nv">key</span><span class="p">:</span><span class="nf">sub</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="nv">arg</span><span class="p">[</span><span class="nv">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="kr">then</span>
+<span class="w">        </span><span class="nv">the</span><span class="p">[</span><span class="nv">key</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">str</span><span class="p">.</span><span class="nf">what</span><span class="p">(</span><span class="nv">arg</span><span class="p">[</span><span class="nv">i</span><span class="o">+</span><span class="mi">1</span><span class="p">])</span><span class="w"> </span><span class="kr">end</span><span class="w"> </span><span class="kr">end</span>
+<span class="w">    </span><span class="kr">if</span><span class="w"> </span><span class="nv">eg</span><span class="p">[</span><span class="nv">s</span><span class="p">:</span><span class="nf">sub</span><span class="p">(</span><span class="mi">3</span><span class="p">)]</span><span class="w"> </span><span class="kr">then</span><span class="w"> </span><span class="nf">section</span><span class="p">(</span><span class="nv">s</span><span class="p">:</span><span class="nf">sub</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>
+<span class="w">    </span><span class="kr">else</span>
+<span class="w">      </span><span class="kr">for</span><span class="w"> </span><span class="nv">_</span><span class="p">,</span><span class="nv">sect</span><span class="w"> </span><span class="kr">in</span><span class="w"> </span><span class="nb">pairs</span><span class="p">(</span><span class="nv">eg</span><span class="p">)</span><span class="w"> </span><span class="kr">do</span>
+<span class="w">        </span><span class="kr">if</span><span class="w"> </span><span class="nv">sect</span><span class="p">[</span><span class="nv">s</span><span class="p">]</span><span class="w"> </span><span class="kr">then</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="nv">sect</span><span class="p">[</span><span class="nv">s</span><span class="p">])</span><span class="w"> </span><span class="kr">end</span><span class="w"> </span><span class="kr">end</span><span class="w"> </span><span class="kr">end</span><span class="w"> </span><span class="kr">end</span><span class="w"> </span><span class="kr">end</span>
+
+<span class="kr">if</span><span class="w"> </span><span class="nv">arg</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="nv">arg</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="nv">arg</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span><span class="nv">find</span><span class="s2">&quot;xaiplus%-eg&quot;</span><span class="w"> </span><span class="kr">then</span><span class="w"> </span><span class="nf">cli</span><span class="p">()</span><span class="w"> </span><span class="kr">end</span>
+<span class="kr">return</span><span class="w"> </span><span class="nv">eg</span>
+
+</pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+</div>
+</body>

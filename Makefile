@@ -24,10 +24,12 @@ eg: ## run every project's examples/tests
 	cd tiny-xai && sbcl --script tiny-xai-eg.lisp --all
 	cd luamine  && lua luamine-eg.lua --all
 	cd xai      && lua xai-eg.lua --all
+	cd xai      && lua xaiplus-eg.lua --all
 
 check: ## glossary links <-> headings, then each course's frozen transcript
 	@python3 etc/join.py glossary.md $(wildcard */*-eg.py */*-eg.lua */*-eg.lisp)
 	@cd xai && lua xai-eg.lua --check
+	@cd xai && lua xaiplus-eg.lua --check
 
 doc: ## pycco html per source file into docs/<proj>/
 	@for p in */; do p=$${p%/}; \
