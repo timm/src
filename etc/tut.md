@@ -66,8 +66,9 @@ Lesson-course variant (exemplar: sandbox/abc-eg.lua; full
 spec in style.md "-eg and -doc"). When the -eg is taught
 as a weekly course, each section additionally gets:
 
-- a "how to run this course" stanza up top (install +
-  the four reading levels) and a lesson 0 teaching the
+- a "how to run this course" stanza up top (links to
+  its own rendered site pages first, then install + the
+  four reading levels) and a lesson 0 teaching the
   implementation language to incomers from the assumed
   language, traps demoed and asserted;
 - an opening stanza `### Lesson N: title` ending in

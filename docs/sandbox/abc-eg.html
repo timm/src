@@ -39,6 +39,12 @@ at, then asserts it: no crash = pass.</p>
 <pre><code> lua abc-eg.lua --seed=2 --tree --score
 </code></pre>
 <h3>How to run this course</h3>
+<p>(Easier read: this file, rendered &ndash;
+<a href="https://timm.github.io/src/sandbox/docs/abc-eg.html">abc-eg.html</a>;
+its library
+<a href="https://timm.github.io/src/sandbox/docs/abc.html">abc.html</a>;
+the shared dictionary
+<a href="https://timm.github.io/src/glossary.html">glossary</a>.)</p>
 <p>Install <a href="https://lua.org">lua 5.4+</a> (mac:
 <code>brew install lua</code>), then fetch the code and its data:</p>
 <pre><code>git clone https://github.com/timm/src
@@ -58,9 +64,9 @@ lua abc-eg.lua --all      # a minute; ends "all pass"
    line, printing as you go.</li>
 <li>(deep dive) Port a lesson to your own favorite
    language (not lua) and reproduce its slice of
-   abc-eg.out. Slow work, so start with the shorter
-   lessons &ndash; and lesson 2&rsquo;s generator is what makes
-   your numbers match ours exactly.</li>
+   abc-eg.out. This can take a little time, so best to
+   start with the shorter functions within each
+   lesson.</li>
 </ol>
     </div>
     <div class='code'>
@@ -978,7 +984,8 @@ optimization. Distance really is most of what &ldquo;learning&rdquo;
 needs.</p>
 <p><strong>Core ideas:</strong> <a href="https://github.com/timm/src/blob/main/glossary.md#norm">norm</a>,
 <a href="https://github.com/timm/src/blob/main/glossary.md#minkowski">minkowski</a>,
-<a href="https://github.com/timm/src/blob/main/glossary.md#missing">missing</a>, <a href="https://github.com/timm/src/blob/main/glossary.md#heaven">heaven</a>,
+<a href="https://github.com/timm/src/blob/main/glossary.md#missing">missing</a>,
+<a href="https://github.com/timm/src/blob/main/glossary.md#heaven">heaven</a>,
 <a href="https://github.com/timm/src/blob/main/glossary.md#knn">knn</a>, <a href="https://github.com/timm/src/blob/main/glossary.md#anomaly">anomaly</a></p>
     </div>
     <div class='code'>
@@ -1384,7 +1391,8 @@ argue with the model). Note what we did not need: no
 gradients, no pruning theory, just distance, bins, and
 recursion.</p>
 <p><strong>Core ideas:</strong> <a href="https://github.com/timm/src/blob/main/glossary.md#tree">tree</a>,
-<a href="https://github.com/timm/src/blob/main/glossary.md#predict">predict</a>, <a href="https://github.com/timm/src/blob/main/glossary.md#explain">explain</a></p>
+<a href="https://github.com/timm/src/blob/main/glossary.md#predict">predict</a>,
+<a href="https://github.com/timm/src/blob/main/glossary.md#explain">explain</a></p>
     </div>
     <div class='code'>
       <div class="highlight"><pre><span class="nv">eg</span><span class="p">.</span><span class="py">tree</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{}</span></pre></div>

@@ -90,7 +90,9 @@ Shape of xx-eg.ext:
   simplest to hardest: lib sections first, then the
   domain code. One eg sub-table per section. Two extras
   bracket the lessons: an opening "how to run this
-  course" stanza (install lines + four reading levels:
+  course" stanza (FIRST: links to its own rendered pages
+  on the site -- the pycco htmls and the glossary -- then
+  install lines + four reading levels:
   skim beside xx-eg.out, run one test, retype at the
   REPL, port and diff), and a lesson 0 teaching the
   implementation language to incomers from the course's

@@ -16,6 +16,13 @@
 --[[
 ### How to run this course
 
+(Easier read: this file, rendered --
+[abc-eg.html](https://timm.github.io/src/sandbox/docs/abc-eg.html);
+its library
+[abc.html](https://timm.github.io/src/sandbox/docs/abc.html);
+the shared dictionary
+[glossary](https://timm.github.io/src/glossary.html).)
+
 Install [lua 5.4+](https://lua.org) (mac:
 `brew install lua`), then fetch the code and its data:
 
