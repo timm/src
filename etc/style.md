@@ -88,7 +88,15 @@ Shape of xx-eg.ext:
 
 - Sections mirror xx.ext's `## sections`, reordered
   simplest to hardest: lib sections first, then the
-  domain code. One eg sub-table per section.
+  domain code. One eg sub-table per section. Two extras
+  bracket the lessons: an opening "how to run this
+  course" stanza (install lines + four reading levels:
+  skim beside xx-eg.out, run one test, retype at the
+  REPL, port and diff), and a lesson 0 teaching the
+  implementation language to incomers from the course's
+  assumed language ("lua for the impatient pythonista":
+  trap demos, each printed and asserted, ending with a
+  tiny self-auditing static analyzer).
 - Each section is one lesson: an opening markdown stanza
   (a few lines of background, ending in
   `**Core ideas:** [key](../glossary.md#key)` join keys --
@@ -120,8 +128,9 @@ Shape of xx-eg.ext:
 - Doc claims are executable (exemplar: abc-eg.lua):
   `--join` verifies lesson links land on doc headings,
   headings are all linked, and dot-list signatures
-  resolve in the module (reflection) -- plus a coverage
-  line, taught/exported verbs. `--transcript` freezes the
+  resolve in the module (reflection; language builtins
+  fall back to _G, so lesson 0 may teach them) -- plus a
+  coverage line, taught/exported verbs. `--transcript` freezes the
   printed `--all` output to xx-eg.out (from a real run,
   never hand-edited; needs deterministic ties -- stable
   keysort, lexical tie-break on mode); `--check` diffs a
@@ -162,7 +171,12 @@ browsable, marked dead by location.
   order, per-page prose alignment (code pages right,
   tests/tutorial pages left) and links the title to the
   file on github; etc/toc.py rewrites README's
-  <!-- doc-toc --> block. One page per SOURCE FILE
+  <!-- doc-toc --> block (page order falls back to a
+  glob for dirs without INSTALL.md, e.g. sandbox, whose
+  pycco pages come from abc-eg's own --doc verb).
+  glossary.md is copied to the site root and, via the
+  jekyll-relative-links plugin, every ../glossary.md#key
+  link lands on glossary.html. One page per SOURCE FILE
   (we tried one page per ## section, and a grouped toc
   atop each page, and reverted both: whole-file pages
   are simpler and the markers still render as headings).
