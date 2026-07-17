@@ -371,11 +371,12 @@ one update per value, numerically stable — and reversible
 
 ## anomaly
 
-*taught in:* [xai-eg, lesson 8](xai/xai-eg.lua)
+*taught in:* [xai-eg, lesson 8](xai/xai-eg.lua) · [xaiplus, lesson 14](xai/xaiplus-eg.lua)
 
 A row far from even its own nearest neighbor. Once
 distance exists, outlier detection is one argmax: find
-who is loneliest (lesson 8, `--near`).
+who is loneliest (lesson 8, `--near`; a calibrated
+nearest-gap CDF in xaiplus lesson 14).
 
 ## centroid
 
@@ -477,7 +478,7 @@ Rows plus typed column summaries: the first row builds
 the [schema](#schema), later rows update per-column
 stats as they are stored (lesson 7).
 
-*Awaiting entries:* medoids, interpolation, synthesis, black-box to small tree.
+*Awaiting entries:* medoids, interpolation, black-box to small tree.
 
 
 # search and optimize
@@ -510,6 +511,15 @@ bin creates. Lower cost = y is simpler to describe after
 the cut. The far half comes from [minus](#minus), so
 scoring never re-reads the rows (lesson 11).
 
+## de
+
+*taught in:* [xaiplus, lesson 7](xai/xaiplus-eg.lua)
+
+Differential evolution: evolve a population of rows; each
+child is three others blended as a + F*(b - c), kept only
+if it scores better. Few knobs, strong results -- the
+default workhorse optimizer here.
+
 ## explain
 
 *taught in:* [xai-eg, lesson 12](xai/xai-eg.lua)
@@ -527,6 +537,23 @@ Explore vs exploit: spend labels learning the landscape,
 or harvesting its best-known corner? Acquisition policies
 (lesson 10) balance the two; pure exploit gets trapped,
 pure explore wastes the [budget](#budget).
+
+## ga
+
+*taught in:* [xaiplus, lesson 8](xai/xaiplus-eg.lua)
+
+Genetic algorithm: each generation mutates the population,
+then refills it by crossover of tournament-selected
+parents. Mutation explores, crossover recombines,
+tournaments apply the selection pressure.
+
+## ls
+
+*taught in:* [xaiplus, lesson 10](xai/xaiplus-eg.lua)
+
+Local search: greedy hill climbing that jumps to a fresh
+random start whenever it stalls, so one bad basin cannot
+trap the whole run. A baseline fancier search must beat.
 
 ## mutate
 
@@ -546,6 +573,30 @@ Route a row down the tree by its branch tests; report the
 leaf's mid (mean or [mode](#mode)). Same tree, two uses:
 predict and [explain](#explain) (lesson 12).
 
+## race
+
+*taught in:* [xaiplus, lesson 11](xai/xaiplus-eg.lua)
+
+Run several optimizers on the same data and rank them by
+result. There is no universal winner (no free lunch), so a
+cheap race beats trusting any one method's reputation.
+
+## sa
+
+*taught in:* [xaiplus, lesson 9](xai/xaiplus-eg.lua)
+
+Simulated annealing: a one-solution search that always
+takes better moves and sometimes worse ones, the tolerance
+cooling as the budget spends -- wander early, greedy late.
+
+## synthesis
+
+*taught in:* [xaiplus, lesson 12](xai/xaiplus-eg.lua)
+
+Inventing new rows: grow a [tree](#tree), then blend rows
+within a single leaf, so each synthetic row stays inside a
+real, coherent region rather than a void between clusters.
+
 ## tree
 
 *taught in:* [xai-eg, lesson 12](xai/xai-eg.lua)
@@ -558,7 +609,7 @@ rows and depth allow. Leaves keep their rows and a mid
 prediction; branches read as English-ish tests
 (lesson 12).
 
-*Awaiting entries:* SBSE, GA, DE, SA, local search, GP, metropolis-hastings, pareto, zitzler, chebyshev, MOEA-D, IGD, hypervolume, surrogates, multi-fidelity, racing, no free lunch.
+*Awaiting entries:* SBSE, GP, metropolis-hastings, pareto, zitzler, chebyshev, MOEA-D, IGD, hypervolume, surrogates, multi-fidelity, no free lunch.
 
 
 # labels

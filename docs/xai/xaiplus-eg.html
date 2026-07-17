@@ -99,6 +99,46 @@ in the <a href="../glossary.md">glossary</a>. Run
 <td>Mutate</td>
 <td><a href="../glossary.md#mutate">mutate</a> <a href="../glossary.md#gauss">gauss</a></td>
 </tr>
+<tr>
+<td>7</td>
+<td>De</td>
+<td><a href="../glossary.md#de">de</a> <a href="../glossary.md#mutate">mutate</a></td>
+</tr>
+<tr>
+<td>8</td>
+<td>Ga</td>
+<td><a href="../glossary.md#ga">ga</a> <a href="../glossary.md#mutate">mutate</a></td>
+</tr>
+<tr>
+<td>9</td>
+<td>Sa</td>
+<td><a href="../glossary.md#sa">sa</a> <a href="../glossary.md#mutate">mutate</a></td>
+</tr>
+<tr>
+<td>10</td>
+<td>Ls</td>
+<td><a href="../glossary.md#ls">ls</a></td>
+</tr>
+<tr>
+<td>11</td>
+<td>Race</td>
+<td><a href="../glossary.md#race">race</a> <a href="../glossary.md#bets">bets</a></td>
+</tr>
+<tr>
+<td>12</td>
+<td>Sample</td>
+<td><a href="../glossary.md#synthesis">synthesis</a> <a href="../glossary.md#tree">tree</a></td>
+</tr>
+<tr>
+<td>13</td>
+<td>Acquire</td>
+<td><a href="../glossary.md#active">active</a> <a href="../glossary.md#budget">budget</a> <a href="../glossary.md#bayes">bayes</a></td>
+</tr>
+<tr>
+<td>14</td>
+<td>Anomaly</td>
+<td><a href="../glossary.md#anomaly">anomaly</a></td>
+</tr>
 </tbody>
 </table>
     </div>
@@ -110,7 +150,8 @@ in the <a href="../glossary.md">glossary</a>. Run
 
 <span class="kd">local</span><span class="w"> </span><span class="nv">eg</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="p">{}</span>
 <span class="kd">local</span><span class="w"> </span><span class="nv">order</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="s2">&quot;knn&quot;</span><span class="p">,</span><span class="s2">&quot;kmeans&quot;</span><span class="p">,</span><span class="s2">&quot;kmeanspp&quot;</span><span class="p">,</span><span class="s2">&quot;bayes&quot;</span><span class="p">,</span>
-<span class="w">               </span><span class="s2">&quot;classify&quot;</span><span class="p">,</span><span class="s2">&quot;mutate&quot;</span><span class="p">}</span></pre></div>
+<span class="w">               </span><span class="s2">&quot;classify&quot;</span><span class="p">,</span><span class="s2">&quot;mutate&quot;</span><span class="p">,</span><span class="s2">&quot;de&quot;</span><span class="p">,</span><span class="s2">&quot;ga&quot;</span><span class="p">,</span><span class="s2">&quot;sa&quot;</span><span class="p">,</span><span class="s2">&quot;ls&quot;</span><span class="p">,</span>
+<span class="w">               </span><span class="s2">&quot;race&quot;</span><span class="p">,</span><span class="s2">&quot;sample&quot;</span><span class="p">,</span><span class="s2">&quot;acquire&quot;</span><span class="p">,</span><span class="s2">&quot;anomaly&quot;</span><span class="p">}</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -119,11 +160,13 @@ in the <a href="../glossary.md">glossary</a>. Run
       <div class='octowrap'>
         <a class='octothorpe' href='#section-1'>#</a>
       </div>
-      <p>the shared running dataset: a small numeric classification
-table (9 cell-measurement x cols, a benign/malignant klass)</p>
+      <p>two running datasets: a numeric classification table (the
+learners, lessons 1-5), and an optimization table with y
+goals (the optimizers, lessons 7-14).</p>
     </div>
     <div class='code'>
-      <div class="highlight"><pre><span class="kd">local</span><span class="w"> </span><span class="nv">DATA</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;$MOOT/classify/breast.w.csv&quot;</span></pre></div>
+      <div class="highlight"><pre><span class="kd">local</span><span class="w"> </span><span class="nv">DATA</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;$MOOT/classify/breast.w.csv&quot;</span>
+<span class="kd">local</span><span class="w"> </span><span class="nv">DOPT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;$MOOT/optimize/misc/auto93.csv&quot;</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -131,6 +174,34 @@ table (9 cell-measurement x cols, a benign/malignant klass)</p>
     <div class='docs'>
       <div class='octowrap'>
         <a class='octothorpe' href='#section-2'>#</a>
+      </div>
+      <p>median disty over a table&rsquo;s rows (the bar to beat)</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="kd">local</span><span class="w"> </span><span class="kr">function</span><span class="w"> </span><span class="nf">med</span><span class="p">(</span><span class="nv">d</span><span class="p">,</span><span class="w">    </span><span class="nv">ys</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">ys</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">lst</span><span class="p">.</span><span class="nf">sort</span><span class="p">(</span><span class="nv">lst</span><span class="p">.</span><span class="nf">map</span><span class="p">(</span><span class="nv">d</span><span class="p">.</span><span class="py">rows</span><span class="p">,</span><span class="w"> </span><span class="kr">function</span><span class="p">(</span><span class="nv">r</span><span class="p">)</span><span class="w"> </span><span class="kr">return</span><span class="w"> </span><span class="nv">d</span><span class="p">:</span><span class="nf">disty</span><span class="p">(</span><span class="nv">r</span><span class="p">)</span><span class="w"> </span><span class="kr">end</span><span class="p">))</span>
+<span class="w">  </span><span class="kr">return</span><span class="w"> </span><span class="nv">ys</span><span class="p">[</span><span class="o">#</span><span class="nv">ys</span><span class="w"> </span><span class="o">//</span><span class="w"> </span><span class="mi">2</span><span class="p">]</span><span class="w"> </span><span class="kr">end</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-3'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-3'>#</a>
+      </div>
+      <p>score a (maybe synthetic) row by its nearest real row&rsquo;s disty</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="kd">local</span><span class="w"> </span><span class="kr">function</span><span class="w"> </span><span class="nf">nn</span><span class="p">(</span><span class="nv">d</span><span class="p">,</span><span class="nv">r</span><span class="p">)</span>
+<span class="w">  </span><span class="kr">return</span><span class="w"> </span><span class="nv">d</span><span class="p">:</span><span class="nf">disty</span><span class="p">(</span><span class="nv">lst</span><span class="p">.</span><span class="nf">keysort</span><span class="p">(</span><span class="nv">d</span><span class="p">.</span><span class="py">rows</span><span class="p">,</span>
+<span class="w">    </span><span class="kr">function</span><span class="p">(</span><span class="nv">z</span><span class="p">)</span><span class="w"> </span><span class="kr">return</span><span class="w"> </span><span class="nv">d</span><span class="p">:</span><span class="nf">distx</span><span class="p">(</span><span class="nv">r</span><span class="p">,</span><span class="nv">z</span><span class="p">)</span><span class="w"> </span><span class="kr">end</span><span class="p">)[</span><span class="mi">1</span><span class="p">])</span><span class="w"> </span><span class="kr">end</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-4'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-4'>#</a>
       </div>
       <h2>Knn</h2>
 <h3>Lesson 1: nearest-neighbor classification</h3>
@@ -148,10 +219,10 @@ nine cell measurements, a benign/malignant klass &ndash; a bare
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-3'>
+  <div class='section' id='section-5'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-3'>#</a>
+        <a class='octothorpe' href='#section-5'>#</a>
       </div>
       <ul>
 <li><strong>xp.knn(data,r0,k)</strong> predicts r0&rsquo;s klass as the mode of
@@ -174,10 +245,10 @@ nine cell measurements, a benign/malignant klass &ndash; a bare
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-4'>
+  <div class='section' id='section-6'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-4'>#</a>
+        <a class='octothorpe' href='#section-6'>#</a>
       </div>
       <p><strong>Exercises (lesson 1).</strong></p>
 <ol>
@@ -196,10 +267,10 @@ nine cell measurements, a benign/malignant klass &ndash; a bare
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-5'>
+  <div class='section' id='section-7'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-5'>#</a>
+        <a class='octothorpe' href='#section-7'>#</a>
       </div>
       <h2>Kmeans</h2>
 <h3>Lesson 2: clustering by repetition</h3>
@@ -218,10 +289,10 @@ what lesson 3 fixes.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-6'>
+  <div class='section' id='section-8'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-6'>#</a>
+        <a class='octothorpe' href='#section-8'>#</a>
       </div>
       <ul>
 <li><strong>xp.kmeans(data,k,iter)</strong> returns k clusters (Tbl
@@ -241,10 +312,10 @@ what lesson 3 fixes.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-7'>
+  <div class='section' id='section-9'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-7'>#</a>
+        <a class='octothorpe' href='#section-9'>#</a>
       </div>
       <p><strong>Exercises (lesson 2).</strong></p>
 <ol>
@@ -262,10 +333,10 @@ what lesson 3 fixes.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-8'>
+  <div class='section' id='section-10'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-8'>#</a>
+        <a class='octothorpe' href='#section-10'>#</a>
       </div>
       <h2>Kmeanspp</h2>
 <h3>Lesson 3: seeding clusters far apart</h3>
@@ -283,10 +354,10 @@ lesson 2&rsquo;s kmeans.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-9'>
+  <div class='section' id='section-11'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-9'>#</a>
+        <a class='octothorpe' href='#section-11'>#</a>
       </div>
       <ul>
 <li><strong>xp.kpp(data,k,few)</strong> returns k seed rows chosen by
@@ -307,10 +378,10 @@ lesson 2&rsquo;s kmeans.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-10'>
+  <div class='section' id='section-12'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-10'>#</a>
+        <a class='octothorpe' href='#section-12'>#</a>
       </div>
       <p><strong>Exercises (lesson 3).</strong></p>
 <ol>
@@ -329,10 +400,10 @@ lesson 2&rsquo;s kmeans.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-11'>
+  <div class='section' id='section-13'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-11'>#</a>
+        <a class='octothorpe' href='#section-13'>#</a>
       </div>
       <h2>Bayes</h2>
 <h3>Lesson 4: likelihoods, the Bayes way</h3>
@@ -351,10 +422,10 @@ out &ndash; exactly the signal the classifier leans on.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-12'>
+  <div class='section' id='section-14'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-12'>#</a>
+        <a class='octothorpe' href='#section-14'>#</a>
       </div>
       <ul>
 <li><strong>xp.bayes.like(col,v,prior)</strong> P(v|col): Sym m-estimate, Num
@@ -375,10 +446,10 @@ out &ndash; exactly the signal the classifier leans on.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-13'>
+  <div class='section' id='section-15'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-13'>#</a>
+        <a class='octothorpe' href='#section-15'>#</a>
       </div>
       <p><strong>Exercises (lesson 4).</strong></p>
 <ol>
@@ -396,10 +467,10 @@ out &ndash; exactly the signal the classifier leans on.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-14'>
+  <div class='section' id='section-16'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-14'>#</a>
+        <a class='octothorpe' href='#section-16'>#</a>
       </div>
       <h2>Classify</h2>
 <h3>Lesson 5: naive Bayes, test-then-train</h3>
@@ -419,10 +490,10 @@ that lands in the mid-90s.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-15'>
+  <div class='section' id='section-17'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-15'>#</a>
+        <a class='octothorpe' href='#section-17'>#</a>
       </div>
       <ul>
 <li><strong>xp.classify(data,wait)</strong> incremental naive Bayes;
@@ -439,10 +510,10 @@ that lands in the mid-90s.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-16'>
+  <div class='section' id='section-18'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-16'>#</a>
+        <a class='octothorpe' href='#section-18'>#</a>
       </div>
       <p><strong>Exercises (lesson 5).</strong></p>
 <ol>
@@ -461,10 +532,10 @@ that lands in the mid-90s.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-17'>
+  <div class='section' id='section-19'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-17'>#</a>
+        <a class='octothorpe' href='#section-19'>#</a>
       </div>
       <h2>Mutate</h2>
 <h3>Lesson 6: making new rows</h3>
@@ -484,10 +555,10 @@ wholly forgets its base.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-18'>
+  <div class='section' id='section-20'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-18'>#</a>
+        <a class='octothorpe' href='#section-20'>#</a>
       </div>
       <ul>
 <li><strong>xp.mutate.pick(col,v)</strong> one fresh value for a column.</li>
@@ -520,10 +591,10 @@ wholly forgets its base.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-19'>
+  <div class='section' id='section-21'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-19'>#</a>
+        <a class='octothorpe' href='#section-21'>#</a>
       </div>
       <p><strong>Exercises (lesson 6).</strong></p>
 <ol>
@@ -541,10 +612,513 @@ wholly forgets its base.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-20'>
+  <div class='section' id='section-22'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-20'>#</a>
+        <a class='octothorpe' href='#section-22'>#</a>
+      </div>
+      <h2>De</h2>
+<h3>Lesson 7: differential evolution</h3>
+<p>The first optimizer. Keep a small population of rows; each
+generation, every parent tries a DE child &ndash; three random
+population rows blended as a + F*(b - c), via
+<a href="../glossary.md#mutate">extrapolate</a> &ndash; and the child
+replaces the parent if it scores better. &ldquo;Better&rdquo; is an
+<code>oracle</code>: a (possibly synthetic) row scores the
+<a href="../glossary.md#heaven">disty</a> of its nearest REAL row, a
+cheap stand-in for the expensive true objective. On auto93,
+DE pulls disty from a median near 0.5 down toward 0.</p>
+<p><strong>Core ideas:</strong> <a href="../glossary.md#de">de</a>,
+<a href="../glossary.md#mutate">mutate</a></p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="nv">eg</span><span class="p">.</span><span class="py">de</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{}</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-23'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-23'>#</a>
+      </div>
+      <ul>
+<li><strong>xp.de(data)</strong> differential evolution; returns the best
+  row found (minimizing the nearest-real disty).</li>
+</ul>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="nv">eg</span><span class="p">.</span><span class="py">de</span><span class="p">[</span><span class="s2">&quot;--run&quot;</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">function</span><span class="p">(</span><span class="w">    </span><span class="nv">d</span><span class="p">,</span><span class="nv">best</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">d</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="nv">Tbl</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="nv">DOPT</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">best</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">xp</span><span class="p">.</span><span class="nf">de</span><span class="p">(</span><span class="nv">d</span><span class="p">)</span>
+<span class="w">  </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;DE   best (nearest-real disty):&quot;</span><span class="p">,</span><span class="w"> </span><span class="nv">str</span><span class="p">.</span><span class="nf">o</span><span class="p">(</span><span class="nf">nn</span><span class="p">(</span><span class="nv">d</span><span class="p">,</span><span class="nv">best</span><span class="p">)),</span>
+<span class="w">        </span><span class="s2">&quot; median&quot;</span><span class="p">,</span><span class="w"> </span><span class="nv">str</span><span class="p">.</span><span class="nf">o</span><span class="p">(</span><span class="nf">med</span><span class="p">(</span><span class="nv">d</span><span class="p">)))</span>
+<span class="w">  </span><span class="nb">assert</span><span class="p">(</span><span class="nf">nn</span><span class="p">(</span><span class="nv">d</span><span class="p">,</span><span class="nv">best</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="nf">med</span><span class="p">(</span><span class="nv">d</span><span class="p">))</span><span class="w"> </span><span class="kr">end</span><span class="w">         </span><span class="c1">-- beats the median</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-24'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-24'>#</a>
+      </div>
+      <p><strong>Exercises (lesson 7).</strong></p>
+<ol>
+<li>In your own favorite language (not lua), write DE and
+   reproduce the best-vs-median line.</li>
+<li>(simple) Rerun with <code>--gens=5</code> then 50. Where do the
+   gains flatten, and how much does <code>--np</code> matter?</li>
+<li>Log DE&rsquo;s best disty each generation; plot the descent.
+   Does it plateau, or keep improving to the last gen?</li>
+</ol>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-25'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-25'>#</a>
+      </div>
+      <h2>Ga</h2>
+<h3>Lesson 8: genetic algorithm</h3>
+<p>A different search. Each generation: mutate the whole
+population one cell each, then refill it by CROSSOVER &ndash;
+splice two parents at a random column &ndash; where parents win
+their slot by tournament (lowest oracle of <code>tour</code> random
+rows). Mutation explores, crossover recombines, tournaments
+apply the selection pressure. Same oracle as DE, so the two
+are directly comparable (see lesson 11).</p>
+<p><strong>Core ideas:</strong> <a href="../glossary.md#ga">ga</a>,
+<a href="../glossary.md#mutate">mutate</a></p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="nv">eg</span><span class="p">.</span><span class="py">ga</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{}</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-26'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-26'>#</a>
+      </div>
+      <ul>
+<li><strong>xp.ga(data)</strong> genetic algorithm (mutate, tournament
+  select, one-point crossover); returns the best row.</li>
+</ul>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="nv">eg</span><span class="p">.</span><span class="py">ga</span><span class="p">[</span><span class="s2">&quot;--run&quot;</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">function</span><span class="p">(</span><span class="w">    </span><span class="nv">d</span><span class="p">,</span><span class="nv">best</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">d</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="nv">Tbl</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="nv">DOPT</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">best</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">xp</span><span class="p">.</span><span class="nf">ga</span><span class="p">(</span><span class="nv">d</span><span class="p">)</span>
+<span class="w">  </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;GA   best (nearest-real disty):&quot;</span><span class="p">,</span><span class="w"> </span><span class="nv">str</span><span class="p">.</span><span class="nf">o</span><span class="p">(</span><span class="nf">nn</span><span class="p">(</span><span class="nv">d</span><span class="p">,</span><span class="nv">best</span><span class="p">)),</span>
+<span class="w">        </span><span class="s2">&quot; median&quot;</span><span class="p">,</span><span class="w"> </span><span class="nv">str</span><span class="p">.</span><span class="nf">o</span><span class="p">(</span><span class="nf">med</span><span class="p">(</span><span class="nv">d</span><span class="p">)))</span>
+<span class="w">  </span><span class="nb">assert</span><span class="p">(</span><span class="nf">nn</span><span class="p">(</span><span class="nv">d</span><span class="p">,</span><span class="nv">best</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="nf">med</span><span class="p">(</span><span class="nv">d</span><span class="p">))</span><span class="w"> </span><span class="kr">end</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-27'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-27'>#</a>
+      </div>
+      <p><strong>Exercises (lesson 8).</strong></p>
+<ol>
+<li>In your own favorite language (not lua), write the GA and
+   reproduce the line.</li>
+<li>(simple) Rerun with <code>--tour=2</code> (near-random) then 8
+   (greedy). How does selection pressure change the result?</li>
+<li>Turn crossover off (return a copy of one parent). How
+   much does recombination actually buy over mutation alone?</li>
+</ol>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-28'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-28'>#</a>
+      </div>
+      <h2>Sa</h2>
+<h3>Lesson 9: simulated annealing</h3>
+<p>The leanest optimizer: one solution, no population. Mutate a
+single cell; always accept a better neighbor, and accept a
+worse one with a probability that COOLS as the eval budget
+spends (metropolis). Early on it wanders freely (escaping
+local traps); late on it turns greedy. One row&rsquo;s worth of
+memory, yet competitive.</p>
+<p><strong>Core ideas:</strong> <a href="../glossary.md#sa">sa</a>,
+<a href="../glossary.md#mutate">mutate</a></p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="nv">eg</span><span class="p">.</span><span class="py">sa</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{}</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-29'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-29'>#</a>
+      </div>
+      <ul>
+<li><strong>xp.sa(data)</strong> simulated annealing, (1+1) with a cooling
+  metropolis accept; returns the best row seen.</li>
+</ul>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="nv">eg</span><span class="p">.</span><span class="py">sa</span><span class="p">[</span><span class="s2">&quot;--run&quot;</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">function</span><span class="p">(</span><span class="w">    </span><span class="nv">d</span><span class="p">,</span><span class="nv">best</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">d</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="nv">Tbl</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="nv">DOPT</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">best</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">xp</span><span class="p">.</span><span class="nf">sa</span><span class="p">(</span><span class="nv">d</span><span class="p">)</span>
+<span class="w">  </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;SA   best (nearest-real disty):&quot;</span><span class="p">,</span><span class="w"> </span><span class="nv">str</span><span class="p">.</span><span class="nf">o</span><span class="p">(</span><span class="nf">nn</span><span class="p">(</span><span class="nv">d</span><span class="p">,</span><span class="nv">best</span><span class="p">)),</span>
+<span class="w">        </span><span class="s2">&quot; median&quot;</span><span class="p">,</span><span class="w"> </span><span class="nv">str</span><span class="p">.</span><span class="nf">o</span><span class="p">(</span><span class="nf">med</span><span class="p">(</span><span class="nv">d</span><span class="p">)))</span>
+<span class="w">  </span><span class="nb">assert</span><span class="p">(</span><span class="nf">nn</span><span class="p">(</span><span class="nv">d</span><span class="p">,</span><span class="nv">best</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="nf">med</span><span class="p">(</span><span class="nv">d</span><span class="p">))</span><span class="w"> </span><span class="kr">end</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-30'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-30'>#</a>
+      </div>
+      <p><strong>Exercises (lesson 9).</strong></p>
+<ol>
+<li>In your own favorite language (not lua), write SA and
+   reproduce the line.</li>
+<li>(simple) Rerun with <code>--budget1=50</code> then 1000. How much
+   does a bigger eval budget buy on auto93?</li>
+<li>Replace the metropolis accept with &ldquo;accept only if
+   better&rdquo; &ndash; pure hill climbing. Does annealing&rsquo;s tolerance
+   for worse moves actually help here?</li>
+</ol>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-31'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-31'>#</a>
+      </div>
+      <h2>Ls</h2>
+<h3>Lesson 10: local search with restarts</h3>
+<p>Greedy hill climbing, plus one trick: when no new best lands
+for <code>restart</code> steps, JUMP to a fresh random row and climb
+again. So a single bad starting basin cannot trap the whole
+run. Simple, and a useful baseline: if fancier search cannot
+beat restart-climbing, be suspicious.</p>
+<p><strong>Core ideas:</strong> <a href="../glossary.md#ls">ls</a></p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="nv">eg</span><span class="p">.</span><span class="py">ls</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{}</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-32'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-32'>#</a>
+      </div>
+      <ul>
+<li><strong>xp.ls(data)</strong> greedy local search with random restarts
+  on stagnation; returns the best row found.</li>
+</ul>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="nv">eg</span><span class="p">.</span><span class="py">ls</span><span class="p">[</span><span class="s2">&quot;--run&quot;</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">function</span><span class="p">(</span><span class="w">    </span><span class="nv">d</span><span class="p">,</span><span class="nv">best</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">d</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="nv">Tbl</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="nv">DOPT</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">best</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">xp</span><span class="p">.</span><span class="nf">ls</span><span class="p">(</span><span class="nv">d</span><span class="p">)</span>
+<span class="w">  </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;LS   best (nearest-real disty):&quot;</span><span class="p">,</span><span class="w"> </span><span class="nv">str</span><span class="p">.</span><span class="nf">o</span><span class="p">(</span><span class="nf">nn</span><span class="p">(</span><span class="nv">d</span><span class="p">,</span><span class="nv">best</span><span class="p">)),</span>
+<span class="w">        </span><span class="s2">&quot; median&quot;</span><span class="p">,</span><span class="w"> </span><span class="nv">str</span><span class="p">.</span><span class="nf">o</span><span class="p">(</span><span class="nf">med</span><span class="p">(</span><span class="nv">d</span><span class="p">)))</span>
+<span class="w">  </span><span class="nb">assert</span><span class="p">(</span><span class="nf">nn</span><span class="p">(</span><span class="nv">d</span><span class="p">,</span><span class="nv">best</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="nf">med</span><span class="p">(</span><span class="nv">d</span><span class="p">))</span><span class="w"> </span><span class="kr">end</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-33'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-33'>#</a>
+      </div>
+      <p><strong>Exercises (lesson 10).</strong></p>
+<ol>
+<li>In your own favorite language (not lua), write LS and
+   reproduce the line.</li>
+<li>(simple) Set <code>--restart=1000000</code> (never restart). How
+   often does plain hill climbing get stuck below its best?</li>
+<li>Count how many restarts a run fires. Does the best answer
+   usually come soon after a restart, or late in a climb?</li>
+</ol>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-34'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-34'>#</a>
+      </div>
+      <h2>Race</h2>
+<h3>Lesson 11: racing the optimizers</h3>
+<p>Which search wins? Do not guess &ndash; race them. Run DE, GA, SA
+and LS on the same data under the same oracle, score each
+one&rsquo;s best row, and rank them. There is no universal winner
+(no free lunch): the ranking shifts with the data and the
+budget, which is exactly why a cheap race beats trusting a
+brand name.</p>
+<p><strong>Core ideas:</strong> <a href="../glossary.md#race">race</a>,
+<a href="../glossary.md#bets">bets</a></p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="nv">eg</span><span class="p">.</span><span class="py">race</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{}</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-35'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-35'>#</a>
+      </div>
+      <ul>
+<li><strong>xp.race(data)</strong> runs every optimizer, scores each by
+  the oracle, returns {name,score} ranked best first.</li>
+</ul>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="nv">eg</span><span class="p">.</span><span class="py">race</span><span class="p">[</span><span class="s2">&quot;--run&quot;</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">function</span><span class="p">(</span><span class="w">    </span><span class="nv">d</span><span class="p">,</span><span class="nv">rank</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">d</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="nv">Tbl</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="nv">DOPT</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">rank</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">xp</span><span class="p">.</span><span class="nf">race</span><span class="p">(</span><span class="nv">d</span><span class="p">)</span>
+<span class="w">  </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;optimizer race (best first):&quot;</span><span class="p">)</span>
+<span class="w">  </span><span class="kr">for</span><span class="w"> </span><span class="nv">_</span><span class="p">,</span><span class="nv">o</span><span class="w"> </span><span class="kr">in</span><span class="w"> </span><span class="nb">ipairs</span><span class="p">(</span><span class="nv">rank</span><span class="p">)</span><span class="w"> </span><span class="kr">do</span>
+<span class="w">    </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;   &quot;</span><span class="p">,</span><span class="w"> </span><span class="nv">o</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="w"> </span><span class="nv">str</span><span class="p">.</span><span class="nf">o</span><span class="p">(</span><span class="nv">o</span><span class="p">[</span><span class="mi">2</span><span class="p">]))</span><span class="w"> </span><span class="kr">end</span>
+<span class="w">  </span><span class="nb">assert</span><span class="p">(</span><span class="o">#</span><span class="nv">rank</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">4</span><span class="p">)</span>
+<span class="w">  </span><span class="nb">assert</span><span class="p">(</span><span class="nv">rank</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="nv">rank</span><span class="p">[</span><span class="o">#</span><span class="nv">rank</span><span class="p">][</span><span class="mi">2</span><span class="p">])</span><span class="w">    </span><span class="c1">-- sorted best first</span>
+<span class="w">  </span><span class="nb">assert</span><span class="p">(</span><span class="nv">rank</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="nf">med</span><span class="p">(</span><span class="nv">d</span><span class="p">))</span><span class="w"> </span><span class="kr">end</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-36'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-36'>#</a>
+      </div>
+      <p><strong>Exercises (lesson 11).</strong></p>
+<ol>
+<li>In your own favorite language (not lua), race your four
+   optimizers and print the ranking.</li>
+<li>(simple) Race at five different <code>--seed</code>s. Does the same
+   optimizer always win, or does the ranking move?</li>
+<li>Feed each optimizer&rsquo;s best-disty distribution (over
+   seeds) to <code>stats.same</code> (xai lesson 9). Are the top two
+   optimizers actually distinguishable?</li>
+</ol>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-37'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-37'>#</a>
+      </div>
+      <h2>Sample</h2>
+<h3>Lesson 12: synthesizing new rows</h3>
+<p>Sometimes you need MORE data. Grow a tree over the rows,
+then make each new row by picking a leaf and DE-blending
+three of its members. Because every synthetic row is born
+inside one leaf &ndash; a real, coherent region &ndash; it stays
+plausible, unlike a row stitched from unrelated extremes.</p>
+<p><strong>Core ideas:</strong> <a href="../glossary.md#synthesis">synthesis</a>,
+<a href="../glossary.md#tree">tree</a></p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="nv">eg</span><span class="p">.</span><span class="py">sample</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{}</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-38'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-38'>#</a>
+      </div>
+      <ul>
+<li><strong>xp.sample(data,n)</strong> returns n synthetic rows, each a
+  DE-blend of three rows from one tree leaf.</li>
+</ul>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="nv">eg</span><span class="p">.</span><span class="py">sample</span><span class="p">[</span><span class="s2">&quot;--rows&quot;</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">function</span><span class="p">(</span><span class="w">    </span><span class="nv">d</span><span class="p">,</span><span class="nv">rows</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">d</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="nv">Tbl</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="nv">DOPT</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">rows</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">xp</span><span class="p">.</span><span class="nf">sample</span><span class="p">(</span><span class="nv">d</span><span class="p">,</span><span class="w"> </span><span class="mi">30</span><span class="p">)</span>
+<span class="w">  </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;synthesized rows:&quot;</span><span class="p">,</span><span class="w"> </span><span class="o">#</span><span class="nv">rows</span><span class="p">,</span>
+<span class="w">        </span><span class="s2">&quot; width&quot;</span><span class="p">,</span><span class="w"> </span><span class="o">#</span><span class="nv">rows</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="w"> </span><span class="s2">&quot;of&quot;</span><span class="p">,</span><span class="w"> </span><span class="o">#</span><span class="nv">d</span><span class="p">.</span><span class="py">cols</span><span class="p">.</span><span class="py">all</span><span class="p">)</span>
+<span class="w">  </span><span class="nb">assert</span><span class="p">(</span><span class="o">#</span><span class="nv">rows</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">30</span><span class="p">)</span>
+<span class="w">  </span><span class="nb">assert</span><span class="p">(</span><span class="o">#</span><span class="nv">rows</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="o">#</span><span class="nv">d</span><span class="p">.</span><span class="py">cols</span><span class="p">.</span><span class="py">all</span><span class="p">)</span><span class="w"> </span><span class="kr">end</span><span class="w">     </span><span class="c1">-- full-width rows</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-39'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-39'>#</a>
+      </div>
+      <p><strong>Exercises (lesson 12).</strong></p>
+<ol>
+<li>In your own favorite language (not lua), synthesize rows
+   from tree leaves and reproduce the counts.</li>
+<li>(simple) Compare the centroid of 200 synthetic rows to
+   the real table&rsquo;s <code>mids</code>. How faithful is the synthesis?</li>
+<li>Train <code>xp.knn</code> on synthetic rows, test on real ones. Does
+   made-up data teach a usable classifier?</li>
+</ol>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-40'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-40'>#</a>
+      </div>
+      <h2>Acquire</h2>
+<h3>Lesson 13: active learning, the historic way</h3>
+<p>The comparison method (xai&rsquo;s own acquire uses poles; this
+one is kept here for contrast). Label a small warm-start,
+split it best/rest by sqrt(N), then repeatedly LABEL the
+unlabeled row the models most want &ndash; scored either by Bayes
+likelihood (like-best minus like-rest) or by centroid
+distance &ndash; and re-cap best. Spend a tiny
+<a href="../glossary.md#budget">budget</a> where it teaches most.</p>
+<p><strong>Core ideas:</strong> <a href="../glossary.md#active">active</a>,
+<a href="../glossary.md#budget">budget</a>, <a href="../glossary.md#bayes">bayes</a></p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="nv">eg</span><span class="p">.</span><span class="py">acquire</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{}</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-41'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-41'>#</a>
+      </div>
+      <ul>
+<li><strong>xp.acquire.top(data,score)</strong> active learning to the
+  budget; score = <strong>xp.acquire.bayes</strong> or
+  <strong>xp.acquire.centroid</strong>. Returns the labeled Tbl.</li>
+</ul>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="nv">eg</span><span class="p">.</span><span class="py">acquire</span><span class="p">[</span><span class="s2">&quot;--both&quot;</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">function</span><span class="p">(</span><span class="w">    </span><span class="nv">d</span><span class="p">,</span><span class="nv">lab</span><span class="p">,</span><span class="nv">ys</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">d</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">Tbl</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="nv">DOPT</span><span class="p">)</span>
+<span class="w">  </span><span class="kr">for</span><span class="w"> </span><span class="nv">_</span><span class="p">,</span><span class="nv">score</span><span class="w"> </span><span class="kr">in</span><span class="w"> </span><span class="nb">ipairs</span><span class="p">{</span><span class="nv">xp</span><span class="p">.</span><span class="py">acquire</span><span class="p">.</span><span class="py">bayes</span><span class="p">,</span><span class="w"> </span><span class="nv">xp</span><span class="p">.</span><span class="py">acquire</span><span class="p">.</span><span class="py">centroid</span><span class="p">}</span><span class="w"> </span><span class="kr">do</span>
+<span class="w">    </span><span class="nv">rnd</span><span class="p">.</span><span class="nf">seed</span><span class="p">(</span><span class="nv">the</span><span class="p">.</span><span class="py">seed</span><span class="p">)</span>
+<span class="w">    </span><span class="nv">lab</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">xp</span><span class="p">.</span><span class="py">acquire</span><span class="p">.</span><span class="nf">top</span><span class="p">(</span><span class="nv">d</span><span class="p">,</span><span class="w"> </span><span class="nv">score</span><span class="p">)</span>
+<span class="w">    </span><span class="nv">ys</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="nv">lst</span><span class="p">.</span><span class="nf">sort</span><span class="p">(</span><span class="nv">lst</span><span class="p">.</span><span class="nf">map</span><span class="p">(</span><span class="nv">lab</span><span class="p">.</span><span class="py">rows</span><span class="p">,</span>
+<span class="w">            </span><span class="kr">function</span><span class="p">(</span><span class="nv">r</span><span class="p">)</span><span class="w"> </span><span class="kr">return</span><span class="w"> </span><span class="nv">d</span><span class="p">:</span><span class="nf">disty</span><span class="p">(</span><span class="nv">r</span><span class="p">)</span><span class="w"> </span><span class="kr">end</span><span class="p">))</span>
+<span class="w">    </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;acquire best disty:&quot;</span><span class="p">,</span><span class="w"> </span><span class="nv">str</span><span class="p">.</span><span class="nf">o</span><span class="p">(</span><span class="nv">ys</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span>
+<span class="w">          </span><span class="s2">&quot; labels&quot;</span><span class="p">,</span><span class="w"> </span><span class="o">#</span><span class="nv">lab</span><span class="p">.</span><span class="py">rows</span><span class="p">)</span>
+<span class="w">    </span><span class="nb">assert</span><span class="p">(</span><span class="nv">ys</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="nf">med</span><span class="p">(</span><span class="nv">d</span><span class="p">))</span>
+<span class="w">    </span><span class="nb">assert</span><span class="p">(</span><span class="o">#</span><span class="nv">lab</span><span class="p">.</span><span class="py">rows</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="nv">the</span><span class="p">.</span><span class="py">start</span><span class="p">)</span><span class="w"> </span><span class="kr">end</span><span class="w"> </span><span class="kr">end</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-42'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-42'>#</a>
+      </div>
+      <p><strong>Exercises (lesson 13).</strong></p>
+<ol>
+<li>In your own favorite language (not lua), write the
+   sqrt-split acquire loop and reproduce the lines.</li>
+<li>(simple) Vary <code>--budget</code> (20, 50, 100). Where does best
+   disty stop improving with more labels?</li>
+<li>Race Bayes vs centroid acquisition across seeds. Which
+   scorer finds good rows on fewer labels, and does it
+   depend on the dataset?</li>
+</ol>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-43'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-43'>#</a>
+      </div>
+      <h2>Anomaly</h2>
+<h3>Lesson 14: anomalies as lonely rows</h3>
+<p>Once distance exists, outliers are easy. Calibrate every
+training row&rsquo;s gap to its nearest OTHER row into a Num, then
+score any row by where its gap falls on that spread: near 1
+means &ldquo;far from everything&rdquo; &ndash; an anomaly. No labels, no
+model, just distance and a running summary.</p>
+<p><strong>Core ideas:</strong> <a href="../glossary.md#anomaly">anomaly</a></p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="nv">eg</span><span class="p">.</span><span class="py">anomaly</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{}</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-44'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-44'>#</a>
+      </div>
+      <ul>
+<li><strong>xp.anomaly(data)</strong> returns a detector row-&gt;0..1; high
+  = a row far from even its nearest neighbor.</li>
+</ul>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="nv">eg</span><span class="p">.</span><span class="py">anomaly</span><span class="p">[</span><span class="s2">&quot;--detect&quot;</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">function</span><span class="p">(</span><span class="w">    </span><span class="nv">d</span><span class="p">,</span><span class="nv">det</span><span class="p">,</span><span class="nv">ss</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">d</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="nv">Tbl</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="nv">DOPT</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">det</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">xp</span><span class="p">.</span><span class="nf">anomaly</span><span class="p">(</span><span class="nv">d</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">ss</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="nv">lst</span><span class="p">.</span><span class="nf">sort</span><span class="p">(</span><span class="nv">lst</span><span class="p">.</span><span class="nf">map</span><span class="p">(</span><span class="nv">d</span><span class="p">.</span><span class="py">rows</span><span class="p">,</span><span class="w"> </span><span class="nv">det</span><span class="p">))</span>
+<span class="w">  </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;anomaly scores lo/mid/hi:&quot;</span><span class="p">,</span><span class="w"> </span><span class="nv">str</span><span class="p">.</span><span class="nf">o</span><span class="p">(</span><span class="nv">ss</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span>
+<span class="w">        </span><span class="nv">str</span><span class="p">.</span><span class="nf">o</span><span class="p">(</span><span class="nv">ss</span><span class="p">[</span><span class="o">#</span><span class="nv">ss</span><span class="w"> </span><span class="o">//</span><span class="w"> </span><span class="mi">2</span><span class="p">]),</span><span class="w"> </span><span class="nv">str</span><span class="p">.</span><span class="nf">o</span><span class="p">(</span><span class="nv">ss</span><span class="p">[</span><span class="o">#</span><span class="nv">ss</span><span class="p">]))</span>
+<span class="w">  </span><span class="nb">assert</span><span class="p">(</span><span class="nv">ss</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="nv">ss</span><span class="p">[</span><span class="o">#</span><span class="nv">ss</span><span class="p">]</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span>
+<span class="w">  </span><span class="nb">assert</span><span class="p">(</span><span class="nv">ss</span><span class="p">[</span><span class="o">#</span><span class="nv">ss</span><span class="p">]</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mf">0.5</span><span class="p">)</span><span class="w"> </span><span class="kr">end</span><span class="w">               </span><span class="c1">-- some row is lonely</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-45'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-45'>#</a>
+      </div>
+      <p><strong>Exercises (lesson 14).</strong></p>
+<ol>
+<li>In your own favorite language (not lua), write the
+   nearest-gap detector and reproduce the scores.</li>
+<li>(simple) Print the single loneliest row. Is it a data
+   error, a rare-but-real case, or a boundary point?</li>
+<li>Inject one obviously-wrong row (all cells at extremes).
+   Does the detector rank it top? What score does it get?</li>
+</ol>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-46'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-46'>#</a>
       </div>
       <h2>Main</h2>
     </div>
@@ -553,10 +1127,10 @@ wholly forgets its base.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-21'>
+  <div class='section' id='section-47'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-21'>#</a>
+        <a class='octothorpe' href='#section-47'>#</a>
       </div>
       <p>run one test, reseeded</p>
     </div>
@@ -565,10 +1139,10 @@ wholly forgets its base.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-22'>
+  <div class='section' id='section-48'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-22'>#</a>
+        <a class='octothorpe' href='#section-48'>#</a>
       </div>
       <p>flags of one section in SOURCE order, parsed from this
 file (pairs() loses definition order).</p>
@@ -587,10 +1161,10 @@ file (pairs() loses definition order).</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-23'>
+  <div class='section' id='section-49'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-23'>#</a>
+        <a class='octothorpe' href='#section-49'>#</a>
       </div>
       <p>run one section&rsquo;s tests, in source (reading) order</p>
     </div>
@@ -616,10 +1190,10 @@ file (pairs() loses definition order).</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-24'>
+  <div class='section' id='section-50'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-24'>#</a>
+        <a class='octothorpe' href='#section-50'>#</a>
       </div>
       <p>freeze the printed pedagogy to xaiplus-eg.out (from a real
 run, never hand-edited); &ndash;check diffs a fresh run to it</p>
@@ -638,10 +1212,10 @@ run, never hand-edited); &ndash;check diffs a fresh run to it</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-25'>
+  <div class='section' id='section-51'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-25'>#</a>
+        <a class='octothorpe' href='#section-51'>#</a>
       </div>
       <p>join checker (per-course half): every glossary link in a
 lesson lands on a heading, and every dot-list signature
@@ -674,10 +1248,10 @@ walk &ldquo;xp.knn&rdquo; through nested tables; nil if absent</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-26'>
+  <div class='section' id='section-52'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-26'>#</a>
+        <a class='octothorpe' href='#section-52'>#</a>
       </div>
       <p>cli: &ndash;key=val sets an option, &ndash;name runs a section, other
 names run one test. Flags steer only the egs that follow.</p>

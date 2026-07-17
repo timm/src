@@ -45,10 +45,11 @@ Tbl. require&rdquo;xai&rdquo; for the engine; require&rdquo;xaiplus&rdquo; here.
 
 <span class="s1">local xai = require&quot;xai&quot;</span>
 <span class="s1">local the,lst,rnd,str = xai.the, xai.lst, xai.rnd, xai.str</span>
-<span class="s1">local Sym,adds,new = xai.Sym, xai.adds, xai.new</span>
+<span class="s1">local Sym,Num,adds,new = xai.Sym, xai.Num, xai.adds, xai.new</span>
+<span class="s1">local Tree = xai.Tree</span>
 <span class="s1">local BIG = 1E32</span>
 <span class="s1">local exp,log,pi = math.exp, math.log, math.pi</span>
-<span class="s1">local min,max = math.min, math.max</span>
+<span class="s1">local min,max,floor,sqrt = math.min,math.max,math.floor,math.sqrt</span>
 <span class="s1">--DIVIDER</span>
 <span class="s1">local function addopts(s)</span>
 <span class="s1">  for k,v in s:gmatch&quot;%-%-(%w+)=(%S+)&quot; do</span>
@@ -77,7 +78,8 @@ Tbl. require&rdquo;xai&rdquo; for the engine; require&rdquo;xaiplus&rdquo; here.
 <span class="s1">--DIVIDER</span>
 <span class="s1">local function near(data,r0,k)</span>
 <span class="s1">  return lst.slice(lst.keysort(data.rows,</span>
-<span class="s1">    function(r) return data:distx(r0,r) end), 1, k or the.knn) end</span>
+<span class="s1">    function(r) return data:distx(r0,r) end),</span>
+<span class="s1">    1, k or the.knn) end</span>
 <span class="s1">--DIVIDER</span>
 <span class="s1">function xp.knn(data,r0,k,    at)</span>
 <span class="s1">  at = data.cols.klass.at</span>
@@ -87,7 +89,8 @@ Tbl. require&rdquo;xai&rdquo; for the engine; require&rdquo;xaiplus&rdquo; here.
 
 <span class="s1">--DIVIDER</span>
 <span class="s1">local function nearest(data,cents,r)</span>
-<span class="s1">  return argmini(cents, function(c) return data:distx(c,r) end) end</span>
+<span class="s1">  return argmini(cents,</span>
+<span class="s1">    function(c) return data:distx(c,r) end) end</span>
 <span class="s1">--DIVIDER</span>
 <span class="s1">local function assign(data,cents,    out)</span>
 <span class="s1">  out = lst.map(cents, function() return data:clone() end)</span>
@@ -210,6 +213,150 @@ Tbl. require&rdquo;xai&rdquo; for the engine; require&rdquo;xaiplus&rdquo; here.
 <span class="s1">        out[col.at] = lo + (v - lo) % span end end end</span>
 <span class="s1">  return out end</span>
 <span class="s1">--DIVIDER</span>
+
+<span class="s1">--DIVIDER</span>
+<span class="s1">local function oracle(data)</span>
+<span class="s1">  return function(r)</span>
+<span class="s1">    return data:disty(near(data, r, 1)[1]) end end</span>
+<span class="s1">--DIVIDER</span>
+
+<span class="s1">--DIVIDER</span>
+<span class="s1">function xp.de(data,    y,pop,t,kid)</span>
+<span class="s1">  y   = oracle(data)</span>
+<span class="s1">  pop = rnd.some(data.rows, the.np)</span>
+<span class="s1">  for _ = 1, the.gens do</span>
+<span class="s1">    for i,parent in ipairs(pop) do</span>
+<span class="s1">      t   = rnd.some(pop, 3)</span>
+<span class="s1">      kid = xp.mutate.extrapolate(data.cols.x, t[1], t[2], t[3])</span>
+<span class="s1">      if y(kid) &lt; y(parent) then pop[i] = kid end end end</span>
+<span class="s1">  return lst.keysort(pop, y)[1] end</span>
+<span class="s1">--DIVIDER</span>
+
+<span class="s1">--DIVIDER</span>
+<span class="s1">local function tourney(pop,y,    x,z)</span>
+<span class="s1">  x = pop[rnd.n(#pop)]</span>
+<span class="s1">  for _ = 2, the.tour do</span>
+<span class="s1">    z = pop[rnd.n(#pop)]; if y(z) &lt; y(x) then x = z end end</span>
+<span class="s1">  return x end</span>
+<span class="s1">--DIVIDER</span>
+<span class="s1">local function cross(data,mum,dad,    kid,cut)</span>
+<span class="s1">  kid, cut = lst.slice(mum), rnd.n(#data.cols.x)</span>
+<span class="s1">  for j,c in ipairs(data.cols.x) do</span>
+<span class="s1">    if j &gt; cut then kid[c.at] = dad[c.at] end end</span>
+<span class="s1">  return kid end</span>
+<span class="s1">--DIVIDER</span>
+<span class="s1">function xp.ga(data,    y,pop,kids)</span>
+<span class="s1">  y   = oracle(data)</span>
+<span class="s1">  pop = rnd.some(data.rows, the.np)</span>
+<span class="s1">  for _ = 1, the.gens do</span>
+<span class="s1">    pop  = lst.map(pop,</span>
+<span class="s1">             function(r) return xp.mutate.picks(data, r, 1) end)</span>
+<span class="s1">    kids = {}</span>
+<span class="s1">    for _ = 1, the.np do</span>
+<span class="s1">      lst.push(kids,</span>
+<span class="s1">        cross(data, tourney(pop,y), tourney(pop,y))) end</span>
+<span class="s1">    pop = kids end</span>
+<span class="s1">  return lst.keysort(pop, y)[1] end</span>
+<span class="s1">--DIVIDER</span>
+
+<span class="s1">--DIVIDER</span>
+<span class="s1">function xp.sa(data,    y,s,es,best,eb,kid,e)</span>
+<span class="s1">  y  = oracle(data)</span>
+<span class="s1">  s  = data.rows[rnd.n(#data.rows)]</span>
+<span class="s1">  es = y(s); best, eb = s, es</span>
+<span class="s1">  for h = 1, the.budget1 do</span>
+<span class="s1">    kid = xp.mutate.picks(data, s, 1)</span>
+<span class="s1">    e   = y(kid)</span>
+<span class="s1">    if e &lt; es or</span>
+<span class="s1">       rnd.n() &lt; exp((es-e)/(1 - h/the.budget1 + 1E-32)) then</span>
+<span class="s1">      s, es = kid, e end</span>
+<span class="s1">    if e &lt; eb then best, eb = kid, e end end</span>
+<span class="s1">  return best end</span>
+<span class="s1">--DIVIDER</span>
+
+<span class="s1">--DIVIDER</span>
+<span class="s1">function xp.ls(data,    y,s,es,best,eb,imp,kid,e)</span>
+<span class="s1">  y   = oracle(data)</span>
+<span class="s1">  s   = data.rows[rnd.n(#data.rows)]</span>
+<span class="s1">  es  = y(s); best, eb, imp = s, es, 0</span>
+<span class="s1">  for h = 1, the.budget1 do</span>
+<span class="s1">    kid = xp.mutate.picks(data, s, 1)</span>
+<span class="s1">    e   = y(kid)</span>
+<span class="s1">    if e &lt; es then s, es = kid, e end</span>
+<span class="s1">    if e &lt; eb then best, eb, imp = kid, e, h end</span>
+<span class="s1">    if h - imp &gt; the.restart then</span>
+<span class="s1">      s = data.rows[rnd.n(#data.rows)]</span>
+<span class="s1">      es, imp = y(s), h end end</span>
+<span class="s1">  return best end</span>
+<span class="s1">--DIVIDER</span>
+<span class="s1">function xp.race(data,    y,opts,out)</span>
+<span class="s1">  y    = oracle(data)</span>
+<span class="s1">  opts = {de=xp.de, ga=xp.ga, sa=xp.sa, ls=xp.ls}</span>
+<span class="s1">  out  = {}</span>
+<span class="s1">  for name,opt in lst.items(opts) do</span>
+<span class="s1">    lst.push(out, {name, y(opt(data))}) end</span>
+<span class="s1">  return lst.keysort(out, function(o) return o[2] end) end</span>
+<span class="s1">--DIVIDER</span>
+<span class="s1">function xp.sample(data,n,    tree,big,out,rs)</span>
+<span class="s1">  tree = Tree.grow(data, data.rows)</span>
+<span class="s1">  big  = {}</span>
+<span class="s1">  for _,leaf in ipairs(tree:leaves()) do</span>
+<span class="s1">    if #leaf.rows &gt;= 3 then lst.push(big, leaf) end end</span>
+<span class="s1">  out = {}</span>
+<span class="s1">  while #big &gt; 0 and #out &lt; (n or 100) do</span>
+<span class="s1">    rs = rnd.some(big[rnd.n(#big)].rows, 3)</span>
+<span class="s1">    lst.push(out, xp.mutate.extrapolate(</span>
+<span class="s1">      data.cols.x, rs[1], rs[2], rs[3])) end</span>
+<span class="s1">  return out end</span>
+<span class="s1">--DIVIDER</span>
+
+<span class="s1">xp.acquire = {}</span>
+<span class="s1">--DIVIDER</span>
+<span class="s1">function xp.acquire.bayes(_,best,rest,row,    n)</span>
+<span class="s1">  n = #best.rows + #rest.rows</span>
+<span class="s1">  return xp.bayes.likes(best,row,n,2)</span>
+<span class="s1">       - xp.bayes.likes(rest,row,n,2) end</span>
+<span class="s1">--DIVIDER</span>
+<span class="s1">function xp.acquire.centroid(data,best,rest,row)</span>
+<span class="s1">  return data:distx(row, rest:mids())</span>
+<span class="s1">       - data:distx(row, best:mids()) end</span>
+<span class="s1">--DIVIDER</span>
+<span class="s1">local function byDisty(data,rs)</span>
+<span class="s1">  return lst.keysort(rs,</span>
+<span class="s1">    function(r) return data:disty(r) end) end</span>
+<span class="s1">--DIVIDER</span>
+<span class="s1">function xp.acquire.top(data,score,budget,start,    rows,lab,</span>
+<span class="s1">    best,rest,cap,unlab,sorted,worst)</span>
+<span class="s1">  score  = score  or xp.acquire.bayes</span>
+<span class="s1">  budget = budget or the.budget</span>
+<span class="s1">  start  = start  or the.start</span>
+<span class="s1">  rows   = rnd.shuffle(lst.slice(data.rows))</span>
+<span class="s1">  lab    = data:clone(lst.slice(rows, 1, start))</span>
+<span class="s1">  sorted = byDisty(data, lab.rows)</span>
+<span class="s1">  cap    = floor(sqrt(#lab.rows))</span>
+<span class="s1">  best   = data:clone(lst.slice(sorted, 1, cap))</span>
+<span class="s1">  rest   = data:clone(lst.slice(sorted, cap+1))</span>
+<span class="s1">  unlab  = lst.slice(rows, start+1)</span>
+<span class="s1">  for _ = 1, budget do</span>
+<span class="s1">    if #unlab == 0 then break end</span>
+<span class="s1">    unlab = lst.keysort(unlab,</span>
+<span class="s1">              function(r) return -score(data,best,rest,r) end)</span>
+<span class="s1">    lab:add(unlab[1]); best:add(unlab[1])</span>
+<span class="s1">    unlab = lst.slice(unlab, 2)</span>
+<span class="s1">    if #best.rows &gt; floor(sqrt(#lab.rows)) then</span>
+<span class="s1">      worst = byDisty(data, best.rows)[#best.rows]</span>
+<span class="s1">      best:add(worst, -1); rest:add(worst) end end</span>
+<span class="s1">  return lab end</span>
+<span class="s1">--DIVIDER</span>
+<span class="s1">function xp.anomaly(data,    dn,gap)</span>
+<span class="s1">  gap = function(r,    nn)</span>
+<span class="s1">    nn = lst.keysort(data.rows,</span>
+<span class="s1">      function(z) return r==z and BIG or data:distx(r,z) end)[1]</span>
+<span class="s1">    return data:distx(r, nn) end</span>
+<span class="s1">  dn  = Num.new()</span>
+<span class="s1">  for _,r in ipairs(data.rows) do dn:add(gap(r)) end</span>
+<span class="s1">  return function(r) return dn:norm(gap(r)) end end</span>
+<span class="s1">--DIVIDER</span>
 <span class="s1">xp.help = help</span>
 <span class="s1">return xp</span>
 
@@ -230,7 +377,13 @@ k=1         naive-bayes Laplace smoothing
 m=2         naive-bayes m-estimate prior weight
 wait=10     rows seen before naive bayes scores
 F=0.5       DE extrapolation factor
-cr=0.3      DE crossover rate ]]</p>
+cr=0.3      DE crossover rate
+np=20       DE/GA population size
+gens=20     DE/GA generations
+tour=5      GA tournament size
+budget1=300 SA/LS eval budget
+restart=40  LS restart-on-stagnation gap
+start=20    acquire warm-start labels ]]</p>
     </div>
     <div class='code'>
       <div class="highlight"><pre></pre></div>
@@ -594,6 +747,281 @@ with chance F, and &ldquo;?&rdquo; in a is left as &ldquo;?&rdquo;</p>
     <div class='docs'>
       <div class='octowrap'>
         <a class='octothorpe' href='#section-29'>#</a>
+      </div>
+      <h2>Optimize</h2>
+<p>Shared gear for the optimizers. <code>oracle</code> scores any row &ndash;
+even a synthetic one &ndash; by the disty of its nearest real
+row: a cheap surrogate for the true, expensive objective.
+Every optimizer below MINIMIZES it and returns its best row.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-30'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-30'>#</a>
+      </div>
+      <p>score a row by the disty of its nearest real row</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-31'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-31'>#</a>
+      </div>
+      <h2>De</h2>
+<p>Differential evolution. A population of rows; each
+generation every parent spawns a DE kid (blend three random
+pop rows via extrapolate) that replaces the parent when the
+oracle scores the kid better.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-32'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-32'>#</a>
+      </div>
+      <p>differential evolution; returns the best row found</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-33'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-33'>#</a>
+      </div>
+      <h2>Ga</h2>
+<p>Genetic algorithm. Each generation: mutate the whole pop
+(one cell each), then refill by one-point crossover of two
+tournament-picked parents.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-34'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-34'>#</a>
+      </div>
+      <p>lowest-oracle row among <code>tour</code> random pop rows</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-35'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-35'>#</a>
+      </div>
+      <p>one-point crossover of two rows over the x columns</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-36'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-36'>#</a>
+      </div>
+      <p>genetic algorithm; returns the best row found</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-37'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-37'>#</a>
+      </div>
+      <h2>Sa</h2>
+<p>Simulated annealing, (1+1). From one row, repeatedly mutate
+one cell; always keep a better kid, and sometimes a worse
+one (metropolis, cooling as the budget spends).</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-38'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-38'>#</a>
+      </div>
+      <p>simulated annealing; returns the best row seen</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-39'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-39'>#</a>
+      </div>
+      <h2>Ls</h2>
+<p>Greedy local search, (1+1) with restarts. Keep only strict
+improvements; after <code>restart</code> steps with no new best, jump
+to a fresh random row.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-40'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-40'>#</a>
+      </div>
+      <p>greedy local search; returns the best row found</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-41'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-41'>#</a>
+      </div>
+      <h2>Race</h2>
+<p>Race the optimizers head to head: run each on one dataset,
+score its best row by the oracle, return them ranked best
+first. A cheap answer to &ldquo;which search wins here?&rdquo;.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-42'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-42'>#</a>
+      </div>
+      <h2>Sample</h2>
+<p>Synthesize new rows. Grow a tree, then for each new row
+pick a leaf and DE-blend three of its rows &ndash; so synthetic
+rows land inside real, coherent regions, not in the voids
+between them.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-43'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-43'>#</a>
+      </div>
+      <h2>Acquire</h2>
+<p>The HISTORIC active learner, kept for comparison (xai&rsquo;s own
+acquire uses poles; this one does not). Label a warm-start,
+split it best/rest by sqrt(N), then repeatedly label the
+top-scored unlabeled row and re-cap best. Two scorers:
+Bayes likelihood, or centroid distance.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-44'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-44'>#</a>
+      </div>
+      <p>score: like(best) - like(rest) (higher = likelier good)</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-45'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-45'>#</a>
+      </div>
+      <p>score: dist to rest mid - dist to best mid</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-46'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-46'>#</a>
+      </div>
+      <p>rows sorted best-first by disty</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-47'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-47'>#</a>
+      </div>
+      <p>warm-start <code>start</code> labels, split best/rest by sqrt, then
+label the top-scored unlabeled row and re-cap best to
+budget. Returns the labeled Tbl.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-48'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-48'>#</a>
+      </div>
+      <h2>Anomaly</h2>
+<p>Calibrate a 1-nearest-neighbor distance on the training
+rows (a Num of every row&rsquo;s gap to its nearest OTHER row),
+then score any row&rsquo;s gap against that spread: a high
+normalized score = a lonely row = an anomaly.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-49'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-49'>#</a>
       </div>
       <h2>Start</h2>
     </div>

@@ -153,10 +153,11 @@ function Cols.new(names,    i,col)
       if s:find"~$" then lst.push(i.protect, col) end end end
   return i end
 
--- route one row's cells to their columns ("?" skipped)
-function Cols.add(i,row)
+-- route one row's cells to their columns, weight w (w<0
+-- folds them back out); "?" skipped
+function Cols.add(i,row,w)
   for _,c in ipairs(i.all) do
-    if row[c.at] ~= "?" then c:add(row[c.at]) end end
+    if row[c.at] ~= "?" then c:add(row[c.at], w) end end
   return row end
 
 
@@ -177,12 +178,17 @@ function Tbl.new(src,    i)
 function Tbl.clone(i,rows)
   return adds(rows or {}, Tbl.new{i.cols.names}) end
 
--- first row makes the cols; later rows update them
-function Tbl.add(i,row)
-  if i.cols
-  then i.middle=nil -- centroid is now outdated
-        lst.push(i.rows, i.cols:add(row))
-  else i.cols = Cols.new(row) end
+-- add a row; w<0 folds it back out and drops it from rows,
+-- so column summaries stay honest under removal. The very
+-- first row instead builds the cols.
+function Tbl.add(i,row,w)
+  if not i.cols then i.cols = Cols.new(row); return row end
+  i.middle = nil                       -- centroid now outdated
+  i.cols:add(row, w)
+  if w and w < 0
+  then for j,r in ipairs(i.rows) do
+         if r == row then table.remove(i.rows, j); break end end
+  else lst.push(i.rows, row) end
   return row end
 
 -- return the current centroid

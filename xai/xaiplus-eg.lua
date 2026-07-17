@@ -52,6 +52,14 @@ in the [glossary](../glossary.md). Run
 | 4 | Bayes    | [bayes](../glossary.md#bayes) [gauss](../glossary.md#gauss) |
 | 5 | Classify | [bayes](../glossary.md#bayes) [confusion](../glossary.md#confusion) [mode](../glossary.md#mode) |
 | 6 | Mutate   | [mutate](../glossary.md#mutate) [gauss](../glossary.md#gauss) |
+| 7 | De       | [de](../glossary.md#de) [mutate](../glossary.md#mutate) |
+| 8 | Ga       | [ga](../glossary.md#ga) [mutate](../glossary.md#mutate) |
+| 9 | Sa       | [sa](../glossary.md#sa) [mutate](../glossary.md#mutate) |
+| 10 | Ls      | [ls](../glossary.md#ls) |
+| 11 | Race    | [race](../glossary.md#race) [bets](../glossary.md#bets) |
+| 12 | Sample  | [synthesis](../glossary.md#synthesis) [tree](../glossary.md#tree) |
+| 13 | Acquire | [active](../glossary.md#active) [budget](../glossary.md#budget) [bayes](../glossary.md#bayes) |
+| 14 | Anomaly | [anomaly](../glossary.md#anomaly) |
 ]]
 local xai = require"xai"
 local xp  = require"xaiplus"
@@ -60,11 +68,24 @@ local Tbl = xai.Tbl
 
 local eg    = {}
 local order = {"knn","kmeans","kmeanspp","bayes",
-               "classify","mutate"}
+               "classify","mutate","de","ga","sa","ls",
+               "race","sample","acquire","anomaly"}
 
--- the shared running dataset: a small numeric classification
--- table (9 cell-measurement x cols, a benign/malignant klass)
+-- two running datasets: a numeric classification table (the
+-- learners, lessons 1-5), and an optimization table with y
+-- goals (the optimizers, lessons 7-14).
 local DATA = "$MOOT/classify/breast.w.csv"
+local DOPT = "$MOOT/optimize/misc/auto93.csv"
+
+-- median disty over a table's rows (the bar to beat)
+local function med(d,    ys)
+  ys = lst.sort(lst.map(d.rows, function(r) return d:disty(r) end))
+  return ys[#ys // 2] end
+
+-- score a (maybe synthetic) row by its nearest real row's disty
+local function nn(d,r)
+  return d:disty(lst.keysort(d.rows,
+    function(z) return d:distx(r,z) end)[1]) end
 
 -- ## Knn
 --[[
@@ -328,6 +349,309 @@ eg.mutate["--extrapolate"] = function(    d,a,b,c,kid,same)
    child keeps from a?
 2. Show `xp.mutate.picks` never leaves a Num cell outside mu +-3sd:
    mutate one column 1000 times and check the range.
+]]
+
+-- ## De
+--[[
+### Lesson 7: differential evolution
+
+The first optimizer. Keep a small population of rows; each
+generation, every parent tries a DE child -- three random
+population rows blended as a + F*(b - c), via
+[extrapolate](../glossary.md#mutate) -- and the child
+replaces the parent if it scores better. "Better" is an
+`oracle`: a (possibly synthetic) row scores the
+[disty](../glossary.md#heaven) of its nearest REAL row, a
+cheap stand-in for the expensive true objective. On auto93,
+DE pulls disty from a median near 0.5 down toward 0.
+
+**Core ideas:** [de](../glossary.md#de),
+[mutate](../glossary.md#mutate)
+]]
+eg.de = {}
+
+-- - **xp.de(data)** differential evolution; returns the best
+--   row found (minimizing the nearest-real disty).
+eg.de["--run"] = function(    d,best)
+  d    = Tbl.new(DOPT)
+  best = xp.de(d)
+  print("DE   best (nearest-real disty):", str.o(nn(d,best)),
+        " median", str.o(med(d)))
+  assert(nn(d,best) < med(d)) end         -- beats the median
+
+--[[
+**Exercises (lesson 7).**
+
+0. In your own favorite language (not lua), write DE and
+   reproduce the best-vs-median line.
+1. (simple) Rerun with `--gens=5` then 50. Where do the
+   gains flatten, and how much does `--np` matter?
+2. Log DE's best disty each generation; plot the descent.
+   Does it plateau, or keep improving to the last gen?
+]]
+
+-- ## Ga
+--[[
+### Lesson 8: genetic algorithm
+
+A different search. Each generation: mutate the whole
+population one cell each, then refill it by CROSSOVER --
+splice two parents at a random column -- where parents win
+their slot by tournament (lowest oracle of `tour` random
+rows). Mutation explores, crossover recombines, tournaments
+apply the selection pressure. Same oracle as DE, so the two
+are directly comparable (see lesson 11).
+
+**Core ideas:** [ga](../glossary.md#ga),
+[mutate](../glossary.md#mutate)
+]]
+eg.ga = {}
+
+-- - **xp.ga(data)** genetic algorithm (mutate, tournament
+--   select, one-point crossover); returns the best row.
+eg.ga["--run"] = function(    d,best)
+  d    = Tbl.new(DOPT)
+  best = xp.ga(d)
+  print("GA   best (nearest-real disty):", str.o(nn(d,best)),
+        " median", str.o(med(d)))
+  assert(nn(d,best) < med(d)) end
+
+--[[
+**Exercises (lesson 8).**
+
+0. In your own favorite language (not lua), write the GA and
+   reproduce the line.
+1. (simple) Rerun with `--tour=2` (near-random) then 8
+   (greedy). How does selection pressure change the result?
+2. Turn crossover off (return a copy of one parent). How
+   much does recombination actually buy over mutation alone?
+]]
+
+-- ## Sa
+--[[
+### Lesson 9: simulated annealing
+
+The leanest optimizer: one solution, no population. Mutate a
+single cell; always accept a better neighbor, and accept a
+worse one with a probability that COOLS as the eval budget
+spends (metropolis). Early on it wanders freely (escaping
+local traps); late on it turns greedy. One row's worth of
+memory, yet competitive.
+
+**Core ideas:** [sa](../glossary.md#sa),
+[mutate](../glossary.md#mutate)
+]]
+eg.sa = {}
+
+-- - **xp.sa(data)** simulated annealing, (1+1) with a cooling
+--   metropolis accept; returns the best row seen.
+eg.sa["--run"] = function(    d,best)
+  d    = Tbl.new(DOPT)
+  best = xp.sa(d)
+  print("SA   best (nearest-real disty):", str.o(nn(d,best)),
+        " median", str.o(med(d)))
+  assert(nn(d,best) < med(d)) end
+
+--[[
+**Exercises (lesson 9).**
+
+0. In your own favorite language (not lua), write SA and
+   reproduce the line.
+1. (simple) Rerun with `--budget1=50` then 1000. How much
+   does a bigger eval budget buy on auto93?
+2. Replace the metropolis accept with "accept only if
+   better" -- pure hill climbing. Does annealing's tolerance
+   for worse moves actually help here?
+]]
+
+-- ## Ls
+--[[
+### Lesson 10: local search with restarts
+
+Greedy hill climbing, plus one trick: when no new best lands
+for `restart` steps, JUMP to a fresh random row and climb
+again. So a single bad starting basin cannot trap the whole
+run. Simple, and a useful baseline: if fancier search cannot
+beat restart-climbing, be suspicious.
+
+**Core ideas:** [ls](../glossary.md#ls)
+]]
+eg.ls = {}
+
+-- - **xp.ls(data)** greedy local search with random restarts
+--   on stagnation; returns the best row found.
+eg.ls["--run"] = function(    d,best)
+  d    = Tbl.new(DOPT)
+  best = xp.ls(d)
+  print("LS   best (nearest-real disty):", str.o(nn(d,best)),
+        " median", str.o(med(d)))
+  assert(nn(d,best) < med(d)) end
+
+--[[
+**Exercises (lesson 10).**
+
+0. In your own favorite language (not lua), write LS and
+   reproduce the line.
+1. (simple) Set `--restart=1000000` (never restart). How
+   often does plain hill climbing get stuck below its best?
+2. Count how many restarts a run fires. Does the best answer
+   usually come soon after a restart, or late in a climb?
+]]
+
+-- ## Race
+--[[
+### Lesson 11: racing the optimizers
+
+Which search wins? Do not guess -- race them. Run DE, GA, SA
+and LS on the same data under the same oracle, score each
+one's best row, and rank them. There is no universal winner
+(no free lunch): the ranking shifts with the data and the
+budget, which is exactly why a cheap race beats trusting a
+brand name.
+
+**Core ideas:** [race](../glossary.md#race),
+[bets](../glossary.md#bets)
+]]
+eg.race = {}
+
+-- - **xp.race(data)** runs every optimizer, scores each by
+--   the oracle, returns {name,score} ranked best first.
+eg.race["--run"] = function(    d,rank)
+  d    = Tbl.new(DOPT)
+  rank = xp.race(d)
+  print("optimizer race (best first):")
+  for _,o in ipairs(rank) do
+    print("   ", o[1], str.o(o[2])) end
+  assert(#rank == 4)
+  assert(rank[1][2] <= rank[#rank][2])    -- sorted best first
+  assert(rank[1][2] < med(d)) end
+
+--[[
+**Exercises (lesson 11).**
+
+0. In your own favorite language (not lua), race your four
+   optimizers and print the ranking.
+1. (simple) Race at five different `--seed`s. Does the same
+   optimizer always win, or does the ranking move?
+2. Feed each optimizer's best-disty distribution (over
+   seeds) to `stats.same` (xai lesson 9). Are the top two
+   optimizers actually distinguishable?
+]]
+
+-- ## Sample
+--[[
+### Lesson 12: synthesizing new rows
+
+Sometimes you need MORE data. Grow a tree over the rows,
+then make each new row by picking a leaf and DE-blending
+three of its members. Because every synthetic row is born
+inside one leaf -- a real, coherent region -- it stays
+plausible, unlike a row stitched from unrelated extremes.
+
+**Core ideas:** [synthesis](../glossary.md#synthesis),
+[tree](../glossary.md#tree)
+]]
+eg.sample = {}
+
+-- - **xp.sample(data,n)** returns n synthetic rows, each a
+--   DE-blend of three rows from one tree leaf.
+eg.sample["--rows"] = function(    d,rows)
+  d    = Tbl.new(DOPT)
+  rows = xp.sample(d, 30)
+  print("synthesized rows:", #rows,
+        " width", #rows[1], "of", #d.cols.all)
+  assert(#rows == 30)
+  assert(#rows[1] == #d.cols.all) end     -- full-width rows
+
+--[[
+**Exercises (lesson 12).**
+
+0. In your own favorite language (not lua), synthesize rows
+   from tree leaves and reproduce the counts.
+1. (simple) Compare the centroid of 200 synthetic rows to
+   the real table's `mids`. How faithful is the synthesis?
+2. Train `xp.knn` on synthetic rows, test on real ones. Does
+   made-up data teach a usable classifier?
+]]
+
+-- ## Acquire
+--[[
+### Lesson 13: active learning, the historic way
+
+The comparison method (xai's own acquire uses poles; this
+one is kept here for contrast). Label a small warm-start,
+split it best/rest by sqrt(N), then repeatedly LABEL the
+unlabeled row the models most want -- scored either by Bayes
+likelihood (like-best minus like-rest) or by centroid
+distance -- and re-cap best. Spend a tiny
+[budget](../glossary.md#budget) where it teaches most.
+
+**Core ideas:** [active](../glossary.md#active),
+[budget](../glossary.md#budget), [bayes](../glossary.md#bayes)
+]]
+eg.acquire = {}
+
+-- - **xp.acquire.top(data,score)** active learning to the
+--   budget; score = **xp.acquire.bayes** or
+--   **xp.acquire.centroid**. Returns the labeled Tbl.
+eg.acquire["--both"] = function(    d,lab,ys)
+  d = Tbl.new(DOPT)
+  for _,score in ipairs{xp.acquire.bayes, xp.acquire.centroid} do
+    rnd.seed(the.seed)
+    lab = xp.acquire.top(d, score)
+    ys  = lst.sort(lst.map(lab.rows,
+            function(r) return d:disty(r) end))
+    print("acquire best disty:", str.o(ys[1]),
+          " labels", #lab.rows)
+    assert(ys[1] < med(d))
+    assert(#lab.rows > the.start) end end
+
+--[[
+**Exercises (lesson 13).**
+
+0. In your own favorite language (not lua), write the
+   sqrt-split acquire loop and reproduce the lines.
+1. (simple) Vary `--budget` (20, 50, 100). Where does best
+   disty stop improving with more labels?
+2. Race Bayes vs centroid acquisition across seeds. Which
+   scorer finds good rows on fewer labels, and does it
+   depend on the dataset?
+]]
+
+-- ## Anomaly
+--[[
+### Lesson 14: anomalies as lonely rows
+
+Once distance exists, outliers are easy. Calibrate every
+training row's gap to its nearest OTHER row into a Num, then
+score any row by where its gap falls on that spread: near 1
+means "far from everything" -- an anomaly. No labels, no
+model, just distance and a running summary.
+
+**Core ideas:** [anomaly](../glossary.md#anomaly)
+]]
+eg.anomaly = {}
+
+-- - **xp.anomaly(data)** returns a detector row->0..1; high
+--   = a row far from even its nearest neighbor.
+eg.anomaly["--detect"] = function(    d,det,ss)
+  d   = Tbl.new(DOPT)
+  det = xp.anomaly(d)
+  ss  = lst.sort(lst.map(d.rows, det))
+  print("anomaly scores lo/mid/hi:", str.o(ss[1]),
+        str.o(ss[#ss // 2]), str.o(ss[#ss]))
+  assert(ss[1] >= 0 and ss[#ss] <= 1)
+  assert(ss[#ss] > 0.5) end               -- some row is lonely
+
+--[[
+**Exercises (lesson 14).**
+
+0. In your own favorite language (not lua), write the
+   nearest-gap detector and reproduce the scores.
+1. (simple) Print the single loneliest row. Is it a data
+   error, a rare-but-real case, or a boundary point?
+2. Inject one obviously-wrong row (all cells at extremes).
+   Does the detector rank it top? What score does it get?
 ]]
 
 -- ## Main

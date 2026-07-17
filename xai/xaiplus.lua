@@ -21,14 +21,21 @@ OPTIONS (added to xai's `the`):
   --m=2         naive-bayes m-estimate prior weight
   --wait=10     rows seen before naive bayes scores
   --F=0.5       DE extrapolation factor
-  --cr=0.3      DE crossover rate ]]
+  --cr=0.3      DE crossover rate
+  --np=20       DE/GA population size
+  --gens=20     DE/GA generations
+  --tour=5      GA tournament size
+  --budget1=300 SA/LS eval budget
+  --restart=40  LS restart-on-stagnation gap
+  --start=20    acquire warm-start labels ]]
 
 local xai = require"xai"
 local the,lst,rnd,str = xai.the, xai.lst, xai.rnd, xai.str
-local Sym,adds,new = xai.Sym, xai.adds, xai.new
+local Sym,Num,adds,new = xai.Sym, xai.Num, xai.adds, xai.new
+local Tree = xai.Tree
 local BIG = 1E32
 local exp,log,pi = math.exp, math.log, math.pi
-local min,max = math.min, math.max
+local min,max,floor,sqrt = math.min,math.max,math.floor,math.sqrt
 
 -- add my --key=val defaults to xai's `the`, erroring if one
 -- would shadow a key xai already set (new fields, never old)
@@ -249,6 +256,209 @@ function xp.mutate.extrapolate(cols,a,b,c,F,cr,
         span   = hi - lo + 1E-32
         out[col.at] = lo + (v - lo) % span end end end
   return out end
+
+
+-- ## Optimize
+-- Shared gear for the optimizers. `oracle` scores any row --
+-- even a synthetic one -- by the disty of its nearest real
+-- row: a cheap surrogate for the true, expensive objective.
+-- Every optimizer below MINIMIZES it and returns its best row.
+
+-- score a row by the disty of its nearest real row
+local function oracle(data)
+  return function(r)
+    return data:disty(near(data, r, 1)[1]) end end
+
+
+-- ## De
+-- Differential evolution. A population of rows; each
+-- generation every parent spawns a DE kid (blend three random
+-- pop rows via extrapolate) that replaces the parent when the
+-- oracle scores the kid better.
+
+-- differential evolution; returns the best row found
+function xp.de(data,    y,pop,t,kid)
+  y   = oracle(data)
+  pop = rnd.some(data.rows, the.np)
+  for _ = 1, the.gens do
+    for i,parent in ipairs(pop) do
+      t   = rnd.some(pop, 3)
+      kid = xp.mutate.extrapolate(data.cols.x, t[1], t[2], t[3])
+      if y(kid) < y(parent) then pop[i] = kid end end end
+  return lst.keysort(pop, y)[1] end
+
+
+-- ## Ga
+-- Genetic algorithm. Each generation: mutate the whole pop
+-- (one cell each), then refill by one-point crossover of two
+-- tournament-picked parents.
+
+-- lowest-oracle row among `tour` random pop rows
+local function tourney(pop,y,    x,z)
+  x = pop[rnd.n(#pop)]
+  for _ = 2, the.tour do
+    z = pop[rnd.n(#pop)]; if y(z) < y(x) then x = z end end
+  return x end
+
+-- one-point crossover of two rows over the x columns
+local function cross(data,mum,dad,    kid,cut)
+  kid, cut = lst.slice(mum), rnd.n(#data.cols.x)
+  for j,c in ipairs(data.cols.x) do
+    if j > cut then kid[c.at] = dad[c.at] end end
+  return kid end
+
+-- genetic algorithm; returns the best row found
+function xp.ga(data,    y,pop,kids)
+  y   = oracle(data)
+  pop = rnd.some(data.rows, the.np)
+  for _ = 1, the.gens do
+    pop  = lst.map(pop,
+             function(r) return xp.mutate.picks(data, r, 1) end)
+    kids = {}
+    for _ = 1, the.np do
+      lst.push(kids,
+        cross(data, tourney(pop,y), tourney(pop,y))) end
+    pop = kids end
+  return lst.keysort(pop, y)[1] end
+
+
+-- ## Sa
+-- Simulated annealing, (1+1). From one row, repeatedly mutate
+-- one cell; always keep a better kid, and sometimes a worse
+-- one (metropolis, cooling as the budget spends).
+
+-- simulated annealing; returns the best row seen
+function xp.sa(data,    y,s,es,best,eb,kid,e)
+  y  = oracle(data)
+  s  = data.rows[rnd.n(#data.rows)]
+  es = y(s); best, eb = s, es
+  for h = 1, the.budget1 do
+    kid = xp.mutate.picks(data, s, 1)
+    e   = y(kid)
+    if e < es or
+       rnd.n() < exp((es-e)/(1 - h/the.budget1 + 1E-32)) then
+      s, es = kid, e end
+    if e < eb then best, eb = kid, e end end
+  return best end
+
+
+-- ## Ls
+-- Greedy local search, (1+1) with restarts. Keep only strict
+-- improvements; after `restart` steps with no new best, jump
+-- to a fresh random row.
+
+-- greedy local search; returns the best row found
+function xp.ls(data,    y,s,es,best,eb,imp,kid,e)
+  y   = oracle(data)
+  s   = data.rows[rnd.n(#data.rows)]
+  es  = y(s); best, eb, imp = s, es, 0
+  for h = 1, the.budget1 do
+    kid = xp.mutate.picks(data, s, 1)
+    e   = y(kid)
+    if e < es then s, es = kid, e end
+    if e < eb then best, eb, imp = kid, e, h end
+    if h - imp > the.restart then
+      s = data.rows[rnd.n(#data.rows)]
+      es, imp = y(s), h end end
+  return best end
+
+
+-- ## Race
+-- Race the optimizers head to head: run each on one dataset,
+-- score its best row by the oracle, return them ranked best
+-- first. A cheap answer to "which search wins here?".
+function xp.race(data,    y,opts,out)
+  y    = oracle(data)
+  opts = {de=xp.de, ga=xp.ga, sa=xp.sa, ls=xp.ls}
+  out  = {}
+  for name,opt in lst.items(opts) do
+    lst.push(out, {name, y(opt(data))}) end
+  return lst.keysort(out, function(o) return o[2] end) end
+
+
+-- ## Sample
+-- Synthesize new rows. Grow a tree, then for each new row
+-- pick a leaf and DE-blend three of its rows -- so synthetic
+-- rows land inside real, coherent regions, not in the voids
+-- between them.
+function xp.sample(data,n,    tree,big,out,rs)
+  tree = Tree.grow(data, data.rows)
+  big  = {}
+  for _,leaf in ipairs(tree:leaves()) do
+    if #leaf.rows >= 3 then lst.push(big, leaf) end end
+  out = {}
+  while #big > 0 and #out < (n or 100) do
+    rs = rnd.some(big[rnd.n(#big)].rows, 3)
+    lst.push(out, xp.mutate.extrapolate(
+      data.cols.x, rs[1], rs[2], rs[3])) end
+  return out end
+
+
+-- ## Acquire
+-- The HISTORIC active learner, kept for comparison (xai's own
+-- acquire uses poles; this one does not). Label a warm-start,
+-- split it best/rest by sqrt(N), then repeatedly label the
+-- top-scored unlabeled row and re-cap best. Two scorers:
+-- Bayes likelihood, or centroid distance.
+
+xp.acquire = {}
+
+-- score: like(best) - like(rest) (higher = likelier good)
+function xp.acquire.bayes(_,best,rest,row,    n)
+  n = #best.rows + #rest.rows
+  return xp.bayes.likes(best,row,n,2)
+       - xp.bayes.likes(rest,row,n,2) end
+
+-- score: dist to rest mid - dist to best mid
+function xp.acquire.centroid(data,best,rest,row)
+  return data:distx(row, rest:mids())
+       - data:distx(row, best:mids()) end
+
+-- rows sorted best-first by disty
+local function byDisty(data,rs)
+  return lst.keysort(rs,
+    function(r) return data:disty(r) end) end
+
+-- warm-start `start` labels, split best/rest by sqrt, then
+-- label the top-scored unlabeled row and re-cap best to
+-- budget. Returns the labeled Tbl.
+function xp.acquire.top(data,score,budget,start,    rows,lab,
+    best,rest,cap,unlab,sorted,worst)
+  score  = score  or xp.acquire.bayes
+  budget = budget or the.budget
+  start  = start  or the.start
+  rows   = rnd.shuffle(lst.slice(data.rows))
+  lab    = data:clone(lst.slice(rows, 1, start))
+  sorted = byDisty(data, lab.rows)
+  cap    = floor(sqrt(#lab.rows))
+  best   = data:clone(lst.slice(sorted, 1, cap))
+  rest   = data:clone(lst.slice(sorted, cap+1))
+  unlab  = lst.slice(rows, start+1)
+  for _ = 1, budget do
+    if #unlab == 0 then break end
+    unlab = lst.keysort(unlab,
+              function(r) return -score(data,best,rest,r) end)
+    lab:add(unlab[1]); best:add(unlab[1])
+    unlab = lst.slice(unlab, 2)
+    if #best.rows > floor(sqrt(#lab.rows)) then
+      worst = byDisty(data, best.rows)[#best.rows]
+      best:add(worst, -1); rest:add(worst) end end
+  return lab end
+
+
+-- ## Anomaly
+-- Calibrate a 1-nearest-neighbor distance on the training
+-- rows (a Num of every row's gap to its nearest OTHER row),
+-- then score any row's gap against that spread: a high
+-- normalized score = a lonely row = an anomaly.
+function xp.anomaly(data,    dn,gap)
+  gap = function(r,    nn)
+    nn = lst.keysort(data.rows,
+      function(z) return r==z and BIG or data:distx(r,z) end)[1]
+    return data:distx(r, nn) end
+  dn  = Num.new()
+  for _,r in ipairs(data.rows) do dn:add(gap(r)) end
+  return function(r) return dn:norm(gap(r)) end end
 
 
 -- ## Start

@@ -32,4 +32,49 @@ cells changed by picks(n=3):	3	of	9
 -- --extrapolate
 x cols kept from base a:	7	of	9
 
+---- de ----------------------------------------
+
+-- --run
+DE   best (nearest-real disty):	0.075	 median	0.535
+
+---- ga ----------------------------------------
+
+-- --run
+GA   best (nearest-real disty):	0.093	 median	0.535
+
+---- sa ----------------------------------------
+
+-- --run
+SA   best (nearest-real disty):	0.093	 median	0.535
+
+---- ls ----------------------------------------
+
+-- --run
+LS   best (nearest-real disty):	0.105	 median	0.535
+
+---- race ----------------------------------------
+
+-- --run
+optimizer race (best first):
+   	de	0.075
+   	ls	0.093
+   	sa	0.141
+   	ga	0.147
+
+---- sample ----------------------------------------
+
+-- --rows
+synthesized rows:	30	 width	8	of	8
+
+---- acquire ----------------------------------------
+
+-- --both
+acquire best disty:	0.075	 labels	70
+acquire best disty:	0.075	 labels	70
+
+---- anomaly ----------------------------------------
+
+-- --detect
+anomaly scores lo/mid/hi:	0.299	0.329	0.994
+
 all pass
