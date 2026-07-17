@@ -29,23 +29,44 @@ local order = {"lua","lst","rnd","str","num","sym","cols",
 --[[
 ### Lesson 0: lua for the impatient pythonista
 
-You know python; time to make some small adjustments for Lua.  Only `nil` and
-`false` are falsy -- 0 and "" are TRUE. Indexes start at
-1, and `for i=1,10` includes the 10. There is ONE data
+You know python; time to make some small adjustments for Lua.  
+   
+- Only `nil` and
+`false` are falsy 
+- -- 0 and "" are TRUE. 
+- Array indexes start at
+1, so `for i=1,10` includes the 10. 
+- There is ONE data
 structure: the table is your list, dict, object and
 module (a list is just the consecutive integer keys;
-everything else rides in the hash part). `pairs` walks
-every key in NO fixed order; `ipairs` walks 1,2,3.. and
-stops at the first gap. Patterns are not regexes: `%w`
-not `\w`, and there is no `|`. Variables are global
-unless marked `local`. `x and y or z` is the ternary
-(breaks when y is false); `x = x or default` fills
-defaults; `..` concatenates; `~=` is not-equals. And one
+everything else rides in the hash part). 
+- `pairs` walks
+every key in NO fixed order (want sorted? this lesson
+builds `lst.items`, a home-made for loop);
+- `ipairs` walks 1,2,3.. and
+stops at the first gap.
+- for loops are customizable: any function that returns
+"the next thing" can drive one. Such iterator functions
+are closures: functions that remember variables from
+where they were born.
+- Patterns are not standard regexes: `%w`
+not `\w`, and there is no `|`. 
+- Variables are global
+unless marked `local` or added as extra fucntion args
+(see last item, below)
+- `x and y or z` is the ternary
+(and, warning, breaks if y is false); 
+- `x = x or default` fills
+defaults; 
+- `..` concatenates; 
+- `~=` is not-equals. 
+- And one
 house rule: params after the wide gap in a signature are
-locals, not arguments -- callers never pass them.
+function locals, not arguments -- callers never pass them.
 
 **Core ideas:** [truthy](abc-doc.md#truthy),
 [onetable](abc-doc.md#onetable),
+[closure](abc-doc.md#closure),
 [patterns](abc-doc.md#patterns), [bob](abc-doc.md#bob)
 ]]
 eg.lua = {}
@@ -72,6 +93,18 @@ eg.lua["--onetable"] = function(    t,n,m)
   assert(n == 4 and m == 5)
   assert(t[1] == 10 and t.job == "cook")
   assert(t[0] == nil) end              -- lua counts from 1
+
+-- - **lst.items(t)** is a home-made for loop: it returns an
+--   iterator -- a closure that remembers how far it got --
+--   yielding key,value in SORTED key order. When pairs'
+--   wandering order hurts (printing, transcripts), roll
+--   your own walk.
+eg.lua["--items"] = function(    t,s)
+  t = {c=3, a=1, b=2}
+  s = ""
+  for k,v in lst.items(t) do s = s .. k .. v end
+  print("sorted walk:", s)
+  assert(s == "a1b2c3") end
 
 -- - **s:find(pat)**, **s:match(pat)**, **s:gsub(pat,new)**:
 --   patterns, not regexes (%d %w %s classes, anchors ^ $),

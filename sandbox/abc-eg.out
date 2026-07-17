@@ -19,6 +19,9 @@
 32 *
 small (<=6 lines):	51	 bigger:	23
 
+-- --items
+sorted walk:	a1b2c3
+
 -- --onetable
 ipairs sees	4	 pairs sees	5
 

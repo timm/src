@@ -13,7 +13,7 @@ order the ideas first appear in the lessons.
 
 | lesson | section | run | core ideas |
 |--------|---------|-----|------------|
-|  0 | Lua     | `lua abc-eg.lua --lua`     | [truthy](#truthy) [onetable](#onetable) [patterns](#patterns) [bob](#bob) |
+|  0 | Lua     | `lua abc-eg.lua --lua`     | [truthy](#truthy) [onetable](#onetable) [closure](#closure) [patterns](#patterns) [bob](#bob) |
 |  1 | Lst     | `lua abc-eg.lua --lst`     | [lists](#lists) [dsu](#dsu) [bisect](#bisect) |
 |  2 | Rnd     | `lua abc-eg.lua --rnd`     | [seed](#seed) [shuffle](#shuffle) [gauss](#gauss) [roulette](#roulette) |
 |  3 | Str     | `lua abc-eg.lua --str`     | [coerce](#coerce) [csv](#csv) [ssot](#ssot) |
@@ -345,9 +345,11 @@ scoring never re-reads the rows (lesson 11).
 
 ## closure
 
-A function plus the variables it captured. `bins.keep`
-(lesson 11) is a closure holding the cheapest bin seen so
-far, so every column's candidates compete in one running
+A function plus the variables it captured. Lesson 0's
+`lst.items` is a closure remembering how far a sorted
+walk has got (that is all a lua iterator is); lesson 11's
+`bins.keep` is one holding the cheapest bin seen so far,
+letting every column's candidates compete in one running
 contest without any global state.
 
 
