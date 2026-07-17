@@ -107,7 +107,8 @@ def page(path):
 def main(site="_site"):
   os.makedirs(site, exist_ok=True)
   open(f"{site}/_config.yml", "w").write(
-    "theme: jekyll-theme-primer\ntitle: timm/src\n")
+    "theme: jekyll-theme-primer\ntitle: timm/src\n"
+    "plugins: [jekyll-relative-links]\n")
   rows = []
   for d in sorted(glob.glob("*/")):
     d = d.rstrip("/")
@@ -144,10 +145,15 @@ def main(site="_site"):
     rows += [f"| [{d}]({d}/index.md) | {lead} |"]
   style = open("etc/style.md").read()
   open(f"{site}/style.md", "w").write(style)
+  if os.path.exists("glossary.md"):   # shared dictionary
+    open(f"{site}/glossary.md", "w").write(
+      "{% raw %}\n" + open("glossary.md").read()
+      + "\n{% endraw %}")
   open(f"{site}/index.md", "w").write("\n".join(
     ["# timm/src", "",
      "One flat dir per idea; prose per block, not per function.",
      "Conventions: [style.md](style.md).",
+     "Concepts: [glossary.md](glossary.md).",
      "Source: [github.com/timm/src](https://github.com/timm/src).",
      "", "| idea | what |", "|------|------|"] + rows) + "\n")
   print(f"{site}: {len(rows)} projects")
