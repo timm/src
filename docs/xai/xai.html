@@ -2,23 +2,22 @@
 <html>
 <head>
   <meta http-equiv="content-type" content="text/html;charset=utf-8">
-  <title>abc.lua</title>
+  <title>xai.lua</title>
   <link rel="stylesheet" href="pycco.css">
-<style>h2 {border-top:1px solid #ddd; margin-top:2.5em; padding-top:.5em} p {text-align:right}</style></head>
+<style>p {text-align:right} #section-0 p, #section-1 p {text-align:left}</style></head>
 <body>
 <div id='container'>
   <div id="background"></div>
   <div class='section'>
-    <div class='docs'><p style="text-align:center">
-<a href="https://timm.github.io/src/"><img alt="home" src="https://img.shields.io/badge/🏠-home-e53935"></a>
-<a href="https://github.com/timm/src/tree/main/sandbox"><img alt="src" src="https://img.shields.io/badge/src-sandbox-fb8c00"></a>
+    <div class='docs'><p align="center">
+<a href="https://timm.github.io/src/"><img alt="home" src="https://img.shields.io/badge/🏠-home-gold"></a>
+<a href="https://github.com/timm/src/tree/main/xai"><img alt="src" src="https://img.shields.io/badge/src-xai-black"></a>
+<a href="https://github.com/timm/src/actions/workflows/tests-xai.yml"><img alt="ci" src="https://github.com/timm/src/actions/workflows/tests-xai.yml/badge.svg"></a>
 <img alt="purpose" src="https://img.shields.io/badge/purpose-xai,optimization-ffb300">
-<br>
-<img alt="language" src="https://img.shields.io/badge/language-lua-43a047">
-<a href="https://timm.fyi"><img alt="author" src="https://img.shields.io/badge/author-timm-1e88e5"></a>
-<a href="https://github.com/timm/src/blob/main/LICENSE.md"><img alt="license" src="https://img.shields.io/badge/(c)2026-MIT-8e24aa"></a>
-</p>
-<h1>abc.lua</h1></div>
+<img alt="language" src="https://img.shields.io/badge/language-lua-9558B2">
+<a href="https://github.com/timm/src/blob/main/LICENSE.md"><img alt="license" src="https://img.shields.io/badge/license-MIT-brightgreen"></a>
+<a href="https://timm.fyi"><img alt="author" src="https://img.shields.io/badge/author-timm-blueviolet"></a>
+</p><p>&lt; prev | <a href="xai-eg.html">next &gt;</a></p><h1><a href="https://github.com/timm/src/blob/main/xai/xai.lua">xai.lua</a></h1></div>
   </div>
   <div class='clearall'>
   <div class='section' id='section-0'>
@@ -26,22 +25,22 @@
       <div class='octowrap'>
         <a class='octothorpe' href='#section-0'>#</a>
       </div>
-      <p>abc.lua: explainable multi-objective optimization, tiny-ly.
+      <p>xai.lua: explainable multi-objective optimization, tiny-ly.
 Polymorphic Num/Sym summaries feed distance, labelling,
 binning and tree code that never asks a column its type.</p>
     </div>
     <div class='code'>
       <div class="highlight"><pre><span></span><span class="kd">local</span><span class="w"> </span><span class="nv">help</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">[[</span>
 <span class="s">   </span>
-<span class="s">abc: explainable multi-objective optimization, tiny-ly</span>
+<span class="s">xai: explainable multi-objective optimization, tiny-ly</span>
 <span class="s">(c) 2026 Tim Menzies &lt;timm@ieee.org&gt;, MIT license</span>
 
 <span class="s">Samples a data landscape under a small labelling budget,</span>
 <span class="s">grows a regression tree over the labels, then picks good</span>
 <span class="s">rows and shows which x-ranges explain them.</span>
 <span class="s">  </span>
-<span class="s">USAGE: local abc = require&quot;abc&quot;      </span>
-<span class="s">(demos and tests: lua abc-eg.lua [OPTIONS] [eg ...])   </span>
+<span class="s">USAGE: local xai = require&quot;xai&quot;      </span>
+<span class="s">(demos and tests: lua xai-eg.lua [OPTIONS] [eg ...])   </span>
 <span class="s">          </span>
 <span class="s">OPTIONS:</span>
 <span class="s">  -a  --acquire=active  labelling: active or random</span>
@@ -1395,7 +1394,7 @@ rnd.n() = float 0..1; rnd.n(n) = integer 1..n</p>
       </div>
       <h2>Start</h2>
 <p>Parse help&rsquo;s &ndash;key=val defaults into <code>the</code>, seed, and
-hand back the module (demos and cli live in abc-eg.lua).</p>
+hand back the module (demos and cli live in xai-eg.lua).</p>
     </div>
     <div class='code'>
       <div class="highlight"><pre><span class="nv">str</span><span class="p">.</span><span class="nf">settings</span><span class="p">(</span><span class="nv">help</span><span class="p">)</span>

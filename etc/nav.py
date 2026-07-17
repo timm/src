@@ -10,7 +10,7 @@ make doc from `sh INSTALL.md list`). The <h1> links to the
 source file on github. Code pages right-align their prose
 (dense margin notes); tests/tutorial pages read left.
 """
-import os, sys
+import os, re, sys
 
 REPO = "https://github.com/timm/src"
 B    = "https://img.shields.io/badge"
@@ -56,6 +56,14 @@ BADGES = '<p align="center">\n' + "\n".join([
   badge("author",   f"{B}/author-timm-blueviolet",
         "https://timm.fyi"),
 ]) + "\n</p>"
+
+# SSOT override: if this dir's README has a hand-authored
+# <!-- badges -->...<!-- /badges --> block, use it verbatim
+# (humans tinker there); else fall back to the generated set.
+if os.path.exists("README.md"):
+  m = re.search(r"<!-- badges -->(.*?)<!-- /badges -->",
+                open("README.md").read(), re.S)
+  if m: BADGES = m.group(1).strip()
 
 nav = ""
 if name in order:

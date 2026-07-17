@@ -1,5 +1,5 @@
 #!/usr/bin/env lua
--- abc-eg.lua: demos and tests for abc.lua. One eg sub-table
+-- xai-eg.lua: demos and tests for xai.lua. One eg sub-table
 -- per library section, ordered simplest to hardest (lib
 -- first, then the AI code). On the command line:
 --
@@ -11,15 +11,15 @@
 -- Each test is reseeded, prints something a tutor can point
 -- at, then asserts it: no crash = pass.
 --
---      lua abc-eg.lua --seed=2 --tree --score
+--      lua xai-eg.lua --seed=2 --tree --score
 --
 --[[
 ### How to run this course
 
 (Easier read: this file, rendered --
-[abc-eg.html](https://timm.github.io/src/sandbox/docs/abc-eg.html);
+[xai-eg.html](https://timm.github.io/src/xai/docs/xai-eg.html);
 its library
-[abc.html](https://timm.github.io/src/sandbox/docs/abc.html);
+[xai.html](https://timm.github.io/src/xai/docs/xai.html);
 the shared dictionary
 [glossary](https://timm.github.io/src/glossary.html).)
 
@@ -28,31 +28,54 @@ Install [lua 5.4+](https://lua.org) (mac:
 
     git clone https://github.com/timm/src
     git clone https://github.com/timm/moot ~/gits/moot
-    cd src/sandbox
-    lua abc-eg.lua --all      # a minute; ends "all pass"
+    cd src/xai
+    lua xai-eg.lua --all      # a minute; ends "all pass"
 
 Then four levels of read, per lesson:
 
 1. (skim) Read a lesson here beside its printed output in
-   [abc-eg.out](abc-eg.out). Can you tell what is going
+   [xai-eg.out](xai-eg.out). Can you tell what is going
    on?
 2. (run) Run that lesson's tests from the command line,
-   e.g. `lua abc-eg.lua --items`. Change an input; rerun.
+   e.g. `lua xai-eg.lua --items`. Change an input; rerun.
 3. (dive) Fire up the REPL: `lua -i`, then
-   `abc = require"abc"`, then retype any demo, line by
+   `xai = require"xai"`, then retype any demo, line by
    line, printing as you go.
 4. (deep dive) Port a lesson to your own favorite
    language (not lua) and reproduce its slice of
-   abc-eg.out. This can take a little time, so best to
+   xai-eg.out. This can take a little time, so best to
    start with the shorter functions within each
    lesson.
+
+### Contents
+
+The lessons in order, and the ideas each lands in the
+[glossary](../glossary.md). Run `lua xai-eg.lua -h` for the
+matching section/test map.
+
+| lesson | section | core ideas |
+|--------|---------|------------|
+|  0 | Lua     | [truthy](../glossary.md#truthy) [onetable](../glossary.md#onetable) [closure](../glossary.md#closure) [patterns](../glossary.md#patterns) [bob](../glossary.md#bob) |
+|  1 | Lst     | [lists](../glossary.md#lists) [dsu](../glossary.md#dsu) [bisect](../glossary.md#bisect) |
+|  2 | Rnd     | [seed](../glossary.md#seed) [shuffle](../glossary.md#shuffle) [gauss](../glossary.md#gauss) [roulette](../glossary.md#roulette) |
+|  3 | Str     | [coerce](../glossary.md#coerce) [csv](../glossary.md#csv) [ssot](../glossary.md#ssot) |
+|  4 | Num     | [welford](../glossary.md#welford) [stream](../glossary.md#stream) [minus](../glossary.md#minus) |
+|  5 | Sym     | [entropy](../glossary.md#entropy) [mode](../glossary.md#mode) [poly](../glossary.md#poly) [noir](../glossary.md#noir) |
+|  6 | Cols    | [schema](../glossary.md#schema) [goals](../glossary.md#goals) [xy](../glossary.md#xy) |
+|  7 | Tbl     | [tables](../glossary.md#tables) [clone](../glossary.md#clone) [centroid](../glossary.md#centroid) |
+|  8 | Dist    | [norm](../glossary.md#norm) [minkowski](../glossary.md#minkowski) [missing](../glossary.md#missing) [heaven](../glossary.md#heaven) [knn](../glossary.md#knn) [anomaly](../glossary.md#anomaly) |
+|  9 | Stats   | [effect](../glossary.md#effect) [ks](../glossary.md#ks) [same](../glossary.md#same) |
+| 10 | Acquire | [budget](../glossary.md#budget) [active](../glossary.md#active) [poles](../glossary.md#poles) [explore](../glossary.md#explore) |
+| 11 | Bins    | [bins](../glossary.md#bins) [cost](../glossary.md#cost) [closure](../glossary.md#closure) |
+| 12 | Tree    | [tree](../glossary.md#tree) [predict](../glossary.md#predict) [explain](../glossary.md#explain) |
+| 13 | Score   | [holdout](../glossary.md#holdout) [win](../glossary.md#win) [baseline](../glossary.md#baseline) [bets](../glossary.md#bets) [variability](../glossary.md#variability) |
 ]]
-local abc = require"abc"
-local the,lst,rnd,str = abc.the, abc.lst, abc.rnd, abc.str
-local stats,acquire   = abc.stats, abc.acquire
-local bins,adds       = abc.bins, abc.adds
-local Num,Sym,Cols    = abc.Num, abc.Sym, abc.Cols
-local Tbl,Tree        = abc.Tbl, abc.Tree
+local xai = require"xai"
+local the,lst,rnd,str = xai.the, xai.lst, xai.rnd, xai.str
+local stats,acquire   = xai.stats, xai.acquire
+local bins,adds       = xai.bins, xai.adds
+local Num,Sym,Cols    = xai.Num, xai.Sym, xai.Cols
+local Tbl,Tree        = xai.Tbl, xai.Tree
 
 local eg    = {}
 local order = {"lua","lst","rnd","str","num","sym","cols",
@@ -127,11 +150,11 @@ eg.lua["--patterns"] = function(    s)
 -- - **io.lines(file)** plus patterns plus one counting
 --   table = a tiny static analyzer. Uncle Bob's rule says
 --   keep functions small. Count code lines per paragraph
---   of abc.lua (comments and blanks end a paragraph):
+--   of xai.lua (comments and blanks end a paragraph):
 --   does that code practice what this lesson preaches?
 eg.lua["--bob"] = function(    n,sizes,small,big)
   n, sizes = 0, {}
-  for s in io.lines"abc.lua" do
+  for s in io.lines"xai.lua" do
     if s:find"%S" and not s:find"^%s*%-%-"
     then n = n + 1
     elseif n > 0 then
@@ -155,9 +178,9 @@ eg.lua["--bob"] = function(    n,sizes,small,big)
    then run it on its own source. Is your code
    Bob-friendly?
 1. (simple) Predict, then check: `0 and 1 or 2`,
-   `nil and 1 or 2`, `#"abc"`, `("x"):rep(3)`.
+   `nil and 1 or 2`, `#"xai"`, `("x"):rep(3)`.
 2. Extend `--bob` to also report the largest paragraph
-   and its first line. Which part of abc.lua most needs
+   and its first line. Which part of xai.lua most needs
    Uncle Bob's attention -- and would splitting it
    actually help a reader?
 ]]
@@ -291,7 +314,7 @@ eg.rnd["--gauss"] = function(    f,num)
    that, then implement this section's examples -- and
    from now on every lesson's exercise 0 can self-grade by
    diffing its printed output (3 decimals) against the
-   frozen transcript abc-eg.out.
+   frozen transcript xai-eg.out.
 1. (simple) Run `--lehmer` with `--seed=7`, twice. Then
    without the flag, twice. Explain the difference in one
    sentence.
@@ -996,13 +1019,13 @@ local function section(name,    keys)
     run(eg[name][k]) end end
 
 eg.main["-h"] = function(    keys)
-  print(abc.help .. "\nSections (and their tests):\n")
+  print(xai.help .. "\nSections (and their tests):\n")
   for _,n in ipairs(order) do
     keys = {}
     for k in pairs(eg[n]) do lst.push(keys, k) end
-    print("  lua abc-eg.lua --" .. n .. "   # or: " ..
+    print("  lua xai-eg.lua --" .. n .. "   # or: " ..
           table.concat(lst.sort(keys), " ")) end
-  print("\nAlso: --all -h --doc --join --transcript --check")
+  print("\nAlso: --all -h --join --transcript --check")
   end
 
 eg.main["--all"] = function()
@@ -1011,17 +1034,17 @@ eg.main["--all"] = function()
     section(n) end
   print("\nall pass") end
 
--- freeze the printed pedagogy: capture --all to abc-eg.out
+-- freeze the printed pedagogy: capture --all to xai-eg.out
 -- (generated from a real run, never hand-edited). Student
 -- ports self-grade against it; CI diffs it via --check.
 eg.main["--transcript"] = function()
-  assert(os.execute("lua abc-eg.lua --all > abc-eg.out"))
-  print("abc-eg.out frozen") end
+  assert(os.execute("lua xai-eg.lua --all > xai-eg.out"))
+  print("xai-eg.out frozen") end
 
 -- a fresh --all must reproduce the frozen transcript, so
 -- any refactor that moves a graded number fails here first
 eg.main["--check"] = function(    ok)
-  ok = os.execute("lua abc-eg.lua --all | diff - abc-eg.out")
+  ok = os.execute("lua xai-eg.lua --all | diff - xai-eg.out")
   print(ok and "transcript ok" or "TRANSCRIPT DRIFT")
   assert(ok) end
 
@@ -1040,7 +1063,7 @@ local function deref(root, name)
 eg.main["--join"] = function(    doc,src,keys,used,taught,
                                 ok,n,total)
   doc = io.open"../glossary.md":read"*a"
-  src = io.open"abc-eg.lua":read"*a"
+  src = io.open"xai-eg.lua":read"*a"
   keys, used, taught, ok = {}, {}, {}, true
   for k in doc:gmatch"\n## ([a-z]+)\n" do keys[k] = true end
   for k in src:gmatch"glossary%.md#([a-z]+)" do
@@ -1053,16 +1076,16 @@ eg.main["--join"] = function(    doc,src,keys,used,taught,
     if line:find"^%-%- %- %*%*" then
       for sig in line:gmatch"%*%*([%w_./]+)%(" do
         for name in sig:gmatch"[%w_.]+" do
-          if deref(abc, name) then taught[name] = true
+          if deref(xai, name) then taught[name] = true
           elseif not deref(_G, name) then    -- lua builtin?
             ok = false
             print("dot-list names missing fn:", name)
           end end end end end
   n, total = 0, 0
   for _ in pairs(taught) do n = n + 1 end
-  for _,v in pairs(abc) do
+  for _,v in pairs(xai) do
     if type(v) == "function" then total = total + 1 end
-    if type(v) == "table" and v ~= abc.the then
+    if type(v) == "table" and v ~= xai.the then
       for _,f in pairs(v) do
         if type(f) == "function" then
           total = total + 1 end end end end
@@ -1070,60 +1093,10 @@ eg.main["--join"] = function(    doc,src,keys,used,taught,
         n, total))
   assert(ok) end
 
--- files to html, and each one's prose alignment
-local docs = {abc="right", ["abc-eg"]="left"}
-
--- pycco only knows "--" line comments, so lift --[[ prose ]]
--- blocks to "-- " lines; drop shebang and formfeeds. pycco
--- pairs a comment run with the NEXT code, so when a "-- ##"
--- heading directly follows prose (e.g. the exercises of the
--- section before), emit a lone ";" code line between them:
--- that closes the old section, and the heading starts fresh.
-local function prose(file,    out,md,last)
-  out = {}
-  for s in io.lines(file) do
-    if     s:find"^%-%-%[%[" then md = true
-    elseif s:find"^%]%]"     then md = false
-    elseif not (s:find"^#!" or s:find"^\f") then
-      if s:find"^%-%- ##" and last == "prose" then
-        lst.push(out, ";") end
-      lst.push(out, md and "-- " .. s or s)
-      if s ~= "" then
-        last = (md or s:find"^%-%-") and "prose" or "code"
-      end end end
-  return table.concat(out, "\n") end
-
-eg.main["--doc"] = function(    tmp,out,b,badges,f,s,i)
-  tmp = os.getenv"HOME" .. "/tmp/eg"
-  out = "../docs/sandbox"    -- committed; doc.py sites it
-  os.execute("mkdir -p " .. tmp .. " " .. out)
-  b = io.open"badges.html"
-  badges = b and b:read"*a" or ""
-  if b then b:close() end
-  for name,align in pairs(docs) do
-    f = io.open(tmp .. "/" .. name .. ".lua", "w")
-    f:write(prose(name .. ".lua"))
-    f:close()
-    os.execute("pycco -d " .. out .. " " ..
-               tmp .. "/" .. name .. ".lua")
-    f = io.open(out .. "/" .. name .. ".html")
-    s = f:read"*a"; f:close()
-    s = s:gsub('href="%.%./glossary%.md',    -- glossary links
-          'href="https://github.com/timm/src/blob/main/'
-          .. 'glossary.md')
-    s = s:gsub("</head>",                    -- per-page style
-          "<style>h2 {border-top:1px solid #ddd; " ..
-          "margin-top:2.5em; padding-top:.5em} " ..
-          "p {text-align:" .. align .. "}</style></head>", 1)
-    i = s:find("<h1", 1, true)               -- badges
-    if i then s = s:sub(1, i - 1) .. badges .. s:sub(i) end
-    f = io.open(out .. "/" .. name .. ".html", "w")
-    f:write(s); f:close() end end
-
 -- cli, args left to right: --key=val (or "-x v", x = an
 -- option's first letter) sets an option; --name runs a
--- section; other names run one test (--all, -h and --doc
--- are just tests in eg.main). Flags steer only the egs
+-- section; other names run one test (--all and -h are
+-- just tests in eg.main). Flags steer only the egs
 -- that follow them.
 local function cli(    k,v)
   for i,s in ipairs(arg) do
@@ -1142,5 +1115,5 @@ local function cli(    k,v)
 
 -- lua's "if __name__ == __main__": when run from the shell,
 -- arg[0] is this script; when require'd, it is the caller's.
-if arg and arg[0] and arg[0]:find"abc%-eg" then cli() end
+if arg and arg[0] and arg[0]:find"xai%-eg" then cli() end
 return eg

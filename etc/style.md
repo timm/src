@@ -41,9 +41,17 @@ recreate them.
   headings either way.
 - `-eg` files are executable transcripts: running them IS
   the tutorial; their asserts ARE the tests (full shape:
-  see "-eg and -doc" below).
+  see "-eg: tutorials that are tests" below).
 - No subdirs inside an idea dir. Uniform shape keeps all
   tooling a single loop over dirs; guard it jealously.
+- One app per dir. INSTALL.md, README.md and the manifest
+  are dir-scoped, and the doc/badge tooling keys on
+  `PROJ = basename(dir)` -- so a dir is exactly one
+  shippable idea. Two languages = two apps = two dirs.
+  sandbox/ is the sole exception: a multi-app scratch area,
+  exempt from the scaffold and the doc pipeline (it renders
+  nothing). A play idea graduates by moving to its own dir
+  and gaining the scaffold (abc -> xai did this).
 
 ## comments: three altitudes, never mixed
 
@@ -75,14 +83,16 @@ python block opening `word: ...` (e.g. `ezr2.py: ...`,
 `INSTALL: ...`) is help text and doc.awk renders it
 fenced verbatim.
 
-## -eg and -doc: tutorials that are tests
+## -eg: tutorials that are tests
 
-Language agnostic (exemplars: sandbox/abc-eg.lua,
+Language agnostic (exemplars: xai/xai-eg.lua,
 ezr2/ezr2-eg.py). Every idea dir pairs xx.ext with
-xx-eg.ext and, when taught as a course, xx-doc.md.
+xx-eg.ext; there is no xx-doc -- a course keeps its
+contents table in the -eg how-to stanza, and its
+definitions and references in glossary.md.
 The doc pipeline pyccos BOTH xx.ext and xx-eg.ext
 (block-comment prose stanzas lift into the docs column;
-see doc.awk, or abc-eg's local `prose`).
+see doc.awk).
 
 Shape of xx-eg.ext:
 
@@ -94,7 +104,9 @@ Shape of xx-eg.ext:
   on the site -- the pycco htmls and the glossary -- then
   install lines + four reading levels:
   skim beside xx-eg.out, run one test, retype at the
-  REPL, port and diff), and a lesson 0 teaching the
+  REPL, port and diff + a contents table, lesson |
+  section | ideas in lesson order, linking the glossary),
+  and a lesson 0 teaching the
   implementation language to incomers from the course's
   assumed language ("lua for the impatient pythonista":
   trap demos, each printed and asserted, ending with a
@@ -124,10 +136,11 @@ Shape of xx-eg.ext:
   the concepts still awaiting entries. Nobody reads it
   top to bottom: arrive by Core-ideas link, leave by
   back-pointer.
-- xx-doc.md keeps only the course-specific views: the
-  contents table (the lesson order, linking into the
-  glossary) and the references (recaps/quiz later).
-- Doc claims are executable (exemplar: abc-eg.lua):
+- No xx-doc: the contents table (lesson | section | ideas,
+  in lesson order) lives in the -eg how-to stanza, and the
+  references live in glossary.md as a *see:* line inside
+  each entry (any general source in its tail section).
+- Doc claims are executable (exemplar: xai-eg.lua):
   `--join` verifies lesson links land on doc headings,
   headings are all linked, and dot-list signatures
   resolve in the module (reflection; language builtins
@@ -140,11 +153,11 @@ Shape of xx-eg.ext:
   16807 generator (pseudocode + first three seeds), so
   student ports self-grade against xx-eg.out by diff.
 
-Maintenance: -eg and -doc files are AUDITED, never
-regenerated. If absent, create; ever after, edits only
+Maintenance: -eg files (and glossary entries) are AUDITED,
+never regenerated. If absent, create; ever after, edits only
 ADD missing bits (new function -> dot-list line + test;
 new idea -> glossary key). Deleting or rewriting existing
--eg/-doc content needs explicit per-item signoff from the
+-eg or glossary content needs explicit per-item signoff from the
 author: these files accrete hand-tuned teaching material
 that regeneration would destroy (cf. luamine/tut.md).
 
@@ -169,13 +182,14 @@ browsable, marked dead by location.
   etc/doc.awk turns each source file into pycco input;
   etc/pyccot.py runs pycco with markdown tables enabled;
   etc/nav.py injects badges (home, src, code, tests, live
-  per-dir ci, license, ...), prev/next in INSTALL.md
+  per-dir ci, license, ...) -- or, if a dir's README has a
+  `<!-- badges -->` block, that block verbatim (a
+  human-authored SSOT) -- plus prev/next in INSTALL.md
   order, per-page prose alignment (code pages right,
   tests/tutorial pages left) and links the title to the
   file on github; etc/toc.py rewrites README's
   <!-- doc-toc --> block (page order falls back to a
-  glob for dirs without INSTALL.md, e.g. sandbox, whose
-  pycco pages come from abc-eg's own --doc verb).
+  glob for dirs without INSTALL.md).
   glossary.md is copied to the site root and, via the
   jekyll-relative-links plugin, every ../glossary.md#key
   link lands on glossary.html. One page per SOURCE FILE

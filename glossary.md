@@ -16,7 +16,7 @@ concepts still awaiting entries (and a course).
 
 ## bisect
 
-*taught in:* [abc-eg, lesson 1](sandbox/abc-eg.lua)
+*taught in:* [xai-eg, lesson 1](xai/xai-eg.lua)
 
 Binary search of a sorted list: the smallest index whose
 item exceeds v, found in log time. So `bisect(t,v)-1`
@@ -26,7 +26,7 @@ fast off sorted lists.
 
 ## closure
 
-*taught in:* [abc-eg, lesson 0](sandbox/abc-eg.lua) · [abc-eg, lesson 11](sandbox/abc-eg.lua)
+*taught in:* [xai-eg, lesson 0](xai/xai-eg.lua) · [xai-eg, lesson 11](xai/xai-eg.lua)
 
 A function plus the variables it captured. Lesson 0's
 `lst.items` is a closure remembering how far a sorted
@@ -37,7 +37,7 @@ contest without any global state.
 
 ## coerce
 
-*taught in:* [abc-eg, lesson 3](sandbox/abc-eg.lua)
+*taught in:* [xai-eg, lesson 3](xai/xai-eg.lua)
 
 Strings to things: "42" becomes a number, "true" a
 boolean, anything else a trimmed string. The whole edge
@@ -46,7 +46,7 @@ of the system where files meet data is one tiny function
 
 ## csv
 
-*taught in:* [abc-eg, lesson 3](sandbox/abc-eg.lua)
+*taught in:* [xai-eg, lesson 3](xai/xai-eg.lua)
 
 Comma-separated values, self-describing: the first line
 is the [schema](#schema). Streamed one row at a time
@@ -54,7 +54,7 @@ is the [schema](#schema). Streamed one row at a time
 
 ## dsu
 
-*taught in:* [abc-eg, lesson 1](sandbox/abc-eg.lua)
+*taught in:* [xai-eg, lesson 1](xai/xai-eg.lua)
 
 Decorate-sort-undecorate: compute each item's sort key
 once, sort the (key,item) pairs, strip the keys. Vital
@@ -63,7 +63,7 @@ when keys are expensive (a distance calc per row), as in
 
 ## lists
 
-*taught in:* [abc-eg, lesson 1](sandbox/abc-eg.lua)
+*taught in:* [xai-eg, lesson 1](xai/xai-eg.lua)
 
 The only container in this system: Lua tables used as
 lists, served by a dozen ten-line verbs that compose
@@ -72,7 +72,7 @@ vocabulary covers thirteen lessons (lesson 1).
 
 ## lua
 
-*taught in:* [abc-eg, lesson 0](sandbox/abc-eg.lua)
+*taught in:* [xai-eg, lesson 0](xai/xai-eg.lua)
 
 For the impatient pythonista:
 
@@ -102,7 +102,7 @@ For the impatient pythonista:
   [metatable events](http://lua-users.org/wiki/MetatableEvents)
   -- __index, __call, __add, __tostring, ...). Setting
   `__index` on a shared table gives python-style method
-  lookup -- see `new` in abc.lua: two lines make the
+  lookup -- see `new` in xai.lua: two lines make the
   whole class system. That buys [poly](#poly)morphism,
   not inheritance; for fuller OO see
   [PIL ch 16](https://www.lua.org/pil/16.html)
@@ -130,7 +130,7 @@ Lua: quick refs (quickest to read, shown first):
 
 ## onetable
 
-*taught in:* [abc-eg, lesson 0](sandbox/abc-eg.lua)
+*taught in:* [xai-eg, lesson 0](xai/xai-eg.lua)
 
 Lua's one data structure: the table is list, dict, object
 and module at once. `ipairs` walks the list part 1,2,3..;
@@ -140,7 +140,7 @@ and module at once. `ipairs` walks the list part 1,2,3..;
 
 ## patterns
 
-*taught in:* [abc-eg, lesson 0](sandbox/abc-eg.lua)
+*taught in:* [xai-eg, lesson 0](xai/xai-eg.lua)
 
 Lua string patterns are not regexes: `%w %d %s` classes,
 `^ $` anchors, no alternation. Small enough to learn in a
@@ -149,7 +149,7 @@ schema texts (lessons 0, 3).
 
 ## poly
 
-*taught in:* [abc-eg, lesson 5](sandbox/abc-eg.lua)
+*taught in:* [xai-eg, lesson 5](xai/xai-eg.lua)
 
 Polymorphism: Num and Sym answer one interface (add, mid,
 spread, without, dist, bins, holds), so distance, binning
@@ -158,7 +158,7 @@ of metatables replace a design pattern (lesson 5).
 
 ## truthy
 
-*taught in:* [abc-eg, lesson 0](sandbox/abc-eg.lua)
+*taught in:* [xai-eg, lesson 0](xai/xai-eg.lua)
 
 In lua only `nil` and `false` are falsy: 0 and "" are
 TRUE. The `x and y or z` ternary and the `x = x or d`
@@ -172,17 +172,17 @@ pythonistas (lesson 0).
 
 ## bob
 
-*taught in:* [abc-eg, lesson 0](sandbox/abc-eg.lua)
+*taught in:* [xai-eg, lesson 0](xai/xai-eg.lua)
 
 Uncle Bob's rule: keep functions small (5-10 lines).
-Lesson 0's `--bob` demo audits abc.lua itself -- strip
+Lesson 0's `--bob` demo audits xai.lua itself -- strip
 comments, histogram paragraph sizes -- and the code
 passes its own preaching. First of the SE design rules;
 the rest live in the scope map below.
 
 ## schema
 
-*taught in:* [abc-eg, lesson 6](sandbox/abc-eg.lua)
+*taught in:* [xai-eg, lesson 6](xai/xai-eg.lua)
 
 The csv header IS the schema: leading uppercase = number;
 suffixes mark [goals](#goals) and columns to skip. Rename
@@ -191,7 +191,7 @@ no config files (lessons 3, 6).
 
 ## ssot
 
-*taught in:* [abc-eg, lesson 3](sandbox/abc-eg.lua)
+*taught in:* [xai-eg, lesson 3](xai/xai-eg.lua)
 
 Single source of truth: the option defaults live in the
 help text and are parsed out of it, so the docs and the
@@ -204,7 +204,7 @@ program cannot disagree (lesson 3).
 
 ## baseline
 
-*taught in:* [abc-eg, lesson 13](sandbox/abc-eg.lua)
+*taught in:* [xai-eg, lesson 13](xai/xai-eg.lua)
 
 Before crediting a clever method, beat a dumb one under
 the same rules. Ours: random labelling with the same
@@ -213,7 +213,10 @@ apart, the cleverness is decoration (lessons 10, 13).
 
 ## effect
 
-*taught in:* [abc-eg, lesson 9](sandbox/abc-eg.lua)
+*taught in:* [xai-eg, lesson 9](xai/xai-eg.lua)
+
+*see:* Cliff (1993), Psych. Bulletin 114 — dominance
+statistics.
 
 Effect size: how BIG a difference is, not merely whether
 one exists. Here Cliff's delta: from sorted lists, how
@@ -222,7 +225,7 @@ delta = who cares (lesson 9).
 
 ## entropy
 
-*taught in:* [abc-eg, lesson 5](sandbox/abc-eg.lua)
+*taught in:* [xai-eg, lesson 5](xai/xai-eg.lua)
 
 The effort needed to describe what is in a bag of
 symbols: -sum p log2 p. Low entropy = one symbol
@@ -231,7 +234,9 @@ classification flavor of [cost](#cost) (lessons 5, 11).
 
 ## gauss
 
-*taught in:* [abc-eg, lesson 2](sandbox/abc-eg.lua)
+*taught in:* [xai-eg, lesson 2](xai/xai-eg.lua)
+
+*see:* Box & Muller (1958) — normal deviates from uniforms.
 
 The bell curve. Box-Muller turns two uniform draws into
 one normal draw with real (unclipped) tails; used to
@@ -239,7 +244,10 @@ sample plausible numeric values (lesson 2).
 
 ## ks
 
-*taught in:* [abc-eg, lesson 9](sandbox/abc-eg.lua)
+*taught in:* [xai-eg, lesson 9](xai/xai-eg.lua)
+
+*see:* Massey (1951), JASA 46 — the Kolmogorov-Smirnov
+test.
 
 Kolmogorov-Smirnov: the biggest gap between two samples'
 CDFs. Distribution-free, no normality assumed, and via
@@ -247,7 +255,7 @@ CDFs. Distribution-free, no normality assumed, and via
 
 ## minus
 
-*taught in:* [abc-eg, lesson 4](sandbox/abc-eg.lua)
+*taught in:* [xai-eg, lesson 4](xai/xai-eg.lua)
 
 The subtraction trick: Welford summaries un-fold, so
 `i:without(j)` returns "i's data minus j's" in constant
@@ -256,14 +264,14 @@ needs only one pass over the rows (lessons 4, 5, 11).
 
 ## mode
 
-*taught in:* [abc-eg, lesson 5](sandbox/abc-eg.lua)
+*taught in:* [xai-eg, lesson 5](xai/xai-eg.lua)
 
 The most common symbol in a bag: Sym's middle, and the
 prediction at a classification leaf (lessons 5, 12).
 
 ## noir
 
-*taught in:* [abc-eg, lesson 5](sandbox/abc-eg.lua)
+*taught in:* [xai-eg, lesson 5](xai/xai-eg.lua)
 
 Stevens' scale ladder: Nominal, Ordinal, Interval, Ratio.
 This system keeps just the two ends -- symbols get
@@ -272,7 +280,7 @@ summaries suffice (lesson 5).
 
 ## roulette
 
-*taught in:* [abc-eg, lesson 2](sandbox/abc-eg.lua)
+*taught in:* [xai-eg, lesson 2](xai/xai-eg.lua)
 
 Weighted random choice: pick a key with probability
 proportional to its weight, by walking counts until a
@@ -280,7 +288,9 @@ random slice of the total is spent (lesson 2).
 
 ## same
 
-*taught in:* [abc-eg, lesson 9](sandbox/abc-eg.lua)
+*taught in:* [xai-eg, lesson 9](xai/xai-eg.lua)
+
+*see:* Cohen (1988) — statistical power and effect size.
 
 Conservative equality for result sets: [effect](#effect)
 AND cohen AND [ks](#ks) must all agree before two samples
@@ -290,7 +300,10 @@ is only shouted when it would be hard to argue otherwise
 
 ## seed
 
-*taught in:* [abc-eg, lesson 2](sandbox/abc-eg.lua)
+*taught in:* [xai-eg, lesson 2](xai/xai-eg.lua)
+
+*see:* Park & Miller (1988), CACM 31(10) — the 16807
+minimal standard generator.
 
 Where a random number generator starts. A fixed seed
 (here: a 16807 Lehmer generator, identical on any lua)
@@ -299,7 +312,7 @@ are checkable by diff (lesson 2).
 
 ## shuffle
 
-*taught in:* [abc-eg, lesson 2](sandbox/abc-eg.lua)
+*taught in:* [xai-eg, lesson 2](xai/xai-eg.lua)
 
 Fisher-Yates: walk the list backwards, swapping each item
 with a random earlier one; every ordering equally likely,
@@ -307,7 +320,7 @@ in linear time (lesson 2).
 
 ## stream
 
-*taught in:* [abc-eg, lesson 4](sandbox/abc-eg.lua)
+*taught in:* [xai-eg, lesson 4](xai/xai-eg.lua)
 
 Process values one at a time, constant memory, no second
 pass. [welford](#welford) streams; so do csv reads; so
@@ -315,7 +328,7 @@ does bin scoring via [minus](#minus) (lessons 3, 4).
 
 ## variability
 
-*taught in:* [abc-eg, lesson 13](sandbox/abc-eg.lua)
+*taught in:* [xai-eg, lesson 13](xai/xai-eg.lua)
 
 Learner variability: rerun with a new seed and the answer
 moves. So report distributions, never single runs, and
@@ -323,7 +336,10 @@ judge gaps with [same](#same) (lesson 13, `--seeds`).
 
 ## welford
 
-*taught in:* [abc-eg, lesson 4](sandbox/abc-eg.lua)
+*taught in:* [xai-eg, lesson 4](xai/xai-eg.lua)
+
+*see:* Welford (1962), Technometrics 4(3) — incremental
+variance.
 
 Incremental mean and variance in three slots (n, mu, m2),
 one update per value, numerically stable — and reversible
@@ -336,7 +352,7 @@ one update per value, numerically stable — and reversible
 
 ## anomaly
 
-*taught in:* [abc-eg, lesson 8](sandbox/abc-eg.lua)
+*taught in:* [xai-eg, lesson 8](xai/xai-eg.lua)
 
 A row far from even its own nearest neighbor. Once
 distance exists, outlier detection is one argmax: find
@@ -344,7 +360,7 @@ who is loneliest (lesson 8, `--near`).
 
 ## centroid
 
-*taught in:* [abc-eg, lesson 7](sandbox/abc-eg.lua)
+*taught in:* [xai-eg, lesson 7](xai/xai-eg.lua)
 
 A table's middle: every column's mid, in column order.
 Computed lazily and cached; any add wipes the cache,
@@ -354,7 +370,7 @@ sampling error with your own eyes.
 
 ## clone
 
-*taught in:* [abc-eg, lesson 7](sandbox/abc-eg.lua)
+*taught in:* [xai-eg, lesson 7](xai/xai-eg.lua)
 
 A fresh table wearing an existing header, given new rows.
 Each subset then owns honest column summaries, keeping
@@ -362,7 +378,7 @@ train and test data uncontaminated (lessons 7, 13).
 
 ## heaven
 
-*taught in:* [abc-eg, lesson 8](sandbox/abc-eg.lua)
+*taught in:* [xai-eg, lesson 8](xai/xai-eg.lua)
 
 The ideal point where every goal is at its best value.
 `disty` = a row's distance to heaven (0 = ideal, 1 =
@@ -371,7 +387,7 @@ worst), so optimization is just "find rows near heaven"
 
 ## knn
 
-*taught in:* [abc-eg, lesson 8](sandbox/abc-eg.lua)
+*taught in:* [xai-eg, lesson 8](xai/xai-eg.lua)
 
 k-nearest-neighbors: sort everything by distance to a
 query, let the closest few answer. No training step --
@@ -379,7 +395,7 @@ the data IS the model (lesson 8, `--near`).
 
 ## minkowski
 
-*taught in:* [abc-eg, lesson 8](sandbox/abc-eg.lua)
+*taught in:* [xai-eg, lesson 8](xai/xai-eg.lua)
 
 The p-norm: aggregate per-column gaps as
 `(sum gap^p / n)^(1/p)`. p=1 city-block, p=2
@@ -388,7 +404,7 @@ euclidean-ish; one exponent tunes the geometry of both
 
 ## missing
 
-*taught in:* [abc-eg, lesson 8](sandbox/abc-eg.lua)
+*taught in:* [xai-eg, lesson 8](xai/xai-eg.lua)
 
 "?" cells. Distance treats them pessimistically — assume
 the unknown value is far away — so missing data widens
@@ -396,7 +412,7 @@ gaps rather than hiding them (lesson 8).
 
 ## norm
 
-*taught in:* [abc-eg, lesson 8](sandbox/abc-eg.lua)
+*taught in:* [xai-eg, lesson 8](xai/xai-eg.lua)
 
 Map a raw number to 0..1 via a logistic over its z-score,
 so a column of grams and a column of years contribute
@@ -404,7 +420,10 @@ fairly to one distance (lesson 8).
 
 ## poles
 
-*taught in:* [abc-eg, lesson 10](sandbox/abc-eg.lua)
+*taught in:* [xai-eg, lesson 10](xai/xai-eg.lua)
+
+*see:* Faloutsos & Lin (1995), SIGMOD — FastMap (the poles
+trick).
 
 Two far-apart rows. Projecting everything onto the line
 joining them gives a cheap one-dimensional view of
@@ -413,7 +432,7 @@ good pole is lesson 10's whole tactic.
 
 ## tables
 
-*taught in:* [abc-eg, lesson 7](sandbox/abc-eg.lua)
+*taught in:* [xai-eg, lesson 7](xai/xai-eg.lua)
 
 Rows plus typed column summaries: the first row builds
 the [schema](#schema), later rows update per-column
@@ -426,7 +445,7 @@ stats as they are stored (lesson 7).
 
 ## bets
 
-*taught in:* [abc-eg, lesson 13](sandbox/abc-eg.lua)
+*taught in:* [xai-eg, lesson 13](xai/xai-eg.lua)
 
 Every learner and optimizer is a falsifiable bet about
 the shape of your data: in recent optimizer tournaments
@@ -435,7 +454,7 @@ cheap experiment; don't trust the brand name (lesson 13).
 
 ## bins
 
-*taught in:* [abc-eg, lesson 11](sandbox/abc-eg.lua)
+*taught in:* [xai-eg, lesson 11](xai/xai-eg.lua)
 
 Chopping an x column into ranges that simplify y
 (lesson 11). Numeric bins come from breaks in sorted
@@ -445,7 +464,7 @@ readable test like `Volume <= 112`.
 
 ## cost
 
-*taught in:* [abc-eg, lesson 11](sandbox/abc-eg.lua)
+*taught in:* [xai-eg, lesson 11](xai/xai-eg.lua)
 
 Split cost: the size-weighted spread of the two halves a
 bin creates. Lower cost = y is simpler to describe after
@@ -454,7 +473,7 @@ scoring never re-reads the rows (lesson 11).
 
 ## explain
 
-*taught in:* [abc-eg, lesson 12](sandbox/abc-eg.lua)
+*taught in:* [xai-eg, lesson 12](xai/xai-eg.lua)
 
 A model a human can argue with: branch tests in the
 data's own vocabulary, leaves small enough to inspect.
@@ -463,7 +482,7 @@ models that merely score well (lesson 12).
 
 ## explore
 
-*taught in:* [abc-eg, lesson 10](sandbox/abc-eg.lua)
+*taught in:* [xai-eg, lesson 10](xai/xai-eg.lua)
 
 Explore vs exploit: spend labels learning the landscape,
 or harvesting its best-known corner? Acquisition policies
@@ -472,7 +491,7 @@ pure explore wastes the [budget](#budget).
 
 ## predict
 
-*taught in:* [abc-eg, lesson 12](sandbox/abc-eg.lua)
+*taught in:* [xai-eg, lesson 12](xai/xai-eg.lua)
 
 Route a row down the tree by its branch tests; report the
 leaf's mid (mean or [mode](#mode)). Same tree, two uses:
@@ -480,7 +499,10 @@ predict and [explain](#explain) (lesson 12).
 
 ## tree
 
-*taught in:* [abc-eg, lesson 12](sandbox/abc-eg.lua)
+*taught in:* [xai-eg, lesson 12](xai/xai-eg.lua)
+
+*see:* Breiman et al. (1984) — CART: classification and
+regression trees.
 
 Recursive splitting on the cheapest [bin](#bins) while
 rows and depth allow. Leaves keep their rows and a mid
@@ -494,7 +516,9 @@ prediction; branches read as English-ish tests
 
 ## active
 
-*taught in:* [abc-eg, lesson 10](sandbox/abc-eg.lua)
+*taught in:* [xai-eg, lesson 10](xai/xai-eg.lua)
+
+*see:* Settles (2009) — Active Learning literature survey.
 
 Active learning: the learner chooses which rows to label
 next, instead of labelling at random. Here (lesson 10),
@@ -504,7 +528,7 @@ Spend the [budget](#budget) where it teaches most.
 
 ## budget
 
-*taught in:* [abc-eg, lesson 10](sandbox/abc-eg.lua)
+*taught in:* [xai-eg, lesson 10](xai/xai-eg.lua)
 
 The number of y-labels we may buy. In real tables the x
 values are cheap and the y values dear (a benchmark, a
@@ -513,7 +537,7 @@ label spent (lessons 10-13).
 
 ## goals
 
-*taught in:* [abc-eg, lesson 6](sandbox/abc-eg.lua)
+*taught in:* [xai-eg, lesson 6](xai/xai-eg.lua)
 
 The y columns: names ending "+" (maximize), "-"
 (minimize), "!" (classify). Goals plus [norm](#norm)
@@ -521,7 +545,7 @@ define [heaven](#heaven) (lessons 6, 8).
 
 ## holdout
 
-*taught in:* [abc-eg, lesson 13](sandbox/abc-eg.lua)
+*taught in:* [xai-eg, lesson 13](xai/xai-eg.lua)
 
 Judge on rows never seen in training: shuffle, train on
 half under the [budget](#budget), let the tree rank the
@@ -529,7 +553,7 @@ other half, check only the top few (lesson 13).
 
 ## win
 
-*taught in:* [abc-eg, lesson 13](sandbox/abc-eg.lua)
+*taught in:* [xai-eg, lesson 13](xai/xai-eg.lua)
 
 A grade for any row: 100 = as good as the best row in the
 table, 0 = no better than the median, computed from the
@@ -537,7 +561,7 @@ distance-to-[heaven](#heaven) distribution (lesson 13).
 
 ## xy
 
-*taught in:* [abc-eg, lesson 6](sandbox/abc-eg.lua)
+*taught in:* [xai-eg, lesson 6](xai/xai-eg.lua)
 
 The x columns describe a thing (cheap to read); the y
 columns judge it (dear to measure). That asymmetry is the
@@ -550,3 +574,12 @@ economics behind the whole second half of the course
 # llm-era se
 
 *Awaiting entries:* AI agents, MCP, A2A, audit trails, reasoning traces, tools over agents, least privilege, automation layer cake, APR, fuzzing, differential oracles, evals.
+
+
+# sources
+
+Per-concept citations live inline above, as the *see:* line
+under each entry. The one general source:
+
+- Menzies (2026) — luamine/tut.md: ten lectures on
+  data-lite AI, the long-form ancestor of the xai course.

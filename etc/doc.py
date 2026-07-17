@@ -114,7 +114,7 @@ def main(site="_site"):
     d = d.rstrip("/")
     srcs = [f for f in sorted(glob.glob(f"{d}/*"))
             if os.path.splitext(f)[1] in MARK]
-    if d in ("etc", "attic") or not srcs: continue
+    if d in ("etc", "attic", "sandbox") or not srcs: continue
     os.makedirs(f"{site}/{d}", exist_ok=True)
     files = []
     if os.path.isdir(f"docs/{d}"):   # pycco html: copy verbatim,

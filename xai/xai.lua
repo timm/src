@@ -1,18 +1,18 @@
 #!/usr/bin/env lua
--- abc.lua: explainable multi-objective optimization, tiny-ly.
+-- xai.lua: explainable multi-objective optimization, tiny-ly.
 -- Polymorphic Num/Sym summaries feed distance, labelling,
 -- binning and tree code that never asks a column its type.
 local help = [[
    
-abc: explainable multi-objective optimization, tiny-ly
+xai: explainable multi-objective optimization, tiny-ly
 (c) 2026 Tim Menzies <timm@ieee.org>, MIT license
 
 Samples a data landscape under a small labelling budget,
 grows a regression tree over the labels, then picks good
 rows and shows which x-ranges explain them.
   
-USAGE: local abc = require"abc"      
-(demos and tests: lua abc-eg.lua [OPTIONS] [eg ...])   
+USAGE: local xai = require"xai"      
+(demos and tests: lua xai-eg.lua [OPTIONS] [eg ...])   
           
 OPTIONS:
   -a  --acquire=active  labelling: active or random
@@ -648,7 +648,7 @@ function str.o(x,    u,y)
 
 -- ## Start
 -- Parse help's --key=val defaults into `the`, seed, and
--- hand back the module (demos and cli live in abc-eg.lua).
+-- hand back the module (demos and cli live in xai-eg.lua).
 
 str.settings(help)
 rnd.seed(the.seed)

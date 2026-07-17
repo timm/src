@@ -2,23 +2,22 @@
 <html>
 <head>
   <meta http-equiv="content-type" content="text/html;charset=utf-8">
-  <title>abc-eg.lua</title>
+  <title>xai-eg.lua</title>
   <link rel="stylesheet" href="pycco.css">
-<style>h2 {border-top:1px solid #ddd; margin-top:2.5em; padding-top:.5em} p {text-align:left}</style></head>
+<style>p {text-align:left} #section-0 p, #section-1 p {text-align:left}</style></head>
 <body>
 <div id='container'>
   <div id="background"></div>
   <div class='section'>
-    <div class='docs'><p style="text-align:center">
-<a href="https://timm.github.io/src/"><img alt="home" src="https://img.shields.io/badge/🏠-home-e53935"></a>
-<a href="https://github.com/timm/src/tree/main/sandbox"><img alt="src" src="https://img.shields.io/badge/src-sandbox-fb8c00"></a>
+    <div class='docs'><p align="center">
+<a href="https://timm.github.io/src/"><img alt="home" src="https://img.shields.io/badge/🏠-home-gold"></a>
+<a href="https://github.com/timm/src/tree/main/xai"><img alt="src" src="https://img.shields.io/badge/src-xai-black"></a>
+<a href="https://github.com/timm/src/actions/workflows/tests-xai.yml"><img alt="ci" src="https://github.com/timm/src/actions/workflows/tests-xai.yml/badge.svg"></a>
 <img alt="purpose" src="https://img.shields.io/badge/purpose-xai,optimization-ffb300">
-<br>
-<img alt="language" src="https://img.shields.io/badge/language-lua-43a047">
-<a href="https://timm.fyi"><img alt="author" src="https://img.shields.io/badge/author-timm-1e88e5"></a>
-<a href="https://github.com/timm/src/blob/main/LICENSE.md"><img alt="license" src="https://img.shields.io/badge/(c)2026-MIT-8e24aa"></a>
-</p>
-<h1>abc-eg.lua</h1></div>
+<img alt="language" src="https://img.shields.io/badge/language-lua-9558B2">
+<a href="https://github.com/timm/src/blob/main/LICENSE.md"><img alt="license" src="https://img.shields.io/badge/license-MIT-brightgreen"></a>
+<a href="https://timm.fyi"><img alt="author" src="https://img.shields.io/badge/author-timm-blueviolet"></a>
+</p><p><a href="xai.html">&lt; prev</a> | next &gt;</p><h1><a href="https://github.com/timm/src/blob/main/xai/xai-eg.lua">xai-eg.lua</a></h1></div>
   </div>
   <div class='clearall'>
   <div class='section' id='section-0'>
@@ -26,7 +25,7 @@
       <div class='octowrap'>
         <a class='octothorpe' href='#section-0'>#</a>
       </div>
-      <p>abc-eg.lua: demos and tests for abc.lua. One eg sub-table
+      <p>xai-eg.lua: demos and tests for xai.lua. One eg sub-table
 per library section, ordered simplest to hardest (lib
 first, then the AI code). On the command line:</p>
 <pre><code>--key=val, -k val    set an option   
@@ -36,46 +35,131 @@ first, then the AI code). On the command line:</p>
 </code></pre>
 <p>Each test is reseeded, prints something a tutor can point
 at, then asserts it: no crash = pass.</p>
-<pre><code> lua abc-eg.lua --seed=2 --tree --score
+<pre><code> lua xai-eg.lua --seed=2 --tree --score
 </code></pre>
 <h3>How to run this course</h3>
 <p>(Easier read: this file, rendered &ndash;
-<a href="https://timm.github.io/src/sandbox/docs/abc-eg.html">abc-eg.html</a>;
+<a href="https://timm.github.io/src/xai/docs/xai-eg.html">xai-eg.html</a>;
 its library
-<a href="https://timm.github.io/src/sandbox/docs/abc.html">abc.html</a>;
+<a href="https://timm.github.io/src/xai/docs/xai.html">xai.html</a>;
 the shared dictionary
 <a href="https://timm.github.io/src/glossary.html">glossary</a>.)</p>
 <p>Install <a href="https://lua.org">lua 5.4+</a> (mac:
 <code>brew install lua</code>), then fetch the code and its data:</p>
 <pre><code>git clone https://github.com/timm/src
 git clone https://github.com/timm/moot ~/gits/moot
-cd src/sandbox
-lua abc-eg.lua --all      # a minute; ends "all pass"
+cd src/xai
+lua xai-eg.lua --all      # a minute; ends "all pass"
 </code></pre>
 <p>Then four levels of read, per lesson:</p>
 <ol>
 <li>(skim) Read a lesson here beside its printed output in
-   <a href="abc-eg.out">abc-eg.out</a>. Can you tell what is going
+   <a href="xai-eg.out">xai-eg.out</a>. Can you tell what is going
    on?</li>
 <li>(run) Run that lesson&rsquo;s tests from the command line,
-   e.g. <code>lua abc-eg.lua --items</code>. Change an input; rerun.</li>
+   e.g. <code>lua xai-eg.lua --items</code>. Change an input; rerun.</li>
 <li>(dive) Fire up the REPL: <code>lua -i</code>, then
-   <code>abc = require"abc"</code>, then retype any demo, line by
+   <code>xai = require"xai"</code>, then retype any demo, line by
    line, printing as you go.</li>
 <li>(deep dive) Port a lesson to your own favorite
    language (not lua) and reproduce its slice of
-   abc-eg.out. This can take a little time, so best to
+   xai-eg.out. This can take a little time, so best to
    start with the shorter functions within each
    lesson.</li>
 </ol>
+<h3>Contents</h3>
+<p>The lessons in order, and the ideas each lands in the
+<a href="../glossary.md">glossary</a>. Run <code>lua xai-eg.lua -h</code> for the
+matching section/test map.</p>
+<table>
+<thead>
+<tr>
+<th>lesson</th>
+<th>section</th>
+<th>core ideas</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>Lua</td>
+<td><a href="../glossary.md#truthy">truthy</a> <a href="../glossary.md#onetable">onetable</a> <a href="../glossary.md#closure">closure</a> <a href="../glossary.md#patterns">patterns</a> <a href="../glossary.md#bob">bob</a></td>
+</tr>
+<tr>
+<td>1</td>
+<td>Lst</td>
+<td><a href="../glossary.md#lists">lists</a> <a href="../glossary.md#dsu">dsu</a> <a href="../glossary.md#bisect">bisect</a></td>
+</tr>
+<tr>
+<td>2</td>
+<td>Rnd</td>
+<td><a href="../glossary.md#seed">seed</a> <a href="../glossary.md#shuffle">shuffle</a> <a href="../glossary.md#gauss">gauss</a> <a href="../glossary.md#roulette">roulette</a></td>
+</tr>
+<tr>
+<td>3</td>
+<td>Str</td>
+<td><a href="../glossary.md#coerce">coerce</a> <a href="../glossary.md#csv">csv</a> <a href="../glossary.md#ssot">ssot</a></td>
+</tr>
+<tr>
+<td>4</td>
+<td>Num</td>
+<td><a href="../glossary.md#welford">welford</a> <a href="../glossary.md#stream">stream</a> <a href="../glossary.md#minus">minus</a></td>
+</tr>
+<tr>
+<td>5</td>
+<td>Sym</td>
+<td><a href="../glossary.md#entropy">entropy</a> <a href="../glossary.md#mode">mode</a> <a href="../glossary.md#poly">poly</a> <a href="../glossary.md#noir">noir</a></td>
+</tr>
+<tr>
+<td>6</td>
+<td>Cols</td>
+<td><a href="../glossary.md#schema">schema</a> <a href="../glossary.md#goals">goals</a> <a href="../glossary.md#xy">xy</a></td>
+</tr>
+<tr>
+<td>7</td>
+<td>Tbl</td>
+<td><a href="../glossary.md#tables">tables</a> <a href="../glossary.md#clone">clone</a> <a href="../glossary.md#centroid">centroid</a></td>
+</tr>
+<tr>
+<td>8</td>
+<td>Dist</td>
+<td><a href="../glossary.md#norm">norm</a> <a href="../glossary.md#minkowski">minkowski</a> <a href="../glossary.md#missing">missing</a> <a href="../glossary.md#heaven">heaven</a> <a href="../glossary.md#knn">knn</a> <a href="../glossary.md#anomaly">anomaly</a></td>
+</tr>
+<tr>
+<td>9</td>
+<td>Stats</td>
+<td><a href="../glossary.md#effect">effect</a> <a href="../glossary.md#ks">ks</a> <a href="../glossary.md#same">same</a></td>
+</tr>
+<tr>
+<td>10</td>
+<td>Acquire</td>
+<td><a href="../glossary.md#budget">budget</a> <a href="../glossary.md#active">active</a> <a href="../glossary.md#poles">poles</a> <a href="../glossary.md#explore">explore</a></td>
+</tr>
+<tr>
+<td>11</td>
+<td>Bins</td>
+<td><a href="../glossary.md#bins">bins</a> <a href="../glossary.md#cost">cost</a> <a href="../glossary.md#closure">closure</a></td>
+</tr>
+<tr>
+<td>12</td>
+<td>Tree</td>
+<td><a href="../glossary.md#tree">tree</a> <a href="../glossary.md#predict">predict</a> <a href="../glossary.md#explain">explain</a></td>
+</tr>
+<tr>
+<td>13</td>
+<td>Score</td>
+<td><a href="../glossary.md#holdout">holdout</a> <a href="../glossary.md#win">win</a> <a href="../glossary.md#baseline">baseline</a> <a href="../glossary.md#bets">bets</a> <a href="../glossary.md#variability">variability</a></td>
+</tr>
+</tbody>
+</table>
     </div>
     <div class='code'>
-      <div class="highlight"><pre><span></span><span class="kd">local</span><span class="w"> </span><span class="nv">abc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">require</span><span class="s2">&quot;abc&quot;</span>
-<span class="kd">local</span><span class="w"> </span><span class="nv">the</span><span class="p">,</span><span class="nv">lst</span><span class="p">,</span><span class="nv">rnd</span><span class="p">,</span><span class="nv">str</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">abc</span><span class="p">.</span><span class="py">the</span><span class="p">,</span><span class="w"> </span><span class="nv">abc</span><span class="p">.</span><span class="py">lst</span><span class="p">,</span><span class="w"> </span><span class="nv">abc</span><span class="p">.</span><span class="py">rnd</span><span class="p">,</span><span class="w"> </span><span class="nv">abc</span><span class="p">.</span><span class="py">str</span>
-<span class="kd">local</span><span class="w"> </span><span class="nv">stats</span><span class="p">,</span><span class="nv">acquire</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="nv">abc</span><span class="p">.</span><span class="py">stats</span><span class="p">,</span><span class="w"> </span><span class="nv">abc</span><span class="p">.</span><span class="py">acquire</span>
-<span class="kd">local</span><span class="w"> </span><span class="nv">bins</span><span class="p">,</span><span class="nv">adds</span><span class="w">       </span><span class="o">=</span><span class="w"> </span><span class="nv">abc</span><span class="p">.</span><span class="py">bins</span><span class="p">,</span><span class="w"> </span><span class="nv">abc</span><span class="p">.</span><span class="py">adds</span>
-<span class="kd">local</span><span class="w"> </span><span class="nv">Num</span><span class="p">,</span><span class="nv">Sym</span><span class="p">,</span><span class="nv">Cols</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="nv">abc</span><span class="p">.</span><span class="py">Num</span><span class="p">,</span><span class="w"> </span><span class="nv">abc</span><span class="p">.</span><span class="py">Sym</span><span class="p">,</span><span class="w"> </span><span class="nv">abc</span><span class="p">.</span><span class="py">Cols</span>
-<span class="kd">local</span><span class="w"> </span><span class="nv">Tbl</span><span class="p">,</span><span class="nv">Tree</span><span class="w">        </span><span class="o">=</span><span class="w"> </span><span class="nv">abc</span><span class="p">.</span><span class="py">Tbl</span><span class="p">,</span><span class="w"> </span><span class="nv">abc</span><span class="p">.</span><span class="py">Tree</span>
+      <div class="highlight"><pre><span></span><span class="kd">local</span><span class="w"> </span><span class="nv">xai</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">require</span><span class="s2">&quot;xai&quot;</span>
+<span class="kd">local</span><span class="w"> </span><span class="nv">the</span><span class="p">,</span><span class="nv">lst</span><span class="p">,</span><span class="nv">rnd</span><span class="p">,</span><span class="nv">str</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">xai</span><span class="p">.</span><span class="py">the</span><span class="p">,</span><span class="w"> </span><span class="nv">xai</span><span class="p">.</span><span class="py">lst</span><span class="p">,</span><span class="w"> </span><span class="nv">xai</span><span class="p">.</span><span class="py">rnd</span><span class="p">,</span><span class="w"> </span><span class="nv">xai</span><span class="p">.</span><span class="py">str</span>
+<span class="kd">local</span><span class="w"> </span><span class="nv">stats</span><span class="p">,</span><span class="nv">acquire</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="nv">xai</span><span class="p">.</span><span class="py">stats</span><span class="p">,</span><span class="w"> </span><span class="nv">xai</span><span class="p">.</span><span class="py">acquire</span>
+<span class="kd">local</span><span class="w"> </span><span class="nv">bins</span><span class="p">,</span><span class="nv">adds</span><span class="w">       </span><span class="o">=</span><span class="w"> </span><span class="nv">xai</span><span class="p">.</span><span class="py">bins</span><span class="p">,</span><span class="w"> </span><span class="nv">xai</span><span class="p">.</span><span class="py">adds</span>
+<span class="kd">local</span><span class="w"> </span><span class="nv">Num</span><span class="p">,</span><span class="nv">Sym</span><span class="p">,</span><span class="nv">Cols</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="nv">xai</span><span class="p">.</span><span class="py">Num</span><span class="p">,</span><span class="w"> </span><span class="nv">xai</span><span class="p">.</span><span class="py">Sym</span><span class="p">,</span><span class="w"> </span><span class="nv">xai</span><span class="p">.</span><span class="py">Cols</span>
+<span class="kd">local</span><span class="w"> </span><span class="nv">Tbl</span><span class="p">,</span><span class="nv">Tree</span><span class="w">        </span><span class="o">=</span><span class="w"> </span><span class="nv">xai</span><span class="p">.</span><span class="py">Tbl</span><span class="p">,</span><span class="w"> </span><span class="nv">xai</span><span class="p">.</span><span class="py">Tree</span>
 
 <span class="kd">local</span><span class="w"> </span><span class="nv">eg</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="p">{}</span>
 <span class="kd">local</span><span class="w"> </span><span class="nv">order</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="s2">&quot;lua&quot;</span><span class="p">,</span><span class="s2">&quot;lst&quot;</span><span class="p">,</span><span class="s2">&quot;rnd&quot;</span><span class="p">,</span><span class="s2">&quot;str&quot;</span><span class="p">,</span><span class="s2">&quot;num&quot;</span><span class="p">,</span><span class="s2">&quot;sym&quot;</span><span class="p">,</span><span class="s2">&quot;cols&quot;</span><span class="p">,</span>
@@ -92,17 +176,17 @@ lua abc-eg.lua --all      # a minute; ends "all pass"
       <h2>Lua</h2>
 <h3>Lesson 0: lua for the impatient pythonista</h3>
 <p>You know python; lua needs a few small adjustments, all
-listed under <a href="https://github.com/timm/src/blob/main/glossary.md#lua">lua</a> in the glossary.
+listed under <a href="../glossary.md#lua">lua</a> in the glossary.
 The demos below are the ones that bite hardest: what
 counts as false, the one-table-fits-all data structure,
 home-made for loops (which is where closures enter),
 patterns that are not regexes &ndash; and a first SE rule,
 checked against our own source code.</p>
-<p><strong>Core ideas:</strong> <a href="https://github.com/timm/src/blob/main/glossary.md#lua">lua</a>,
-<a href="https://github.com/timm/src/blob/main/glossary.md#truthy">truthy</a>,
-<a href="https://github.com/timm/src/blob/main/glossary.md#onetable">onetable</a>,
-<a href="https://github.com/timm/src/blob/main/glossary.md#closure">closure</a>,
-<a href="https://github.com/timm/src/blob/main/glossary.md#patterns">patterns</a>, <a href="https://github.com/timm/src/blob/main/glossary.md#bob">bob</a></p>
+<p><strong>Core ideas:</strong> <a href="../glossary.md#lua">lua</a>,
+<a href="../glossary.md#truthy">truthy</a>,
+<a href="../glossary.md#onetable">onetable</a>,
+<a href="../glossary.md#closure">closure</a>,
+<a href="../glossary.md#patterns">patterns</a>, <a href="../glossary.md#bob">bob</a></p>
     </div>
     <div class='code'>
       <div class="highlight"><pre><span class="nv">eg</span><span class="p">.</span><span class="py">lua</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{}</span></pre></div>
@@ -207,14 +291,14 @@ checked against our own source code.</p>
 <li><strong>io.lines(file)</strong> plus patterns plus one counting
   table = a tiny static analyzer. Uncle Bob&rsquo;s rule says
   keep functions small. Count code lines per paragraph
-  of abc.lua (comments and blanks end a paragraph):
+  of xai.lua (comments and blanks end a paragraph):
   does that code practice what this lesson preaches?</li>
 </ul>
     </div>
     <div class='code'>
       <div class="highlight"><pre><span class="nv">eg</span><span class="p">.</span><span class="py">lua</span><span class="p">[</span><span class="s2">&quot;--bob&quot;</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">function</span><span class="p">(</span><span class="w">    </span><span class="nv">n</span><span class="p">,</span><span class="nv">sizes</span><span class="p">,</span><span class="nv">small</span><span class="p">,</span><span class="nv">big</span><span class="p">)</span>
 <span class="w">  </span><span class="nv">n</span><span class="p">,</span><span class="w"> </span><span class="nv">sizes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="p">{}</span>
-<span class="w">  </span><span class="kr">for</span><span class="w"> </span><span class="nv">s</span><span class="w"> </span><span class="kr">in</span><span class="w"> </span><span class="nb">io.lines</span><span class="s2">&quot;abc.lua&quot;</span><span class="w"> </span><span class="kr">do</span>
+<span class="w">  </span><span class="kr">for</span><span class="w"> </span><span class="nv">s</span><span class="w"> </span><span class="kr">in</span><span class="w"> </span><span class="nb">io.lines</span><span class="s2">&quot;xai.lua&quot;</span><span class="w"> </span><span class="kr">do</span>
 <span class="w">    </span><span class="kr">if</span><span class="w"> </span><span class="nv">s</span><span class="p">:</span><span class="py">find</span><span class="s2">&quot;%S&quot;</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="nv">s</span><span class="p">:</span><span class="py">find</span><span class="s2">&quot;^%s*%-%-&quot;</span>
 <span class="w">    </span><span class="kr">then</span><span class="w"> </span><span class="nv">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">n</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span>
 <span class="w">    </span><span class="kr">elseif</span><span class="w"> </span><span class="nv">n</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="kr">then</span>
@@ -244,15 +328,15 @@ checked against our own source code.</p>
    then run it on its own source. Is your code
    Bob-friendly?</li>
 <li>(simple) Predict, then check: <code>0 and 1 or 2</code>,
-   <code>nil and 1 or 2</code>, <code>#"abc"</code>, <code>("x"):rep(3)</code>.</li>
+   <code>nil and 1 or 2</code>, <code>#"xai"</code>, <code>("x"):rep(3)</code>.</li>
 <li>Extend <code>--bob</code> to also report the largest paragraph
-   and its first line. Which part of abc.lua most needs
+   and its first line. Which part of xai.lua most needs
    Uncle Bob&rsquo;s attention &ndash; and would splitting it
    actually help a reader?</li>
 </ol>
     </div>
     <div class='code'>
-      <div class="highlight"><pre><span class="p">;</span></pre></div>
+      <div class="highlight"><pre></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -274,8 +358,8 @@ per item (the decorate-sort-undecorate trick &ndash; vital when
 the key is an expensive distance calc), and <code>bisect</code> finds
 positions in sorted lists in log time (lesson 9&rsquo;s statistics
 lean on it).</p>
-<p><strong>Core ideas:</strong> <a href="https://github.com/timm/src/blob/main/glossary.md#lists">lists</a>,
-<a href="https://github.com/timm/src/blob/main/glossary.md#dsu">dsu</a>, <a href="https://github.com/timm/src/blob/main/glossary.md#bisect">bisect</a></p>
+<p><strong>Core ideas:</strong> <a href="../glossary.md#lists">lists</a>,
+<a href="../glossary.md#dsu">dsu</a>, <a href="../glossary.md#bisect">bisect</a></p>
     </div>
     <div class='code'>
       <div class="highlight"><pre><span class="nv">eg</span><span class="p">.</span><span class="py">lst</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{}</span></pre></div>
@@ -352,7 +436,7 @@ lean on it).</p>
 </ol>
     </div>
     <div class='code'>
-      <div class="highlight"><pre><span class="p">;</span></pre></div>
+      <div class="highlight"><pre></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -372,9 +456,9 @@ reproducibility from this one seed. Also here: turning
 uniform bits into other shapes (Box-Muller for bells,
 roulette wheels for weighted choice), which is most of what
 &ldquo;simulation&rdquo; means.</p>
-<p><strong>Core ideas:</strong> <a href="https://github.com/timm/src/blob/main/glossary.md#seed">seed</a>,
-<a href="https://github.com/timm/src/blob/main/glossary.md#shuffle">shuffle</a>, <a href="https://github.com/timm/src/blob/main/glossary.md#gauss">gauss</a>,
-<a href="https://github.com/timm/src/blob/main/glossary.md#roulette">roulette</a></p>
+<p><strong>Core ideas:</strong> <a href="../glossary.md#seed">seed</a>,
+<a href="../glossary.md#shuffle">shuffle</a>, <a href="../glossary.md#gauss">gauss</a>,
+<a href="../glossary.md#roulette">roulette</a></p>
     </div>
     <div class='code'>
       <div class="highlight"><pre><span class="nv">eg</span><span class="p">.</span><span class="py">rnd</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{}</span></pre></div>
@@ -463,7 +547,7 @@ roulette wheels for weighted choice), which is most of what
    that, then implement this section&rsquo;s examples &ndash; and
    from now on every lesson&rsquo;s exercise 0 can self-grade by
    diffing its printed output (3 decimals) against the
-   frozen transcript abc-eg.out.</li>
+   frozen transcript xai-eg.out.</li>
 <li>(simple) Run <code>--lehmer</code> with <code>--seed=7</code>, twice. Then
    without the flag, twice. Explain the difference in one
    sentence.</li>
@@ -474,7 +558,7 @@ roulette wheels for weighted choice), which is most of what
 </ol>
     </div>
     <div class='code'>
-      <div class="highlight"><pre><span class="p">;</span></pre></div>
+      <div class="highlight"><pre></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -494,8 +578,8 @@ data files describe themselves &ndash; lesson 6 will read column
 roles straight out of the csv header. When parsing is this
 cheap, there is no excuse for config files, schemas, or
 YAML.</p>
-<p><strong>Core ideas:</strong> <a href="https://github.com/timm/src/blob/main/glossary.md#coerce">coerce</a>,
-<a href="https://github.com/timm/src/blob/main/glossary.md#csv">csv</a>, <a href="https://github.com/timm/src/blob/main/glossary.md#ssot">ssot</a></p>
+<p><strong>Core ideas:</strong> <a href="../glossary.md#coerce">coerce</a>,
+<a href="../glossary.md#csv">csv</a>, <a href="../glossary.md#ssot">ssot</a></p>
     </div>
     <div class='code'>
       <div class="highlight"><pre><span class="nv">eg</span><span class="p">.</span><span class="py">str</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{}</span></pre></div>
@@ -589,7 +673,7 @@ YAML.</p>
 </ol>
     </div>
     <div class='code'>
-      <div class="highlight"><pre><span class="p">;</span></pre></div>
+      <div class="highlight"><pre></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -608,8 +692,8 @@ built this way can be UN-folded, so <code>without</code> returns &ldquo;all
 of i&rsquo;s data except j&rsquo;s&rdquo; in constant time, no second pass
 over the rows. Columns also carry their goal here: a name
 ending &ldquo;-&rdquo; means lower is better.</p>
-<p><strong>Core ideas:</strong> <a href="https://github.com/timm/src/blob/main/glossary.md#welford">welford</a>,
-<a href="https://github.com/timm/src/blob/main/glossary.md#stream">stream</a>, <a href="https://github.com/timm/src/blob/main/glossary.md#minus">minus</a></p>
+<p><strong>Core ideas:</strong> <a href="../glossary.md#welford">welford</a>,
+<a href="../glossary.md#stream">stream</a>, <a href="../glossary.md#minus">minus</a></p>
     </div>
     <div class='code'>
       <div class="highlight"><pre><span class="nv">eg</span><span class="p">.</span><span class="py">num</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{}</span></pre></div>
@@ -685,7 +769,7 @@ ending &ldquo;-&rdquo; means lower is better.</p>
 </ol>
     </div>
     <div class='code'>
-      <div class="highlight"><pre><span class="p">;</span></pre></div>
+      <div class="highlight"><pre></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -706,9 +790,9 @@ asks a column its type. That is polymorphism doing the
 work of a design pattern, in twenty lines. (Measurement
 theory calls Num and Sym the two ends of the NOIR ladder:
 nominal things get counted, ratio things get averaged.)</p>
-<p><strong>Core ideas:</strong> <a href="https://github.com/timm/src/blob/main/glossary.md#entropy">entropy</a>,
-<a href="https://github.com/timm/src/blob/main/glossary.md#mode">mode</a>, <a href="https://github.com/timm/src/blob/main/glossary.md#poly">poly</a>,
-<a href="https://github.com/timm/src/blob/main/glossary.md#noir">noir</a></p>
+<p><strong>Core ideas:</strong> <a href="../glossary.md#entropy">entropy</a>,
+<a href="../glossary.md#mode">mode</a>, <a href="../glossary.md#poly">poly</a>,
+<a href="../glossary.md#noir">noir</a></p>
     </div>
     <div class='code'>
       <div class="highlight"><pre><span class="nv">eg</span><span class="p">.</span><span class="py">sym</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{}</span></pre></div>
@@ -779,7 +863,7 @@ nominal things get counted, ratio things get averaged.)</p>
 </ol>
     </div>
     <div class='code'>
-      <div class="highlight"><pre><span class="p">;</span></pre></div>
+      <div class="highlight"><pre></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -798,8 +882,8 @@ maximize, or classify; trailing &ldquo;X&rdquo; means ignore. One
 summaries, split into x (inputs) and y (goals). No config
 file, no schema language &ndash; rename a column and the
 system&rsquo;s whole view of the data changes.</p>
-<p><strong>Core ideas:</strong> <a href="https://github.com/timm/src/blob/main/glossary.md#schema">schema</a>,
-<a href="https://github.com/timm/src/blob/main/glossary.md#goals">goals</a>, <a href="https://github.com/timm/src/blob/main/glossary.md#xy">xy</a></p>
+<p><strong>Core ideas:</strong> <a href="../glossary.md#schema">schema</a>,
+<a href="../glossary.md#goals">goals</a>, <a href="../glossary.md#xy">xy</a></p>
     </div>
     <div class='code'>
       <div class="highlight"><pre><span class="nv">eg</span><span class="p">.</span><span class="py">cols</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{}</span></pre></div>
@@ -850,7 +934,7 @@ system&rsquo;s whole view of the data changes.</p>
 </ol>
     </div>
     <div class='code'>
-      <div class="highlight"><pre><span class="p">;</span></pre></div>
+      <div class="highlight"><pre></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -869,9 +953,9 @@ Grow different row subsets inside clones and each subset
 gets its own honest statistics &ndash; which is how lesson 13
 keeps its train and test data from contaminating each
 other.</p>
-<p><strong>Core ideas:</strong> <a href="https://github.com/timm/src/blob/main/glossary.md#tables">tables</a>,
-<a href="https://github.com/timm/src/blob/main/glossary.md#clone">clone</a>,
-<a href="https://github.com/timm/src/blob/main/glossary.md#centroid">centroid</a></p>
+<p><strong>Core ideas:</strong> <a href="../glossary.md#tables">tables</a>,
+<a href="../glossary.md#clone">clone</a>,
+<a href="../glossary.md#centroid">centroid</a></p>
     </div>
     <div class='code'>
       <div class="highlight"><pre><span class="nv">eg</span><span class="p">.</span><span class="py">tbl</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{}</span></pre></div>
@@ -962,7 +1046,7 @@ other.</p>
 </ol>
     </div>
     <div class='code'>
-      <div class="highlight"><pre><span class="p">;</span></pre></div>
+      <div class="highlight"><pre></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -982,11 +1066,11 @@ With just these two rulers we get clustering, nearest
 neighbors, anomaly detection, and (lessons 10-13) cheap
 optimization. Distance really is most of what &ldquo;learning&rdquo;
 needs.</p>
-<p><strong>Core ideas:</strong> <a href="https://github.com/timm/src/blob/main/glossary.md#norm">norm</a>,
-<a href="https://github.com/timm/src/blob/main/glossary.md#minkowski">minkowski</a>,
-<a href="https://github.com/timm/src/blob/main/glossary.md#missing">missing</a>,
-<a href="https://github.com/timm/src/blob/main/glossary.md#heaven">heaven</a>,
-<a href="https://github.com/timm/src/blob/main/glossary.md#knn">knn</a>, <a href="https://github.com/timm/src/blob/main/glossary.md#anomaly">anomaly</a></p>
+<p><strong>Core ideas:</strong> <a href="../glossary.md#norm">norm</a>,
+<a href="../glossary.md#minkowski">minkowski</a>,
+<a href="../glossary.md#missing">missing</a>,
+<a href="../glossary.md#heaven">heaven</a>,
+<a href="../glossary.md#knn">knn</a>, <a href="../glossary.md#anomaly">anomaly</a></p>
     </div>
     <div class='code'>
       <div class="highlight"><pre><span class="nv">eg</span><span class="p">.</span><span class="py">dist</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{}</span></pre></div>
@@ -1089,7 +1173,7 @@ needs.</p>
 </ol>
     </div>
     <div class='code'>
-      <div class="highlight"><pre><span class="p">;</span></pre></div>
+      <div class="highlight"><pre></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -1109,8 +1193,8 @@ all three makes the equality conservative: we only shout
 &ldquo;different!&rdquo; when it would take real effort to argue
 otherwise. Note the lesson-1 payoff: all three run fast off
 sorted lists and <code>bisect</code>.</p>
-<p><strong>Core ideas:</strong> <a href="https://github.com/timm/src/blob/main/glossary.md#effect">effect</a>,
-<a href="https://github.com/timm/src/blob/main/glossary.md#ks">ks</a>, <a href="https://github.com/timm/src/blob/main/glossary.md#same">same</a></p>
+<p><strong>Core ideas:</strong> <a href="../glossary.md#effect">effect</a>,
+<a href="../glossary.md#ks">ks</a>, <a href="../glossary.md#same">same</a></p>
     </div>
     <div class='code'>
       <div class="highlight"><pre><span class="nv">eg</span><span class="p">.</span><span class="py">stats</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{}</span></pre></div>
@@ -1168,7 +1252,7 @@ sorted lists and <code>bisect</code>.</p>
 </ol>
     </div>
     <div class='code'>
-      <div class="highlight"><pre><span class="p">;</span></pre></div>
+      <div class="highlight"><pre></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -1189,9 +1273,9 @@ nearest the good pole, repeat. A whole tree&rsquo;s worth of
 labels for the price of a few dozen. The deeper game is
 explore vs exploit: spend labels learning the landscape,
 or harvesting its best-known corner?</p>
-<p><strong>Core ideas:</strong> <a href="https://github.com/timm/src/blob/main/glossary.md#budget">budget</a>,
-<a href="https://github.com/timm/src/blob/main/glossary.md#active">active</a>, <a href="https://github.com/timm/src/blob/main/glossary.md#poles">poles</a>,
-<a href="https://github.com/timm/src/blob/main/glossary.md#explore">explore</a></p>
+<p><strong>Core ideas:</strong> <a href="../glossary.md#budget">budget</a>,
+<a href="../glossary.md#active">active</a>, <a href="../glossary.md#poles">poles</a>,
+<a href="../glossary.md#explore">explore</a></p>
     </div>
     <div class='code'>
       <div class="highlight"><pre><span class="nv">eg</span><span class="p">.</span><span class="py">acquire</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{}</span></pre></div>
@@ -1288,7 +1372,7 @@ or harvesting its best-known corner?</p>
 </ol>
     </div>
     <div class='code'>
-      <div class="highlight"><pre><span class="p">;</span></pre></div>
+      <div class="highlight"><pre></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -1308,8 +1392,8 @@ and a tiny closure (<code>bins.keep</code>) remembers the best bin
 seen so far, so all columns share one running competition.
 Swap the y summary from Num to Sym and the same code stops
 regressing and starts classifying.</p>
-<p><strong>Core ideas:</strong> <a href="https://github.com/timm/src/blob/main/glossary.md#bins">bins</a>,
-<a href="https://github.com/timm/src/blob/main/glossary.md#cost">cost</a>, <a href="https://github.com/timm/src/blob/main/glossary.md#closure">closure</a></p>
+<p><strong>Core ideas:</strong> <a href="../glossary.md#bins">bins</a>,
+<a href="../glossary.md#cost">cost</a>, <a href="../glossary.md#closure">closure</a></p>
     </div>
     <div class='code'>
       <div class="highlight"><pre><span class="nv">eg</span><span class="p">.</span><span class="py">bins</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{}</span></pre></div>
@@ -1370,7 +1454,7 @@ regressing and starts classifying.</p>
 </ol>
     </div>
     <div class='code'>
-      <div class="highlight"><pre><span class="p">;</span></pre></div>
+      <div class="highlight"><pre></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -1390,9 +1474,9 @@ EXPLANATION (print the branch conditions; a human can now
 argue with the model). Note what we did not need: no
 gradients, no pruning theory, just distance, bins, and
 recursion.</p>
-<p><strong>Core ideas:</strong> <a href="https://github.com/timm/src/blob/main/glossary.md#tree">tree</a>,
-<a href="https://github.com/timm/src/blob/main/glossary.md#predict">predict</a>,
-<a href="https://github.com/timm/src/blob/main/glossary.md#explain">explain</a></p>
+<p><strong>Core ideas:</strong> <a href="../glossary.md#tree">tree</a>,
+<a href="../glossary.md#predict">predict</a>,
+<a href="../glossary.md#explain">explain</a></p>
     </div>
     <div class='code'>
       <div class="highlight"><pre><span class="nv">eg</span><span class="p">.</span><span class="py">tree</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{}</span></pre></div>
@@ -1446,7 +1530,7 @@ recursion.</p>
 </ol>
     </div>
     <div class='code'>
-      <div class="highlight"><pre><span class="p">;</span></pre></div>
+      <div class="highlight"><pre></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -1468,10 +1552,10 @@ cautions: never trust one run (rerun across seeds, report
 the spread), and remember that any such rig is a
 falsifiable bet about your data&rsquo;s shape &ndash; in recent
 optimizer tournaments the winner changed with the budget.</p>
-<p><strong>Core ideas:</strong> <a href="https://github.com/timm/src/blob/main/glossary.md#holdout">holdout</a>,
-<a href="https://github.com/timm/src/blob/main/glossary.md#win">win</a>, <a href="https://github.com/timm/src/blob/main/glossary.md#baseline">baseline</a>,
-<a href="https://github.com/timm/src/blob/main/glossary.md#bets">bets</a>,
-<a href="https://github.com/timm/src/blob/main/glossary.md#variability">variability</a></p>
+<p><strong>Core ideas:</strong> <a href="../glossary.md#holdout">holdout</a>,
+<a href="../glossary.md#win">win</a>, <a href="../glossary.md#baseline">baseline</a>,
+<a href="../glossary.md#bets">bets</a>,
+<a href="../glossary.md#variability">variability</a></p>
     </div>
     <div class='code'>
       <div class="highlight"><pre><span class="nv">eg</span><span class="p">.</span><span class="py">score</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{}</span></pre></div>
@@ -1550,7 +1634,7 @@ optimizer tournaments the winner changed with the budget.</p>
 </ol>
     </div>
     <div class='code'>
-      <div class="highlight"><pre><span class="p">;</span></pre></div>
+      <div class="highlight"><pre></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -1594,13 +1678,13 @@ optimizer tournaments the winner changed with the budget.</p>
 <span class="w">    </span><span class="nf">run</span><span class="p">(</span><span class="nv">eg</span><span class="p">[</span><span class="nv">name</span><span class="p">][</span><span class="nv">k</span><span class="p">])</span><span class="w"> </span><span class="kr">end</span><span class="w"> </span><span class="kr">end</span>
 
 <span class="nv">eg</span><span class="p">.</span><span class="py">main</span><span class="p">[</span><span class="s2">&quot;-h&quot;</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">function</span><span class="p">(</span><span class="w">    </span><span class="nv">keys</span><span class="p">)</span>
-<span class="w">  </span><span class="nb">print</span><span class="p">(</span><span class="nv">abc</span><span class="p">.</span><span class="py">help</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Sections (and their tests):</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="w">  </span><span class="nb">print</span><span class="p">(</span><span class="nv">xai</span><span class="p">.</span><span class="py">help</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Sections (and their tests):</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
 <span class="w">  </span><span class="kr">for</span><span class="w"> </span><span class="nv">_</span><span class="p">,</span><span class="nv">n</span><span class="w"> </span><span class="kr">in</span><span class="w"> </span><span class="nb">ipairs</span><span class="p">(</span><span class="nv">order</span><span class="p">)</span><span class="w"> </span><span class="kr">do</span>
 <span class="w">    </span><span class="nv">keys</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{}</span>
 <span class="w">    </span><span class="kr">for</span><span class="w"> </span><span class="nv">k</span><span class="w"> </span><span class="kr">in</span><span class="w"> </span><span class="nb">pairs</span><span class="p">(</span><span class="nv">eg</span><span class="p">[</span><span class="nv">n</span><span class="p">])</span><span class="w"> </span><span class="kr">do</span><span class="w"> </span><span class="nv">lst</span><span class="p">.</span><span class="nf">push</span><span class="p">(</span><span class="nv">keys</span><span class="p">,</span><span class="w"> </span><span class="nv">k</span><span class="p">)</span><span class="w"> </span><span class="kr">end</span>
-<span class="w">    </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  lua abc-eg.lua --&quot;</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="nv">n</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="s2">&quot;   # or: &quot;</span><span class="w"> </span><span class="o">..</span>
+<span class="w">    </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  lua xai-eg.lua --&quot;</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="nv">n</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="s2">&quot;   # or: &quot;</span><span class="w"> </span><span class="o">..</span>
 <span class="w">          </span><span class="nb">table.concat</span><span class="p">(</span><span class="nv">lst</span><span class="p">.</span><span class="nf">sort</span><span class="p">(</span><span class="nv">keys</span><span class="p">),</span><span class="w"> </span><span class="s2">&quot; &quot;</span><span class="p">))</span><span class="w"> </span><span class="kr">end</span>
-<span class="w">  </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Also: --all -h --doc --join --transcript --check&quot;</span><span class="p">)</span>
+<span class="w">  </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Also: --all -h --join --transcript --check&quot;</span><span class="p">)</span>
 <span class="w">  </span><span class="kr">end</span>
 
 <span class="nv">eg</span><span class="p">.</span><span class="py">main</span><span class="p">[</span><span class="s2">&quot;--all&quot;</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">function</span><span class="p">()</span>
@@ -1616,14 +1700,14 @@ optimizer tournaments the winner changed with the budget.</p>
       <div class='octowrap'>
         <a class='octothorpe' href='#section-64'>#</a>
       </div>
-      <p>freeze the printed pedagogy: capture &ndash;all to abc-eg.out
+      <p>freeze the printed pedagogy: capture &ndash;all to xai-eg.out
 (generated from a real run, never hand-edited). Student
 ports self-grade against it; CI diffs it via &ndash;check.</p>
     </div>
     <div class='code'>
       <div class="highlight"><pre><span class="nv">eg</span><span class="p">.</span><span class="py">main</span><span class="p">[</span><span class="s2">&quot;--transcript&quot;</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">function</span><span class="p">()</span>
-<span class="w">  </span><span class="nb">assert</span><span class="p">(</span><span class="nb">os.execute</span><span class="p">(</span><span class="s2">&quot;lua abc-eg.lua --all &gt; abc-eg.out&quot;</span><span class="p">))</span>
-<span class="w">  </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;abc-eg.out frozen&quot;</span><span class="p">)</span><span class="w"> </span><span class="kr">end</span></pre></div>
+<span class="w">  </span><span class="nb">assert</span><span class="p">(</span><span class="nb">os.execute</span><span class="p">(</span><span class="s2">&quot;lua xai-eg.lua --all &gt; xai-eg.out&quot;</span><span class="p">))</span>
+<span class="w">  </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;xai-eg.out frozen&quot;</span><span class="p">)</span><span class="w"> </span><span class="kr">end</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -1637,7 +1721,7 @@ any refactor that moves a graded number fails here first</p>
     </div>
     <div class='code'>
       <div class="highlight"><pre><span class="nv">eg</span><span class="p">.</span><span class="py">main</span><span class="p">[</span><span class="s2">&quot;--check&quot;</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">function</span><span class="p">(</span><span class="w">    </span><span class="nv">ok</span><span class="p">)</span>
-<span class="w">  </span><span class="nv">ok</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">os.execute</span><span class="p">(</span><span class="s2">&quot;lua abc-eg.lua --all | diff - abc-eg.out&quot;</span><span class="p">)</span>
+<span class="w">  </span><span class="nv">ok</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">os.execute</span><span class="p">(</span><span class="s2">&quot;lua xai-eg.lua --all | diff - xai-eg.out&quot;</span><span class="p">)</span>
 <span class="w">  </span><span class="nb">print</span><span class="p">(</span><span class="nv">ok</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="s2">&quot;transcript ok&quot;</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="s2">&quot;TRANSCRIPT DRIFT&quot;</span><span class="p">)</span>
 <span class="w">  </span><span class="nb">assert</span><span class="p">(</span><span class="nv">ok</span><span class="p">)</span><span class="w"> </span><span class="kr">end</span></pre></div>
     </div>
@@ -1665,7 +1749,7 @@ walk &ldquo;lst.push&rdquo; through a table of tables; nil if absent</p>
 <span class="nv">eg</span><span class="p">.</span><span class="py">main</span><span class="p">[</span><span class="s2">&quot;--join&quot;</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">function</span><span class="p">(</span><span class="w">    </span><span class="nv">doc</span><span class="p">,</span><span class="nv">src</span><span class="p">,</span><span class="nv">keys</span><span class="p">,</span><span class="nv">used</span><span class="p">,</span><span class="nv">taught</span><span class="p">,</span>
 <span class="w">                                </span><span class="nv">ok</span><span class="p">,</span><span class="nv">n</span><span class="p">,</span><span class="nv">total</span><span class="p">)</span>
 <span class="w">  </span><span class="nv">doc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">io.open</span><span class="s2">&quot;../glossary.md&quot;</span><span class="p">:</span><span class="nv">read</span><span class="s2">&quot;*a&quot;</span>
-<span class="w">  </span><span class="nv">src</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">io.open</span><span class="s2">&quot;abc-eg.lua&quot;</span><span class="p">:</span><span class="nv">read</span><span class="s2">&quot;*a&quot;</span>
+<span class="w">  </span><span class="nv">src</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">io.open</span><span class="s2">&quot;xai-eg.lua&quot;</span><span class="p">:</span><span class="nv">read</span><span class="s2">&quot;*a&quot;</span>
 <span class="w">  </span><span class="nv">keys</span><span class="p">,</span><span class="w"> </span><span class="nv">used</span><span class="p">,</span><span class="w"> </span><span class="nv">taught</span><span class="p">,</span><span class="w"> </span><span class="nv">ok</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{},</span><span class="w"> </span><span class="p">{},</span><span class="w"> </span><span class="p">{},</span><span class="w"> </span><span class="kc">true</span>
 <span class="w">  </span><span class="kr">for</span><span class="w"> </span><span class="nv">k</span><span class="w"> </span><span class="kr">in</span><span class="w"> </span><span class="nv">doc</span><span class="p">:</span><span class="py">gmatch</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">## ([a-z]+)</span><span class="se">\n</span><span class="s2">&quot;</span><span class="w"> </span><span class="kr">do</span><span class="w"> </span><span class="nv">keys</span><span class="p">[</span><span class="nv">k</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">true</span><span class="w"> </span><span class="kr">end</span>
 <span class="w">  </span><span class="kr">for</span><span class="w"> </span><span class="nv">k</span><span class="w"> </span><span class="kr">in</span><span class="w"> </span><span class="nv">src</span><span class="p">:</span><span class="py">gmatch</span><span class="s2">&quot;glossary%.md#([a-z]+)&quot;</span><span class="w"> </span><span class="kr">do</span>
@@ -1678,16 +1762,16 @@ walk &ldquo;lst.push&rdquo; through a table of tables; nil if absent</p>
 <span class="w">    </span><span class="kr">if</span><span class="w"> </span><span class="nv">line</span><span class="p">:</span><span class="py">find</span><span class="s2">&quot;^%-%- %- %*%*&quot;</span><span class="w"> </span><span class="kr">then</span>
 <span class="w">      </span><span class="kr">for</span><span class="w"> </span><span class="nv">sig</span><span class="w"> </span><span class="kr">in</span><span class="w"> </span><span class="nv">line</span><span class="p">:</span><span class="py">gmatch</span><span class="s2">&quot;%*%*([%w_./]+)%(&quot;</span><span class="w"> </span><span class="kr">do</span>
 <span class="w">        </span><span class="kr">for</span><span class="w"> </span><span class="nv">name</span><span class="w"> </span><span class="kr">in</span><span class="w"> </span><span class="nv">sig</span><span class="p">:</span><span class="py">gmatch</span><span class="s2">&quot;[%w_.]+&quot;</span><span class="w"> </span><span class="kr">do</span>
-<span class="w">          </span><span class="kr">if</span><span class="w"> </span><span class="nf">deref</span><span class="p">(</span><span class="nv">abc</span><span class="p">,</span><span class="w"> </span><span class="nv">name</span><span class="p">)</span><span class="w"> </span><span class="kr">then</span><span class="w"> </span><span class="nv">taught</span><span class="p">[</span><span class="nv">name</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">true</span>
+<span class="w">          </span><span class="kr">if</span><span class="w"> </span><span class="nf">deref</span><span class="p">(</span><span class="nv">xai</span><span class="p">,</span><span class="w"> </span><span class="nv">name</span><span class="p">)</span><span class="w"> </span><span class="kr">then</span><span class="w"> </span><span class="nv">taught</span><span class="p">[</span><span class="nv">name</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">true</span>
 <span class="w">          </span><span class="kr">elseif</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="nf">deref</span><span class="p">(</span><span class="nb">_G</span><span class="p">,</span><span class="w"> </span><span class="nv">name</span><span class="p">)</span><span class="w"> </span><span class="kr">then</span><span class="w">    </span><span class="c1">-- lua builtin?</span>
 <span class="w">            </span><span class="nv">ok</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">false</span>
 <span class="w">            </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;dot-list names missing fn:&quot;</span><span class="p">,</span><span class="w"> </span><span class="nv">name</span><span class="p">)</span>
 <span class="w">          </span><span class="kr">end</span><span class="w"> </span><span class="kr">end</span><span class="w"> </span><span class="kr">end</span><span class="w"> </span><span class="kr">end</span><span class="w"> </span><span class="kr">end</span>
 <span class="w">  </span><span class="nv">n</span><span class="p">,</span><span class="w"> </span><span class="nv">total</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span>
 <span class="w">  </span><span class="kr">for</span><span class="w"> </span><span class="nv">_</span><span class="w"> </span><span class="kr">in</span><span class="w"> </span><span class="nb">pairs</span><span class="p">(</span><span class="nv">taught</span><span class="p">)</span><span class="w"> </span><span class="kr">do</span><span class="w"> </span><span class="nv">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">n</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="kr">end</span>
-<span class="w">  </span><span class="kr">for</span><span class="w"> </span><span class="nv">_</span><span class="p">,</span><span class="nv">v</span><span class="w"> </span><span class="kr">in</span><span class="w"> </span><span class="nb">pairs</span><span class="p">(</span><span class="nv">abc</span><span class="p">)</span><span class="w"> </span><span class="kr">do</span>
+<span class="w">  </span><span class="kr">for</span><span class="w"> </span><span class="nv">_</span><span class="p">,</span><span class="nv">v</span><span class="w"> </span><span class="kr">in</span><span class="w"> </span><span class="nb">pairs</span><span class="p">(</span><span class="nv">xai</span><span class="p">)</span><span class="w"> </span><span class="kr">do</span>
 <span class="w">    </span><span class="kr">if</span><span class="w"> </span><span class="nb">type</span><span class="p">(</span><span class="nv">v</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s2">&quot;function&quot;</span><span class="w"> </span><span class="kr">then</span><span class="w"> </span><span class="nv">total</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">total</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="kr">end</span>
-<span class="w">    </span><span class="kr">if</span><span class="w"> </span><span class="nb">type</span><span class="p">(</span><span class="nv">v</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s2">&quot;table&quot;</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="nv">v</span><span class="w"> </span><span class="o">~=</span><span class="w"> </span><span class="nv">abc</span><span class="p">.</span><span class="py">the</span><span class="w"> </span><span class="kr">then</span>
+<span class="w">    </span><span class="kr">if</span><span class="w"> </span><span class="nb">type</span><span class="p">(</span><span class="nv">v</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s2">&quot;table&quot;</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="nv">v</span><span class="w"> </span><span class="o">~=</span><span class="w"> </span><span class="nv">xai</span><span class="p">.</span><span class="py">the</span><span class="w"> </span><span class="kr">then</span>
 <span class="w">      </span><span class="kr">for</span><span class="w"> </span><span class="nv">_</span><span class="p">,</span><span class="nv">f</span><span class="w"> </span><span class="kr">in</span><span class="w"> </span><span class="nb">pairs</span><span class="p">(</span><span class="nv">v</span><span class="p">)</span><span class="w"> </span><span class="kr">do</span>
 <span class="w">        </span><span class="kr">if</span><span class="w"> </span><span class="nb">type</span><span class="p">(</span><span class="nv">f</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s2">&quot;function&quot;</span><span class="w"> </span><span class="kr">then</span>
 <span class="w">          </span><span class="nv">total</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">total</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="kr">end</span><span class="w"> </span><span class="kr">end</span><span class="w"> </span><span class="kr">end</span><span class="w"> </span><span class="kr">end</span>
@@ -1702,78 +1786,10 @@ walk &ldquo;lst.push&rdquo; through a table of tables; nil if absent</p>
       <div class='octowrap'>
         <a class='octothorpe' href='#section-67'>#</a>
       </div>
-      <p>files to html, and each one&rsquo;s prose alignment</p>
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre><span class="kd">local</span><span class="w"> </span><span class="nv">docs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="nv">abc</span><span class="o">=</span><span class="s2">&quot;right&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;abc-eg&quot;</span><span class="p">]</span><span class="o">=</span><span class="s2">&quot;left&quot;</span><span class="p">}</span></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-68'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-68'>#</a>
-      </div>
-      <p>pycco only knows &ldquo;&ndash;&rdquo; line comments, so lift &ndash; <a href="prose .html"> prose </a>
-blocks to &ldquo;&ndash; &rdquo; lines; drop shebang and formfeeds. pycco
-pairs a comment run with the NEXT code, so when a &ldquo;&ndash; ##&rdquo;
-heading directly follows prose (e.g. the exercises of the
-section before), emit a lone &ldquo;;&rdquo; code line between them:
-that closes the old section, and the heading starts fresh.</p>
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre><span class="kd">local</span><span class="w"> </span><span class="kr">function</span><span class="w"> </span><span class="nf">prose</span><span class="p">(</span><span class="nv">file</span><span class="p">,</span><span class="w">    </span><span class="nv">out</span><span class="p">,</span><span class="nv">md</span><span class="p">,</span><span class="nv">last</span><span class="p">)</span>
-<span class="w">  </span><span class="nv">out</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{}</span>
-<span class="w">  </span><span class="kr">for</span><span class="w"> </span><span class="nv">s</span><span class="w"> </span><span class="kr">in</span><span class="w"> </span><span class="nb">io.lines</span><span class="p">(</span><span class="nv">file</span><span class="p">)</span><span class="w"> </span><span class="kr">do</span>
-<span class="w">    </span><span class="kr">if</span><span class="w">     </span><span class="nv">s</span><span class="p">:</span><span class="py">find</span><span class="s2">&quot;^%-%-%[%[&quot;</span><span class="w"> </span><span class="kr">then</span><span class="w"> </span><span class="nv">md</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">true</span>
-<span class="w">    </span><span class="kr">elseif</span><span class="w"> </span><span class="nv">s</span><span class="p">:</span><span class="py">find</span><span class="s2">&quot;^%]%]&quot;</span><span class="w">     </span><span class="kr">then</span><span class="w"> </span><span class="nv">md</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">false</span>
-<span class="w">    </span><span class="kr">elseif</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="p">(</span><span class="nv">s</span><span class="p">:</span><span class="py">find</span><span class="s2">&quot;^#!&quot;</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="nv">s</span><span class="p">:</span><span class="py">find</span><span class="s2">&quot;^</span><span class="se">\f</span><span class="s2">&quot;</span><span class="p">)</span><span class="w"> </span><span class="kr">then</span>
-<span class="w">      </span><span class="kr">if</span><span class="w"> </span><span class="nv">s</span><span class="p">:</span><span class="py">find</span><span class="s2">&quot;^%-%- ##&quot;</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="nv">last</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s2">&quot;prose&quot;</span><span class="w"> </span><span class="kr">then</span>
-<span class="w">        </span><span class="nv">lst</span><span class="p">.</span><span class="nf">push</span><span class="p">(</span><span class="nv">out</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;;&quot;</span><span class="p">)</span><span class="w"> </span><span class="kr">end</span>
-<span class="w">      </span><span class="nv">lst</span><span class="p">.</span><span class="nf">push</span><span class="p">(</span><span class="nv">out</span><span class="p">,</span><span class="w"> </span><span class="nv">md</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="s2">&quot;-- &quot;</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="nv">s</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="nv">s</span><span class="p">)</span>
-<span class="w">      </span><span class="kr">if</span><span class="w"> </span><span class="nv">s</span><span class="w"> </span><span class="o">~=</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="w"> </span><span class="kr">then</span>
-<span class="w">        </span><span class="nv">last</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="nv">md</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="nv">s</span><span class="p">:</span><span class="py">find</span><span class="s2">&quot;^%-%-&quot;</span><span class="p">)</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="s2">&quot;prose&quot;</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="s2">&quot;code&quot;</span>
-<span class="w">      </span><span class="kr">end</span><span class="w"> </span><span class="kr">end</span><span class="w"> </span><span class="kr">end</span>
-<span class="w">  </span><span class="kr">return</span><span class="w"> </span><span class="nb">table.concat</span><span class="p">(</span><span class="nv">out</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span><span class="w"> </span><span class="kr">end</span>
-
-<span class="nv">eg</span><span class="p">.</span><span class="py">main</span><span class="p">[</span><span class="s2">&quot;--doc&quot;</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">function</span><span class="p">(</span><span class="w">    </span><span class="nv">tmp</span><span class="p">,</span><span class="nv">out</span><span class="p">,</span><span class="nv">b</span><span class="p">,</span><span class="nv">badges</span><span class="p">,</span><span class="nv">f</span><span class="p">,</span><span class="nv">s</span><span class="p">,</span><span class="nv">i</span><span class="p">)</span>
-<span class="w">  </span><span class="nv">tmp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">os.getenv</span><span class="s2">&quot;HOME&quot;</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="s2">&quot;/tmp/eg&quot;</span>
-<span class="w">  </span><span class="nv">out</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;../docs/sandbox&quot;</span><span class="w">    </span><span class="c1">-- committed; doc.py sites it</span>
-<span class="w">  </span><span class="nb">os.execute</span><span class="p">(</span><span class="s2">&quot;mkdir -p &quot;</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="nv">tmp</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="s2">&quot; &quot;</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="nv">out</span><span class="p">)</span>
-<span class="w">  </span><span class="nv">b</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">io.open</span><span class="s2">&quot;badges.html&quot;</span>
-<span class="w">  </span><span class="nv">badges</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">b</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="nv">b</span><span class="p">:</span><span class="py">read</span><span class="s2">&quot;*a&quot;</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="s2">&quot;&quot;</span>
-<span class="w">  </span><span class="kr">if</span><span class="w"> </span><span class="nv">b</span><span class="w"> </span><span class="kr">then</span><span class="w"> </span><span class="nv">b</span><span class="p">:</span><span class="nf">close</span><span class="p">()</span><span class="w"> </span><span class="kr">end</span>
-<span class="w">  </span><span class="kr">for</span><span class="w"> </span><span class="nv">name</span><span class="p">,</span><span class="nv">align</span><span class="w"> </span><span class="kr">in</span><span class="w"> </span><span class="nb">pairs</span><span class="p">(</span><span class="nv">docs</span><span class="p">)</span><span class="w"> </span><span class="kr">do</span>
-<span class="w">    </span><span class="nv">f</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">io.open</span><span class="p">(</span><span class="nv">tmp</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="s2">&quot;/&quot;</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="nv">name</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="s2">&quot;.lua&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;w&quot;</span><span class="p">)</span>
-<span class="w">    </span><span class="nv">f</span><span class="p">:</span><span class="nf">write</span><span class="p">(</span><span class="nf">prose</span><span class="p">(</span><span class="nv">name</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="s2">&quot;.lua&quot;</span><span class="p">))</span>
-<span class="w">    </span><span class="nv">f</span><span class="p">:</span><span class="nf">close</span><span class="p">()</span>
-<span class="w">    </span><span class="nb">os.execute</span><span class="p">(</span><span class="s2">&quot;pycco -d &quot;</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="nv">out</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="s2">&quot; &quot;</span><span class="w"> </span><span class="o">..</span>
-<span class="w">               </span><span class="nv">tmp</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="s2">&quot;/&quot;</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="nv">name</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="s2">&quot;.lua&quot;</span><span class="p">)</span>
-<span class="w">    </span><span class="nv">f</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">io.open</span><span class="p">(</span><span class="nv">out</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="s2">&quot;/&quot;</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="nv">name</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="s2">&quot;.html&quot;</span><span class="p">)</span>
-<span class="w">    </span><span class="nv">s</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">f</span><span class="p">:</span><span class="py">read</span><span class="s2">&quot;*a&quot;</span><span class="p">;</span><span class="w"> </span><span class="nv">f</span><span class="p">:</span><span class="nf">close</span><span class="p">()</span>
-<span class="w">    </span><span class="nv">s</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">s</span><span class="p">:</span><span class="nf">gsub</span><span class="p">(</span><span class="s1">&#39;href=&quot;%.%./glossary%.md&#39;</span><span class="p">,</span><span class="w">    </span><span class="c1">-- glossary links</span>
-<span class="w">          </span><span class="s1">&#39;href=&quot;https://github.com/timm/src/blob/main/&#39;</span>
-<span class="w">          </span><span class="o">..</span><span class="w"> </span><span class="s1">&#39;glossary.md&#39;</span><span class="p">)</span>
-<span class="w">    </span><span class="nv">s</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">s</span><span class="p">:</span><span class="nf">gsub</span><span class="p">(</span><span class="s2">&quot;&lt;/head&gt;&quot;</span><span class="p">,</span><span class="w">                    </span><span class="c1">-- per-page style</span>
-<span class="w">          </span><span class="s2">&quot;&lt;style&gt;h2 {border-top:1px solid #ddd; &quot;</span><span class="w"> </span><span class="o">..</span>
-<span class="w">          </span><span class="s2">&quot;margin-top:2.5em; padding-top:.5em} &quot;</span><span class="w"> </span><span class="o">..</span>
-<span class="w">          </span><span class="s2">&quot;p {text-align:&quot;</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="nv">align</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="s2">&quot;}&lt;/style&gt;&lt;/head&gt;&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span>
-<span class="w">    </span><span class="nv">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">s</span><span class="p">:</span><span class="nf">find</span><span class="p">(</span><span class="s2">&quot;&lt;h1&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="kc">true</span><span class="p">)</span><span class="w">               </span><span class="c1">-- badges</span>
-<span class="w">    </span><span class="kr">if</span><span class="w"> </span><span class="nv">i</span><span class="w"> </span><span class="kr">then</span><span class="w"> </span><span class="nv">s</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">s</span><span class="p">:</span><span class="nf">sub</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="nv">i</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="nv">badges</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="nv">s</span><span class="p">:</span><span class="nf">sub</span><span class="p">(</span><span class="nv">i</span><span class="p">)</span><span class="w"> </span><span class="kr">end</span>
-<span class="w">    </span><span class="nv">f</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">io.open</span><span class="p">(</span><span class="nv">out</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="s2">&quot;/&quot;</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="nv">name</span><span class="w"> </span><span class="o">..</span><span class="w"> </span><span class="s2">&quot;.html&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;w&quot;</span><span class="p">)</span>
-<span class="w">    </span><span class="nv">f</span><span class="p">:</span><span class="nf">write</span><span class="p">(</span><span class="nv">s</span><span class="p">);</span><span class="w"> </span><span class="nv">f</span><span class="p">:</span><span class="nf">close</span><span class="p">()</span><span class="w"> </span><span class="kr">end</span><span class="w"> </span><span class="kr">end</span></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-69'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-69'>#</a>
-      </div>
       <p>cli, args left to right: &ndash;key=val (or &ldquo;-x v&rdquo;, x = an
 option&rsquo;s first letter) sets an option; &ndash;name runs a
-section; other names run one test (&ndash;all, -h and &ndash;doc
-are just tests in eg.main). Flags steer only the egs
+section; other names run one test (&ndash;all and -h are
+just tests in eg.main). Flags steer only the egs
 that follow them.</p>
     </div>
     <div class='code'>
@@ -1794,16 +1810,16 @@ that follow them.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-70'>
+  <div class='section' id='section-68'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-70'>#</a>
+        <a class='octothorpe' href='#section-68'>#</a>
       </div>
       <p>lua&rsquo;s &ldquo;if <strong>name</strong> == <strong>main</strong>&rdquo;: when run from the shell,
 arg[0] is this script; when require&rsquo;d, it is the caller&rsquo;s.</p>
     </div>
     <div class='code'>
-      <div class="highlight"><pre><span class="kr">if</span><span class="w"> </span><span class="nv">arg</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="nv">arg</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="nv">arg</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span><span class="nv">find</span><span class="s2">&quot;abc%-eg&quot;</span><span class="w"> </span><span class="kr">then</span><span class="w"> </span><span class="nf">cli</span><span class="p">()</span><span class="w"> </span><span class="kr">end</span>
+      <div class="highlight"><pre><span class="kr">if</span><span class="w"> </span><span class="nv">arg</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="nv">arg</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="nv">arg</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span><span class="nv">find</span><span class="s2">&quot;xai%-eg&quot;</span><span class="w"> </span><span class="kr">then</span><span class="w"> </span><span class="nf">cli</span><span class="p">()</span><span class="w"> </span><span class="kr">end</span>
 <span class="kr">return</span><span class="w"> </span><span class="nv">eg</span>
 
 </pre></div>

@@ -62,13 +62,14 @@ Stanza skeleton, every stanza:
 - Arc: zero -> someplace cool. Last demo = the whole rig;
   studies after; runners and CLI entry live in xx-eg.
 
-Lesson-course variant (exemplar: sandbox/abc-eg.lua; full
-spec in style.md "-eg and -doc"). When the -eg is taught
+Lesson-course variant (exemplar: xai/xai-eg.lua; full
+spec in style.md "-eg: tutorials that are tests"). When the -eg is taught
 as a weekly course, each section additionally gets:
 
 - a "how to run this course" stanza up top (links to
   its own rendered site pages first, then install + the
-  four reading levels) and a lesson 0 teaching the
+  four reading levels + a contents table, lesson | section
+  | ideas, linking the glossary) and a lesson 0 teaching the
   implementation language to incomers from the assumed
   language, traps demoed and asserted;
 - an opening stanza `### Lesson N: title` ending in
@@ -85,16 +86,18 @@ as a weekly course, each section additionally gets:
   DERIVED from that structure, never hand-listed; the
   file returns the eg table, cli fires only when main.
 
-## 2b. The lecture notes (glossary.md + xx-doc.md)
+## 2b. The lecture notes (glossary.md)
 
 Definitions live in the REPO-ROOT glossary.md, shared by
 every course: one `## key` entry per idea, region-grouped,
 alphabetical within a region, each entry carrying a
-*taught in* back-pointer line and each region listing the
-concepts still awaiting entries. Per course, xx-doc.md
-keeps just the contents table (lesson | section | run |
-ideas, in lesson order) and the references. All of it
-audited, never regenerated (style.md maintenance rule).
+*taught in* back-pointer line, a *see:* citation line where
+one applies, and each region listing the concepts still
+awaiting entries (any general source lands in a tail
+section). There is no xx-doc: the contents table (lesson |
+section | ideas, in lesson order) lives in the -eg how-to
+stanza. All of it audited, never regenerated (style.md
+maintenance rule).
 
 ## 3. Wire into the shared tooling
 
@@ -125,7 +128,7 @@ audited, never regenerated (style.md maintenance rule).
     doc links land, all headings linked, all dot-list
     signatures resolve) and --check passes (a fresh --all
     reproduces the frozen xx-eg.out transcript); both are
-    eg verbs, exemplar sandbox/abc-eg.lua
+    eg verbs, exemplar xai/xai-eg.lua
     TODO not yet built: output splicing the other way --
     run each demo, paste its output back under the stanza
     (xx-eg.out now captures the output; the splice remains)
