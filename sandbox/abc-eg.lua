@@ -36,9 +36,9 @@ Then four levels of read, per lesson:
    line, printing as you go.
 4. (deep dive) Port a lesson to your own favorite
    language (not lua) and reproduce its slice of
-   abc-eg.out. Slow work, so start with the shorter
-   lessons -- and lesson 2's generator is what makes
-   your numbers match ours exactly.
+   abc-eg.out. This can take a little time, so best to
+   start with the shorter functions within each
+   lesson.
 ]]
 local abc = require"abc"
 local the,lst,rnd,str = abc.the, abc.lst, abc.rnd, abc.str
