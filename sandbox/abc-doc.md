@@ -13,6 +13,7 @@ order the ideas first appear in the lessons.
 
 | lesson | section | run | core ideas |
 |--------|---------|-----|------------|
+|  0 | Lua     | `lua abc-eg.lua --lua`     | [truthy](#truthy) [onetable](#onetable) [patterns](#patterns) [bob](#bob) |
 |  1 | Lst     | `lua abc-eg.lua --lst`     | [lists](#lists) [dsu](#dsu) [bisect](#bisect) |
 |  2 | Rnd     | `lua abc-eg.lua --rnd`     | [seed](#seed) [shuffle](#shuffle) [gauss](#gauss) [roulette](#roulette) |
 |  3 | Str     | `lua abc-eg.lua --str`     | [coerce](#coerce) [csv](#csv) [ssot](#ssot) |
@@ -28,6 +29,36 @@ order the ideas first appear in the lessons.
 | 13 | Score   | `lua abc-eg.lua --score`   | [holdout](#holdout) [win](#win) [baseline](#baseline) [bets](#bets) [variability](#variability) |
 
 ## Glossary
+
+## truthy
+
+In lua only `nil` and `false` are falsy: 0 and "" are
+TRUE. The `x and y or z` ternary and the `x = x or d`
+default idiom both lean on this -- and both surprise
+pythonistas (lesson 0).
+
+## onetable
+
+Lua's one data structure: the table is list, dict, object
+and module at once. `ipairs` walks the list part 1,2,3..;
+`pairs` walks everything, in no fixed order. Lesson 10's
+`lab` (set and list in one table) is this idea at work
+(lesson 0).
+
+## patterns
+
+Lua string patterns are not regexes: `%w %d %s` classes,
+`^ $` anchors, no alternation. Small enough to learn in a
+minute; enough to parse this whole system's csv, help and
+schema texts (lessons 0, 3).
+
+## bob
+
+Uncle Bob's rule: keep functions small (5-10 lines).
+Lesson 0's `--bob` demo audits abc.lua itself -- strip
+comments, histogram paragraph sizes -- and the code
+passes its own preaching. First of the SE design rules;
+the rest live in the scope map below.
 
 ## lists
 
@@ -392,7 +423,8 @@ future lessons.
 1. Code craft:
    **lists**, **dsu**, **bisect**, **closure**,
    **poly**, **coerce**, **csv**, **ssot**, **schema**,
-   little languages, idioms, short functions,
+   little languages, **idioms** (lesson 0), **bob**
+   (short functions),
    function-oriented over OO, streaming-over-loading,
    pipe-and-filter, no magic numbers, code needs doco,
    code needs tests, rogue globals, fail fast.

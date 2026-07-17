@@ -1,4 +1,24 @@
 
+---- lua ----------------------------------------
+
+-- --bob
+ 1- 3 lines: 26 paragraphs
+ 4- 6 lines: 25 paragraphs
+ 7- 9 lines: 14 paragraphs
+10-12 lines: 6 paragraphs
+16-18 lines: 2 paragraphs
+31-33 lines: 1 paragraphs
+small (<=6 lines) vs big:	51	23
+
+-- --onetable
+ipairs sees	4	 pairs sees	5
+
+-- --patterns
+goal col?	minimize
+
+-- --truthy
+0 is truthy:	yes
+
 ---- lst ----------------------------------------
 
 -- --basics

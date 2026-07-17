@@ -21,8 +21,109 @@ local Num,Sym,Cols    = abc.Num, abc.Sym, abc.Cols
 local Tbl,Tree        = abc.Tbl, abc.Tree
 
 local eg    = {}
-local order = {"lst","rnd","str","num","sym","cols","tbl",
-               "dist","stats","acquire","bins","tree","score"}
+local order = {"lua","lst","rnd","str","num","sym","cols",
+               "tbl","dist","stats","acquire","bins","tree",
+               "score"}
+
+-- ## Lua
+--[[
+### Lesson 0: lua for the impatient pythonista
+
+You know python; here is what bites. Only `nil` and
+`false` are falsy -- 0 and "" are TRUE. Indexes start at
+1, and `for i=1,10` includes the 10. There is ONE data
+structure: the table is your list, dict, object and
+module (a list is just the consecutive integer keys;
+everything else rides in the hash part). `pairs` walks
+every key in NO fixed order; `ipairs` walks 1,2,3.. and
+stops at the first gap. Patterns are not regexes: `%w`
+not `\w`, and there is no `|`. Variables are global
+unless marked `local`. `x and y or z` is the ternary
+(breaks when y is false); `x = x or default` fills
+defaults; `..` concatenates; `~=` is not-equals. And one
+house rule: params after the wide gap in a signature are
+locals, not arguments -- callers never pass them.
+
+**Core ideas:** [truthy](abc-doc.md#truthy),
+[onetable](abc-doc.md#onetable),
+[patterns](abc-doc.md#patterns), [bob](abc-doc.md#bob)
+]]
+eg.lua = {}
+
+-- - **type(x)** and truthiness: only nil and false are
+--   falsy. `and/or` chains give ternaries and defaults.
+eg.lua["--truthy"] = function(    x)
+  print("0 is truthy:", 0 and "yes" or "no")
+  assert(0 and "" and true)
+  assert((false or nil) == nil)
+  x = nil
+  x = x or 42                          -- the default idiom
+  assert(x == 42)
+  assert((1 == 1 and "t" or "f") == "t") end
+
+-- - **pairs(t)** walks every key, no fixed order;
+--   **ipairs(t)** walks 1,2,3.. stopping at the first nil.
+--   One table = python's list + dict + object, all at once.
+eg.lua["--onetable"] = function(    t,n,m)
+  t = {10, 20, 30, job="cook", 40}
+  n = 0; for _ in ipairs(t) do n = n + 1 end
+  m = 0; for _ in pairs(t)  do m = m + 1 end
+  print("ipairs sees", n, " pairs sees", m)
+  assert(n == 4 and m == 5)
+  assert(t[1] == 10 and t.job == "cook")
+  assert(t[0] == nil) end              -- lua counts from 1
+
+-- - **s:find(pat)**, **s:match(pat)**, **s:gsub(pat,new)**:
+--   patterns, not regexes (%d %w %s classes, anchors ^ $),
+--   and ("s"):method sugar works on any string.
+eg.lua["--patterns"] = function(    s)
+  s = "Lbs-"
+  print("goal col?", s:find"-$" and "minimize" or "no")
+  assert(s:find"-$")
+  assert(("age=42"):match"%d+" == "42")
+  assert(("a,b,c"):gsub(",", ";") == "a;b;c") end
+
+-- - **io.lines(file)** plus patterns plus one counting
+--   table = a tiny static analyzer. Uncle Bob's rule says
+--   keep functions small; strip comments and blanks, count
+--   lines per paragraph, histogram in bins of 3. Does
+--   abc.lua practice what this lesson preaches?
+eg.lua["--bob"] = function(    n,sizes,fin,keys,small,big)
+  n, sizes = 0, {}
+  fin = function(    b)
+    if n > 0 then
+      b = (n - 1) // 3                 -- 0 = 1-3 lines, ..
+      sizes[b] = (sizes[b] or 0) + 1
+      n = 0 end end
+  for s in io.lines"abc.lua" do
+    if s:find"^%s*%-%-" or not s:find"%S"
+    then fin()
+    else n = n + 1 end end
+  fin()
+  keys, small, big = {}, 0, 0
+  for b in pairs(sizes) do lst.push(keys, b) end
+  for _,b in ipairs(lst.sort(keys)) do
+    print(("%2s-%2s lines: %s paragraphs"):format(
+          3*b + 1, 3*b + 3, sizes[b]))
+    if b < 2 then small = small + sizes[b]
+    else big = big + sizes[b] end end
+  print("small (<=6 lines) vs big:", small, big)
+  assert(small > big) end              -- Bob would approve
+
+--[[
+**Exercises (lesson 0).**
+
+0. In your own favorite language (not lua), write the
+   `--bob` analyzer for that language's comment syntax,
+   then run it on its own source. Is your code
+   Bob-friendly?
+1. (simple) Predict, then check: `0 and 1 or 2`,
+   `nil and 1 or 2`, `#"abc"`, `("x"):rep(3)`.
+2. Extend `--bob` to also report the largest paragraph
+   and its first line. Which part of abc.lua most needs
+   Uncle Bob's attention -- and would splitting it
+   actually help a reader?
+]]
 
 -- ## Lst
 --[[
@@ -896,10 +997,13 @@ eg.main["--join"] = function(    doc,src,keys,used,taught,
     if line:find"^%-%- %- %*%*" then
       for sig in line:gmatch"%*%*([%w_./]+)%(" do
         for name in sig:gmatch"[%w_.]+" do
-          f = abc
-          for w in name:gmatch"[%w_]+" do
-            f = type(f) == "table" and f[w] end
-          taught[name] = true
+          for _,root in ipairs{abc, _G} do  -- module, else lua
+            f = root
+            for w in name:gmatch"[%w_]+" do
+              f = type(f) == "table" and f[w] end
+            if f then
+              if root == abc then taught[name] = true end
+              break end end
           if not f then
             ok = false
             print("dot-list names missing fn:", name)
