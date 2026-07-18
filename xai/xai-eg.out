@@ -24,12 +24,12 @@ goal col?	minimize
  8 *****
  9 ****
 10 **
-11 ***
+11 ****
 12 *
 17 *
 18 *
 32 *
-small (<=6 lines):	52	 bigger:	24
+small (<=6 lines):	52	 bigger:	25
 
 ---- lst ----------------------------------------
 
@@ -111,6 +111,9 @@ loneliest (anomaly?):	{6 168 132 80 3 2910 11.400 30}	gap	0.243
 
 -- --same
 same(a,b):	true	 same(a,c):	false
+
+-- --top
+top:	{a b}
 
 ---- acquire ----------------------------------------
 

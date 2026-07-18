@@ -725,8 +725,8 @@ eg.stats = {}
 --   over pre-sorted lists (0 = identical).
 -- - **stats.cohen(xs,ys)** |mean gap| <= 0.35 pooled sd?
 -- - **stats.ks(xs,ys)** max gap between two sorted CDFs.
--- - **stats.same(xs,ys)** conservative equality: sorts copies
---   once, then all three of the above must agree.
+-- - **stats.same(xs,ys)** sorts copies once, then same unless
+--   all three of the above see a difference.
 eg.stats["--same"] = function(    a,b,c)
   a, b, c = {}, {}, {}
   for _ = 1, 32 do
@@ -740,6 +740,21 @@ eg.stats["--same"] = function(    a,b,c)
   assert(stats.cohen(a, a))
   assert(stats.cliffs(a, a) == 0)
   assert(stats.ks(a, a) == 0) end
+
+-- - **stats.top(dct,rev)** rank keys by their list's mean
+--   (rev flips to descending); returns the leader plus every
+--   key `same` as it.
+eg.stats["--top"] = function(    t,got)
+  t = {a={}, b={}, c={}}
+  for _ = 1, 32 do
+    lst.push(t.a, rnd.n())
+    lst.push(t.b, 0.02 + rnd.n())
+    lst.push(t.c, 2 + rnd.n()) end
+  got = stats.top(t)
+  print("top:", str.o(got))
+  assert(#got == 2 and got[1] == "a" and got[2] == "b")
+  got = stats.top(t, true)
+  assert(#got == 1 and got[1] == "c") end
 
 --[[
 **Exercises (lesson 9).**

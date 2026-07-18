@@ -472,8 +472,8 @@ function Tree.show(i,tbl,    up,down,W,win,ws,ymid,branch)
 
 
 -- ## Stats
--- `same` = conservative equality: `cohen` AND `cliffs`
--- AND `ks` must all agree before two sets are equal.
+-- `same` = conservative difference: `cohen` AND `cliffs`
+-- AND `ks` must all see a gap before two sets differ.
 
 -- Cliff's delta effect size in 0..1 (0 = identical); ys sorted
 function stats.cliffs(xs,ys,    m,gt,lt)
@@ -499,13 +499,29 @@ function stats.cohen(xs,ys,    a,b,sd)
         / (a.n + b.n - 2))^0.5
   return abs(a.mu - b.mu) <= 0.35*(sd + 1E-32) end
 
--- true if xs,ys are statistically indistinguishable
+-- true unless every test sees a difference: "different!"
+-- only when it would take real effort to argue otherwise
 function stats.same(xs,ys,    n,m)
   xs = lst.sort(lst.slice(xs))
   ys = lst.sort(lst.slice(ys))
   n, m = #xs, #ys
-  return stats.cohen(xs,ys) and stats.cliffs(xs,ys)<=0.195
-     and stats.ks(xs,ys) <= 1.36*((n + m)/(n*m))^0.5 end
+  return stats.cohen(xs,ys) or stats.cliffs(xs,ys)<=0.195
+      or stats.ks(xs,ys) <= 1.36*((n + m)/(n*m))^0.5 end
+
+-- keys of dct (key -> list of nums), ranked by list mean
+-- (rev flips to descending): the leader, plus every key
+-- `same` as the leader
+function stats.top(dct,rev,    keys,out)
+  keys = lst.keysort(
+           lst.sort(lst.kap(dct, function(k) return k end)),
+           function(k,    mu)
+             mu = adds(dct[k]).mu
+             return rev and -mu or mu end)
+  out = {keys[1]}
+  for i = 2, #keys do
+    if not stats.same(dct[keys[1]], dct[keys[i]]) then break end
+    lst.push(out, keys[i]) end
+  return out end
 
 
 -- ## Lst
