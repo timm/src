@@ -424,9 +424,9 @@ eg.num["--welford"] = function(    n)
   assert(n.n == 3 and n:mid() == 20)
   assert(Num.new("Lbs-").w == 0 and Num.new("Mpg+").w == 1) end
 
--- - **Num.without(i,j)** Num of i's data without j's: weighted
---   add of -j.n values at j.mu, then j's spread comes off m2.
---   This trick lets bin scoring skip a second data pass.
+-- - **Num.without(num1,num2)** Num of num1's data without num2's:
+--   weighted add of -n2 values at mu2, then num2's spread comes
+--   off m2. This trick lets bin scoring skip a second data pass.
 -- - **Num.norm(i,v)** logistic z-score squash to 0..1, so the
 --   mean lands near 0.5.
 eg.num["--without"] = function(    a,b,c)
@@ -485,8 +485,9 @@ eg.sym["--mode"] = function(    s)
   s:add("c", -1)                      -- fold the c back out
   assert(s.n == 5 and s.has.c == nil) end
 
--- - **Sym.without(i,j)** counts of i without j's, same shape
---   as Num.without: bin scoring never asks a column its type.
+-- - **Sym.without(sym1,sym2)** counts of sym1 without sym2's,
+--   same shape as Num.without: bin scoring never asks a
+--   column its type.
 eg.sym["--minus"] = function(    a,b,c)
   a = adds({"a","a","b"}, Sym.new())
   b = adds({"b"},         Sym.new())

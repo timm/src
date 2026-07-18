@@ -12,26 +12,27 @@ xaiplus: learners and optimizers layered on xai
 USAGE: local xp = require"xaiplus"
 (demos and tests: lua xaiplus-eg.lua [OPTIONS] [eg ...])
 
-OPTIONS (added to xai's `the`):
-  --knn=3       neighbors for the knn classifier
-  --kluster=8   clusters for kmeans / kmeans++
-  --iter=10     kmeans passes
-  --few=128     sample pool for kmeans++ seeding
-  --k=1         naive-bayes Laplace smoothing
-  --m=2         naive-bayes m-estimate prior weight
-  --wait=10     rows seen before naive bayes scores
-  --F=0.5       DE extrapolation factor
-  --cr=0.3      DE crossover rate
-  --np=20       DE/GA population size
-  --gens=20     DE/GA generations
-  --tour=5      GA tournament size
-  --budget1=300 SA/LS eval budget
-  --restart=40  LS restart-on-stagnation gap
-  --start=20    acquire warm-start labels ]]
+OPTIONS (added to xai's `the`; shorts are UPPER case
+so they never clash with xai's lower-case shorts):
+  -K  --knn=3       neighbors for the knn classifier
+  -U  --kluster=8   clusters for kmeans / kmeans++
+  -I  --iter=10     kmeans passes
+  -E  --few=128     sample pool for kmeans++ seeding
+  -L  --k=1         naive-bayes Laplace smoothing
+  -M  --m=2         naive-bayes m-estimate prior weight
+  -W  --wait=10     rows seen before naive bayes scores
+  -X  --F=0.5       DE extrapolation factor
+  -C  --cr=0.3      DE crossover rate
+  -N  --np=20       DE/GA population size
+  -G  --gens=20     DE/GA generations
+  -T  --tour=5      GA tournament size
+  -B  --budget1=300 SA/LS eval budget
+  -R  --restart=40  LS restart-on-stagnation gap
+  -S  --start=20    acquire warm-start labels ]]
 
 local xai = require"xai"
 local the,lst,rnd,str = xai.the, xai.lst, xai.rnd, xai.str
-local Sym,Num,adds,new = xai.Sym, xai.Num, xai.adds, xai.new
+local Sym,Num,adds = xai.Sym, xai.Num, xai.adds
 local Tree = xai.Tree
 local BIG = 1E32
 local exp,log,pi = math.exp, math.log, math.pi
@@ -73,15 +74,21 @@ local function wpick(ws,    s,r)
 -- step -- the data IS the model. Needs a "!" klass column.
 
 -- the k rows of data nearest r0, by distx
-local function near(data,r0,k)
-  return lst.slice(lst.keysort(data.rows,
-    function(r) return data:distx(r0,r) end),
+local function near(tbl,r0,k)
+  return lst.slice(lst.keysort(tbl.rows,
+    function(r) return tbl:distx(r0,r) end),
     1, k or the.knn) end
 
+-- the one row nearest r0: near(tbl,r0,1)[1], but O(N), no sort
+local function nearest(tbl,r0,rows)
+  rows = rows or tbl.rows
+  return rows[argmini(rows,
+    function(r) return tbl:distx(r0,r) end)] end
+
 -- predict r0's klass = mode of its k neighbors' klasses
-function xp.knn(data,r0,k,    at)
-  at = data.cols.klass.at
-  return adds(lst.map(near(data,r0,k),
+function xp.knn(tbl,r0,k,    at)
+  at = tbl.cols.klass.at
+  return adds(lst.map(near(tbl,r0,k),
     function(r) return r[at] end), Sym.new()):mid() end
 
 
@@ -90,16 +97,12 @@ function xp.knn(data,r0,k,    at)
 -- the centroids to their members' middle, repeat. A centroid
 -- is just a `mids` row; a cluster is a xai Tbl clone.
 
--- index of the centroid nearest row r
-local function nearest(data,cents,r)
-  return argmini(cents,
-    function(c) return data:distx(c,r) end) end
-
 -- one pass: each row into its nearest centroid's clone
-local function assign(data,cents,    out)
-  out = lst.map(cents, function() return data:clone() end)
-  for _,r in ipairs(data.rows) do
-    out[nearest(data,cents,r)]:add(r) end
+local function assign(tbl,cents,    out)
+  out = lst.map(cents, function() return tbl:clone() end)
+  for _,r in ipairs(tbl.rows) do
+    out[argmini(cents,
+      function(c) return tbl:distx(c,r) end)]:add(r) end
   return out end
 
 -- centroids = the middle of each non-empty cluster
@@ -110,11 +113,11 @@ local function recentre(clusters,    cents)
   return cents end
 
 -- k clusters: iter rounds of assign then recentre
-function xp.kmeans(data,k,iter,    cents)
-  cents = rnd.some(data.rows, k or the.kluster)
+function xp.kmeans(tbl,k,iter,    cents)
+  cents = rnd.some(tbl.rows, k or the.kluster)
   for _ = 1, iter or the.iter do
-    cents = recentre(assign(data, cents)) end
-  return assign(data, cents) end
+    cents = recentre(assign(tbl, cents)) end
+  return assign(tbl, cents) end
 
 
 -- ## Kmeanspp
@@ -124,23 +127,23 @@ function xp.kmeans(data,k,iter,    cents)
 -- d^2 trick). Returns the seed rows, not clusters.
 
 -- squared distance from r to its nearest centroid in cents
-local function d2(data,cents,r,    lo,d)
+local function d2(tbl,cents,r,    lo,d)
   lo = BIG
   for _,c in ipairs(cents) do
-    d = data:distx(r,c); lo = min(lo, d*d) end
+    d = tbl:distx(r,c); lo = min(lo, d*d) end
   return lo end
 
 -- one more centroid: d^2-weighted pick from a random pool
-local function farther(data,cents,few,    pool,ws)
-  pool = rnd.some(data.rows, min(few or the.few, #data.rows))
-  ws   = lst.map(pool, function(r) return d2(data,cents,r) end)
+local function farther(tbl,cents,few,    pool,ws)
+  pool = rnd.some(tbl.rows, min(few or the.few, #tbl.rows))
+  ws   = lst.map(pool, function(r) return d2(tbl,cents,r) end)
   return pool[wpick(ws)] end
 
 -- k centroids by kmeans++ seeding
-function xp.kpp(data,k,few,    cents)
-  cents = {rnd.some(data.rows, 1)[1]}
+function xp.kpp(tbl,k,few,    cents)
+  cents = {rnd.some(tbl.rows, 1)[1]}
   while #cents < (k or the.kluster) do
-    lst.push(cents, farther(data, cents, few)) end
+    lst.push(cents, farther(tbl, cents, few)) end
   return cents end
 
 
@@ -161,51 +164,49 @@ function xp.bayes.like(col,v,prior,    z)
   return exp(-(v - col.mu)^2/z)/(pi*z)^0.5 end
 
 -- log-likelihood of a row under klass model h (a xai Tbl)
-function xp.bayes.likes(h,row,nrows,nh,    prior,out,v)
+function xp.bayes.likes(h,row,nrows,nh,    prior,out)
   prior = (#h.rows + the.m)/(nrows + the.m*nh)
   out   = log(prior)
-  for _,c in ipairs(h.cols.x) do
-    v = row[c.at]
-    if v ~= "?" then
-      v = xp.bayes.like(c, v, prior)
-      if v > 0 then out = out + log(v) end end end
+  for c,v in lst.cells(h.cols.x,row) do
+    v = xp.bayes.like(c, v, prior)
+    if v > 0 then out = out + log(v) end end
   return out end
+
+-- klass in h (a dict of klass -> Tbl) most liking the row
+function xp.bayes.mostlikes(h,row,nrows,nh,    best,bs,s)
+  bs = -BIG
+  for k,hk in lst.items(h) do
+    s = xp.bayes.likes(hk, row, nrows, nh)
+    if s > bs then bs,best = s,k end end
+  return best end
 
 
 -- ## Classify
 -- Incremental naive Bayes, test-then-train: for each row,
--- predict its klass from the models seen so far, score the
--- guess in a Confuse matrix, then train the true klass's
--- model. One pass, no held-out split needed.
+-- predict its klass from the models seen so far, push the
+-- {got,want} pair to `seen`, then train the true klass's
+-- model. One pass, no held-out split. Any score (accuracy,
+-- confusion counts) is just a spin down the pairs after.
 
--- confusion matrix: add(want,got) tallies each cell;
--- `acc` = the fraction landing on the diagonal
-local Confuse = {}
-function Confuse.new()
-  return new(Confuse, {n=0, ok=0, cells={}}) end
-function Confuse.add(i,want,got,    key)
-  i.n = i.n + 1
-  if want == got then i.ok = i.ok + 1 end
-  key = want .. "|" .. got
-  i.cells[key] = (i.cells[key] or 0) + 1
-  return got end
-function Confuse.acc(i) return i.ok/(i.n + 1E-32) end
+-- fraction of seen {got,want} pairs that agree
+function xp.acc(seen,    n)
+  n = 0
+  for _,p in ipairs(seen) do
+    if p[1] == p[2] then n = n + 1 end end
+  return n/(#seen + 1E-32) end
 
--- test-then-train naive Bayes; returns the Confuse matrix
-function xp.classify(data,wait,    h,cf,nh,at,want,best,bs,s)
-  wait, at  = wait or the.wait, data.cols.klass.at
-  h, cf, nh = {}, Confuse.new(), 0
-  for i,row in ipairs(data.rows) do
+-- test-then-train naive Bayes; returns the {got,want} pairs
+function xp.classify(tbl,wait,    h,seen,nh,at,want)
+  wait, at    = wait or the.wait, tbl.cols.klass.at
+  h, seen, nh = {}, {}, 0
+  for i,row in ipairs(tbl.rows) do
     want = row[at]
     if i >= wait and nh > 0 then
-      best, bs = nil, -BIG
-      for k,hk in lst.items(h) do
-        s = xp.bayes.likes(hk, row, #data.rows, nh)
-        if s > bs then bs,best = s,k end end
-      cf:add(want, best) end
-    if not h[want] then h[want]=data:clone(); nh=nh+1 end
+      lst.push(seen,
+        {xp.bayes.mostlikes(h, row, #tbl.rows, nh), want}) end
+    if not h[want] then h[want]=tbl:clone(); nh=nh+1 end
     h[want]:add(row) end
-  return cf end
+  return seen end
 
 
 -- ## Mutate
@@ -230,8 +231,8 @@ function xp.mutate.pick(col,v,    lo,hi,val)
   return max(lo, min(hi, val)) end
 
 -- copy row; mutate n of its x columns via pick
-function xp.mutate.picks(data,row,n,    out,xs)
-  out, xs = lst.slice(row), rnd.shuffle(lst.slice(data.cols.x))
+function xp.mutate.picks(tbl,row,n,    out,xs)
+  out, xs = lst.slice(row), rnd.shuffle(lst.slice(tbl.cols.x))
   for j = 1, min(n, #xs) do
     out[xs[j].at] = xp.mutate.pick(xs[j], out[xs[j].at]) end
   return out end
@@ -259,33 +260,36 @@ function xp.mutate.extrapolate(cols,a,b,c,F,cr,
 
 
 -- ## Optimize
--- Shared gear for the optimizers. `oracle` scores any row --
--- even a synthetic one -- by the disty of its nearest real
--- row: a cheap surrogate for the true, expensive objective.
--- Every optimizer below MINIMIZES it and returns its best row.
+-- Shared gear for the optimizers. `evaluate` installs xai's
+-- `label` hook on a Tbl, so disty can score any row -- even
+-- a synthetic one -- by snapping it to its nearest real row
+-- (a cheap surrogate for the true, expensive objective;
+-- identity on real rows). Every optimizer below MINIMIZES
+-- the hooked disty and returns its best row.
 
--- score a row by the disty of its nearest real row
-local function oracle(data)
-  return function(r)
-    return data:disty(near(data, r, 1)[1]) end end
+-- install the surrogate label hook; hand back the scorer
+local function evaluate(tbl)
+  tbl.label = tbl.label
+            or function(r) return nearest(tbl, r) end
+  return function(r) return tbl:disty(r) end end
 
 
 -- ## De
 -- Differential evolution. A population of rows; each
 -- generation every parent spawns a DE kid (blend three random
 -- pop rows via extrapolate) that replaces the parent when the
--- oracle scores the kid better.
+-- hooked disty scores the kid better.
 
 -- differential evolution; returns the best row found
-function xp.de(data,    y,pop,t,kid)
-  y   = oracle(data)
-  pop = rnd.some(data.rows, the.np)
+function xp.de(tbl,    y,pop,t,kid)
+  y   = evaluate(tbl)
+  pop = rnd.some(tbl.rows, the.np)
   for _ = 1, the.gens do
     for i,parent in ipairs(pop) do
       t   = rnd.some(pop, 3)
-      kid = xp.mutate.extrapolate(data.cols.x, t[1], t[2], t[3])
+      kid = xp.mutate.extrapolate(tbl.cols.x, t[1], t[2], t[3])
       if y(kid) < y(parent) then pop[i] = kid end end end
-  return lst.keysort(pop, y)[1] end
+  return pop[argmini(pop, y)] end
 
 
 -- ## Ga
@@ -293,7 +297,7 @@ function xp.de(data,    y,pop,t,kid)
 -- (one cell each), then refill by one-point crossover of two
 -- tournament-picked parents.
 
--- lowest-oracle row among `tour` random pop rows
+-- lowest-scoring row among `tour` random pop rows
 local function tourney(pop,y,    x,z)
   x = pop[rnd.n(#pop)]
   for _ = 2, the.tour do
@@ -301,25 +305,25 @@ local function tourney(pop,y,    x,z)
   return x end
 
 -- one-point crossover of two rows over the x columns
-local function cross(data,mum,dad,    kid,cut)
-  kid, cut = lst.slice(mum), rnd.n(#data.cols.x)
-  for j,c in ipairs(data.cols.x) do
+local function cross(tbl,mum,dad,    kid,cut)
+  kid, cut = lst.slice(mum), rnd.n(#tbl.cols.x)
+  for j,c in ipairs(tbl.cols.x) do
     if j > cut then kid[c.at] = dad[c.at] end end
   return kid end
 
 -- genetic algorithm; returns the best row found
-function xp.ga(data,    y,pop,kids)
-  y   = oracle(data)
-  pop = rnd.some(data.rows, the.np)
+function xp.ga(tbl,    y,pop,kids)
+  y   = evaluate(tbl)
+  pop = rnd.some(tbl.rows, the.np)
   for _ = 1, the.gens do
     pop  = lst.map(pop,
-             function(r) return xp.mutate.picks(data, r, 1) end)
+             function(r) return xp.mutate.picks(tbl, r, 1) end)
     kids = {}
     for _ = 1, the.np do
       lst.push(kids,
-        cross(data, tourney(pop,y), tourney(pop,y))) end
+        cross(tbl, tourney(pop,y), tourney(pop,y))) end
     pop = kids end
-  return lst.keysort(pop, y)[1] end
+  return pop[argmini(pop, y)] end
 
 
 -- ## Sa
@@ -328,12 +332,12 @@ function xp.ga(data,    y,pop,kids)
 -- one (metropolis, cooling as the budget spends).
 
 -- simulated annealing; returns the best row seen
-function xp.sa(data,    y,s,es,best,eb,kid,e)
-  y  = oracle(data)
-  s  = data.rows[rnd.n(#data.rows)]
+function xp.sa(tbl,    y,s,es,best,eb,kid,e)
+  y  = evaluate(tbl)
+  s  = tbl.rows[rnd.n(#tbl.rows)]
   es = y(s); best, eb = s, es
   for h = 1, the.budget1 do
-    kid = xp.mutate.picks(data, s, 1)
+    kid = xp.mutate.picks(tbl, s, 1)
     e   = y(kid)
     if e < es or
        rnd.n() < exp((es-e)/(1 - h/the.budget1 + 1E-32)) then
@@ -348,31 +352,31 @@ function xp.sa(data,    y,s,es,best,eb,kid,e)
 -- to a fresh random row.
 
 -- greedy local search; returns the best row found
-function xp.ls(data,    y,s,es,best,eb,imp,kid,e)
-  y   = oracle(data)
-  s   = data.rows[rnd.n(#data.rows)]
+function xp.ls(tbl,    y,s,es,best,eb,imp,kid,e)
+  y   = evaluate(tbl)
+  s   = tbl.rows[rnd.n(#tbl.rows)]
   es  = y(s); best, eb, imp = s, es, 0
   for h = 1, the.budget1 do
-    kid = xp.mutate.picks(data, s, 1)
+    kid = xp.mutate.picks(tbl, s, 1)
     e   = y(kid)
     if e < es then s, es = kid, e end
     if e < eb then best, eb, imp = kid, e, h end
     if h - imp > the.restart then
-      s = data.rows[rnd.n(#data.rows)]
+      s = tbl.rows[rnd.n(#tbl.rows)]
       es, imp = y(s), h end end
   return best end
 
 
 -- ## Race
 -- Race the optimizers head to head: run each on one dataset,
--- score its best row by the oracle, return them ranked best
+-- score its best row by the hooked disty, return them ranked best
 -- first. A cheap answer to "which search wins here?".
-function xp.race(data,    y,opts,out)
-  y    = oracle(data)
+function xp.race(tbl,    y,opts,out)
+  y    = evaluate(tbl)
   opts = {de=xp.de, ga=xp.ga, sa=xp.sa, ls=xp.ls}
   out  = {}
   for name,opt in lst.items(opts) do
-    lst.push(out, {name, y(opt(data))}) end
+    lst.push(out, {name, y(opt(tbl))}) end
   return lst.keysort(out, function(o) return o[2] end) end
 
 
@@ -381,8 +385,8 @@ function xp.race(data,    y,opts,out)
 -- pick a leaf and DE-blend three of its rows -- so synthetic
 -- rows land inside real, coherent regions, not in the voids
 -- between them.
-function xp.sample(data,n,    tree,big,out,rs)
-  tree = Tree.grow(data, data.rows)
+function xp.sample(tbl,n,    tree,big,out,rs)
+  tree = Tree.grow(tbl, tbl.rows)
   big  = {}
   for _,leaf in ipairs(tree:leaves()) do
     if #leaf.rows >= 3 then lst.push(big, leaf) end end
@@ -390,7 +394,7 @@ function xp.sample(data,n,    tree,big,out,rs)
   while #big > 0 and #out < (n or 100) do
     rs = rnd.some(big[rnd.n(#big)].rows, 3)
     lst.push(out, xp.mutate.extrapolate(
-      data.cols.x, rs[1], rs[2], rs[3])) end
+      tbl.cols.x, rs[1], rs[2], rs[3])) end
   return out end
 
 
@@ -410,38 +414,38 @@ function xp.acquire.bayes(_,best,rest,row,    n)
        - xp.bayes.likes(rest,row,n,2) end
 
 -- score: dist to rest mid - dist to best mid
-function xp.acquire.centroid(data,best,rest,row)
-  return data:distx(row, rest:mids())
-       - data:distx(row, best:mids()) end
+function xp.acquire.centroid(tbl,best,rest,row)
+  return tbl:distx(row, rest:mids())
+       - tbl:distx(row, best:mids()) end
 
 -- rows sorted best-first by disty
-local function byDisty(data,rs)
+local function byDisty(tbl,rs)
   return lst.keysort(rs,
-    function(r) return data:disty(r) end) end
+    function(r) return tbl:disty(r) end) end
 
 -- warm-start `start` labels, split best/rest by sqrt, then
 -- label the top-scored unlabeled row and re-cap best to
 -- budget. Returns the labeled Tbl.
-function xp.acquire.top(data,score,budget,start,    rows,lab,
+function xp.acquire.top(tbl,score,budget,start,    rows,lab,
     best,rest,cap,unlab,sorted,worst)
   score  = score  or xp.acquire.bayes
   budget = budget or the.budget
   start  = start  or the.start
-  rows   = rnd.shuffle(lst.slice(data.rows))
-  lab    = data:clone(lst.slice(rows, 1, start))
-  sorted = byDisty(data, lab.rows)
+  rows   = rnd.shuffle(lst.slice(tbl.rows))
+  lab    = tbl:clone(lst.slice(rows, 1, start))
+  sorted = byDisty(tbl, lab.rows)
   cap    = floor(sqrt(#lab.rows))
-  best   = data:clone(lst.slice(sorted, 1, cap))
-  rest   = data:clone(lst.slice(sorted, cap+1))
+  best   = tbl:clone(lst.slice(sorted, 1, cap))
+  rest   = tbl:clone(lst.slice(sorted, cap+1))
   unlab  = lst.slice(rows, start+1)
   for _ = 1, budget do
     if #unlab == 0 then break end
     unlab = lst.keysort(unlab,
-              function(r) return -score(data,best,rest,r) end)
+              function(r) return -score(tbl,best,rest,r) end)
     lab:add(unlab[1]); best:add(unlab[1])
     unlab = lst.slice(unlab, 2)
     if #best.rows > floor(sqrt(#lab.rows)) then
-      worst = byDisty(data, best.rows)[#best.rows]
+      worst = byDisty(tbl, best.rows)[#best.rows]
       best:add(worst, -1); rest:add(worst) end end
   return lab end
 
@@ -451,13 +455,13 @@ function xp.acquire.top(data,score,budget,start,    rows,lab,
 -- rows (a Num of every row's gap to its nearest OTHER row),
 -- then score any row's gap against that spread: a high
 -- normalized score = a lonely row = an anomaly.
-function xp.anomaly(data,    dn,gap)
+function xp.anomaly(tbl,    dn,gap)
   gap = function(r,    nn)
-    nn = lst.keysort(data.rows,
-      function(z) return r==z and BIG or data:distx(r,z) end)[1]
-    return data:distx(r, nn) end
+    nn = tbl.rows[argmini(tbl.rows,
+      function(z) return r==z and BIG or tbl:distx(r,z) end)]
+    return tbl:distx(r, nn) end
   dn  = Num.new()
-  for _,r in ipairs(data.rows) do dn:add(gap(r)) end
+  for _,r in ipairs(tbl.rows) do dn:add(gap(r)) end
   return function(r) return dn:norm(gap(r)) end end
 
 

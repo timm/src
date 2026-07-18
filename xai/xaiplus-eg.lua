@@ -3,7 +3,8 @@
 -- applications layer over xai. One eg sub-table per app,
 -- ordered simplest to hardest. On the command line:
 --
---     --key=val, -k val    set an option
+--     --key=val, -K val    set an option (xai shorts are
+--                          lower case, xaiplus's UPPER)
 --     --knn, --kmeans ...  run one app's tests
 --     --all                run every app
 --
@@ -103,7 +104,7 @@ nine cell measurements, a benign/malignant klass -- a bare
 ]]
 eg.knn = {}
 
--- - **xp.knn(data,r0,k)** predicts r0's klass as the mode of
+-- - **xp.knn(tbl,r0,k)** predicts r0's klass as the mode of
 --   the klasses of its k nearest rows (distx, then Sym mode).
 eg.knn["--acc"] = function(    d,rows,h,tr,te,at,ok)
   d    = Tbl.new(DATA)
@@ -148,7 +149,7 @@ what lesson 3 fixes.
 ]]
 eg.kmeans = {}
 
--- - **xp.kmeans(data,k,iter)** returns k clusters (Tbl
+-- - **xp.kmeans(tbl,k,iter)** returns k clusters (Tbl
 --   clones); iter passes of assign-then-recentre.
 eg.kmeans["--cluster"] = function(    d,cl,tot,ns)
   d  = Tbl.new(DATA)
@@ -188,7 +189,7 @@ lesson 2's kmeans.
 ]]
 eg.kmeanspp = {}
 
--- - **xp.kpp(data,k,few)** returns k seed rows chosen by
+-- - **xp.kpp(tbl,k,few)** returns k seed rows chosen by
 --   kmeans++ (d^2-weighted picks from a `few`-row pool).
 eg.kmeanspp["--seed"] = function(    d,cs,spread,gap)
   d  = Tbl.new(DATA)
@@ -235,6 +236,8 @@ eg.bayes = {}
 --   gaussian pdf.
 -- - **xp.bayes.likes(h,row,n,nh)** log-likelihood of a row under a
 --   klass model h (a Tbl of that klass's rows).
+-- - **xp.bayes.mostlikes(h,row,n,nh)** klass in a dict of models
+--   most liking the row.
 eg.bayes["--like"] = function(    d,c,near,far)
   d    = Tbl.new(DATA)
   c    = d.cols.x[1]                    -- a numeric feature
@@ -274,14 +277,15 @@ that lands in the mid-90s.
 ]]
 eg.classify = {}
 
--- - **xp.classify(data,wait)** incremental naive Bayes;
---   returns a Confuse matrix (`:acc()` = its accuracy).
-eg.classify["--acc"] = function(    d,cf)
-  d  = Tbl.new(DATA)
-  cf = xp.classify(d)
-  print("naive Bayes accuracy on breast.w:", str.o(cf:acc()))
-  assert(cf:acc() > 0.9)
-  assert(cf.n > 600) end                -- scored most rows
+-- - **xp.classify(tbl,wait)** incremental naive Bayes;
+--   returns the {got,want} pairs it scored.
+-- - **xp.acc(seen)** fraction of those pairs that agree.
+eg.classify["--acc"] = function(    d,seen)
+  d    = Tbl.new(DATA)
+  seen = xp.classify(d)
+  print("naive Bayes accuracy on breast.w:", str.o(xp.acc(seen)))
+  assert(xp.acc(seen) > 0.9)
+  assert(#seen > 600) end               -- scored most rows
 
 --[[
 **Exercises (lesson 5).**
@@ -291,9 +295,9 @@ eg.classify["--acc"] = function(    d,cf)
 1. (simple) Vary `--wait` (10, 50, 200). Does a longer
    warm-up before scoring raise or lower the reported acc,
    and why?
-2. From the Confuse `cells`, print the two most common
-   mistakes (want|got pairs off the diagonal). Which klass
-   is hardest to tell apart?
+2. Spin down the {got,want} pairs to find the two most
+   common mistakes (got ~= want). Which klass is hardest
+   to tell apart?
 ]]
 
 -- ## Mutate
@@ -315,7 +319,7 @@ wholly forgets its base.
 eg.mutate = {}
 
 -- - **xp.mutate.pick(col,v)** one fresh value for a column.
--- - **xp.mutate.picks(data,row,n)** copy row, mutate n of its x cells.
+-- - **xp.mutate.picks(tbl,row,n)** copy row, mutate n of its x cells.
 -- - **xp.mutate.extrapolate(cols,a,b,c)** DE blend a+F*(b-c); one
 --   column always kept from a.
 eg.mutate["--picks"] = function(    d,r,m,diff)
@@ -359,10 +363,10 @@ The first optimizer. Keep a small population of rows; each
 generation, every parent tries a DE child -- three random
 population rows blended as a + F*(b - c), via
 [extrapolate](../glossary.md#mutate) -- and the child
-replaces the parent if it scores better. "Better" is an
-`oracle`: a (possibly synthetic) row scores the
-[disty](../glossary.md#heaven) of its nearest REAL row, a
-cheap stand-in for the expensive true objective. On auto93,
+replaces the parent if it scores better. "Better" is xai's
+[disty](../glossary.md#heaven) with a `label` hook installed:
+a (possibly synthetic) row first snaps to its nearest REAL
+row, a cheap stand-in for the true objective. On auto93,
 DE pulls disty from a median near 0.5 down toward 0.
 
 **Core ideas:** [de](../glossary.md#de),
@@ -370,7 +374,7 @@ DE pulls disty from a median near 0.5 down toward 0.
 ]]
 eg.de = {}
 
--- - **xp.de(data)** differential evolution; returns the best
+-- - **xp.de(tbl)** differential evolution; returns the best
 --   row found (minimizing the nearest-real disty).
 eg.de["--run"] = function(    d,best)
   d    = Tbl.new(DOPT)
@@ -397,17 +401,17 @@ eg.de["--run"] = function(    d,best)
 A different search. Each generation: mutate the whole
 population one cell each, then refill it by CROSSOVER --
 splice two parents at a random column -- where parents win
-their slot by tournament (lowest oracle of `tour` random
-rows). Mutation explores, crossover recombines, tournaments
-apply the selection pressure. Same oracle as DE, so the two
-are directly comparable (see lesson 11).
+their slot by tournament (lowest hooked disty of `tour`
+random rows). Mutation explores, crossover recombines,
+tournaments apply the selection pressure. Same scorer as DE,
+so the two are directly comparable (see lesson 11).
 
 **Core ideas:** [ga](../glossary.md#ga),
 [mutate](../glossary.md#mutate)
 ]]
 eg.ga = {}
 
--- - **xp.ga(data)** genetic algorithm (mutate, tournament
+-- - **xp.ga(tbl)** genetic algorithm (mutate, tournament
 --   select, one-point crossover); returns the best row.
 eg.ga["--run"] = function(    d,best)
   d    = Tbl.new(DOPT)
@@ -443,7 +447,7 @@ memory, yet competitive.
 ]]
 eg.sa = {}
 
--- - **xp.sa(data)** simulated annealing, (1+1) with a cooling
+-- - **xp.sa(tbl)** simulated annealing, (1+1) with a cooling
 --   metropolis accept; returns the best row seen.
 eg.sa["--run"] = function(    d,best)
   d    = Tbl.new(DOPT)
@@ -478,7 +482,7 @@ beat restart-climbing, be suspicious.
 ]]
 eg.ls = {}
 
--- - **xp.ls(data)** greedy local search with random restarts
+-- - **xp.ls(tbl)** greedy local search with random restarts
 --   on stagnation; returns the best row found.
 eg.ls["--run"] = function(    d,best)
   d    = Tbl.new(DOPT)
@@ -503,7 +507,7 @@ eg.ls["--run"] = function(    d,best)
 ### Lesson 11: racing the optimizers
 
 Which search wins? Do not guess -- race them. Run DE, GA, SA
-and LS on the same data under the same oracle, score each
+and LS on the same data under the same scorer, score each
 one's best row, and rank them. There is no universal winner
 (no free lunch): the ranking shifts with the data and the
 budget, which is exactly why a cheap race beats trusting a
@@ -514,8 +518,8 @@ brand name.
 ]]
 eg.race = {}
 
--- - **xp.race(data)** runs every optimizer, scores each by
---   the oracle, returns {name,score} ranked best first.
+-- - **xp.race(tbl)** runs every optimizer, scores each by
+--   the hooked disty, returns {name,score} ranked best first.
 eg.race["--run"] = function(    d,rank)
   d    = Tbl.new(DOPT)
   rank = xp.race(d)
@@ -553,7 +557,7 @@ plausible, unlike a row stitched from unrelated extremes.
 ]]
 eg.sample = {}
 
--- - **xp.sample(data,n)** returns n synthetic rows, each a
+-- - **xp.sample(tbl,n)** returns n synthetic rows, each a
 --   DE-blend of three rows from one tree leaf.
 eg.sample["--rows"] = function(    d,rows)
   d    = Tbl.new(DOPT)
@@ -591,7 +595,7 @@ distance -- and re-cap best. Spend a tiny
 ]]
 eg.acquire = {}
 
--- - **xp.acquire.top(data,score)** active learning to the
+-- - **xp.acquire.top(tbl,score)** active learning to the
 --   budget; score = **xp.acquire.bayes** or
 --   **xp.acquire.centroid**. Returns the labeled Tbl.
 eg.acquire["--both"] = function(    d,lab,ys)
@@ -632,7 +636,7 @@ model, just distance and a running summary.
 ]]
 eg.anomaly = {}
 
--- - **xp.anomaly(data)** returns a detector row->0..1; high
+-- - **xp.anomaly(tbl)** returns a detector row->0..1; high
 --   = a row far from even its nearest neighbor.
 eg.anomaly["--detect"] = function(    d,det,ss)
   d   = Tbl.new(DOPT)
@@ -735,15 +739,21 @@ eg.main["--join"] = function(    doc,src,keys,ok,ns)
 
 -- cli: --key=val sets an option, --name runs a section, other
 -- names run one test. Flags steer only the egs that follow.
+-- Short flags ("-x val") come from the help texts: xai's are
+-- lower case, xaiplus's UPPER case, so they never collide.
+local shorts = {}
+for c,key in (xai.help..xp.help):gmatch"%-(%w)%s+%-%-(%w+)=" do
+  shorts[c] = key end
+
 local function cli(    k,v)
   for i,s in ipairs(arg) do
     k,v = s:match"^%-%-(%w+)=(%S+)$"
     if v then
       if the[k] == nil then error("unknown --" .. k) end
       the[k] = str.what(v) end
-    for key,_ in pairs(the) do
-      if s == "-" .. key:sub(1,1) and arg[i+1] then
-        the[key] = str.what(arg[i+1]) end end
+    k = s:match"^%-(%w)$"
+    if k and shorts[k] and arg[i+1] then
+      the[shorts[k]] = str.what(arg[i+1]) end
     if eg[s:sub(3)] then section(s:sub(3))
     else
       for _,sect in pairs(eg) do

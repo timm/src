@@ -35,30 +35,30 @@ x cols kept from base a:	7	of	9
 ---- de ----------------------------------------
 
 -- --run
-DE   best (nearest-real disty):	0.075	 median	0.535
+DE   best (nearest-real disty):	0.075	 median	0.544
 
 ---- ga ----------------------------------------
 
 -- --run
-GA   best (nearest-real disty):	0.093	 median	0.535
+GA   best (nearest-real disty):	0.093	 median	0.544
 
 ---- sa ----------------------------------------
 
 -- --run
-SA   best (nearest-real disty):	0.093	 median	0.535
+SA   best (nearest-real disty):	0.093	 median	0.544
 
 ---- ls ----------------------------------------
 
 -- --run
-LS   best (nearest-real disty):	0.105	 median	0.535
+LS   best (nearest-real disty):	0.105	 median	0.544
 
 ---- race ----------------------------------------
 
 -- --run
 optimizer race (best first):
    	de	0.075
-   	ls	0.093
-   	sa	0.141
+   	sa	0.093
+   	ls	0.105
    	ga	0.147
 
 ---- sample ----------------------------------------
@@ -75,6 +75,6 @@ acquire best disty:	0.075	 labels	70
 ---- anomaly ----------------------------------------
 
 -- --detect
-anomaly scores lo/mid/hi:	0.299	0.329	0.994
+anomaly scores lo/mid/hi:	0.291	0.324	0.994
 
 all pass

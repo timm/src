@@ -76,14 +76,16 @@ function Num.norm(i,v,    z)
   z = (v - i.mu)/(i:spread() + 1E-32)
   return 1/(1 + exp(-1.7*max(-3, min(3, z)))) end
 
--- Num summarizing i's data without j's: weighted add of
--- -j.n values at j.mu, then j's own spread comes off m2
-function Num.without(i,j,    k)
-  k = Num.new(i.txt, i.at)
-  if j.n < i.n then
-    k.n, k.mu, k.m2 = i.n, i.mu, i.m2
-    k:add(j.mu, -j.n)
-    k.m2 = max(0, k.m2 - j.m2) end
+-- Num summarizing num1's data without num2's: weighted add
+-- of -n2 values at mu2, then num2's own spread comes off m2
+function Num.without(num1,num2,    n1,mu1,m21,n2,mu2,m22,k)
+  n1,mu1,m21 = num1.n, num1.mu, num1.m2
+  n2,mu2,m22 = num2.n, num2.mu, num2.m2
+  k = Num.new(num1.txt, num1.at)
+  if n2 < n1 then
+    k.n, k.mu, k.m2 = n1, mu1, m21
+    k:add(mu2, -n2)
+    k.m2 = max(0, k.m2 - m22) end
   return k end
 
 
@@ -109,8 +111,7 @@ function Sym.add(i,v,w,    c)
 function Sym.mid(i,    most,out)
   most = 0
   for k,n in pairs(i.has) do
-    if n > most or
-       (n == most and tostring(k) < tostring(out)) then
+    if n > most or (n == most and k < out) then
       most,out = n,k end end
   return out end
 
@@ -121,11 +122,11 @@ function Sym.spread(i,    e)
     e = e - n/i.n * log(n/i.n, 2) end
   return e end
 
--- Sym summarizing i's data without j's
-function Sym.without(i,j,    k)
-  k = Sym.new(i.txt, i.at)
-  for v,n in pairs(i.has) do k:add(v,  n) end
-  for v,n in pairs(j.has) do k:add(v, -n) end
+-- Sym summarizing sym1's data without sym2's
+function Sym.without(sym1,sym2,    k)
+  k = Sym.new(sym1.txt, sym1.at)
+  for v,n in pairs(sym1.has) do k:add(v,  n) end
+  for v,n in pairs(sym2.has) do k:add(v, -n) end
   return k end
 
 -- fold a list into a summary (Num unless told otherwise)
@@ -156,8 +157,7 @@ function Cols.new(names,    i,col)
 -- route one row's cells to their columns, weight w (w<0
 -- folds them back out); "?" skipped
 function Cols.add(i,row,w)
-  for _,c in ipairs(i.all) do
-    if row[c.at] ~= "?" then c:add(row[c.at], w) end end
+  for c,v in lst.cells(i.all,row) do c:add(v,w) end
   return row end
 
 
@@ -230,8 +230,11 @@ function Tbl.distx(i,r1,r2)
   return minkowski(i.cols.x, function(c)
     return c:dist(r1[c.at], r2[c.at]) end) end
 
--- row's distance to the ideal y goals (0 = best)
+-- row's distance to the ideal y goals (0 = best). Rows
+-- pass through the optional `label` hook first: the one
+-- place any evaluation is ever spent.
 function Tbl.disty(i,row)
+  if i.label then row = i.label(row) end
   return minkowski(i.cols.y, function(c)
     if row[c.at] ~= "?" then
       return abs(c:norm(row[c.at]) - c.w) end end) end
@@ -563,7 +566,17 @@ function lst.argmax(t,fn,    hi,v,out)
 function lst.items(t,     i,keys)
   i,keys = 0,lst.sort(lst.kap(t, function(k,_) return k end))
   return function()
-    i=i+1; if keys[i] then return keys[i], t[keys[i]] end end end 
+    i=i+1; if keys[i] then return keys[i], t[keys[i]] end end end
+
+-- iterate col,row[col.at] over cols, skipping "?" cells
+function lst.cells(cols,row,    i)
+  i = 0
+  return function(    c,v)
+    while true do
+      i = i + 1; c = cols[i]
+      if not c then return end
+      v = row[c.at]
+      if v ~= "?" then return c,v end end end end
 
 
 -- ## Rnd
