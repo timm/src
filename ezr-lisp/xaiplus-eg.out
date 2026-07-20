@@ -1,0 +1,50 @@
+
+; eg--acquire
+acquire best disty: 0.075  labels 70
+acquire best disty: 0.075  labels 70
+
+; eg--anomaly
+anomaly scores lo/mid/hi: 0.291 0.324 0.994
+
+; eg--classify
+naive Bayes accuracy on breast.w: 0.957
+
+; eg--de
+DE   best (nearest-real disty): 0.141  median 0.538
+
+; eg--extrapolate
+x cols kept from base a: 6 of 9
+
+; eg--ga
+GA   best (nearest-real disty): 0.113  median 0.538
+
+; eg--kmeans
+5 clusters, sizes: (44 53 139 182 281)
+
+; eg--knn
+3-NN accuracy on breast.w: 0.962
+
+; eg--kpp
+5 kmeans++ seeds, mean pair distance: 0.438
+
+; eg--like
+like at mean vs 3sd out: 0.142 0.002
+
+; eg--ls
+LS   best (nearest-real disty): 0.075  median 0.538
+
+; eg--picks
+cells changed by picks(n=3): 3 of 9
+
+; eg--race
+optimizer race (best first):
+    ga 0.093
+    ls 0.113
+    sa 0.140
+    de 0.141
+
+; eg--sa
+SA   best (nearest-real disty): 0.150  median 0.538
+
+; eg--sample
+synthesized rows: 30  width 8 of 8

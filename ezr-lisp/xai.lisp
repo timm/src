@@ -15,6 +15,8 @@
 (defpackage :xai (:use :common-lisp))
 (in-package :xai)
 
+(setf *read-default-float-format* 'double-float)
+
 #+sbcl (declaim (sb-ext:muffle-conditions
                   warning style-warning))
 
@@ -52,7 +54,7 @@ Also: --join --transcript --check (course upkeep).")
 
 (defstruct num (at 0) (txt " ") (n 0) (w 1) (mu 0.0) (m2 0.0))
 
-(defstruct (cols (:constructor %make-cols)) names all x y)
+(defstruct (cols (:constructor %make-cols)) names all x y klass)
 
 (defstruct (tbl (:constructor %make-tbl)) cols rows)
 
@@ -293,6 +295,7 @@ Also: --join --transcript --check (course upkeep).")
                     (make-sym :at at :txt s))))
       (push col $all)
       (cond ((find z "-+!")
+             (when (eql z #\!) (setf $klass col))
              (when (eql z #\-) (setf (? col w) 0))
              (push col $y))
             ((not (eql z #\X)) (push col $x)))))
@@ -673,6 +676,78 @@ Also: --join --transcript --check (course upkeep).")
   "Command-line args after the script name"
   #+sbcl  (cdr sb-ext:*posix-argv*)
   #+clisp ext:*args*)
+
+(defun sh (cmd)
+  "Run a shell command; return its exit code"
+  #+sbcl (sb-ext:process-exit-code
+           (sb-ext:run-program "/bin/sh" (list "-c" cmd)
+                               :output *standard-output*
+                               :error *error-output*))
+  #-sbcl 1)
+
+(defun slurp (file)
+  "Whole file as one string"
+  (with-open-file (s file)
+    (let ((str (make-string (file-length s))))
+      (subseq str 0 (read-sequence str s)))))
+
+(defun gkeys (&aux (keys (o)))
+  "Glossary headings '## key' as a set"
+  (with-open-file (s "../glossary.md")
+    (loop for line = (read-line s nil) while line do
+      (when (and (> (length line) 3)
+                 (string= "## " line :end2 3)
+                 (every #'lower-case-p (subseq line 3)))
+        (setf (gethash (subseq line 3) keys) t))))
+  keys)
+
+(defun freeze (script out)
+  "Capture script's --all to out (a real run, never edited)"
+  (assert (zerop (sh (cat "sbcl --script " script
+                          " --all > " out))))
+  (format t "~&~a frozen~%" out))
+
+(defun check-transcript (script out &aux ok)
+  "A fresh --all must reproduce the frozen transcript"
+  (setf ok (zerop (sh (cat "sbcl --script " script
+                           " --all | diff - " out))))
+  (format t "~&~a~%" (if ok "transcript ok"
+                            "TRANSCRIPT DRIFT"))
+  (assert ok))
+
+(defun join-check (srcfile &aux (src (slurp srcfile))
+                                (keys (gkeys)) (ok t)
+                                (taught (o)))
+  "Doc claims, executable: glossary links, table signatures"
+  (let ((tag "glossary.md#") (start 0))
+    (loop for pos = (search tag src :start2 start)
+          while pos
+          do (let* ((k0 (+ pos (length tag)))
+                    (k1 (position-if-not #'alpha-char-p src
+                                         :start k0))
+                    (key (subseq src k0 k1)))
+               (unless (or (string= key "")  ; the tag itself
+                           (gethash key keys))
+                 (setf ok nil)
+                 (format t "~&no heading: ~a~%" key))
+               (setf start k1))))
+  (with-input-from-string (s src)
+    (loop for line = (read-line s nil) while line do
+      (when (eql 0 (search "| `(" line))
+        (let* ((k0 4)
+               (k1 (position-if
+                     (lambda (c) (member c '(#\Space #\))))
+                     line :start k0))
+               (name (subseq line k0 k1))
+               (sym (find-symbol (string-upcase name) :xai)))
+          (if (and sym (fboundp sym))
+              (setf (gethash name taught) t)
+              (progn (setf ok nil)
+                     (format t "~&table names missing fn: ~a~%"
+                             name)))))))
+  (format t "~&coverage: ~a taught verbs; ~a demos~%"
+          (hash-table-count taught) (length (egs "EG--")))
+  (assert ok))
 
 (defun help ()
   "Print options (with defaults), tests, studies"

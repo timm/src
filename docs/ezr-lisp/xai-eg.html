@@ -12,8 +12,8 @@
     <div class='docs'><p align="center">
 <a href="https://timm.github.io/src/"><img alt="home" src="https://img.shields.io/badge/🏠-home-gold"></a>
 <a href="https://github.com/timm/src/tree/main/ezr-lisp"><img alt="src" src="https://img.shields.io/badge/src-ezr--lisp-black"></a>
-<a href="xai.html"><img alt="code" src="https://img.shields.io/badge/code-3%20pages-2ea44f"></a>
-<a href="xai-eg.html"><img alt="tests" src="https://img.shields.io/badge/tests-1%20pages-06b6d4"></a>
+<a href="xai.html"><img alt="code" src="https://img.shields.io/badge/code-4%20pages-2ea44f"></a>
+<a href="xai-eg.html"><img alt="tests" src="https://img.shields.io/badge/tests-2%20pages-06b6d4"></a>
 <a href="https://github.com/timm/src/actions/workflows/tests-ezr-lisp.yml"><img alt="ci" src="https://github.com/timm/src/actions/workflows/tests-ezr-lisp.yml/badge.svg"></a>
 <a href="https://github.com/timm/src/issues"><img alt="issues" src="https://img.shields.io/badge/issues-report-red"></a>
 <a href="https://github.com/timm/src/blob/main/LICENSE.md"><img alt="license" src="https://img.shields.io/badge/license-MIT-brightgreen"></a>
@@ -1885,15 +1885,11 @@ names a function that exists.</p>
       <div class='octowrap'>
         <a class='octothorpe' href='#section-72'>#</a>
       </div>
-      <p>Run a shell command; return its exit code</p>
+      <p>Freeze &ndash;all output to xai-eg.out (from a real run)</p>
     </div>
     <div class='code'>
-      <div class="highlight"><pre><span class="p">(</span><span class="nf">defun</span><span class="w"> </span><span class="nv">sh</span><span class="w"> </span><span class="p">(</span><span class="nf">cmd</span><span class="p">)</span>
-<span class="w">  </span><span class="o">#</span><span class="nv">+sbcl</span><span class="w"> </span><span class="p">(</span><span class="nf">sb-ext:process-exit-code</span>
-<span class="w">           </span><span class="p">(</span><span class="nf">sb-ext:run-program</span><span class="w"> </span><span class="s">&quot;/bin/sh&quot;</span><span class="w"> </span><span class="p">(</span><span class="nb">list</span><span class="w"> </span><span class="s">&quot;-c&quot;</span><span class="w"> </span><span class="nv">cmd</span><span class="p">)</span>
-<span class="w">                               </span><span class="nv">:output</span><span class="w"> </span><span class="nv">*standard-output*</span>
-<span class="w">                               </span><span class="nv">:error</span><span class="w"> </span><span class="nv">*error-output*</span><span class="p">))</span>
-<span class="w">  </span><span class="o">#</span><span class="nv">-sbcl</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span></pre></div>
+      <div class="highlight"><pre><span class="p">(</span><span class="nf">defun</span><span class="w"> </span><span class="nv">eg--transcript</span><span class="w"> </span><span class="p">()</span>
+<span class="w">  </span><span class="p">(</span><span class="nf">freeze</span><span class="w"> </span><span class="s">&quot;xai-eg.lisp&quot;</span><span class="w"> </span><span class="s">&quot;xai-eg.out&quot;</span><span class="p">))</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -1902,13 +1898,11 @@ names a function that exists.</p>
       <div class='octowrap'>
         <a class='octothorpe' href='#section-73'>#</a>
       </div>
-      <p>Freeze &ndash;all output to xai-eg.out (from a real run)</p>
+      <p>A fresh &ndash;all must reproduce the frozen transcript</p>
     </div>
     <div class='code'>
-      <div class="highlight"><pre><span class="p">(</span><span class="nf">defun</span><span class="w"> </span><span class="nv">eg--transcript</span><span class="w"> </span><span class="p">()</span>
-<span class="w">  </span><span class="p">(</span><span class="nf">assert</span><span class="w"> </span><span class="p">(</span><span class="nf">zerop</span><span class="w"> </span><span class="p">(</span><span class="nf">sh</span><span class="w"> </span><span class="p">(</span><span class="nb">concatenate</span><span class="w"> </span><span class="ss">&#39;string</span>
-<span class="w">    </span><span class="s">&quot;sbcl --script xai-eg.lisp --all &gt; xai-eg.out&quot;</span><span class="p">))))</span>
-<span class="w">  </span><span class="p">(</span><span class="nb">format</span><span class="w"> </span><span class="nv">t</span><span class="w"> </span><span class="s">&quot;~&amp;xai-eg.out frozen~%&quot;</span><span class="p">))</span></pre></div>
+      <div class="highlight"><pre><span class="p">(</span><span class="nf">defun</span><span class="w"> </span><span class="nv">eg--check</span><span class="w"> </span><span class="p">()</span>
+<span class="w">  </span><span class="p">(</span><span class="nf">check-transcript</span><span class="w"> </span><span class="s">&quot;xai-eg.lisp&quot;</span><span class="w"> </span><span class="s">&quot;xai-eg.out&quot;</span><span class="p">))</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -1917,15 +1911,11 @@ names a function that exists.</p>
       <div class='octowrap'>
         <a class='octothorpe' href='#section-74'>#</a>
       </div>
-      <p>A fresh &ndash;all must reproduce the frozen transcript</p>
+      <p>Doc claims, executable: glossary links, table signatures</p>
     </div>
     <div class='code'>
-      <div class="highlight"><pre><span class="p">(</span><span class="nf">defun</span><span class="w"> </span><span class="nv">eg--check</span><span class="w"> </span><span class="p">(</span><span class="nf">&amp;aux</span><span class="w"> </span><span class="nv">ok</span><span class="p">)</span>
-<span class="w">  </span><span class="p">(</span><span class="nf">setf</span><span class="w"> </span><span class="nv">ok</span><span class="w"> </span><span class="p">(</span><span class="nf">zerop</span><span class="w"> </span><span class="p">(</span><span class="nf">sh</span><span class="w"> </span><span class="p">(</span><span class="nb">concatenate</span><span class="w"> </span><span class="ss">&#39;string</span>
-<span class="w">    </span><span class="s">&quot;sbcl --script xai-eg.lisp --all | diff - xai-eg.out&quot;</span><span class="p">))))</span>
-<span class="w">  </span><span class="p">(</span><span class="nb">format</span><span class="w"> </span><span class="nv">t</span><span class="w"> </span><span class="s">&quot;~&amp;~a~%&quot;</span><span class="w"> </span><span class="p">(</span><span class="k">if</span><span class="w"> </span><span class="nv">ok</span><span class="w"> </span><span class="s">&quot;transcript ok&quot;</span>
-<span class="w">                            </span><span class="s">&quot;TRANSCRIPT DRIFT&quot;</span><span class="p">))</span>
-<span class="w">  </span><span class="p">(</span><span class="nf">assert</span><span class="w"> </span><span class="nv">ok</span><span class="p">))</span></pre></div>
+      <div class="highlight"><pre><span class="p">(</span><span class="nf">defun</span><span class="w"> </span><span class="nv">eg--join</span><span class="w"> </span><span class="p">()</span>
+<span class="w">  </span><span class="p">(</span><span class="nf">join-check</span><span class="w"> </span><span class="s">&quot;xai-eg.lisp&quot;</span><span class="p">))</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -1933,84 +1923,6 @@ names a function that exists.</p>
     <div class='docs'>
       <div class='octowrap'>
         <a class='octothorpe' href='#section-75'>#</a>
-      </div>
-      <p>Whole file as one string</p>
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre><span class="p">(</span><span class="nf">defun</span><span class="w"> </span><span class="nv">slurp</span><span class="w"> </span><span class="p">(</span><span class="nf">file</span><span class="w"> </span><span class="nv">&amp;aux</span><span class="p">)</span>
-<span class="w">  </span><span class="p">(</span><span class="nf">with-open-file</span><span class="w"> </span><span class="p">(</span><span class="nf">s</span><span class="w"> </span><span class="nv">file</span><span class="p">)</span>
-<span class="w">    </span><span class="p">(</span><span class="k">let</span><span class="w"> </span><span class="p">((</span><span class="nf">str</span><span class="w"> </span><span class="p">(</span><span class="nb">make-string</span><span class="w"> </span><span class="p">(</span><span class="nf">file-length</span><span class="w"> </span><span class="nv">s</span><span class="p">))))</span>
-<span class="w">      </span><span class="p">(</span><span class="nf">subseq</span><span class="w"> </span><span class="nv">str</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="p">(</span><span class="nf">read-sequence</span><span class="w"> </span><span class="nv">str</span><span class="w"> </span><span class="nv">s</span><span class="p">)))))</span></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-76'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-76'>#</a>
-      </div>
-      <p>Glossary headings &lsquo;## key&rsquo; as a set</p>
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre><span class="p">(</span><span class="nf">defun</span><span class="w"> </span><span class="nv">gkeys</span><span class="w"> </span><span class="p">(</span><span class="nf">&amp;aux</span><span class="w"> </span><span class="p">(</span><span class="nf">keys</span><span class="w"> </span><span class="p">(</span><span class="nb">make-hash-table</span><span class="w"> </span><span class="nv">:test</span><span class="w"> </span><span class="o">#</span><span class="ss">&#39;equal</span><span class="p">)))</span>
-<span class="w">  </span><span class="p">(</span><span class="nf">with-open-file</span><span class="w"> </span><span class="p">(</span><span class="nf">s</span><span class="w"> </span><span class="s">&quot;../glossary.md&quot;</span><span class="p">)</span>
-<span class="w">    </span><span class="p">(</span><span class="nf">loop</span><span class="w"> </span><span class="nv">for</span><span class="w"> </span><span class="nv">line</span><span class="w"> </span><span class="nb">=</span><span class="w"> </span><span class="p">(</span><span class="nf">read-line</span><span class="w"> </span><span class="nv">s</span><span class="w"> </span><span class="nv">nil</span><span class="p">)</span><span class="w"> </span><span class="k">while</span><span class="w"> </span><span class="nv">line</span><span class="w"> </span><span class="k">do</span>
-<span class="w">      </span><span class="p">(</span><span class="k">when</span><span class="w"> </span><span class="p">(</span><span class="k">and</span><span class="w"> </span><span class="p">(</span><span class="nb">&gt;</span><span class="w"> </span><span class="p">(</span><span class="nb">length</span><span class="w"> </span><span class="nv">line</span><span class="p">)</span><span class="w"> </span><span class="mi">3</span><span class="p">)</span>
-<span class="w">                 </span><span class="p">(</span><span class="nb">string=</span><span class="w"> </span><span class="s">&quot;## &quot;</span><span class="w"> </span><span class="nv">line</span><span class="w"> </span><span class="nv">:end2</span><span class="w"> </span><span class="mi">3</span><span class="p">)</span>
-<span class="w">                 </span><span class="p">(</span><span class="nb">every</span><span class="w"> </span><span class="o">#</span><span class="ss">&#39;lower-case-p</span><span class="w"> </span><span class="p">(</span><span class="nf">subseq</span><span class="w"> </span><span class="nv">line</span><span class="w"> </span><span class="mi">3</span><span class="p">)))</span>
-<span class="w">        </span><span class="p">(</span><span class="nf">setf</span><span class="w"> </span><span class="p">(</span><span class="nf">gethash</span><span class="w"> </span><span class="p">(</span><span class="nf">subseq</span><span class="w"> </span><span class="nv">line</span><span class="w"> </span><span class="mi">3</span><span class="p">)</span><span class="w"> </span><span class="nv">keys</span><span class="p">)</span><span class="w"> </span><span class="nv">t</span><span class="p">))))</span>
-<span class="w">  </span><span class="nv">keys</span><span class="p">)</span></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-77'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-77'>#</a>
-      </div>
-      <p>Doc claims, executable: glossary links, table signatures</p>
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre><span class="p">(</span><span class="nf">defun</span><span class="w"> </span><span class="nv">eg--join</span><span class="w"> </span><span class="p">(</span><span class="nf">&amp;aux</span><span class="w"> </span><span class="p">(</span><span class="nf">src</span><span class="w"> </span><span class="p">(</span><span class="nf">slurp</span><span class="w"> </span><span class="s">&quot;xai-eg.lisp&quot;</span><span class="p">))</span>
-<span class="w">                      </span><span class="p">(</span><span class="nf">keys</span><span class="w"> </span><span class="p">(</span><span class="nf">gkeys</span><span class="p">))</span><span class="w"> </span><span class="p">(</span><span class="nf">ok</span><span class="w"> </span><span class="nv">t</span><span class="p">)</span>
-<span class="w">                      </span><span class="p">(</span><span class="nf">taught</span><span class="w"> </span><span class="p">(</span><span class="nb">make-hash-table</span><span class="w"> </span><span class="nv">:test</span><span class="w"> </span><span class="o">#</span><span class="ss">&#39;equal</span><span class="p">)))</span>
-<span class="w">  </span><span class="p">(</span><span class="k">let</span><span class="w"> </span><span class="p">((</span><span class="nf">tag</span><span class="w"> </span><span class="s">&quot;glossary.md#&quot;</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="nf">start</span><span class="w"> </span><span class="mi">0</span><span class="p">))</span>
-<span class="w">    </span><span class="p">(</span><span class="nf">loop</span><span class="w"> </span><span class="nv">for</span><span class="w"> </span><span class="nv">pos</span><span class="w"> </span><span class="nb">=</span><span class="w"> </span><span class="p">(</span><span class="nf">search</span><span class="w"> </span><span class="nv">tag</span><span class="w"> </span><span class="nv">src</span><span class="w"> </span><span class="nv">:start2</span><span class="w"> </span><span class="nv">start</span><span class="p">)</span>
-<span class="w">          </span><span class="k">while</span><span class="w"> </span><span class="nv">pos</span>
-<span class="w">          </span><span class="k">do</span><span class="w"> </span><span class="p">(</span><span class="k">let*</span><span class="w"> </span><span class="p">((</span><span class="nf">k0</span><span class="w"> </span><span class="p">(</span><span class="nb">+</span><span class="w"> </span><span class="nv">pos</span><span class="w"> </span><span class="p">(</span><span class="nb">length</span><span class="w"> </span><span class="nv">tag</span><span class="p">)))</span>
-<span class="w">                    </span><span class="p">(</span><span class="nf">k1</span><span class="w"> </span><span class="p">(</span><span class="nf">position-if-not</span><span class="w"> </span><span class="o">#</span><span class="ss">&#39;alpha-char-p</span><span class="w"> </span><span class="nv">src</span>
-<span class="w">                                         </span><span class="nv">:start</span><span class="w"> </span><span class="nv">k0</span><span class="p">))</span>
-<span class="w">                    </span><span class="p">(</span><span class="nf">key</span><span class="w"> </span><span class="p">(</span><span class="nf">subseq</span><span class="w"> </span><span class="nv">src</span><span class="w"> </span><span class="nv">k0</span><span class="w"> </span><span class="nv">k1</span><span class="p">)))</span>
-<span class="w">               </span><span class="p">(</span><span class="k">unless</span><span class="w"> </span><span class="p">(</span><span class="k">or</span><span class="w"> </span><span class="p">(</span><span class="nb">string=</span><span class="w"> </span><span class="nv">key</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="p">)</span><span class="w">  </span><span class="c1">; the tag itself</span>
-<span class="w">                           </span><span class="p">(</span><span class="nf">gethash</span><span class="w"> </span><span class="nv">key</span><span class="w"> </span><span class="nv">keys</span><span class="p">))</span>
-<span class="w">                 </span><span class="p">(</span><span class="nf">setf</span><span class="w"> </span><span class="nv">ok</span><span class="w"> </span><span class="nv">nil</span><span class="p">)</span>
-<span class="w">                 </span><span class="p">(</span><span class="nb">format</span><span class="w"> </span><span class="nv">t</span><span class="w"> </span><span class="s">&quot;~&amp;no heading: ~a~%&quot;</span><span class="w"> </span><span class="nv">key</span><span class="p">))</span>
-<span class="w">               </span><span class="p">(</span><span class="nf">setf</span><span class="w"> </span><span class="nv">start</span><span class="w"> </span><span class="nv">k1</span><span class="p">))))</span>
-<span class="w">  </span><span class="p">(</span><span class="nb">with-input-from-string</span><span class="w"> </span><span class="p">(</span><span class="nf">s</span><span class="w"> </span><span class="nv">src</span><span class="p">)</span>
-<span class="w">    </span><span class="p">(</span><span class="nf">loop</span><span class="w"> </span><span class="nv">for</span><span class="w"> </span><span class="nv">line</span><span class="w"> </span><span class="nb">=</span><span class="w"> </span><span class="p">(</span><span class="nf">read-line</span><span class="w"> </span><span class="nv">s</span><span class="w"> </span><span class="nv">nil</span><span class="p">)</span><span class="w"> </span><span class="k">while</span><span class="w"> </span><span class="nv">line</span><span class="w"> </span><span class="k">do</span>
-<span class="w">      </span><span class="p">(</span><span class="k">when</span><span class="w"> </span><span class="p">(</span><span class="nf">eql</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="p">(</span><span class="nf">search</span><span class="w"> </span><span class="s">&quot;| `(&quot;</span><span class="w"> </span><span class="nv">line</span><span class="p">))</span>
-<span class="w">        </span><span class="p">(</span><span class="k">let*</span><span class="w"> </span><span class="p">((</span><span class="nf">k0</span><span class="w"> </span><span class="mi">4</span><span class="p">)</span>
-<span class="w">               </span><span class="p">(</span><span class="nf">k1</span><span class="w"> </span><span class="p">(</span><span class="nf">position-if</span>
-<span class="w">                     </span><span class="p">(</span><span class="k">lambda</span><span class="w"> </span><span class="p">(</span><span class="nf">c</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="nb">member</span><span class="w"> </span><span class="nv">c</span><span class="w"> </span><span class="o">&#39;</span><span class="p">(</span><span class="sc">#\Space</span><span class="w"> </span><span class="sc">#\)</span><span class="p">)))</span>
-<span class="w">                     </span><span class="nv">line</span><span class="w"> </span><span class="nv">:start</span><span class="w"> </span><span class="nv">k0</span><span class="p">))</span>
-<span class="w">               </span><span class="p">(</span><span class="nf">name</span><span class="w"> </span><span class="p">(</span><span class="nf">subseq</span><span class="w"> </span><span class="nv">line</span><span class="w"> </span><span class="nv">k0</span><span class="w"> </span><span class="nv">k1</span><span class="p">))</span>
-<span class="w">               </span><span class="p">(</span><span class="nf">sym</span><span class="w"> </span><span class="p">(</span><span class="nf">find-symbol</span><span class="w"> </span><span class="p">(</span><span class="nb">string-upcase</span><span class="w"> </span><span class="nv">name</span><span class="p">)</span><span class="w"> </span><span class="nv">:xai</span><span class="p">)))</span>
-<span class="w">          </span><span class="p">(</span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="k">and</span><span class="w"> </span><span class="nv">sym</span><span class="w"> </span><span class="p">(</span><span class="nf">fboundp</span><span class="w"> </span><span class="nv">sym</span><span class="p">))</span>
-<span class="w">              </span><span class="p">(</span><span class="nf">setf</span><span class="w"> </span><span class="p">(</span><span class="nf">gethash</span><span class="w"> </span><span class="nv">name</span><span class="w"> </span><span class="nv">taught</span><span class="p">)</span><span class="w"> </span><span class="nv">t</span><span class="p">)</span>
-<span class="w">              </span><span class="p">(</span><span class="nf">progn</span><span class="w"> </span><span class="p">(</span><span class="nf">setf</span><span class="w"> </span><span class="nv">ok</span><span class="w"> </span><span class="nv">nil</span><span class="p">)</span>
-<span class="w">                     </span><span class="p">(</span><span class="nb">format</span><span class="w"> </span><span class="nv">t</span><span class="w"> </span><span class="s">&quot;~&amp;table names missing fn: ~a~%&quot;</span>
-<span class="w">                             </span><span class="nv">name</span><span class="p">)))))))</span>
-<span class="w">  </span><span class="p">(</span><span class="k">let</span><span class="w"> </span><span class="p">((</span><span class="nf">total</span><span class="w"> </span><span class="p">(</span><span class="nb">length</span><span class="w"> </span><span class="p">(</span><span class="nf">egs</span><span class="w"> </span><span class="s">&quot;EG--&quot;</span><span class="p">))))</span>
-<span class="w">    </span><span class="p">(</span><span class="nb">format</span><span class="w"> </span><span class="nv">t</span><span class="w"> </span><span class="s">&quot;~&amp;coverage: ~a taught verbs; ~a demos~%&quot;</span>
-<span class="w">            </span><span class="p">(</span><span class="nf">hash-table-count</span><span class="w"> </span><span class="nv">taught</span><span class="p">)</span><span class="w"> </span><span class="nv">total</span><span class="p">))</span>
-<span class="w">  </span><span class="p">(</span><span class="nf">assert</span><span class="w"> </span><span class="nv">ok</span><span class="p">))</span></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-78'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-78'>#</a>
       </div>
       <h2>Runners</h2>
 <p><code>eg--all</code> and <code>eg--study</code> find their functions by name (see
@@ -2022,10 +1934,10 @@ reproduces in isolation.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-79'>
+  <div class='section' id='section-76'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-79'>#</a>
+        <a class='octothorpe' href='#section-76'>#</a>
       </div>
       <p>Run each test, reseeding before each</p>
     </div>
@@ -2038,10 +1950,10 @@ reproduces in isolation.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-80'>
+  <div class='section' id='section-77'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-80'>#</a>
+        <a class='octothorpe' href='#section-77'>#</a>
       </div>
       <p>Run every unit test</p>
     </div>
@@ -2051,10 +1963,10 @@ reproduces in isolation.</p>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-81'>
+  <div class='section' id='section-78'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-81'>#</a>
+        <a class='octothorpe' href='#section-78'>#</a>
       </div>
       <p>Run every study</p>
     </div>

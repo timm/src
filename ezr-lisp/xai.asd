@@ -17,3 +17,13 @@
   :description "DTLZ1-7 live-model driver for xai."
   :depends-on ("xai")
   :components ((:file "dtlz")))
+
+(defsystem "xai/plus"
+  :description "Learners and optimizers layered on xai."
+  :depends-on ("xai")
+  :components ((:file "xaiplus")))
+
+(defsystem "xai/plus-eg"
+  :description "Unit tests and tutorial for xai/plus."
+  :depends-on ("xai/plus")
+  :components ((:file "xaiplus-eg")))

@@ -1,4 +1,6 @@
 xai	xai.lisp	code
 xai-eg	xai-eg.lisp	tests
 dtlz	dtlz.lisp	code
+xaiplus	xaiplus.lisp	code
+xaiplus-eg	xaiplus-eg.lisp	tests
 report	report.lisp	code

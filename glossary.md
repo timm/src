@@ -245,7 +245,7 @@ apart, the cleverness is decoration (lessons 10, 13).
 
 ## bayes
 
-*taught in:* [xaiplus, lesson 4](ezr-lua/xaiplus-eg.lua) · [xaiplus, lesson 5](ezr-lua/xaiplus-eg.lua)
+*taught in:* [xaiplus, lesson 4](ezr-lua/xaiplus-eg.lua) · [xaiplus, lesson 5](ezr-lua/xaiplus-eg.lua) · [xaiplus-eg (lisp), lesson 4](ezr-lisp/xaiplus-eg.lisp)
 
 Naive Bayes: score a row under a klass by multiplying its
 columns' likelihoods -- a [gauss](#gauss)ian pdf for
@@ -255,7 +255,7 @@ independent; cheap, incremental, a strong baseline.
 
 ## confusion
 
-*taught in:* [xaiplus, lesson 5](ezr-lua/xaiplus-eg.lua)
+*taught in:* [xaiplus, lesson 5](ezr-lua/xaiplus-eg.lua) · [xaiplus-eg (lisp), lesson 5](ezr-lisp/xaiplus-eg.lisp)
 
 A confusion matrix counts predictions by (actual, guessed)
 klass. Its diagonal is the hits; accuracy is the diagonal
@@ -285,7 +285,7 @@ classification flavor of [cost](#cost) (lessons 5, 11).
 
 ## gauss
 
-*taught in:* [xai-eg, lesson 2](ezr-lua/xai-eg.lua)
+*taught in:* [xai-eg, lesson 2](ezr-lua/xai-eg.lua) · [xaiplus-eg (lisp), lesson 4](ezr-lisp/xaiplus-eg.lisp)
 
 *see:* Box & Muller (1958) — normal deviates from uniforms.
 
@@ -315,7 +315,7 @@ needs only one pass over the rows (lessons 4, 5, 11).
 
 ## mode
 
-*taught in:* [xai-eg, lesson 5](ezr-lua/xai-eg.lua) · [xai-eg (lisp), lesson 3](ezr-lisp/xai-eg.lisp)
+*taught in:* [xai-eg, lesson 5](ezr-lua/xai-eg.lua) · [xai-eg (lisp), lesson 3](ezr-lisp/xai-eg.lisp) · [xaiplus-eg (lisp), lesson 1](ezr-lisp/xaiplus-eg.lisp)
 
 The most common symbol in a bag: Sym's middle, and the
 prediction at a classification leaf (lessons 5, 12).
@@ -403,7 +403,7 @@ one update per value, numerically stable — and reversible
 
 ## anomaly
 
-*taught in:* [xai-eg, lesson 8](ezr-lua/xai-eg.lua) · [xaiplus, lesson 14](ezr-lua/xaiplus-eg.lua)
+*taught in:* [xai-eg, lesson 8](ezr-lua/xai-eg.lua) · [xaiplus, lesson 14](ezr-lua/xaiplus-eg.lua) · [xaiplus-eg (lisp), lesson 14](ezr-lisp/xaiplus-eg.lisp)
 
 A row far from even its own nearest neighbor. Once
 distance exists, outlier detection is one argmax: find
@@ -412,7 +412,7 @@ nearest-gap CDF in xaiplus lesson 14).
 
 ## centroid
 
-*taught in:* [xai-eg, lesson 7](ezr-lua/xai-eg.lua)
+*taught in:* [xai-eg, lesson 7](ezr-lua/xai-eg.lua) · [xaiplus-eg (lisp), lesson 2](ezr-lisp/xaiplus-eg.lisp)
 
 A table's middle: every column's mid, in column order.
 Computed lazily and cached; any add wipes the cache,
@@ -439,7 +439,7 @@ worst), so optimization is just "find rows near heaven"
 
 ## kmeans
 
-*taught in:* [xaiplus, lesson 2](ezr-lua/xaiplus-eg.lua)
+*taught in:* [xaiplus, lesson 2](ezr-lua/xaiplus-eg.lua) · [xaiplus-eg (lisp), lesson 2](ezr-lisp/xaiplus-eg.lisp)
 
 k clusters found by repetition: drop each row into its
 nearest centroid, move every centroid to its members'
@@ -449,7 +449,7 @@ seeds smarter.
 
 ## kmeanspp
 
-*taught in:* [xaiplus, lesson 3](ezr-lua/xaiplus-eg.lua)
+*taught in:* [xaiplus, lesson 3](ezr-lua/xaiplus-eg.lua) · [xaiplus-eg (lisp), lesson 3](ezr-lisp/xaiplus-eg.lisp)
 
 kmeans++ seeding: draw each new centroid from a small pool
 with probability proportional to its squared distance to
@@ -458,7 +458,7 @@ start than random, so [kmeans](#kmeans) settles faster.
 
 ## knn
 
-*taught in:* [xai-eg, lesson 8](ezr-lua/xai-eg.lua) · [xaiplus, lesson 1](ezr-lua/xaiplus-eg.lua)
+*taught in:* [xai-eg, lesson 8](ezr-lua/xai-eg.lua) · [xaiplus, lesson 1](ezr-lua/xaiplus-eg.lua) · [xaiplus-eg (lisp), lesson 1](ezr-lisp/xaiplus-eg.lisp)
 
 k-nearest-neighbors: sort everything by distance to a
 query, let the closest few answer. No training step --
@@ -517,7 +517,7 @@ stats as they are stored (lesson 7).
 
 ## bets
 
-*taught in:* [xai-eg, lesson 13](ezr-lua/xai-eg.lua)
+*taught in:* [xai-eg, lesson 13](ezr-lua/xai-eg.lua) · [xaiplus-eg (lisp), lesson 11](ezr-lisp/xaiplus-eg.lisp)
 
 Every learner and optimizer is a falsifiable bet about
 the shape of your data: in recent optimizer tournaments
@@ -545,7 +545,7 @@ scoring never re-reads the rows (lesson 11).
 
 ## de
 
-*taught in:* [xaiplus, lesson 7](ezr-lua/xaiplus-eg.lua)
+*taught in:* [xaiplus, lesson 7](ezr-lua/xaiplus-eg.lua) · [xaiplus-eg (lisp), lesson 7](ezr-lisp/xaiplus-eg.lisp)
 
 Differential evolution: evolve a population of rows; each
 child is three others blended as a + F*(b - c), kept only
@@ -572,7 +572,7 @@ pure explore wastes the [budget](#budget).
 
 ## ga
 
-*taught in:* [xaiplus, lesson 8](ezr-lua/xaiplus-eg.lua)
+*taught in:* [xaiplus, lesson 8](ezr-lua/xaiplus-eg.lua) · [xaiplus-eg (lisp), lesson 8](ezr-lisp/xaiplus-eg.lisp)
 
 Genetic algorithm: each generation mutates the population,
 then refills it by crossover of tournament-selected
@@ -581,7 +581,7 @@ tournaments apply the selection pressure.
 
 ## ls
 
-*taught in:* [xaiplus, lesson 10](ezr-lua/xaiplus-eg.lua)
+*taught in:* [xaiplus, lesson 10](ezr-lua/xaiplus-eg.lua) · [xaiplus-eg (lisp), lesson 10](ezr-lisp/xaiplus-eg.lisp)
 
 Local search: greedy hill climbing that jumps to a fresh
 random start whenever it stalls, so one bad basin cannot
@@ -589,7 +589,7 @@ trap the whole run. A baseline fancier search must beat.
 
 ## mutate
 
-*taught in:* [xaiplus, lesson 6](ezr-lua/xaiplus-eg.lua)
+*taught in:* [xaiplus, lesson 6](ezr-lua/xaiplus-eg.lua) · [xaiplus-eg (lisp), lesson 6](ezr-lisp/xaiplus-eg.lisp)
 
 Making new rows from old: nudge one cell (a [gauss](#gauss)
 for numbers, a frequency draw for symbols), or blend three
@@ -607,7 +607,7 @@ predict and [explain](#explain) (lesson 12).
 
 ## race
 
-*taught in:* [xaiplus, lesson 11](ezr-lua/xaiplus-eg.lua)
+*taught in:* [xaiplus, lesson 11](ezr-lua/xaiplus-eg.lua) · [xaiplus-eg (lisp), lesson 11](ezr-lisp/xaiplus-eg.lisp)
 
 Run several optimizers on the same data and rank them by
 result. There is no universal winner (no free lunch), so a
@@ -615,7 +615,7 @@ cheap race beats trusting any one method's reputation.
 
 ## sa
 
-*taught in:* [xaiplus, lesson 9](ezr-lua/xaiplus-eg.lua)
+*taught in:* [xaiplus, lesson 9](ezr-lua/xaiplus-eg.lua) · [xaiplus-eg (lisp), lesson 9](ezr-lisp/xaiplus-eg.lisp)
 
 Simulated annealing: a one-solution search that always
 takes better moves and sometimes worse ones, the tolerance
@@ -623,7 +623,7 @@ cooling as the budget spends -- wander early, greedy late.
 
 ## synthesis
 
-*taught in:* [xaiplus, lesson 12](ezr-lua/xaiplus-eg.lua)
+*taught in:* [xaiplus, lesson 12](ezr-lua/xaiplus-eg.lua) · [xaiplus-eg (lisp), lesson 12](ezr-lisp/xaiplus-eg.lisp)
 
 Inventing new rows: grow a [tree](#tree), then blend rows
 within a single leaf, so each synthetic row stays inside a
@@ -631,7 +631,7 @@ real, coherent region rather than a void between clusters.
 
 ## tree
 
-*taught in:* [xai-eg, lesson 12](ezr-lua/xai-eg.lua) · [xai-eg (lisp), lesson 11](ezr-lisp/xai-eg.lisp)
+*taught in:* [xai-eg, lesson 12](ezr-lua/xai-eg.lua) · [xai-eg (lisp), lesson 11](ezr-lisp/xai-eg.lisp) · [xaiplus-eg (lisp), lesson 12](ezr-lisp/xaiplus-eg.lisp)
 
 *see:* Breiman et al. (1984) — CART: classification and
 regression trees.
@@ -648,7 +648,7 @@ prediction; branches read as English-ish tests
 
 ## active
 
-*taught in:* [xai-eg, lesson 10](ezr-lua/xai-eg.lua) · [xai-eg (lisp), lesson 9](ezr-lisp/xai-eg.lisp)
+*taught in:* [xai-eg, lesson 10](ezr-lua/xai-eg.lua) · [xai-eg (lisp), lesson 9](ezr-lisp/xai-eg.lisp) · [xaiplus-eg (lisp), lesson 13](ezr-lisp/xaiplus-eg.lisp)
 
 *see:* Settles (2009) — Active Learning literature survey.
 
@@ -660,7 +660,7 @@ Spend the [budget](#budget) where it teaches most.
 
 ## budget
 
-*taught in:* [xai-eg, lesson 10](ezr-lua/xai-eg.lua) · [xai-eg (lisp), lesson 9](ezr-lisp/xai-eg.lisp)
+*taught in:* [xai-eg, lesson 10](ezr-lua/xai-eg.lua) · [xai-eg (lisp), lesson 9](ezr-lisp/xai-eg.lisp) · [xaiplus-eg (lisp), lesson 13](ezr-lisp/xaiplus-eg.lisp)
 
 The number of y-labels we may buy. In real tables the x
 values are cheap and the y values dear (a benchmark, a

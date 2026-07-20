@@ -963,78 +963,17 @@ lands on a real heading, every `| (fn ..) |` table row
 names a function that exists.
 |#
 
-(defun sh (cmd)
-  "Run a shell command; return its exit code"
-  #+sbcl (sb-ext:process-exit-code
-           (sb-ext:run-program "/bin/sh" (list "-c" cmd)
-                               :output *standard-output*
-                               :error *error-output*))
-  #-sbcl 1)
-
 (defun eg--transcript ()
   "Freeze --all output to xai-eg.out (from a real run)"
-  (assert (zerop (sh (concatenate 'string
-    "sbcl --script xai-eg.lisp --all > xai-eg.out"))))
-  (format t "~&xai-eg.out frozen~%"))
+  (freeze "xai-eg.lisp" "xai-eg.out"))
 
-(defun eg--check (&aux ok)
+(defun eg--check ()
   "A fresh --all must reproduce the frozen transcript"
-  (setf ok (zerop (sh (concatenate 'string
-    "sbcl --script xai-eg.lisp --all | diff - xai-eg.out"))))
-  (format t "~&~a~%" (if ok "transcript ok"
-                            "TRANSCRIPT DRIFT"))
-  (assert ok))
+  (check-transcript "xai-eg.lisp" "xai-eg.out"))
 
-(defun slurp (file &aux)
-  "Whole file as one string"
-  (with-open-file (s file)
-    (let ((str (make-string (file-length s))))
-      (subseq str 0 (read-sequence str s)))))
-
-(defun gkeys (&aux (keys (make-hash-table :test #'equal)))
-  "Glossary headings '## key' as a set"
-  (with-open-file (s "../glossary.md")
-    (loop for line = (read-line s nil) while line do
-      (when (and (> (length line) 3)
-                 (string= "## " line :end2 3)
-                 (every #'lower-case-p (subseq line 3)))
-        (setf (gethash (subseq line 3) keys) t))))
-  keys)
-
-(defun eg--join (&aux (src (slurp "xai-eg.lisp"))
-                      (keys (gkeys)) (ok t)
-                      (taught (make-hash-table :test #'equal)))
+(defun eg--join ()
   "Doc claims, executable: glossary links, table signatures"
-  (let ((tag "glossary.md#") (start 0))
-    (loop for pos = (search tag src :start2 start)
-          while pos
-          do (let* ((k0 (+ pos (length tag)))
-                    (k1 (position-if-not #'alpha-char-p src
-                                         :start k0))
-                    (key (subseq src k0 k1)))
-               (unless (or (string= key "")  ; the tag itself
-                           (gethash key keys))
-                 (setf ok nil)
-                 (format t "~&no heading: ~a~%" key))
-               (setf start k1))))
-  (with-input-from-string (s src)
-    (loop for line = (read-line s nil) while line do
-      (when (eql 0 (search "| `(" line))
-        (let* ((k0 4)
-               (k1 (position-if
-                     (lambda (c) (member c '(#\Space #\))))
-                     line :start k0))
-               (name (subseq line k0 k1))
-               (sym (find-symbol (string-upcase name) :xai)))
-          (if (and sym (fboundp sym))
-              (setf (gethash name taught) t)
-              (progn (setf ok nil)
-                     (format t "~&table names missing fn: ~a~%"
-                             name)))))))
-  (let ((total (length (egs "EG--"))))
-    (format t "~&coverage: ~a taught verbs; ~a demos~%"
-            (hash-table-count taught) total))
-  (assert ok))
+  (join-check "xai-eg.lisp"))
 
 
 #|

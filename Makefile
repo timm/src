@@ -22,6 +22,7 @@ push: ## add+commit+push+status
 eg: ## run every project's examples/tests
 	cd ezr-py     && python3 xai-eg.py all
 	cd ezr-lisp && sbcl --script xai-eg.lisp --all
+	cd ezr-lisp && sbcl --script xaiplus-eg.lisp --all
 	cd attic/luamine  && lua luamine-eg.lua --all
 	cd ezr-lua      && lua xai-eg.lua --all
 	cd ezr-lua      && lua xaiplus-eg.lua --all
@@ -31,6 +32,7 @@ check: ## glossary links <-> headings, then each course's frozen transcript
 	@cd ezr-lua && lua xai-eg.lua --check
 	@cd ezr-lua && lua xaiplus-eg.lua --check
 	@cd ezr-lisp && sbcl --script xai-eg.lisp --check
+	@cd ezr-lisp && sbcl --script xaiplus-eg.lisp --check
 
 doc: ## pycco html per source file into docs/<proj>/
 	@for p in */; do p=$${p%/}; \

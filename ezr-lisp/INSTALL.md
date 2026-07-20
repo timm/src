@@ -2,6 +2,9 @@ FILES="xai.lisp
        xai-eg.lisp
        xai-eg.out
        dtlz.lisp
+       xaiplus.lisp
+       xaiplus-eg.lisp
+       xaiplus-eg.out
        report.lisp"
 : <<'DOCS'
 
