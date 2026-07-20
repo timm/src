@@ -1,4 +1,6 @@
 xai	xai.py	code
 xai-eg	xai-eg.py	tests
+xaiplus	xaiplus.py	code
+xaiplus-eg	xaiplus-eg.py	tests
 dtlz	dtlz.py	code
 report	report.py	code

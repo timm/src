@@ -1,5 +1,7 @@
 FILES="xai.py
        xai-eg.py
+       xaiplus.py
+       xaiplus-eg.py
        dtlz.py
        report.py"
 : <<'DOCS'
