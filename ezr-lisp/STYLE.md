@@ -1,9 +1,9 @@
-# STYLE.md — how tiny-xai gets written
+# STYLE.md — how xai gets written
 
 Tiny functions. Beautiful code. Lines fit 65 chars
 (`awk 'length > 65' *.lisp`).
 Routine testing is sbcl only
-(`sbcl --script tiny-xai-eg.lisp --all`, ~0.1s; also
+(`sbcl --script xai-eg.lisp --all`, ~0.1s; also
 `make eg` at the repo root); CLISP (~200x slower) is an
 occasional pre-commit portability gate. Code stays
 portable to both.
@@ -15,9 +15,9 @@ portable to both.
   helpers get folded back in.
 - **One library file**, sectioned by `;;; ## Name` markers,
   one topic per section, each sized to a printed page
-  column (`make tiny-xai.pdf` at the repo root prints it).
+  column (`make xai.pdf` at the repo root prints it).
   New topic = new marker section + its egs in
-  tiny-xai-eg.lisp + nothing else (INSTALL.md lists whole
+  xai-eg.lisp + nothing else (INSTALL.md lists whole
   files, not sections).
 - **cols = lists** (dolist, push + nreverse);
   **rows = list** (pushed, newest first);
@@ -78,25 +78,25 @@ portable to both.
   first via `few` and `--cap`. The `-eg` files are also
   the tutorial: prose lives in `#| markdown |#` blocks,
   one block per demo, in reading order (the load list in
-  `tiny-xai-eg.lisp`).
-- Reference implementation: `../ezr2/ezr2.py`. Prefer
+  `xai-eg.lisp`).
+- Reference implementation: `../ezr-py/xai.py`. Prefer
   its shapes; numeric bins come from exact sorted split
   points, never fixed-width approximations; pinned
   asserts make every refactor a provable no-op.
 
 ## Files
 
-    tiny-xai.lisp     the engine: package, settings, structs,
+    xai.lisp     the engine: package, settings, structs,
                       then one ;;; ## section per topic
-    tiny-xai-eg.lisp  tutorial + tests + script entry
+    xai-eg.lisp  tutorial + tests + script entry
     dtlz.lisp         external-model demo (*label* hook)
     report.lisp       rebuilds REPORT.md (worker + --hist)
-    tiny-xai.asd      systems: tiny-xai, /eg, /dtlz
+    xai.asd      systems: xai, /eg, /dtlz
     INSTALL.md        curl installer; FILES = reading order
     REPORT.md         the RQ0-RQ2b study write-up
 
 **TL;DR for claude: after any code change run
-`sbcl --script tiny-xai-eg.lisp --all` (and clisp before
+`sbcl --script xai-eg.lisp --all` (and clisp before
 committing); after any algorithm change rerun report.lisp
 and refresh REPORT.md; keep function notes (engine) and
 test docstrings (eg) one-line, capitalized, truthful.**

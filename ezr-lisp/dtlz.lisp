@@ -1,19 +1,19 @@
 ; vim: set lispwords+=loop,aif :
-;;;; Drive tiny-xai with an EXTERNAL MODEL instead of a CSV.
+;;;; Drive xai with an EXTERNAL MODEL instead of a CSV.
 ;;;; The DTLZ1-7 benchmarks are live models: a row's x-values
 ;;;; are decision variables; its goals are computed on demand
 ;;;; via the *label* hook. This is how an outside user plugs
-;;;; their own (expensive) model into tiny-xai.
+;;;; their own (expensive) model into xai.
 ;;;;
 ;;;;   sbcl --script dtlz.lisp              # dtlz2
 ;;;;   sbcl --script dtlz.lisp --model dtlz7
 ;;;;   sbcl --script dtlz.lisp --model all --M 3 --N 8
-;;;; Under ASDF, load the "tiny-xai/dtlz" system instead;
+;;;; Under ASDF, load the "xai/dtlz" system instead;
 ;;;; the guard below skips the load; eval-when never fires.
 
-(unless (find-package :tiny-xai)
-  (load (merge-pathnames "tiny-xai.lisp" *load-truename*)))
-(in-package :tiny-xai)
+(unless (find-package :xai)
+  (load (merge-pathnames "xai.lisp" *load-truename*)))
+(in-package :xai)
 
 
 ;;; ## Models
@@ -195,5 +195,5 @@
     (dolist (m (if (equal name "all")
                    *models*
                    (list (intern (string-upcase name)
-                                 :tiny-xai))))
+                                 :xai))))
       (run-model m nn mm))))

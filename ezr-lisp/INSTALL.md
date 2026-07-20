@@ -1,5 +1,5 @@
-FILES="tiny-xai.lisp
-       tiny-xai-eg.lisp
+FILES="xai.lisp
+       xai-eg.lisp
        dtlz.lisp
        report.lisp"
 : <<'DOCS'

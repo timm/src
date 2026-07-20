@@ -3,7 +3,7 @@ requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "ezr2"
+name = "xai"
 version = "0.1.0"
 readme = "README.md"
 description = "Explainable multi-objective optimization (landscape + tree)"
@@ -13,13 +13,13 @@ requires-python = ">=3.12"
 dependencies = []
 
 [tool.setuptools]
-py-modules = ["ezr2"]
+py-modules = ["xai"]
 
 [project.urls]
 Homepage = "https://github.com/timm/src"
 
 [tool.ruff]
-# terse K&R-style code, exec-loaded (see ezr2.py load());
+# terse K&R-style code, exec-loaded (see xai.py load());
 # ignore the house-style rules and cross-file name checks
 lint.ignore = ["E701","E702","E731","E401","E402",
                "F403","F405","F821"]

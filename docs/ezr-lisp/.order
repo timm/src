@@ -1,4 +1,4 @@
-tiny-xai	tiny-xai.lisp	code
-tiny-xai-eg	tiny-xai-eg.lisp	tests
+xai	xai.lisp	code
+xai-eg	xai-eg.lisp	tests
 dtlz	dtlz.lisp	code
 report	report.lisp	code

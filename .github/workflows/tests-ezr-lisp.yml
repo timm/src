@@ -16,6 +16,6 @@ jobs:
           repository: timm/moot
           path: moot
       - run: sudo apt-get update -q && sudo apt-get install -y sbcl
-      - run: cd ezr-lisp && sbcl --script tiny-xai-eg.lisp --all
+      - run: cd ezr-lisp && sbcl --script xai-eg.lisp --all
         env:
           MOOT: ${{ github.workspace }}/moot

@@ -9,7 +9,7 @@
 #  - one-line docstrings lift ABOVE their defun as comments
 # py (emit .py):
 #  - bare `"""` lines toggle markdown prose blocks; a block
-#    opening "word: ..." (e.g. "ezr2.py: ...") is help text
+#    opening "word: ..." (e.g. "xai.py: ...") is help text
 #    and gets fenced verbatim (line structure survives)
 #  - col-0 "# " notes pass through (already pycco prose)
 #  - one-line docstrings lift ABOVE their def as comments

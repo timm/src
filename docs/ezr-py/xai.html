@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta http-equiv="content-type" content="text/html;charset=utf-8">
-  <title>ezr2.py</title>
+  <title>xai.py</title>
   <link rel="stylesheet" href="pycco.css">
 <style>p {text-align:right} #section-0 p, #section-1 p {text-align:left}</style></head>
 <body>
@@ -12,15 +12,15 @@
     <div class='docs'><p align="center">
 <a href="https://timm.github.io/src/"><img alt="home" src="https://img.shields.io/badge/🏠-home-gold"></a>
 <a href="https://github.com/timm/src/tree/main/ezr-py"><img alt="src" src="https://img.shields.io/badge/src-ezr--py-black"></a>
-<a href="ezr2.html"><img alt="code" src="https://img.shields.io/badge/code-3%20pages-2ea44f"></a>
-<a href="ezr2-eg.html"><img alt="tests" src="https://img.shields.io/badge/tests-1%20pages-06b6d4"></a>
+<a href="xai.html"><img alt="code" src="https://img.shields.io/badge/code-3%20pages-2ea44f"></a>
+<a href="xai-eg.html"><img alt="tests" src="https://img.shields.io/badge/tests-1%20pages-06b6d4"></a>
 <a href="https://github.com/timm/src/actions/workflows/tests-ezr-py.yml"><img alt="ci" src="https://github.com/timm/src/actions/workflows/tests-ezr-py.yml/badge.svg"></a>
 <a href="https://github.com/timm/src/issues"><img alt="issues" src="https://img.shields.io/badge/issues-report-red"></a>
 <a href="https://github.com/timm/src/blob/main/LICENSE.md"><img alt="license" src="https://img.shields.io/badge/license-MIT-brightgreen"></a>
 <img alt="language" src="https://img.shields.io/badge/language-python-9558B2">
 <img alt="runs on" src="https://img.shields.io/badge/runs%20on-python3-EE4C2C">
 <a href="https://timm.fyi"><img alt="author" src="https://img.shields.io/badge/author-timm-blueviolet"></a>
-</p><p>&lt; prev | <a href="ezr2-eg.html">next &gt;</a></p><h1><a href="https://github.com/timm/src/blob/main/ezr-py/ezr2.py">ezr2.py</a></h1></div>
+</p><p>&lt; prev | <a href="xai-eg.html">next &gt;</a></p><h1><a href="https://github.com/timm/src/blob/main/ezr-py/xai.py">xai.py</a></h1></div>
   </div>
   <div class='clearall'>
   <div class='section' id='section-0'>
@@ -28,10 +28,10 @@
       <div class='octowrap'>
         <a class='octothorpe' href='#section-0'>#</a>
       </div>
-      <pre><code class="language-text">ezr2: landscape analysis for xai and optimization CSV data.
+      <pre><code class="language-text">xai: landscape analysis for xai and optimization CSV data.
 (c) 2026, Tim Menzies &lt;timm@ieee.org&gt;, MIT license
 
-USAGE: python3 ezr2-eg.py [--key=val ...] [test ...]
+USAGE: python3 xai-eg.py [--key=val ...] [test ...]
 
 OPTIONS: (defaults below are parsed into `the`):
   --file   data file  = $MOOT/optimize/misc/auto93.csv
@@ -60,10 +60,10 @@ TESTS: (run with their bare name):
 </code></pre>
 <pre><code class="language-text">INSTALL: one curl fetches every file; data lives in the moot
 repo (tiny.cc/moot), cloned to ~/gits/moot (or set $MOOT):
-  REPO=https://raw.githubusercontent.com/timm/src/main/ezr2
+  REPO=https://raw.githubusercontent.com/timm/src/main/ezr-py
   curl -fL $REPO/INSTALL.md | sh
   git clone https://github.com/timm/moot ~/gits/moot
-  python3 ezr2-eg.py disty
+  python3 xai-eg.py disty
 
 MODES: optimize a static CSV (format below), or a live model by
   overriding labelled() to compute goals live -- worked example
@@ -84,7 +84,7 @@ an ignored column (HpX); goals minimize Lbs, maximize Acc/Mpg.
 DISTY: each row's &quot;distance to heaven&quot; -- its distance to ideal
 point where goals are best (0 = ideal, 1 = worst). `disty` reads
 only the y-columns, so optimization scores a row without seeing
-how it was made. `python3 ezr2-eg.py disty` sorts by disty and
+how it was made. `python3 xai-eg.py disty` sorts by disty and
 prints the best 5, a blank line, then the worst 5:
 
   Clndrs  Volume  HpX  Model  origin  Lbs-  Acc+  Mpg+  disty

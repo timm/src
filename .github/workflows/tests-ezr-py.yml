@@ -15,6 +15,6 @@ jobs:
         with:
           repository: timm/moot
           path: moot
-      - run: cd ezr-py && python3 ezr2-eg.py all
+      - run: cd ezr-py && python3 xai-eg.py all
         env:
           MOOT: ${{ github.workspace }}/moot

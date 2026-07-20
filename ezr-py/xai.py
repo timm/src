@@ -1,9 +1,9 @@
 #!/usr/bin/env python3 -B
 """
-ezr2: landscape analysis for xai and optimization CSV data.
+xai: landscape analysis for xai and optimization CSV data.
 (c) 2026, Tim Menzies <timm@ieee.org>, MIT license
 
-USAGE: python3 ezr2-eg.py [--key=val ...] [test ...]
+USAGE: python3 xai-eg.py [--key=val ...] [test ...]
 
 OPTIONS: (defaults below are parsed into `the`):
   --file   data file  = $MOOT/optimize/misc/auto93.csv
@@ -33,10 +33,10 @@ TESTS: (run with their bare name):
 """
 INSTALL: one curl fetches every file; data lives in the moot
 repo (tiny.cc/moot), cloned to ~/gits/moot (or set $MOOT):
-  REPO=https://raw.githubusercontent.com/timm/src/main/ezr2
+  REPO=https://raw.githubusercontent.com/timm/src/main/ezr-py
   curl -fL $REPO/INSTALL.md | sh
   git clone https://github.com/timm/moot ~/gits/moot
-  python3 ezr2-eg.py disty
+  python3 xai-eg.py disty
 
 MODES: optimize a static CSV (format below), or a live model by
   overriding labelled() to compute goals live -- worked example
@@ -57,7 +57,7 @@ an ignored column (HpX); goals minimize Lbs, maximize Acc/Mpg.
 DISTY: each row's "distance to heaven" -- its distance to ideal
 point where goals are best (0 = ideal, 1 = worst). `disty` reads
 only the y-columns, so optimization scores a row without seeing
-how it was made. `python3 ezr2-eg.py disty` sorts by disty and
+how it was made. `python3 xai-eg.py disty` sorts by disty and
 prints the best 5, a blank line, then the worst 5:
 
   Clndrs  Volume  HpX  Model  origin  Lbs-  Acc+  Mpg+  disty

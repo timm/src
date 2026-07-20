@@ -12,8 +12,8 @@
 ;;;; each; `cols` and `tbl` hold tables; `node` is one tree
 ;;;; node.
 
-(defpackage :tiny-xai (:use :common-lisp))
-(in-package :tiny-xai)
+(defpackage :xai (:use :common-lisp))
+(in-package :xai)
 
 #+sbcl (declaim (sb-ext:muffle-conditions
                   warning style-warning))
@@ -22,14 +22,14 @@
 (defconstant +big+  1e32)
 
 (defvar *help* "
-tiny-xai: explainable multi-objective optimization, tiny-ly.
+xai: explainable multi-objective optimization, tiny-ly.
 (c) 2026 Tim Menzies <timm@ieee.org> (see LICENSE.md).
 
 Samples a data landscape under a small labelling budget,
 grows a regression tree over the labels, picks good rows,
 and shows which x-ranges explain them.
 
-USAGE: sbcl --script tiny-xai-eg.lisp [--key val ..] [--run ..]
+USAGE: sbcl --script xai-eg.lisp [--key val ..] [--run ..]
 
 CSVs name their column roles in the header: leading
 uppercase = numeric; trailing +/- = goal to maximize or
@@ -658,9 +658,9 @@ Every TEST and STUDY runs by its flag (e.g. --all --tree).")
            (find-class (if (symbolp x) x (type-of x))))))
 
 (defun egs (prefix)
-  "Sorted fbound tiny-xai symbols starting with prefix"
+  "Sorted fbound xai symbols starting with prefix"
   (sort (loop for s being the present-symbols
-              of (find-package :tiny-xai)
+              of (find-package :xai)
               when (and (fboundp s)
                         (eql 0 (search prefix (string s)))
                         (not (member s '(eg--all eg--study))))
@@ -696,7 +696,7 @@ Every TEST and STUDY runs by its flag (e.g. --all --tree).")
     (loop for s in args do
       (dolist (pre '("EG" "STUDY"))
         (let ((fun (intern (format nil "~a~:@(~a~)" pre s)
-                           :tiny-xai)))
+                           :xai)))
           (when (fboundp fun)
             (setf *seed* (? *my* --seed))
             (funcall fun)))))))

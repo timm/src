@@ -2,7 +2,7 @@
 
 Meta-prompt. Give an agent this file plus a target project
 dir; it should reproduce what ezr-py/ezr-lisp/luamine got in
-2026-07. Worked exemplars: ezr-py/ezr2.py + ezr2-eg.py. Shape
+2026-07. Worked exemplars: ezr-py/xai.py + xai-eg.py. Shape
 and rationale: style.md.
 
 ## The three layers (never mix altitudes)

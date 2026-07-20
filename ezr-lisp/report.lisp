@@ -9,9 +9,9 @@
 ;;;;     sbcl --script report.lisp {} > report.csv
 ;;;;   sbcl --script report.lisp --hist report.csv
 
-(unless (find-package :tiny-xai)
-  (load (merge-pathnames "tiny-xai.lisp" *load-truename*)))
-(in-package :tiny-xai)
+(unless (find-package :xai)
+  (load (merge-pathnames "xai.lisp" *load-truename*)))
+(in-package :xai)
 
 (defun arm (tbl budget mode &aux out (w (wins tbl)))
   "One arm: 20 paired holdouts at one budget and mode"

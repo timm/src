@@ -12,8 +12,8 @@
     <div class='docs'><p align="center">
 <a href="https://timm.github.io/src/"><img alt="home" src="https://img.shields.io/badge/🏠-home-gold"></a>
 <a href="https://github.com/timm/src/tree/main/ezr-py"><img alt="src" src="https://img.shields.io/badge/src-ezr--py-black"></a>
-<a href="ezr2.html"><img alt="code" src="https://img.shields.io/badge/code-3%20pages-2ea44f"></a>
-<a href="ezr2-eg.html"><img alt="tests" src="https://img.shields.io/badge/tests-1%20pages-06b6d4"></a>
+<a href="xai.html"><img alt="code" src="https://img.shields.io/badge/code-3%20pages-2ea44f"></a>
+<a href="xai-eg.html"><img alt="tests" src="https://img.shields.io/badge/tests-1%20pages-06b6d4"></a>
 <a href="https://github.com/timm/src/actions/workflows/tests-ezr-py.yml"><img alt="ci" src="https://github.com/timm/src/actions/workflows/tests-ezr-py.yml/badge.svg"></a>
 <a href="https://github.com/timm/src/issues"><img alt="issues" src="https://img.shields.io/badge/issues-report-red"></a>
 <a href="https://github.com/timm/src/blob/main/LICENSE.md"><img alt="license" src="https://img.shields.io/badge/license-MIT-brightgreen"></a>
@@ -31,7 +31,7 @@
       <pre><code class="language-text">report.py: rebuild REPORT.md's stats (RQ0-RQ2) over the
 $MOOT/optimize corpus.
 
-USAGE (from the ezr2 dir):
+USAGE (from the ezr-py dir):
   python3 report.py            # all datasets, all cores
   python3 report.py 4          # use 4 cores
   python3 report.py auto93     # only files matching substring
@@ -50,7 +50,7 @@ histograms used in REPORT.md print at the end.
 <span class="kn">from</span><span class="w"> </span><span class="nn">multiprocessing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Pool</span>
 
 <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)))</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">ezr2</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">xai</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
 
 <span class="n">REPEATS</span> <span class="o">=</span> <span class="mi">20</span></pre></div>
     </div>
@@ -84,7 +84,7 @@ histograms used in REPORT.md print at the end.
     <div class='code'>
       <div class="highlight"><pre><span class="k">def</span><span class="w"> </span><span class="nf">dataset</span><span class="p">(</span><span class="n">file</span><span class="p">):</span>
   <span class="n">t0</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
-  <span class="n">the</span><span class="o">.</span><span class="n">maxd</span> <span class="o">=</span> <span class="mi">4</span>               <span class="c1"># the study rig (matches tiny-xai)</span>
+  <span class="n">the</span><span class="o">.</span><span class="n">maxd</span> <span class="o">=</span> <span class="mi">4</span>               <span class="c1"># the study rig (matches ezr-lisp)</span>
   <span class="k">try</span><span class="p">:</span>
     <span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="n">the</span><span class="o">.</span><span class="n">seed</span><span class="p">)</span>
     <span class="n">tbl</span> <span class="o">=</span> <span class="n">Tbl</span><span class="p">(</span><span class="n">csv</span><span class="p">(</span><span class="n">file</span><span class="p">))</span>
@@ -111,7 +111,7 @@ histograms used in REPORT.md print at the end.
       <div class='octowrap'>
         <a class='octothorpe' href='#section-3'>#</a>
       </div>
-      <p>tiny-xai style histogram: percent + stars (1 star = 3 items)</p>
+      <p>ezr-lisp style histogram: percent + stars (1 star = 3 items)</p>
     </div>
     <div class='code'>
       <div class="highlight"><pre><span class="k">def</span><span class="w"> </span><span class="nf">hist</span><span class="p">(</span><span class="n">vals</span><span class="p">,</span> <span class="n">lo</span><span class="p">,</span> <span class="n">hi</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">ties</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">per_star</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>

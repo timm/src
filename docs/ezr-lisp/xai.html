@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta http-equiv="content-type" content="text/html;charset=utf-8">
-  <title>tiny-xai.lisp</title>
+  <title>xai.lisp</title>
   <link rel="stylesheet" href="pycco.css">
 <style>p {text-align:right} #section-0 p, #section-1 p {text-align:left}</style></head>
 <body>
@@ -12,15 +12,15 @@
     <div class='docs'><p align="center">
 <a href="https://timm.github.io/src/"><img alt="home" src="https://img.shields.io/badge/🏠-home-gold"></a>
 <a href="https://github.com/timm/src/tree/main/ezr-lisp"><img alt="src" src="https://img.shields.io/badge/src-ezr--lisp-black"></a>
-<a href="tiny-xai.html"><img alt="code" src="https://img.shields.io/badge/code-3%20pages-2ea44f"></a>
-<a href="tiny-xai-eg.html"><img alt="tests" src="https://img.shields.io/badge/tests-1%20pages-06b6d4"></a>
+<a href="xai.html"><img alt="code" src="https://img.shields.io/badge/code-3%20pages-2ea44f"></a>
+<a href="xai-eg.html"><img alt="tests" src="https://img.shields.io/badge/tests-1%20pages-06b6d4"></a>
 <a href="https://github.com/timm/src/actions/workflows/tests-ezr-lisp.yml"><img alt="ci" src="https://github.com/timm/src/actions/workflows/tests-ezr-lisp.yml/badge.svg"></a>
 <a href="https://github.com/timm/src/issues"><img alt="issues" src="https://img.shields.io/badge/issues-report-red"></a>
 <a href="https://github.com/timm/src/blob/main/LICENSE.md"><img alt="license" src="https://img.shields.io/badge/license-MIT-brightgreen"></a>
 <img alt="language" src="https://img.shields.io/badge/language-common%20lisp-9558B2">
 <img alt="runs on" src="https://img.shields.io/badge/runs%20on-sbcl%20|%20clisp-EE4C2C">
 <a href="https://timm.fyi"><img alt="author" src="https://img.shields.io/badge/author-timm-blueviolet"></a>
-</p><p>&lt; prev | <a href="tiny-xai-eg.html">next &gt;</a></p><h1><a href="https://github.com/timm/src/blob/main/ezr-lisp/tiny-xai.lisp">tiny-xai.lisp</a></h1></div>
+</p><p>&lt; prev | <a href="xai-eg.html">next &gt;</a></p><h1><a href="https://github.com/timm/src/blob/main/ezr-lisp/xai.lisp">xai.lisp</a></h1></div>
   </div>
   <div class='clearall'>
   <div class='section' id='section-0'>
@@ -41,8 +41,8 @@ each; <code>cols</code> and <code>tbl</code> hold tables; <code>node</code> is o
 node.</p>
     </div>
     <div class='code'>
-      <div class="highlight"><pre><span></span><span class="p">(</span><span class="nf">defpackage</span><span class="w"> </span><span class="nv">:tiny-xai</span><span class="w"> </span><span class="p">(</span><span class="nf">:use</span><span class="w"> </span><span class="nv">:common-lisp</span><span class="p">))</span>
-<span class="p">(</span><span class="nf">in-package</span><span class="w"> </span><span class="nv">:tiny-xai</span><span class="p">)</span>
+      <div class="highlight"><pre><span></span><span class="p">(</span><span class="nf">defpackage</span><span class="w"> </span><span class="nv">:xai</span><span class="w"> </span><span class="p">(</span><span class="nf">:use</span><span class="w"> </span><span class="nv">:common-lisp</span><span class="p">))</span>
+<span class="p">(</span><span class="nf">in-package</span><span class="w"> </span><span class="nv">:xai</span><span class="p">)</span>
 
 <span class="o">#</span><span class="nv">+sbcl</span><span class="w"> </span><span class="p">(</span><span class="nf">declaim</span><span class="w"> </span><span class="p">(</span><span class="nf">sb-ext:muffle-conditions</span>
 <span class="w">                  </span><span class="nv">warning</span><span class="w"> </span><span class="nv">style-warning</span><span class="p">))</span>
@@ -51,14 +51,14 @@ node.</p>
 <span class="p">(</span><span class="nf">defconstant</span><span class="w"> </span><span class="nv">+big+</span><span class="w">  </span><span class="mi">1e32</span><span class="p">)</span>
 
 <span class="p">(</span><span class="nf">defvar</span><span class="w"> </span><span class="nv">*help*</span><span class="w"> </span><span class="s">&quot;</span>
-<span class="s">tiny-xai: explainable multi-objective optimization, tiny-ly.</span>
+<span class="s">xai: explainable multi-objective optimization, tiny-ly.</span>
 <span class="s">(c) 2026 Tim Menzies &lt;timm@ieee.org&gt; (see LICENSE.md).</span>
 
 <span class="s">Samples a data landscape under a small labelling budget,</span>
 <span class="s">grows a regression tree over the labels, picks good rows,</span>
 <span class="s">and shows which x-ranges explain them.</span>
 
-<span class="s">USAGE: sbcl --script tiny-xai-eg.lisp [--key val ..] [--run ..]</span>
+<span class="s">USAGE: sbcl --script xai-eg.lisp [--key val ..] [--run ..]</span>
 
 <span class="s">CSVs name their column roles in the header: leading</span>
 <span class="s">uppercase = numeric; trailing +/- = goal to maximize or</span>
@@ -1211,12 +1211,12 @@ Grow a few labels; keep the keepf slice nearest the good</p>
       <div class='octowrap'>
         <a class='octothorpe' href='#section-69'>#</a>
       </div>
-      <p>Sorted fbound tiny-xai symbols starting with prefix</p>
+      <p>Sorted fbound xai symbols starting with prefix</p>
     </div>
     <div class='code'>
       <div class="highlight"><pre><span class="p">(</span><span class="nf">defun</span><span class="w"> </span><span class="nv">egs</span><span class="w"> </span><span class="p">(</span><span class="nf">prefix</span><span class="p">)</span>
 <span class="w">  </span><span class="p">(</span><span class="nb">sort</span><span class="w"> </span><span class="p">(</span><span class="nf">loop</span><span class="w"> </span><span class="nv">for</span><span class="w"> </span><span class="nv">s</span><span class="w"> </span><span class="nv">being</span><span class="w"> </span><span class="nv">the</span><span class="w"> </span><span class="nv">present-symbols</span>
-<span class="w">              </span><span class="nv">of</span><span class="w"> </span><span class="p">(</span><span class="nf">find-package</span><span class="w"> </span><span class="nv">:tiny-xai</span><span class="p">)</span>
+<span class="w">              </span><span class="nv">of</span><span class="w"> </span><span class="p">(</span><span class="nf">find-package</span><span class="w"> </span><span class="nv">:xai</span><span class="p">)</span>
 <span class="w">              </span><span class="k">when</span><span class="w"> </span><span class="p">(</span><span class="k">and</span><span class="w"> </span><span class="p">(</span><span class="nf">fboundp</span><span class="w"> </span><span class="nv">s</span><span class="p">)</span>
 <span class="w">                        </span><span class="p">(</span><span class="nf">eql</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="p">(</span><span class="nf">search</span><span class="w"> </span><span class="nv">prefix</span><span class="w"> </span><span class="p">(</span><span class="nb">string</span><span class="w"> </span><span class="nv">s</span><span class="p">)))</span>
 <span class="w">                        </span><span class="p">(</span><span class="nb">not</span><span class="w"> </span><span class="p">(</span><span class="nb">member</span><span class="w"> </span><span class="nv">s</span><span class="w"> </span><span class="o">&#39;</span><span class="p">(</span><span class="nv">eg--all</span><span class="w"> </span><span class="nv">eg--study</span><span class="p">))))</span>
@@ -1279,7 +1279,7 @@ Grow a few labels; keep the keepf slice nearest the good</p>
 <span class="w">    </span><span class="p">(</span><span class="nf">loop</span><span class="w"> </span><span class="nv">for</span><span class="w"> </span><span class="nv">s</span><span class="w"> </span><span class="nv">in</span><span class="w"> </span><span class="nv">args</span><span class="w"> </span><span class="k">do</span>
 <span class="w">      </span><span class="p">(</span><span class="nf">dolist</span><span class="w"> </span><span class="p">(</span><span class="nf">pre</span><span class="w"> </span><span class="o">&#39;</span><span class="p">(</span><span class="s">&quot;EG&quot;</span><span class="w"> </span><span class="s">&quot;STUDY&quot;</span><span class="p">))</span>
 <span class="w">        </span><span class="p">(</span><span class="k">let</span><span class="w"> </span><span class="p">((</span><span class="nf">fun</span><span class="w"> </span><span class="p">(</span><span class="nf">intern</span><span class="w"> </span><span class="p">(</span><span class="nb">format</span><span class="w"> </span><span class="nv">nil</span><span class="w"> </span><span class="s">&quot;~a~:@(~a~)&quot;</span><span class="w"> </span><span class="nv">pre</span><span class="w"> </span><span class="nv">s</span><span class="p">)</span>
-<span class="w">                           </span><span class="nv">:tiny-xai</span><span class="p">)))</span>
+<span class="w">                           </span><span class="nv">:xai</span><span class="p">)))</span>
 <span class="w">          </span><span class="p">(</span><span class="k">when</span><span class="w"> </span><span class="p">(</span><span class="nf">fboundp</span><span class="w"> </span><span class="nv">fun</span><span class="p">)</span>
 <span class="w">            </span><span class="p">(</span><span class="nf">setf</span><span class="w"> </span><span class="nv">*seed*</span><span class="w"> </span><span class="p">(</span><span class="nf">?</span><span class="w"> </span><span class="nv">*my*</span><span class="w"> </span><span class="nv">--seed</span><span class="p">))</span>
 <span class="w">            </span><span class="p">(</span><span class="nf">funcall</span><span class="w"> </span><span class="nv">fun</span><span class="p">)))))))</span>

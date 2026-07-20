@@ -15,7 +15,7 @@ Everything lives in exactly two repos:
 Data is NEVER copied into src. Code reaches it via a leading
 `$MOOT` in file names: the MOOT env var if set, else
 `~/gits/moot`. Every language implements the same tiny
-`path()` expansion (see ezr-py/ezr2.py, ezr-lisp/tiny-xai.lisp,
+`path()` expansion (see ezr-py/xai.py, ezr-lisp/xai.lisp,
 luamine/lib.lua).
 Copies of moot data in other repos were a mistake; do not
 recreate them.
@@ -32,6 +32,11 @@ recreate them.
       INSTALL.md     curl installer; FILES = reading order
       README.md      intro + generated doc-toc block
       pyproject.toml | xx.asd | *.rockspec  ~10-line pointer
+
+For a multi-language family, dirs are <family>-<lang> and
+every dir holds the SAME app file names: ezr-py/xai.py,
+ezr-lua/xai.lua, ezr-lisp/xai.lisp (family = ezr, app =
+xai). Ports stay diffable file-for-file across languages.
 
 - Install promise: `curl <raw>/xx/INSTALL.md | sh` fetches
   the whole idea (a handful of files).
@@ -79,14 +84,14 @@ them.
 
 Prose stanzas (block comments / bare
 `"""` blocks) open with a sentence, never a blank line; a
-python block opening `word: ...` (e.g. `ezr2.py: ...`,
+python block opening `word: ...` (e.g. `xai.py: ...`,
 `INSTALL: ...`) is help text and doc.awk renders it
 fenced verbatim.
 
 ## -eg: tutorials that are tests
 
 Language agnostic (exemplars: ezr-lua/xai-eg.lua,
-ezr-py/ezr2-eg.py). Every idea dir pairs xx.ext with
+ezr-py/xai-eg.py). Every idea dir pairs xx.ext with
 xx-eg.ext; there is no xx-doc -- a course keeps its
 contents table in the -eg how-to stanza, and its
 definitions and references in glossary.md.
@@ -164,8 +169,8 @@ that regeneration would destroy (cf. luamine/tut.md).
 ## versions: tags, never dirs
 
 - No v13/ dirs. Versions are git's job:
-    latest:  raw.githubusercontent.com/timm/src/main/ezr-py/ezr2.py
-    pinned:  raw.githubusercontent.com/timm/src/ezr-py-v13/ezr-py/ezr2.py
+    latest:  raw.githubusercontent.com/timm/src/main/ezr-py/xai.py
+    pinned:  raw.githubusercontent.com/timm/src/ezr-py-v13/ezr-py/xai.py
 - Tags are namespaced per idea: ezr-py-v13, xomo-v12.
 - A breaking rewrite is a NEW idea dir with a new name
   (ezr -> ezr-py), not a version bump; the old dir moves to

@@ -1,5 +1,5 @@
-FILES="ezr2.py
-       ezr2-eg.py
+FILES="xai.py
+       xai-eg.py
        dtlz.py
        report.py"
 : <<'DOCS'

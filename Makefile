@@ -20,8 +20,8 @@ push: ## add+commit+push+status
 	@git status
 
 eg: ## run every project's examples/tests
-	cd ezr-py     && python3 ezr2-eg.py all
-	cd ezr-lisp && sbcl --script tiny-xai-eg.lisp --all
+	cd ezr-py     && python3 xai-eg.py all
+	cd ezr-lisp && sbcl --script xai-eg.lisp --all
 	cd attic/luamine  && lua luamine-eg.lua --all
 	cd ezr-lua      && lua xai-eg.lua --all
 	cd ezr-lua      && lua xaiplus-eg.lua --all

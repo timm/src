@@ -12,12 +12,12 @@ differ, active wins 41:11 (RQ2). Given 4x the labels,
 random beats active@50 56:12 - active learning pays when
 the label budget is a hard wall (RQ2b). These lisp numbers
 agree, question for question, with the python reference
-(`../ezr2/REPORT.md`): RQ1b there 55:8, here 56:6; RQ2
+(`../ezr-py/REPORT.md`): RQ1b there 55:8, here 56:6; RQ2
 there 43:8, here 41:11.
 
 ## The sampler
 
-`sway3` (tiny-xai.lisp) is a landscape sampler in the
+`sway3` (xai.lisp) is a landscape sampler in the
 FASTMAP family: project the pool onto the line joining two
 poles (initially the two most distant rows; on redo
 passes, the best and worst labels seen so far), orient the
@@ -33,7 +33,7 @@ the control.
 
 ## Method
 
-Same rig as the python reference (`../ezr2/REPORT.md`),
+Same rig as the python reference (`../ezr-py/REPORT.md`),
 ported: 127 CSVs from `$MOOT/optimize/*/*.csv`, capped at
 1024 rows; per repeat, shuffle and split 50:50; label at
 most `--budget - --check` training rows; fit a regression
@@ -187,7 +187,7 @@ steps (exploit-first ordering; sway3 redo with best/worst
 anchors), renamed --landscape to --acquire and --grow to
 --more, and regenerated over $MOOT (127 files; previously
 ../optimiz, 129). Cross-language agreement with
-`../ezr2/REPORT.md` is close everywhere: RQ0 median 86 vs
+`../ezr-py/REPORT.md` is close everywhere: RQ0 median 86 vs
 87; RQ1b 56:6 vs 55:8; RQ2 41:11 vs 43:8; RQ2b 12:56 vs
 10:46.
 

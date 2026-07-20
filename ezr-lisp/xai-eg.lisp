@@ -1,21 +1,21 @@
 ; vim: set lispwords+=loop,aif :
-;;;; Tutorial and tests for tiny-xai (library: tiny-xai.lisp).
+;;;; Tutorial and tests for xai (library: xai.lisp).
 ;;;; Prose lives in #| markdown |# blocks; each demo is one
 ;;;; eg-- function; a postprocessor appends each demo's real
 ;;;; output. One -eg file per engine file, loaded below in
 ;;;; tutorial order. Run any demo by flag:
-;;;;   sbcl --script tiny-xai-eg.lisp --all --study --tree
-;;;; Under ASDF, load system "tiny-xai/eg" instead; the guard
+;;;;   sbcl --script xai-eg.lisp --all --study --tree
+;;;; Under ASDF, load system "xai/eg" instead; the guard
 ;;;; below skips the load; the eval-when never fires.
 
-(unless (find-package :tiny-xai)
-  (load (merge-pathnames "tiny-xai.lisp" *load-truename*)))
+(unless (find-package :xai)
+  (load (merge-pathnames "xai.lisp" *load-truename*)))
 
-(in-package :tiny-xai)
+(in-package :xai)
 
 
 #|
-# tiny-xai: from zero to someplace cool
+# xai: from zero to someplace cool
 
 Tables of data are cheap; *labels* are dear: running a
 benchmark, compiling a config, polling a focus group. So the

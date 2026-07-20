@@ -1,16 +1,16 @@
 #!/usr/bin/env python3 -B
 """
-ezr2-eg.py: tutorial and tests for ezr2 (library in ezr2.py).
+xai-eg.py: tutorial and tests for xai (library in xai.py).
 
 Run any test by its bare name; pass --key=val to override a knob:
-  python3 ezr2-eg.py tree
-  python3 ezr2-eg.py all
+  python3 xai-eg.py tree
+  python3 xai-eg.py all
 
 One -eg file per engine file, loaded below in tutorial order;
 prose lives in string blocks; every sample is pasted from a
 real run, never hand-typed.
 """
-from ezr2 import *
+from xai import *
 
 """
 

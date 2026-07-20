@@ -3,7 +3,7 @@
 report.py: rebuild REPORT.md's stats (RQ0-RQ2) over the
 $MOOT/optimize corpus.
 
-USAGE (from the ezr2 dir):
+USAGE (from the ezr-py dir):
   python3 report.py            # all datasets, all cores
   python3 report.py 4          # use 4 cores
   python3 report.py auto93     # only files matching substring
@@ -20,7 +20,7 @@ import sys, os, glob, json, time, random
 from multiprocessing import Pool
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from ezr2 import *
+from xai import *
 
 REPEATS = 20
 
@@ -34,7 +34,7 @@ def arm(tbl, budget, mode):
 
 def dataset(file):
   t0 = time.perf_counter()
-  the.maxd = 4               # the study rig (matches tiny-xai)
+  the.maxd = 4               # the study rig (matches ezr-lisp)
   try:
     random.seed(the.seed)
     tbl = Tbl(csv(file))
@@ -54,7 +54,7 @@ def dataset(file):
     return dict(file=os.path.basename(file),
                 error="%s: %s" % (type(e).__name__, e))
 
-# tiny-xai style histogram: percent + stars (1 star = 3 items)
+# ezr-lisp style histogram: percent + stars (1 star = 3 items)
 def hist(vals, lo, hi, width, ties=False, per_star=3):
   n = len(vals)
   def bar(c): return " %s" % ("*"*round(c/per_star)) if c else ""

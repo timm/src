@@ -1,16 +1,16 @@
 #!/usr/bin/env python3 -B
 """
-dtlz.py: drive ezr2 with an EXTERNAL MODEL instead of a CSV.
+dtlz.py: drive xai with an EXTERNAL MODEL instead of a CSV.
 
 The DTLZ1-7 benchmarks are live models: a row's x-values are decision
-variables; its goals are computed on demand by overriding ezr2.labelled.
-This is how an outside user plugs their own (expensive) model into ezr2.
+variables; its goals are computed on demand by overriding xai.labelled.
+This is how an outside user plugs their own (expensive) model into xai.
 
   python3 dtlz.py                 # default model: dtlz2
   python3 dtlz.py --model=dtlz4   # any of dtlz1..dtlz7
   python3 dtlz.py --model=dtlz7 --M=3 --N=8
 """
-import sys, random, ezr2
+import sys, random, xai
 from math import cos, sin, pi
 
 #-- models ------------------------------------------------------
@@ -59,7 +59,7 @@ MODELS = {k: v for k, v in globals().items() if k.startswith("dtlz")}
 
 #-- knobs -------------------------------------------------------
 # CLI knobs: model, M objectives, N decision vars
-arg = lambda k, d: next((ezr2.thing(a.split("=")[1]) for a in sys.argv
+arg = lambda k, d: next((xai.thing(a.split("=")[1]) for a in sys.argv
                          if a.startswith("--"+k+"=")), d)
 NAME = arg("model", "dtlz2"); MODEL = MODELS[NAME]
 M    = arg("M", 2)
@@ -71,34 +71,34 @@ names = [f"X{i+1}" for i in range(N)] + [f"F{m+1}-" for m in range(M)]
 def fresh_pool(n=1000):
   return [[random.random() for _ in range(N)] + ["?"]*M for _ in range(n)]
 
-# ezr2's seam: goals come from the model, folded into
+# xai's seam: goals come from the model, folded into
 # tbl.cols so disty can normalize objectives as they arrive
 def labelled(row):
   if "?" in row[N:]:
     row[N:] = MODEL(row[:N], M)
-    for at in tbl.y: tbl.cols[at] = ezr2.add(tbl.cols[at], row[at])
+    for at in tbl.y: tbl.cols[at] = xai.add(tbl.cols[at], row[at])
   return row
-ezr2.labelled = labelled            # labelled() reads the global `tbl`
+xai.labelled = labelled            # labelled() reads the global `tbl`
 
 def instance(row):
   print("  x  " + " ".join("%.2f" % v for v in row[:N]))
   print("  f  " + " ".join("%.3f" % v for v in row[N:]) +
-        "   (disty %.3f, lower=better)" % ezr2.disty(tbl, row))
+        "   (disty %.3f, lower=better)" % xai.disty(tbl, row))
 
 print("model %s   N=%d x-vars   M=%d objectives" % (NAME, N, M))
-ezr2.the.budget = 30
+xai.the.budget = 30
 
 # (1) pure: acquire ranks the whole pool, no train/test split
-random.seed(1); tbl = ezr2.Tbl([names] + fresh_pool())
-got = ezr2.acquire(tbl)
+random.seed(1); tbl = xai.Tbl([names] + fresh_pool())
+got = xai.acquire(tbl)
 print("\nthe best option found (one instance):")
 instance(got[0])
 
 # (2) explanatory model: which x-ranges reach good goals
 print("\nwhy? an explanatory model -- which x-ranges reach good goals:")
-ezr2.show(tbl, ezr2.tree(tbl, got))
+xai.show(tbl, xai.tree(tbl, got))
 
 # (3) test the model on new data: train/test split via holdout
-random.seed(1); tbl = ezr2.Tbl([names] + fresh_pool())
+random.seed(1); tbl = xai.Tbl([names] + fresh_pool())
 print("\ndoes that model generalize? best pick on unseen test data:")
-instance(ezr2.holdout(tbl))
+instance(xai.holdout(tbl))

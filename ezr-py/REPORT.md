@@ -68,7 +68,7 @@ leaves are "bought"; the rig returns the truly best of
 those. Score = `wins`: percent of the gap to the dataset's
 best row that the pick closes (100 = optimal, 0 = median,
 clamped at +/-100). Note: this study sets `--maxd 4`
-(the library default is 8) to match the tiny-xai rig.
+(the library default is 8) to match the ezr-lisp rig.
 
 **Comparisons.** Per dataset, 20 paired repeats per arm
 (repeat k reseeds both arms with `seed + k`) of five
@@ -87,11 +87,11 @@ below).
 **Get the code and data.** One curl for the code, one
 clone for the data:
 
-    REPO=https://raw.githubusercontent.com/timm/src/main/ezr2
+    REPO=https://raw.githubusercontent.com/timm/src/main/xai
     curl -fL $REPO/INSTALL.md | sh
     git clone https://github.com/timm/moot ~/gits/moot
-    python3 ezr2-eg.py -h          # options, tests
-    python3 ezr2-eg.py all         # unit tests, ~10s
+    python3 xai-eg.py -h          # options, tests
+    python3 xai-eg.py all         # unit tests, ~10s
     python3 report.py              # this study, ~8min
 
 Data paths default to `$MOOT` (env var, else
@@ -265,12 +265,12 @@ active@50 earns its keep when the budget is a hard wall.
 ## Aside: which projection anchors?
 
 This code is the reference for that bookkeeping. In
-`sway3` (ezr2.py) labelled rows stay in the pool, new
+`sway3` (xai.py) labelled rows stay in the pool, new
 labels come from the pool walk, and only in-pool labels
 anchor the projection - so a culled label stops steering
 (until a redo pass deliberately re-anchors at the best and
 worst labels so far). A Common Lisp port of this code
-(`../tiny-xai`) twice lost that detail by anchoring on
+(`../ezr-lisp`) twice lost that detail by anchoring on
 *all* labels ever picked, and each time the
 active-vs-random edge quietly collapsed to a dead heat
 (23-19 there, vs 36-15 once restored). Moral: in
