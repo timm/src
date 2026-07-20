@@ -7,9 +7,12 @@ One entry per idea, shared by every course in this repo
 rarely read this file top to bottom: you arrive from a
 lesson's **Core ideas** link, and the *taught in* line
 under each heading points back to every lesson that uses
-the term. Entries are grouped into coarse regions,
-alphabetical within each; each region ends by naming
-concepts still awaiting entries (and a course).
+the term. Where an idea rests on a paper, a *see:* `[^key]`
+footnote cites it (peer-reviewed, MLA, with a verify link;
+all defined in `# references` at the end). Entries are
+grouped into coarse regions, alphabetical within each; each
+region ends by naming concepts still awaiting entries (and
+a course).
 
 
 # coding
@@ -234,8 +237,7 @@ learner keeps mixing up.
 
 *taught in:* [xai-eg, lesson 9](xai/xai-eg.lua)
 
-*see:* Cliff (1993), Psych. Bulletin 114 — dominance
-statistics.
+*see:* [^cliff]
 
 Effect size: how BIG a difference is, not merely whether
 one exists. Here Cliff's delta: from sorted lists, how
@@ -255,7 +257,7 @@ classification flavor of [cost](#cost) (lessons 5, 11).
 
 *taught in:* [xai-eg, lesson 2](xai/xai-eg.lua)
 
-*see:* Box & Muller (1958) — normal deviates from uniforms.
+*see:* [^boxmuller]
 
 The bell curve. Box-Muller turns two uniform draws into
 one normal draw with real (unclipped) tails; used to
@@ -265,8 +267,7 @@ sample plausible numeric values (lesson 2).
 
 *taught in:* [xai-eg, lesson 9](xai/xai-eg.lua)
 
-*see:* Massey (1951), JASA 46 — the Kolmogorov-Smirnov
-test.
+*see:* [^massey]
 
 Kolmogorov-Smirnov: the biggest gap between two samples'
 CDFs. Distribution-free, no normality assumed, and via
@@ -309,7 +310,7 @@ random slice of the total is spent (lesson 2).
 
 *taught in:* [xai-eg, lesson 9](xai/xai-eg.lua)
 
-*see:* Cohen (1988) — statistical power and effect size.
+*see:* [^cohen]
 
 Conservative equality for result sets: [effect](#effect)
 AND cohen AND [ks](#ks) must all agree before two samples
@@ -321,8 +322,7 @@ is only shouted when it would be hard to argue otherwise
 
 *taught in:* [xai-eg, lesson 2](xai/xai-eg.lua)
 
-*see:* Park & Miller (1988), CACM 31(10) — the 16807
-minimal standard generator.
+*see:* [^parkmiller]
 
 Where a random number generator starts. A fixed seed
 (here: a 16807 Lehmer generator, identical on any lua)
@@ -357,8 +357,7 @@ judge gaps with [same](#same) (lesson 13, `--seeds`).
 
 *taught in:* [xai-eg, lesson 4](xai/xai-eg.lua)
 
-*see:* Welford (1962), Technometrics 4(3) — incremental
-variance.
+*see:* [^welford]
 
 Incremental mean and variance in three slots (n, mu, m2),
 one update per value, numerically stable — and reversible
@@ -462,8 +461,7 @@ fairly to one distance (lesson 8).
 
 *taught in:* [xai-eg, lesson 10](xai/xai-eg.lua)
 
-*see:* Faloutsos & Lin (1995), SIGMOD — FastMap (the poles
-trick).
+*see:* [^fastmap]
 
 Two far-apart rows. Projecting everything onto the line
 joining them gives a cheap one-dimensional view of
@@ -601,8 +599,7 @@ real, coherent region rather than a void between clusters.
 
 *taught in:* [xai-eg, lesson 12](xai/xai-eg.lua)
 
-*see:* Breiman et al. (1984) — CART: classification and
-regression trees.
+*see:* [^cart]
 
 Recursive splitting on the cheapest [bin](#bins) while
 rows and depth allow. Leaves keep their rows and a mid
@@ -618,7 +615,7 @@ prediction; branches read as English-ish tests
 
 *taught in:* [xai-eg, lesson 10](xai/xai-eg.lua)
 
-*see:* Settles (2009) — Active Learning literature survey.
+*see:* [^settles]
 
 Active learning: the learner chooses which rows to label
 next, instead of labelling at random. Here (lesson 10),
@@ -676,10 +673,25 @@ economics behind the whole second half of the course
 *Awaiting entries:* AI agents, MCP, A2A, audit trails, reasoning traces, tools over agents, least privilege, automation layer cake, APR, fuzzing, differential oracles, evals.
 
 
-# sources
+# references
 
-Per-concept citations live inline above, as the *see:* line
-under each entry. The one general source:
+Papers cited above via GFM footnotes (`[^key]` on an
+entry's *see:* line), MLA style, each ending in a link so a
+reader can verify the work is real. Concept-level, so shared
+across every course. (DOIs written by hand -- spot-check
+before relying.)
 
-- Menzies (2026) — luamine/tut.md: ten lectures on
-  data-lite AI, the long-form ancestor of the xai course.
+[^welford]: Welford, B. P. "Note on a Method for Calculating Corrected Sums of Squares and Products." *Technometrics*, vol. 4, no. 3, 1962, pp. 419-420. <https://doi.org/10.1080/00401706.1962.10490022>
+[^parkmiller]: Park, Stephen K., and Keith W. Miller. "Random Number Generators: Good Ones Are Hard to Find." *Communications of the ACM*, vol. 31, no. 10, 1988, pp. 1192-1201. <https://doi.org/10.1145/63039.63042>
+[^boxmuller]: Box, G. E. P., and Mervin E. Muller. "A Note on the Generation of Random Normal Deviates." *The Annals of Mathematical Statistics*, vol. 29, no. 2, 1958, pp. 610-611. <https://doi.org/10.1214/aoms/1177706645>
+[^cliff]: Cliff, Norman. "Dominance Statistics: Ordinal Analyses to Answer Ordinal Questions." *Psychological Bulletin*, vol. 114, no. 3, 1993, pp. 494-509. <https://doi.org/10.1037/0033-2909.114.3.494>
+[^cohen]: Cohen, Jacob. *Statistical Power Analysis for the Behavioral Sciences*. 2nd ed., Lawrence Erlbaum Associates, 1988. <https://doi.org/10.4324/9780203771587>
+[^massey]: Massey, Frank J. "The Kolmogorov-Smirnov Test for Goodness of Fit." *Journal of the American Statistical Association*, vol. 46, no. 253, 1951, pp. 68-78. <https://doi.org/10.1080/01621459.1951.10500769>
+[^fastmap]: Faloutsos, Christos, and King-Ip Lin. "FastMap: A Fast Algorithm for Indexing, Data-Mining and Visualization of Traditional and Multimedia Datasets." *Proc. 1995 ACM SIGMOD Int. Conf. on Management of Data*, 1995, pp. 163-174. <https://doi.org/10.1145/223784.223812>
+[^cart]: Breiman, Leo, et al. *Classification and Regression Trees*. Wadsworth, 1984. <https://doi.org/10.1201/9781315139470>
+[^settles]: Settles, Burr. "Active Learning Literature Survey." Computer Sciences Technical Report 1648, University of Wisconsin-Madison, 2009. <https://minds.wisconsin.edu/handle/1793/60660>
+
+General (the long-form ancestor of the xai course, not a
+single paper): Menzies, Tim. *luamine/tut.md: Ten Lectures
+on Data-Lite AI.* timm/src, 2026.
+<https://github.com/timm/src/blob/main/luamine/tut.md>
