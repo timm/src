@@ -1,8 +1,8 @@
 # tut.md -- recipe: restructure an idea dir into house style
 
 Meta-prompt. Give an agent this file plus a target project
-dir; it should reproduce what ezr2/tiny-xai/luamine got in
-2026-07. Worked exemplars: ezr2/ezr2.py + ezr2-eg.py. Shape
+dir; it should reproduce what ezr-py/ezr-lisp/luamine got in
+2026-07. Worked exemplars: ezr-py/ezr2.py + ezr2-eg.py. Shape
 and rationale: style.md.
 
 ## The three layers (never mix altitudes)
@@ -62,7 +62,7 @@ Stanza skeleton, every stanza:
 - Arc: zero -> someplace cool. Last demo = the whole rig;
   studies after; runners and CLI entry live in xx-eg.
 
-Lesson-course variant (exemplar: xai/xai-eg.lua; full
+Lesson-course variant (exemplar: ezr-lua/xai-eg.lua; full
 spec in style.md "-eg: tutorials that are tests"). When the -eg is taught
 as a weekly course, each section additionally gets:
 
@@ -128,7 +128,7 @@ maintenance rule).
     doc links land, all headings linked, all dot-list
     signatures resolve) and --check passes (a fresh --all
     reproduces the frozen xx-eg.out transcript); both are
-    eg verbs, exemplar xai/xai-eg.lua
+    eg verbs, exemplar ezr-lua/xai-eg.lua
     TODO not yet built: output splicing the other way --
     run each demo, paste its output back under the stanza
     (xx-eg.out now captures the output; the splice remains)

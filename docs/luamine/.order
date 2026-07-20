@@ -1,5 +1,0 @@
-lib	lib.lua	code
-luamine	luamine.lua	code
-lapps	lapps.lua	code
-luamine-eg	luamine-eg.lua	tests
-tutchk	tutchk.lua	code

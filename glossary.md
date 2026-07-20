@@ -16,7 +16,7 @@ concepts still awaiting entries (and a course).
 
 ## bisect
 
-*taught in:* [xai-eg, lesson 1](xai/xai-eg.lua)
+*taught in:* [xai-eg, lesson 1](ezr-lua/xai-eg.lua)
 
 Binary search of a sorted list: the smallest index whose
 item exceeds v, found in log time. So `bisect(t,v)-1`
@@ -26,7 +26,7 @@ fast off sorted lists.
 
 ## closure
 
-*taught in:* [xai-eg, lesson 0](xai/xai-eg.lua) · [xai-eg, lesson 11](xai/xai-eg.lua)
+*taught in:* [xai-eg, lesson 0](ezr-lua/xai-eg.lua) · [xai-eg, lesson 11](ezr-lua/xai-eg.lua)
 
 A function plus the variables it captured. Lesson 0's
 `lst.items` is a closure remembering how far a sorted
@@ -37,7 +37,7 @@ contest without any global state.
 
 ## coerce
 
-*taught in:* [xai-eg, lesson 3](xai/xai-eg.lua)
+*taught in:* [xai-eg, lesson 3](ezr-lua/xai-eg.lua)
 
 Strings to things: "42" becomes a number, "true" a
 boolean, anything else a trimmed string. The whole edge
@@ -46,7 +46,7 @@ of the system where files meet data is one tiny function
 
 ## csv
 
-*taught in:* [xai-eg, lesson 3](xai/xai-eg.lua)
+*taught in:* [xai-eg, lesson 3](ezr-lua/xai-eg.lua)
 
 Comma-separated values, self-describing: the first line
 is the [schema](#schema). Streamed one row at a time
@@ -54,7 +54,7 @@ is the [schema](#schema). Streamed one row at a time
 
 ## dsu
 
-*taught in:* [xai-eg, lesson 1](xai/xai-eg.lua)
+*taught in:* [xai-eg, lesson 1](ezr-lua/xai-eg.lua)
 
 Decorate-sort-undecorate: compute each item's sort key
 once, sort the (key,item) pairs, strip the keys. Vital
@@ -63,7 +63,7 @@ when keys are expensive (a distance calc per row), as in
 
 ## lists
 
-*taught in:* [xai-eg, lesson 1](xai/xai-eg.lua)
+*taught in:* [xai-eg, lesson 1](ezr-lua/xai-eg.lua)
 
 The only container in this system: Lua tables used as
 lists, served by a dozen ten-line verbs that compose
@@ -72,7 +72,7 @@ vocabulary covers thirteen lessons (lesson 1).
 
 ## lua
 
-*taught in:* [xai-eg, lesson 0](xai/xai-eg.lua)
+*taught in:* [xai-eg, lesson 0](ezr-lua/xai-eg.lua)
 
 For the impatient pythonista:
 
@@ -130,7 +130,7 @@ Lua: quick refs (quickest to read, shown first):
 
 ## onetable
 
-*taught in:* [xai-eg, lesson 0](xai/xai-eg.lua)
+*taught in:* [xai-eg, lesson 0](ezr-lua/xai-eg.lua)
 
 Lua's one data structure: the table is list, dict, object
 and module at once. `ipairs` walks the list part 1,2,3..;
@@ -140,7 +140,7 @@ and module at once. `ipairs` walks the list part 1,2,3..;
 
 ## patterns
 
-*taught in:* [xai-eg, lesson 0](xai/xai-eg.lua)
+*taught in:* [xai-eg, lesson 0](ezr-lua/xai-eg.lua)
 
 Lua string patterns are not regexes: `%w %d %s` classes,
 `^ $` anchors, no alternation. Small enough to learn in a
@@ -149,7 +149,7 @@ schema texts (lessons 0, 3).
 
 ## poly
 
-*taught in:* [xai-eg, lesson 5](xai/xai-eg.lua)
+*taught in:* [xai-eg, lesson 5](ezr-lua/xai-eg.lua)
 
 Polymorphism: Num and Sym answer one interface (add, mid,
 spread, without, dist, bins, holds), so distance, binning
@@ -158,7 +158,7 @@ of metatables replace a design pattern (lesson 5).
 
 ## truthy
 
-*taught in:* [xai-eg, lesson 0](xai/xai-eg.lua)
+*taught in:* [xai-eg, lesson 0](ezr-lua/xai-eg.lua)
 
 In lua only `nil` and `false` are falsy: 0 and "" are
 TRUE. The `x and y or z` ternary and the `x = x or d`
@@ -172,7 +172,7 @@ pythonistas (lesson 0).
 
 ## bob
 
-*taught in:* [xai-eg, lesson 0](xai/xai-eg.lua)
+*taught in:* [xai-eg, lesson 0](ezr-lua/xai-eg.lua)
 
 Uncle Bob's rule: keep functions small (5-10 lines).
 Lesson 0's `--bob` demo audits xai.lua itself -- strip
@@ -182,7 +182,7 @@ the rest live in the scope map below.
 
 ## schema
 
-*taught in:* [xai-eg, lesson 6](xai/xai-eg.lua)
+*taught in:* [xai-eg, lesson 6](ezr-lua/xai-eg.lua)
 
 The csv header IS the schema: leading uppercase = number;
 suffixes mark [goals](#goals) and columns to skip. Rename
@@ -191,7 +191,7 @@ no config files (lessons 3, 6).
 
 ## ssot
 
-*taught in:* [xai-eg, lesson 3](xai/xai-eg.lua)
+*taught in:* [xai-eg, lesson 3](ezr-lua/xai-eg.lua)
 
 Single source of truth: the option defaults live in the
 help text and are parsed out of it, so the docs and the
@@ -204,7 +204,7 @@ program cannot disagree (lesson 3).
 
 ## baseline
 
-*taught in:* [xai-eg, lesson 13](xai/xai-eg.lua)
+*taught in:* [xai-eg, lesson 13](ezr-lua/xai-eg.lua)
 
 Before crediting a clever method, beat a dumb one under
 the same rules. Ours: random labelling with the same
@@ -213,7 +213,7 @@ apart, the cleverness is decoration (lessons 10, 13).
 
 ## bayes
 
-*taught in:* [xaiplus, lesson 4](xai/xaiplus-eg.lua) · [xaiplus, lesson 5](xai/xaiplus-eg.lua)
+*taught in:* [xaiplus, lesson 4](ezr-lua/xaiplus-eg.lua) · [xaiplus, lesson 5](ezr-lua/xaiplus-eg.lua)
 
 Naive Bayes: score a row under a klass by multiplying its
 columns' likelihoods -- a [gauss](#gauss)ian pdf for
@@ -223,7 +223,7 @@ independent; cheap, incremental, a strong baseline.
 
 ## confusion
 
-*taught in:* [xaiplus, lesson 5](xai/xaiplus-eg.lua)
+*taught in:* [xaiplus, lesson 5](ezr-lua/xaiplus-eg.lua)
 
 A confusion matrix counts predictions by (actual, guessed)
 klass. Its diagonal is the hits; accuracy is the diagonal
@@ -232,7 +232,7 @@ learner keeps mixing up.
 
 ## effect
 
-*taught in:* [xai-eg, lesson 9](xai/xai-eg.lua)
+*taught in:* [xai-eg, lesson 9](ezr-lua/xai-eg.lua)
 
 *see:* Cliff (1993), Psych. Bulletin 114 — dominance
 statistics.
@@ -244,7 +244,7 @@ delta = who cares (lesson 9).
 
 ## entropy
 
-*taught in:* [xai-eg, lesson 5](xai/xai-eg.lua)
+*taught in:* [xai-eg, lesson 5](ezr-lua/xai-eg.lua)
 
 The effort needed to describe what is in a bag of
 symbols: -sum p log2 p. Low entropy = one symbol
@@ -253,7 +253,7 @@ classification flavor of [cost](#cost) (lessons 5, 11).
 
 ## gauss
 
-*taught in:* [xai-eg, lesson 2](xai/xai-eg.lua)
+*taught in:* [xai-eg, lesson 2](ezr-lua/xai-eg.lua)
 
 *see:* Box & Muller (1958) — normal deviates from uniforms.
 
@@ -263,7 +263,7 @@ sample plausible numeric values (lesson 2).
 
 ## ks
 
-*taught in:* [xai-eg, lesson 9](xai/xai-eg.lua)
+*taught in:* [xai-eg, lesson 9](ezr-lua/xai-eg.lua)
 
 *see:* Massey (1951), JASA 46 — the Kolmogorov-Smirnov
 test.
@@ -274,7 +274,7 @@ CDFs. Distribution-free, no normality assumed, and via
 
 ## minus
 
-*taught in:* [xai-eg, lesson 4](xai/xai-eg.lua)
+*taught in:* [xai-eg, lesson 4](ezr-lua/xai-eg.lua)
 
 The subtraction trick: Welford summaries un-fold, so
 `i:without(j)` returns "i's data minus j's" in constant
@@ -283,14 +283,14 @@ needs only one pass over the rows (lessons 4, 5, 11).
 
 ## mode
 
-*taught in:* [xai-eg, lesson 5](xai/xai-eg.lua)
+*taught in:* [xai-eg, lesson 5](ezr-lua/xai-eg.lua)
 
 The most common symbol in a bag: Sym's middle, and the
 prediction at a classification leaf (lessons 5, 12).
 
 ## noir
 
-*taught in:* [xai-eg, lesson 5](xai/xai-eg.lua)
+*taught in:* [xai-eg, lesson 5](ezr-lua/xai-eg.lua)
 
 Stevens' scale ladder: Nominal, Ordinal, Interval, Ratio.
 This system keeps just the two ends -- symbols get
@@ -299,7 +299,7 @@ summaries suffice (lesson 5).
 
 ## roulette
 
-*taught in:* [xai-eg, lesson 2](xai/xai-eg.lua)
+*taught in:* [xai-eg, lesson 2](ezr-lua/xai-eg.lua)
 
 Weighted random choice: pick a key with probability
 proportional to its weight, by walking counts until a
@@ -307,7 +307,7 @@ random slice of the total is spent (lesson 2).
 
 ## same
 
-*taught in:* [xai-eg, lesson 9](xai/xai-eg.lua)
+*taught in:* [xai-eg, lesson 9](ezr-lua/xai-eg.lua)
 
 *see:* Cohen (1988) — statistical power and effect size.
 
@@ -319,7 +319,7 @@ is only shouted when it would be hard to argue otherwise
 
 ## seed
 
-*taught in:* [xai-eg, lesson 2](xai/xai-eg.lua)
+*taught in:* [xai-eg, lesson 2](ezr-lua/xai-eg.lua)
 
 *see:* Park & Miller (1988), CACM 31(10) — the 16807
 minimal standard generator.
@@ -331,7 +331,7 @@ are checkable by diff (lesson 2).
 
 ## shuffle
 
-*taught in:* [xai-eg, lesson 2](xai/xai-eg.lua)
+*taught in:* [xai-eg, lesson 2](ezr-lua/xai-eg.lua)
 
 Fisher-Yates: walk the list backwards, swapping each item
 with a random earlier one; every ordering equally likely,
@@ -339,7 +339,7 @@ in linear time (lesson 2).
 
 ## stream
 
-*taught in:* [xai-eg, lesson 4](xai/xai-eg.lua)
+*taught in:* [xai-eg, lesson 4](ezr-lua/xai-eg.lua)
 
 Process values one at a time, constant memory, no second
 pass. [welford](#welford) streams; so do csv reads; so
@@ -347,7 +347,7 @@ does bin scoring via [minus](#minus) (lessons 3, 4).
 
 ## variability
 
-*taught in:* [xai-eg, lesson 13](xai/xai-eg.lua)
+*taught in:* [xai-eg, lesson 13](ezr-lua/xai-eg.lua)
 
 Learner variability: rerun with a new seed and the answer
 moves. So report distributions, never single runs, and
@@ -355,7 +355,7 @@ judge gaps with [same](#same) (lesson 13, `--seeds`).
 
 ## welford
 
-*taught in:* [xai-eg, lesson 4](xai/xai-eg.lua)
+*taught in:* [xai-eg, lesson 4](ezr-lua/xai-eg.lua)
 
 *see:* Welford (1962), Technometrics 4(3) — incremental
 variance.
@@ -371,7 +371,7 @@ one update per value, numerically stable — and reversible
 
 ## anomaly
 
-*taught in:* [xai-eg, lesson 8](xai/xai-eg.lua) · [xaiplus, lesson 14](xai/xaiplus-eg.lua)
+*taught in:* [xai-eg, lesson 8](ezr-lua/xai-eg.lua) · [xaiplus, lesson 14](ezr-lua/xaiplus-eg.lua)
 
 A row far from even its own nearest neighbor. Once
 distance exists, outlier detection is one argmax: find
@@ -380,7 +380,7 @@ nearest-gap CDF in xaiplus lesson 14).
 
 ## centroid
 
-*taught in:* [xai-eg, lesson 7](xai/xai-eg.lua)
+*taught in:* [xai-eg, lesson 7](ezr-lua/xai-eg.lua)
 
 A table's middle: every column's mid, in column order.
 Computed lazily and cached; any add wipes the cache,
@@ -390,7 +390,7 @@ sampling error with your own eyes.
 
 ## clone
 
-*taught in:* [xai-eg, lesson 7](xai/xai-eg.lua)
+*taught in:* [xai-eg, lesson 7](ezr-lua/xai-eg.lua)
 
 A fresh table wearing an existing header, given new rows.
 Each subset then owns honest column summaries, keeping
@@ -398,7 +398,7 @@ train and test data uncontaminated (lessons 7, 13).
 
 ## heaven
 
-*taught in:* [xai-eg, lesson 8](xai/xai-eg.lua)
+*taught in:* [xai-eg, lesson 8](ezr-lua/xai-eg.lua)
 
 The ideal point where every goal is at its best value.
 `disty` = a row's distance to heaven (0 = ideal, 1 =
@@ -407,7 +407,7 @@ worst), so optimization is just "find rows near heaven"
 
 ## kmeans
 
-*taught in:* [xaiplus, lesson 2](xai/xaiplus-eg.lua)
+*taught in:* [xaiplus, lesson 2](ezr-lua/xaiplus-eg.lua)
 
 k clusters found by repetition: drop each row into its
 nearest centroid, move every centroid to its members'
@@ -417,7 +417,7 @@ seeds smarter.
 
 ## kmeanspp
 
-*taught in:* [xaiplus, lesson 3](xai/xaiplus-eg.lua)
+*taught in:* [xaiplus, lesson 3](ezr-lua/xaiplus-eg.lua)
 
 kmeans++ seeding: draw each new centroid from a small pool
 with probability proportional to its squared distance to
@@ -426,7 +426,7 @@ start than random, so [kmeans](#kmeans) settles faster.
 
 ## knn
 
-*taught in:* [xai-eg, lesson 8](xai/xai-eg.lua) · [xaiplus, lesson 1](xai/xaiplus-eg.lua)
+*taught in:* [xai-eg, lesson 8](ezr-lua/xai-eg.lua) · [xaiplus, lesson 1](ezr-lua/xaiplus-eg.lua)
 
 k-nearest-neighbors: sort everything by distance to a
 query, let the closest few answer. No training step --
@@ -435,7 +435,7 @@ classifier in xaiplus lesson 1).
 
 ## minkowski
 
-*taught in:* [xai-eg, lesson 8](xai/xai-eg.lua)
+*taught in:* [xai-eg, lesson 8](ezr-lua/xai-eg.lua)
 
 The p-norm: aggregate per-column gaps as
 `(sum gap^p / n)^(1/p)`. p=1 city-block, p=2
@@ -444,7 +444,7 @@ euclidean-ish; one exponent tunes the geometry of both
 
 ## missing
 
-*taught in:* [xai-eg, lesson 8](xai/xai-eg.lua)
+*taught in:* [xai-eg, lesson 8](ezr-lua/xai-eg.lua)
 
 "?" cells. Distance treats them pessimistically — assume
 the unknown value is far away — so missing data widens
@@ -452,7 +452,7 @@ gaps rather than hiding them (lesson 8).
 
 ## norm
 
-*taught in:* [xai-eg, lesson 8](xai/xai-eg.lua)
+*taught in:* [xai-eg, lesson 8](ezr-lua/xai-eg.lua)
 
 Map a raw number to 0..1 via a logistic over its z-score,
 so a column of grams and a column of years contribute
@@ -460,7 +460,7 @@ fairly to one distance (lesson 8).
 
 ## poles
 
-*taught in:* [xai-eg, lesson 10](xai/xai-eg.lua)
+*taught in:* [xai-eg, lesson 10](ezr-lua/xai-eg.lua)
 
 *see:* Faloutsos & Lin (1995), SIGMOD — FastMap (the poles
 trick).
@@ -472,7 +472,7 @@ good pole is lesson 10's whole tactic.
 
 ## tables
 
-*taught in:* [xai-eg, lesson 7](xai/xai-eg.lua)
+*taught in:* [xai-eg, lesson 7](ezr-lua/xai-eg.lua)
 
 Rows plus typed column summaries: the first row builds
 the [schema](#schema), later rows update per-column
@@ -485,7 +485,7 @@ stats as they are stored (lesson 7).
 
 ## bets
 
-*taught in:* [xai-eg, lesson 13](xai/xai-eg.lua)
+*taught in:* [xai-eg, lesson 13](ezr-lua/xai-eg.lua)
 
 Every learner and optimizer is a falsifiable bet about
 the shape of your data: in recent optimizer tournaments
@@ -494,7 +494,7 @@ cheap experiment; don't trust the brand name (lesson 13).
 
 ## bins
 
-*taught in:* [xai-eg, lesson 11](xai/xai-eg.lua)
+*taught in:* [xai-eg, lesson 11](ezr-lua/xai-eg.lua)
 
 Chopping an x column into ranges that simplify y
 (lesson 11). Numeric bins come from breaks in sorted
@@ -504,7 +504,7 @@ readable test like `Volume <= 112`.
 
 ## cost
 
-*taught in:* [xai-eg, lesson 11](xai/xai-eg.lua)
+*taught in:* [xai-eg, lesson 11](ezr-lua/xai-eg.lua)
 
 Split cost: the size-weighted spread of the two halves a
 bin creates. Lower cost = y is simpler to describe after
@@ -513,7 +513,7 @@ scoring never re-reads the rows (lesson 11).
 
 ## de
 
-*taught in:* [xaiplus, lesson 7](xai/xaiplus-eg.lua)
+*taught in:* [xaiplus, lesson 7](ezr-lua/xaiplus-eg.lua)
 
 Differential evolution: evolve a population of rows; each
 child is three others blended as a + F*(b - c), kept only
@@ -522,7 +522,7 @@ default workhorse optimizer here.
 
 ## explain
 
-*taught in:* [xai-eg, lesson 12](xai/xai-eg.lua)
+*taught in:* [xai-eg, lesson 12](ezr-lua/xai-eg.lua)
 
 A model a human can argue with: branch tests in the
 data's own vocabulary, leaves small enough to inspect.
@@ -531,7 +531,7 @@ models that merely score well (lesson 12).
 
 ## explore
 
-*taught in:* [xai-eg, lesson 10](xai/xai-eg.lua)
+*taught in:* [xai-eg, lesson 10](ezr-lua/xai-eg.lua)
 
 Explore vs exploit: spend labels learning the landscape,
 or harvesting its best-known corner? Acquisition policies
@@ -540,7 +540,7 @@ pure explore wastes the [budget](#budget).
 
 ## ga
 
-*taught in:* [xaiplus, lesson 8](xai/xaiplus-eg.lua)
+*taught in:* [xaiplus, lesson 8](ezr-lua/xaiplus-eg.lua)
 
 Genetic algorithm: each generation mutates the population,
 then refills it by crossover of tournament-selected
@@ -549,7 +549,7 @@ tournaments apply the selection pressure.
 
 ## ls
 
-*taught in:* [xaiplus, lesson 10](xai/xaiplus-eg.lua)
+*taught in:* [xaiplus, lesson 10](ezr-lua/xaiplus-eg.lua)
 
 Local search: greedy hill climbing that jumps to a fresh
 random start whenever it stalls, so one bad basin cannot
@@ -557,7 +557,7 @@ trap the whole run. A baseline fancier search must beat.
 
 ## mutate
 
-*taught in:* [xaiplus, lesson 6](xai/xaiplus-eg.lua)
+*taught in:* [xaiplus, lesson 6](ezr-lua/xaiplus-eg.lua)
 
 Making new rows from old: nudge one cell (a [gauss](#gauss)
 for numbers, a frequency draw for symbols), or blend three
@@ -567,7 +567,7 @@ optimizer searches over.
 
 ## predict
 
-*taught in:* [xai-eg, lesson 12](xai/xai-eg.lua)
+*taught in:* [xai-eg, lesson 12](ezr-lua/xai-eg.lua)
 
 Route a row down the tree by its branch tests; report the
 leaf's mid (mean or [mode](#mode)). Same tree, two uses:
@@ -575,7 +575,7 @@ predict and [explain](#explain) (lesson 12).
 
 ## race
 
-*taught in:* [xaiplus, lesson 11](xai/xaiplus-eg.lua)
+*taught in:* [xaiplus, lesson 11](ezr-lua/xaiplus-eg.lua)
 
 Run several optimizers on the same data and rank them by
 result. There is no universal winner (no free lunch), so a
@@ -583,7 +583,7 @@ cheap race beats trusting any one method's reputation.
 
 ## sa
 
-*taught in:* [xaiplus, lesson 9](xai/xaiplus-eg.lua)
+*taught in:* [xaiplus, lesson 9](ezr-lua/xaiplus-eg.lua)
 
 Simulated annealing: a one-solution search that always
 takes better moves and sometimes worse ones, the tolerance
@@ -591,7 +591,7 @@ cooling as the budget spends -- wander early, greedy late.
 
 ## synthesis
 
-*taught in:* [xaiplus, lesson 12](xai/xaiplus-eg.lua)
+*taught in:* [xaiplus, lesson 12](ezr-lua/xaiplus-eg.lua)
 
 Inventing new rows: grow a [tree](#tree), then blend rows
 within a single leaf, so each synthetic row stays inside a
@@ -599,7 +599,7 @@ real, coherent region rather than a void between clusters.
 
 ## tree
 
-*taught in:* [xai-eg, lesson 12](xai/xai-eg.lua)
+*taught in:* [xai-eg, lesson 12](ezr-lua/xai-eg.lua)
 
 *see:* Breiman et al. (1984) — CART: classification and
 regression trees.
@@ -616,7 +616,7 @@ prediction; branches read as English-ish tests
 
 ## active
 
-*taught in:* [xai-eg, lesson 10](xai/xai-eg.lua)
+*taught in:* [xai-eg, lesson 10](ezr-lua/xai-eg.lua)
 
 *see:* Settles (2009) — Active Learning literature survey.
 
@@ -628,7 +628,7 @@ Spend the [budget](#budget) where it teaches most.
 
 ## budget
 
-*taught in:* [xai-eg, lesson 10](xai/xai-eg.lua)
+*taught in:* [xai-eg, lesson 10](ezr-lua/xai-eg.lua)
 
 The number of y-labels we may buy. In real tables the x
 values are cheap and the y values dear (a benchmark, a
@@ -637,7 +637,7 @@ label spent (lessons 10-13).
 
 ## goals
 
-*taught in:* [xai-eg, lesson 6](xai/xai-eg.lua)
+*taught in:* [xai-eg, lesson 6](ezr-lua/xai-eg.lua)
 
 The y columns: names ending "+" (maximize), "-"
 (minimize), "!" (classify). Goals plus [norm](#norm)
@@ -645,7 +645,7 @@ define [heaven](#heaven) (lessons 6, 8).
 
 ## holdout
 
-*taught in:* [xai-eg, lesson 13](xai/xai-eg.lua)
+*taught in:* [xai-eg, lesson 13](ezr-lua/xai-eg.lua)
 
 Judge on rows never seen in training: shuffle, train on
 half under the [budget](#budget), let the tree rank the
@@ -653,7 +653,7 @@ other half, check only the top few (lesson 13).
 
 ## win
 
-*taught in:* [xai-eg, lesson 13](xai/xai-eg.lua)
+*taught in:* [xai-eg, lesson 13](ezr-lua/xai-eg.lua)
 
 A grade for any row: 100 = as good as the best row in the
 table, 0 = no better than the median, computed from the
@@ -661,7 +661,7 @@ distance-to-[heaven](#heaven) distribution (lesson 13).
 
 ## xy
 
-*taught in:* [xai-eg, lesson 6](xai/xai-eg.lua)
+*taught in:* [xai-eg, lesson 6](ezr-lua/xai-eg.lua)
 
 The x columns describe a thing (cheap to read); the y
 columns judge it (dear to measure). That asymmetry is the

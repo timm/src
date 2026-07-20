@@ -20,16 +20,16 @@ push: ## add+commit+push+status
 	@git status
 
 eg: ## run every project's examples/tests
-	cd ezr2     && python3 ezr2-eg.py all
-	cd tiny-xai && sbcl --script tiny-xai-eg.lisp --all
-	cd luamine  && lua luamine-eg.lua --all
-	cd xai      && lua xai-eg.lua --all
-	cd xai      && lua xaiplus-eg.lua --all
+	cd ezr-py     && python3 ezr2-eg.py all
+	cd ezr-lisp && sbcl --script tiny-xai-eg.lisp --all
+	cd attic/luamine  && lua luamine-eg.lua --all
+	cd ezr-lua      && lua xai-eg.lua --all
+	cd ezr-lua      && lua xaiplus-eg.lua --all
 
 check: ## glossary links <-> headings, then each course's frozen transcript
 	@python3 etc/join.py glossary.md $(wildcard */*-eg.py */*-eg.lua */*-eg.lisp)
-	@cd xai && lua xai-eg.lua --check
-	@cd xai && lua xaiplus-eg.lua --check
+	@cd ezr-lua && lua xai-eg.lua --check
+	@cd ezr-lua && lua xaiplus-eg.lua --check
 
 doc: ## pycco html per source file into docs/<proj>/
 	@for p in */; do p=$${p%/}; \
@@ -69,7 +69,7 @@ Cols ?= 3         # pdf columns
 LPC  ?= 120       # lines per pdf column; packs sections
 ETC  := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))etc
 
-%.pdf: ## project dir -> ~/tmp/src/NAME.pdf via a2ps (make tiny-xai.pdf)
+%.pdf: ## project dir -> ~/tmp/src/NAME.pdf via a2ps (make ezr-lisp.pdf)
 	@src=$$(ls */$*.lisp */$*.py */$*.lua 2>/dev/null | head -1); \
 	 test -n "$$src" || { echo "no */$*.(lisp|py|lua)"; exit 1; }; \
 	 case $${src##*.} in lisp) lang=clisp;; py) lang=python;; \

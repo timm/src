@@ -15,7 +15,7 @@ Everything lives in exactly two repos:
 Data is NEVER copied into src. Code reaches it via a leading
 `$MOOT` in file names: the MOOT env var if set, else
 `~/gits/moot`. Every language implements the same tiny
-`path()` expansion (see ezr2/ezr2.py, tiny-xai/tiny-xai.lisp,
+`path()` expansion (see ezr-py/ezr2.py, ezr-lisp/tiny-xai.lisp,
 luamine/lib.lua).
 Copies of moot data in other repos were a mistake; do not
 recreate them.
@@ -51,7 +51,7 @@ recreate them.
   sandbox/ is the sole exception: a multi-app scratch area,
   exempt from the scaffold and the doc pipeline (it renders
   nothing). A play idea graduates by moving to its own dir
-  and gaining the scaffold (abc -> xai did this).
+  and gaining the scaffold (abc -> ezr-lua did this).
 
 ## comments: three altitudes, never mixed
 
@@ -85,8 +85,8 @@ fenced verbatim.
 
 ## -eg: tutorials that are tests
 
-Language agnostic (exemplars: xai/xai-eg.lua,
-ezr2/ezr2-eg.py). Every idea dir pairs xx.ext with
+Language agnostic (exemplars: ezr-lua/xai-eg.lua,
+ezr-py/ezr2-eg.py). Every idea dir pairs xx.ext with
 xx-eg.ext; there is no xx-doc -- a course keeps its
 contents table in the -eg how-to stanza, and its
 definitions and references in glossary.md.
@@ -164,11 +164,11 @@ that regeneration would destroy (cf. luamine/tut.md).
 ## versions: tags, never dirs
 
 - No v13/ dirs. Versions are git's job:
-    latest:  raw.githubusercontent.com/timm/src/main/ezr2/ezr2.py
-    pinned:  raw.githubusercontent.com/timm/src/ezr2-v13/ezr2/ezr2.py
-- Tags are namespaced per idea: ezr2-v13, xomo-v12.
+    latest:  raw.githubusercontent.com/timm/src/main/ezr-py/ezr2.py
+    pinned:  raw.githubusercontent.com/timm/src/ezr-py-v13/ezr-py/ezr2.py
+- Tags are namespaced per idea: ezr-py-v13, xomo-v12.
 - A breaking rewrite is a NEW idea dir with a new name
-  (ezr -> ezr2), not a version bump; the old dir moves to
+  (ezr -> ezr-py), not a version bump; the old dir moves to
   attic/.
 
 ## attic/, not deletion
@@ -233,4 +233,4 @@ browsable, marked dead by location.
 
     curl -fL <raw>/xx/INSTALL.md | sh    (whole idea), or
     git clone --filter=blob:none --sparse https://github.com/timm/src
-    git sparse-checkout set ezr2
+    git sparse-checkout set ezr-py

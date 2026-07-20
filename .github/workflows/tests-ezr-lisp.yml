@@ -1,0 +1,21 @@
+name: ezr-lisp
+on:
+  push:
+    branches: [main]
+    paths:
+      - "ezr-lisp/**"
+      - ".github/workflows/tests-ezr-lisp.yml"
+  workflow_dispatch:
+jobs:
+  eg:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          repository: timm/moot
+          path: moot
+      - run: sudo apt-get update -q && sudo apt-get install -y sbcl
+      - run: cd ezr-lisp && sbcl --script tiny-xai-eg.lisp --all
+        env:
+          MOOT: ${{ github.workspace }}/moot
