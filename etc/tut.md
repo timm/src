@@ -91,10 +91,13 @@ as a weekly course, each section additionally gets:
 Definitions live in the REPO-ROOT glossary.md, shared by
 every course: one `## key` entry per idea, region-grouped,
 alphabetical within a region, each entry carrying a
-*taught in* back-pointer line, a *see:* citation line where
-one applies, and each region listing the concepts still
-awaiting entries (any general source lands in a tail
-section). There is no xx-doc: the contents table (lesson |
+*taught in* back-pointer line, a *see:* [^key] footnote
+where one applies -- citing a well-cited, peer-reviewed
+paper in MLA style with a DOI or stable link (so a reader
+can verify the paper is real), all such `[^key]:`
+definitions collected in a `# references` block at file
+end -- and each region listing the concepts still awaiting
+entries. There is no xx-doc: the contents table (lesson |
 section | ideas, in lesson order) lives in the -eg how-to
 stanza. All of it audited, never regenerated (style.md
 maintenance rule).
@@ -124,11 +127,14 @@ maintenance rule).
     replay checker (exemplar: luamine/tutchk.lua) and add it
     to the dir's tests workflow -- every [n]> event
     re-executed, outputs diffed, env-specific events skipped
-    if the dir carries a lesson course: --join passes (all
-    doc links land, all headings linked, all dot-list
-    signatures resolve) and --check passes (a fresh --all
-    reproduces the frozen xx-eg.out transcript); both are
-    eg verbs, exemplar ezr-lua/xai-eg.lua
+    if the dir carries a lesson course: --join passes (its
+    own doc links land, its dot-list signatures resolve) and
+    --check passes (a fresh --all reproduces the frozen
+    xx-eg.out transcript); both are eg verbs, exemplar
+    ezr-lua/xai-eg.lua. `make check` adds the repo-wide half
+    (etc/join.py): every glossary heading is taught by SOME
+    course -- since the glossary is shared, no single course
+    can own that check
     TODO not yet built: output splicing the other way --
     run each demo, paste its output back under the stanza
     (xx-eg.out now captures the output; the splice remains)

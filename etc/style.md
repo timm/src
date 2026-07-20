@@ -57,6 +57,19 @@ xai). Ports stay diffable file-for-file across languages.
   exempt from the scaffold and the doc pipeline (it renders
   nothing). A play idea graduates by moving to its own dir
   and gaining the scaffold (abc -> ezr-lua did this).
+- An app may LAYER modules: a tiny core `xx.*` plus addon
+  modules `xxplus.*` (cf. attic/luamine's lib/luamine/lapps),
+  each paired with its OWN `-eg` course (xx-eg, xxplus-eg).
+  All share one manifest (`modules` lists both), one README,
+  and the repo glossary -- still one app, one dir. An addon
+  `require`s the core and NEVER edits it; it extends the
+  shared `the` from its own help string, asserting no option
+  key collides. Each `-eg` course is a separate glossary
+  client, so the repo-wide "every heading taught somewhere"
+  check moved from each course's `--join` into `make check`
+  (etc/join.py). Exemplar: xai (engine + 14-lesson course) +
+  xaiplus (learners & optimizers layered on top), in every
+  ezr-* dir.
 
 ## comments: three altitudes, never mixed
 
@@ -143,8 +156,12 @@ Shape of xx-eg.ext:
   back-pointer.
 - No xx-doc: the contents table (lesson | section | ideas,
   in lesson order) lives in the -eg how-to stanza, and the
-  references live in glossary.md as a *see:* line inside
-  each entry (any general source in its tail section).
+  references live in glossary.md. An entry that has one
+  should cite a well-cited, PEER-REVIEWED paper via a GFM
+  footnote: an inline `[^key]` marker on its *see:* line,
+  whose `[^key]:` definition -- MLA style, ending in a DOI
+  or other stable link so a reader can verify the paper is
+  real -- collects in a `# references` block at end of file.
 - Doc claims are executable (exemplar: xai-eg.lua):
   `--join` verifies lesson links land on doc headings,
   headings are all linked, and dot-list signatures
