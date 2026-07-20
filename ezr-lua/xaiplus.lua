@@ -160,7 +160,7 @@ xp.bayes = {}
 function xp.bayes.like(col,v,prior,    z)
   if not col.mu then
     return ((col.has[v] or 0)+the.k*prior)/(col.n+the.k) end
-  z = 2*(col:spread() + 1E-32)^2
+  z = 2*col:spread()^2 + 1E-32
   return exp(-(v - col.mu)^2/z)/(pi*z)^0.5 end
 
 -- log-likelihood of a row under klass model h (a xai Tbl)

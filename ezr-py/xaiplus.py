@@ -123,7 +123,7 @@ def kpp(tbl, k=None, few=None):
 def like(col, v, prior):
   if is_sym(col):
     return (col.get(v,0) + the.k*prior)/(size(col) + the.k)
-  z = 2*(sd(col) + TINY)**2
+  z = 2*sd(col)**2 + TINY
   return exp(-(v - mu_(col))**2/z)/(pi*z)**.5
 
 def likes(h, row, nrows, nh):

@@ -187,7 +187,7 @@ OPTIONS (added to xai's; never shadowing its flags):")
   (if (sym-p col)
       (/ (+ (ats (? col has) v 0) (* (? *my+* --k) prior))
          (+ (? col n) (? *my+* --k)))
-      (let ((z (* 2 (expt (+ (spread col) +tiny+) 2))))
+      (let ((z (+ (* 2 (expt (spread col) 2)) +tiny+)))
         (/ (exp (- (/ (expt (- v (? col mu)) 2) z)))
            (sqrt (* pi z))))))
 
