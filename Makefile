@@ -30,6 +30,7 @@ check: ## glossary links <-> headings, then each course's frozen transcript
 	@python3 etc/join.py glossary.md $(wildcard */*-eg.py */*-eg.lua */*-eg.lisp)
 	@cd ezr-lua && lua xai-eg.lua --check
 	@cd ezr-lua && lua xaiplus-eg.lua --check
+	@cd ezr-lisp && sbcl --script xai-eg.lisp --check
 
 doc: ## pycco html per source file into docs/<proj>/
 	@for p in */; do p=$${p%/}; \

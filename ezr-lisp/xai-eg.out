@@ -1,0 +1,136 @@
+
+; eg--bins
+best 5.88 at Volume v 183 (sd 8.34)
+
+; eg--bob
+ 1 ********************
+ 2 ********
+ 3 **************
+ 4 **********
+ 5 *************
+ 6 ***
+ 7 ***********
+ 8 *****
+ 9 ***
+10 ***
+11 *
+13 ****
+14 **
+15 *
+26 *
+small (<=6 lines): 68 bigger: 31
+
+; eg--dists
+best  (disty 0.075):
+#(4 90 48 78 2 1985 21.5 40) 
+nearest in x (distx 0.001):
+#(4 89 71 78 2 1990 14.9 30) 
+worst (disty 0.956):
+#(8 455 225 73 1 4951 11 10) 
+
+; eg--equality
+eq NIL eql NIL equal T equalp T = T
+
+; eg--funs
+(funcall f 16) 4.0; mapcar 1+ (2 3 4)
+
+; eg--holdout
+picked #(4 71 65 74 3 1836 21 30)
+win= 86 disty= 0.140
+
+; eg--land
+labelled 45 best 0.075 worst 0.951
+best labelled row:
+#(4 90 48 78 2 1985 21.5 40) 
+
+; eg--macros
+a 1 b.c 2 d 3 seed 1234567891
+
+; eg--my
+#S(SETTINGS
+   :--SEED 1234567891
+   :--P 2
+   :--DEPTH 4
+   :--LEAF 3
+   :--BUDGET 50
+   :--CAP 1024
+   :--CHECK 5
+   :--MORE 4
+   :--KEEPF 0.66
+   :--ACQUIRE "active"
+   :--FILE "$MOOT/optimize/misc/auto93.csv")
+
+; eg--num
+Mpg+: n 398 mu 23.84 sd 8.34
+
+; eg--numbers
+1/3 stays 1/3; (float 1/3) is 0.33333334
+(floor 7 2) = 3 remainder 1
+
+; eg--rand
+rand 0.000 0.000 rint 1
+irwin-hall mu -0.001 sd 0.996
+
+; eg--rows
+
+#("Clndrs" "Volume" "HpX" "Model" "origin" "Lbs-" "Acc+" "Mpg+") 
+#(8 304 193 70 1 4732 18.5 10) 
+#(8 360 215 70 1 4615 14 10) 
+#(8 307 200 70 1 4376 15 10) 
+#(8 318 210 70 1 4382 13.5 10) 
+... plus 394 more rows
+
+; eg--same
+same: self T nudged(+.02) T shifted(+1) NIL
+
+; eg--sym
+(a a a a b b c): mid A ent 1.379
+origin: mid 1 ent 1.327
+
+; eg--tbl
+rows 398 |x| 4 |y| 3
+Lbs- mid 2970.42 div 846.84
+Acc+ mid 15.57 div 2.76
+Mpg+ mid 23.84 div 8.34
+
+; eg--thing
+
+(23 3.14 -100.0 ? T NIL "abc") 
+
+; eg--tree
+  398    23.84  
+  227    28.94  Volume <= 183
+  123    31.71  |  Volume <= 112
+   62    28.87  |  |  Model <= 77
+    3    20.00  |  |  |  Clndrs <= 3
+   59    29.32  |  |  |  Clndrs > 3
+   61    34.59  |  |  Model > 77
+   54    35.19  |  |  |  Volume <= 107
+    7    30.00  |  |  |  Volume > 107
+  104    25.67  |  Volume > 112
+   59    22.71  |  |  Model <= 78
+   48    23.33  |  |  |  Volume <= 140
+   11    20.00  |  |  |  Volume > 140
+   45    29.56  |  |  Model > 78
+   16    33.13  |  |  |  Volume <= 135
+   29    27.59  |  |  |  Volume > 135
+  171    17.08  Volume > 183
+   70    20.00  |  Volume <= 260
+   67    20.00  |  |  Clndrs <= 6
+    3    20.00  |  |  |  Volume <= 198
+   64    20.00  |  |  |  Volume > 198
+    3    20.00  |  |  Clndrs > 6
+  101    15.05  |  Volume > 260
+   78    13.21  |  |  Model <= 76
+   72    13.47  |  |  |  Volume <= 429
+    6    10.00  |  |  |  Volume > 429
+   23    21.30  |  |  Model > 76
+   12    20.00  |  |  |  Model <= 78
+   11    22.73  |  |  |  Model > 78
+leaves= 15, x= 3 of 4
+
+; eg--truthy
+nil is (): T; 0 is true: YES
+
+; eg--wins
+win(best)= 100 win(worst)= -90

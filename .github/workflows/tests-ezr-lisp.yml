@@ -19,3 +19,7 @@ jobs:
       - run: cd ezr-lisp && sbcl --script xai-eg.lisp --all
         env:
           MOOT: ${{ github.workspace }}/moot
+      - run: cd ezr-lisp && sbcl --script xai-eg.lisp --join
+      - run: cd ezr-lisp && sbcl --script xai-eg.lisp --check
+        env:
+          MOOT: ${{ github.workspace }}/moot

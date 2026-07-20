@@ -65,7 +65,8 @@ node.</p>
 <span class="s">minimize; trailing X = ignore; ? cells = missing.</span>
 
 <span class="s">Every OPTION below is a flag (e.g. --seed 1 --file x.csv).</span>
-<span class="s">Every TEST and STUDY runs by its flag (e.g. --all --tree).&quot;</span><span class="p">)</span></pre></div>
+<span class="s">Every TEST and STUDY runs by its flag (e.g. --all --tree).</span>
+<span class="s">Also: --join --transcript --check (course upkeep).&quot;</span><span class="p">)</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -1219,7 +1220,8 @@ Grow a few labels; keep the keepf slice nearest the good</p>
 <span class="w">              </span><span class="nv">of</span><span class="w"> </span><span class="p">(</span><span class="nf">find-package</span><span class="w"> </span><span class="nv">:xai</span><span class="p">)</span>
 <span class="w">              </span><span class="k">when</span><span class="w"> </span><span class="p">(</span><span class="k">and</span><span class="w"> </span><span class="p">(</span><span class="nf">fboundp</span><span class="w"> </span><span class="nv">s</span><span class="p">)</span>
 <span class="w">                        </span><span class="p">(</span><span class="nf">eql</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="p">(</span><span class="nf">search</span><span class="w"> </span><span class="nv">prefix</span><span class="w"> </span><span class="p">(</span><span class="nb">string</span><span class="w"> </span><span class="nv">s</span><span class="p">)))</span>
-<span class="w">                        </span><span class="p">(</span><span class="nb">not</span><span class="w"> </span><span class="p">(</span><span class="nb">member</span><span class="w"> </span><span class="nv">s</span><span class="w"> </span><span class="o">&#39;</span><span class="p">(</span><span class="nv">eg--all</span><span class="w"> </span><span class="nv">eg--study</span><span class="p">))))</span>
+<span class="w">                        </span><span class="p">(</span><span class="nb">not</span><span class="w"> </span><span class="p">(</span><span class="nb">member</span><span class="w"> </span><span class="nv">s</span><span class="w"> </span><span class="o">&#39;</span><span class="p">(</span><span class="nv">eg--all</span><span class="w"> </span><span class="nv">eg--study</span><span class="w"> </span><span class="nv">eg--join</span>
+<span class="w">                                          </span><span class="nv">eg--transcript</span><span class="w"> </span><span class="nv">eg--check</span><span class="p">))))</span>
 <span class="w">              </span><span class="nv">collect</span><span class="w"> </span><span class="nv">s</span><span class="p">)</span>
 <span class="w">        </span><span class="o">#</span><span class="ss">&#39;string&lt;</span><span class="w"> </span><span class="nv">:key</span><span class="w"> </span><span class="o">#</span><span class="ss">&#39;string</span><span class="p">))</span></pre></div>
     </div>

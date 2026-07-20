@@ -37,7 +37,7 @@ contest without any global state.
 
 ## coerce
 
-*taught in:* [xai-eg, lesson 3](ezr-lua/xai-eg.lua)
+*taught in:* [xai-eg, lesson 3](ezr-lua/xai-eg.lua) · [xai-eg (lisp), lesson 1](ezr-lisp/xai-eg.lisp)
 
 Strings to things: "42" becomes a number, "true" a
 boolean, anything else a trimmed string. The whole edge
@@ -46,7 +46,7 @@ of the system where files meet data is one tiny function
 
 ## csv
 
-*taught in:* [xai-eg, lesson 3](ezr-lua/xai-eg.lua)
+*taught in:* [xai-eg, lesson 3](ezr-lua/xai-eg.lua) · [xai-eg (lisp), lesson 1](ezr-lisp/xai-eg.lisp)
 
 Comma-separated values, self-describing: the first line
 is the [schema](#schema). Streamed one row at a time
@@ -69,6 +69,27 @@ The only container in this system: Lua tables used as
 lists, served by a dozen ten-line verbs that compose
 (push returns its item, sort its list). A small
 vocabulary covers thirteen lessons (lesson 1).
+
+## lisp
+
+*taught in:* [xai-eg (lisp), lesson 0](ezr-lisp/xai-eg.lisp)
+
+For the impatient pythonista:
+
+- `nil` is the only false, and it IS the empty list;
+  0 and "" are TRUE
+- five spellings of equal: `eq` (same object), `eql`
+  (same object, or same-type same-value number), `equal`
+  (same structure), `equalp` (case- and type-blind), `=`
+  (same numeric value)
+- functions live in their own namespace: quote them with
+  `#'`, call function values with `funcall` or `apply`
+- integer math stays exact: `(/ 1 3)` is the rational
+  `1/3`, not 0.333; `(float x)` when you must round
+- many returns: `(floor 7 2)` yields 3 AND 1; the extras
+  drop silently unless caught by `multiple-value-bind`
+- `format` is its own tiny language: `~a` display, `~s`
+  readable, `~,2f` two decimals, `~&` fresh line
 
 ## lua
 
@@ -128,6 +149,17 @@ Lua: quick refs (quickest to read, shown first):
 - Lua 5.4 Reference Manual:  https://www.lua.org/manual/5.4/
 - PIL (Programming in Lua):  https://www.lua.org/pil/contents.html   (1st ed, free)
 
+## macros
+
+*taught in:* [xai-eg (lisp), lesson 2](ezr-lisp/xai-eg.lisp)
+
+Code that writes code, at compile time. Used sparingly
+here: one accessor family (`ats` reads hash keys and
+struct slots alike; `?` nests it; `ats!` fills a missing
+key on first touch) plus `aif`, which remembers its test
+as `it`. Rule of thumb: a macro must buy shorter call
+sites at every use, else write a function.
+
 ## onetable
 
 *taught in:* [xai-eg, lesson 0](ezr-lua/xai-eg.lua)
@@ -158,7 +190,7 @@ of metatables replace a design pattern (lesson 5).
 
 ## truthy
 
-*taught in:* [xai-eg, lesson 0](ezr-lua/xai-eg.lua)
+*taught in:* [xai-eg, lesson 0](ezr-lua/xai-eg.lua) · [xai-eg (lisp), lesson 0](ezr-lisp/xai-eg.lisp)
 
 In lua only `nil` and `false` are falsy: 0 and "" are
 TRUE. The `x and y or z` ternary and the `x = x or d`
@@ -172,7 +204,7 @@ pythonistas (lesson 0).
 
 ## bob
 
-*taught in:* [xai-eg, lesson 0](ezr-lua/xai-eg.lua)
+*taught in:* [xai-eg, lesson 0](ezr-lua/xai-eg.lua) · [xai-eg (lisp), lesson 0](ezr-lisp/xai-eg.lisp)
 
 Uncle Bob's rule: keep functions small (5-10 lines).
 Lesson 0's `--bob` demo audits xai.lua itself -- strip
@@ -182,7 +214,7 @@ the rest live in the scope map below.
 
 ## schema
 
-*taught in:* [xai-eg, lesson 6](ezr-lua/xai-eg.lua)
+*taught in:* [xai-eg, lesson 6](ezr-lua/xai-eg.lua) · [xai-eg (lisp), lesson 6](ezr-lisp/xai-eg.lisp)
 
 The csv header IS the schema: leading uppercase = number;
 suffixes mark [goals](#goals) and columns to skip. Rename
@@ -191,7 +223,7 @@ no config files (lessons 3, 6).
 
 ## ssot
 
-*taught in:* [xai-eg, lesson 3](ezr-lua/xai-eg.lua)
+*taught in:* [xai-eg, lesson 3](ezr-lua/xai-eg.lua) · [xai-eg (lisp), lesson 2](ezr-lisp/xai-eg.lisp)
 
 Single source of truth: the option defaults live in the
 help text and are parsed out of it, so the docs and the
@@ -204,7 +236,7 @@ program cannot disagree (lesson 3).
 
 ## baseline
 
-*taught in:* [xai-eg, lesson 13](ezr-lua/xai-eg.lua)
+*taught in:* [xai-eg, lesson 13](ezr-lua/xai-eg.lua) · [xai-eg (lisp), lesson 12](ezr-lisp/xai-eg.lisp)
 
 Before crediting a clever method, beat a dumb one under
 the same rules. Ours: random labelling with the same
@@ -232,7 +264,7 @@ learner keeps mixing up.
 
 ## effect
 
-*taught in:* [xai-eg, lesson 9](ezr-lua/xai-eg.lua)
+*taught in:* [xai-eg, lesson 9](ezr-lua/xai-eg.lua) · [xai-eg (lisp), lesson 8](ezr-lisp/xai-eg.lisp)
 
 *see:* Cliff (1993), Psych. Bulletin 114 — dominance
 statistics.
@@ -244,7 +276,7 @@ delta = who cares (lesson 9).
 
 ## entropy
 
-*taught in:* [xai-eg, lesson 5](ezr-lua/xai-eg.lua)
+*taught in:* [xai-eg, lesson 5](ezr-lua/xai-eg.lua) · [xai-eg (lisp), lesson 3](ezr-lisp/xai-eg.lisp)
 
 The effort needed to describe what is in a bag of
 symbols: -sum p log2 p. Low entropy = one symbol
@@ -263,7 +295,7 @@ sample plausible numeric values (lesson 2).
 
 ## ks
 
-*taught in:* [xai-eg, lesson 9](ezr-lua/xai-eg.lua)
+*taught in:* [xai-eg, lesson 9](ezr-lua/xai-eg.lua) · [xai-eg (lisp), lesson 8](ezr-lisp/xai-eg.lisp)
 
 *see:* Massey (1951), JASA 46 — the Kolmogorov-Smirnov
 test.
@@ -283,7 +315,7 @@ needs only one pass over the rows (lessons 4, 5, 11).
 
 ## mode
 
-*taught in:* [xai-eg, lesson 5](ezr-lua/xai-eg.lua)
+*taught in:* [xai-eg, lesson 5](ezr-lua/xai-eg.lua) · [xai-eg (lisp), lesson 3](ezr-lisp/xai-eg.lisp)
 
 The most common symbol in a bag: Sym's middle, and the
 prediction at a classification leaf (lessons 5, 12).
@@ -307,7 +339,7 @@ random slice of the total is spent (lesson 2).
 
 ## same
 
-*taught in:* [xai-eg, lesson 9](ezr-lua/xai-eg.lua)
+*taught in:* [xai-eg, lesson 9](ezr-lua/xai-eg.lua) · [xai-eg (lisp), lesson 8](ezr-lisp/xai-eg.lisp)
 
 *see:* Cohen (1988) — statistical power and effect size.
 
@@ -319,7 +351,7 @@ is only shouted when it would be hard to argue otherwise
 
 ## seed
 
-*taught in:* [xai-eg, lesson 2](ezr-lua/xai-eg.lua)
+*taught in:* [xai-eg, lesson 2](ezr-lua/xai-eg.lua) · [xai-eg (lisp), lesson 5](ezr-lisp/xai-eg.lisp)
 
 *see:* Park & Miller (1988), CACM 31(10) — the 16807
 minimal standard generator.
@@ -339,7 +371,7 @@ in linear time (lesson 2).
 
 ## stream
 
-*taught in:* [xai-eg, lesson 4](ezr-lua/xai-eg.lua)
+*taught in:* [xai-eg, lesson 4](ezr-lua/xai-eg.lua) · [xai-eg (lisp), lesson 4](ezr-lisp/xai-eg.lisp)
 
 Process values one at a time, constant memory, no second
 pass. [welford](#welford) streams; so do csv reads; so
@@ -347,7 +379,7 @@ does bin scoring via [minus](#minus) (lessons 3, 4).
 
 ## variability
 
-*taught in:* [xai-eg, lesson 13](ezr-lua/xai-eg.lua)
+*taught in:* [xai-eg, lesson 13](ezr-lua/xai-eg.lua) · [xai-eg (lisp), lesson 12](ezr-lisp/xai-eg.lisp)
 
 Learner variability: rerun with a new seed and the answer
 moves. So report distributions, never single runs, and
@@ -355,7 +387,7 @@ judge gaps with [same](#same) (lesson 13, `--seeds`).
 
 ## welford
 
-*taught in:* [xai-eg, lesson 4](ezr-lua/xai-eg.lua)
+*taught in:* [xai-eg, lesson 4](ezr-lua/xai-eg.lua) · [xai-eg (lisp), lesson 4](ezr-lisp/xai-eg.lisp)
 
 *see:* Welford (1962), Technometrics 4(3) — incremental
 variance.
@@ -398,7 +430,7 @@ train and test data uncontaminated (lessons 7, 13).
 
 ## heaven
 
-*taught in:* [xai-eg, lesson 8](ezr-lua/xai-eg.lua)
+*taught in:* [xai-eg, lesson 8](ezr-lua/xai-eg.lua) · [xai-eg (lisp), lesson 7](ezr-lisp/xai-eg.lisp)
 
 The ideal point where every goal is at its best value.
 `disty` = a row's distance to heaven (0 = ideal, 1 =
@@ -435,7 +467,7 @@ classifier in xaiplus lesson 1).
 
 ## minkowski
 
-*taught in:* [xai-eg, lesson 8](ezr-lua/xai-eg.lua)
+*taught in:* [xai-eg, lesson 8](ezr-lua/xai-eg.lua) · [xai-eg (lisp), lesson 7](ezr-lisp/xai-eg.lisp)
 
 The p-norm: aggregate per-column gaps as
 `(sum gap^p / n)^(1/p)`. p=1 city-block, p=2
@@ -444,7 +476,7 @@ euclidean-ish; one exponent tunes the geometry of both
 
 ## missing
 
-*taught in:* [xai-eg, lesson 8](ezr-lua/xai-eg.lua)
+*taught in:* [xai-eg, lesson 8](ezr-lua/xai-eg.lua) · [xai-eg (lisp), lesson 7](ezr-lisp/xai-eg.lisp)
 
 "?" cells. Distance treats them pessimistically — assume
 the unknown value is far away — so missing data widens
@@ -452,7 +484,7 @@ gaps rather than hiding them (lesson 8).
 
 ## norm
 
-*taught in:* [xai-eg, lesson 8](ezr-lua/xai-eg.lua)
+*taught in:* [xai-eg, lesson 8](ezr-lua/xai-eg.lua) · [xai-eg (lisp), lesson 7](ezr-lisp/xai-eg.lisp)
 
 Map a raw number to 0..1 via a logistic over its z-score,
 so a column of grams and a column of years contribute
@@ -460,7 +492,7 @@ fairly to one distance (lesson 8).
 
 ## poles
 
-*taught in:* [xai-eg, lesson 10](ezr-lua/xai-eg.lua)
+*taught in:* [xai-eg, lesson 10](ezr-lua/xai-eg.lua) · [xai-eg (lisp), lesson 9](ezr-lisp/xai-eg.lisp)
 
 *see:* Faloutsos & Lin (1995), SIGMOD — FastMap (the poles
 trick).
@@ -472,7 +504,7 @@ good pole is lesson 10's whole tactic.
 
 ## tables
 
-*taught in:* [xai-eg, lesson 7](ezr-lua/xai-eg.lua)
+*taught in:* [xai-eg, lesson 7](ezr-lua/xai-eg.lua) · [xai-eg (lisp), lesson 6](ezr-lisp/xai-eg.lisp)
 
 Rows plus typed column summaries: the first row builds
 the [schema](#schema), later rows update per-column
@@ -494,7 +526,7 @@ cheap experiment; don't trust the brand name (lesson 13).
 
 ## bins
 
-*taught in:* [xai-eg, lesson 11](ezr-lua/xai-eg.lua)
+*taught in:* [xai-eg, lesson 11](ezr-lua/xai-eg.lua) · [xai-eg (lisp), lesson 10](ezr-lisp/xai-eg.lisp)
 
 Chopping an x column into ranges that simplify y
 (lesson 11). Numeric bins come from breaks in sorted
@@ -504,7 +536,7 @@ readable test like `Volume <= 112`.
 
 ## cost
 
-*taught in:* [xai-eg, lesson 11](ezr-lua/xai-eg.lua)
+*taught in:* [xai-eg, lesson 11](ezr-lua/xai-eg.lua) · [xai-eg (lisp), lesson 10](ezr-lisp/xai-eg.lisp)
 
 Split cost: the size-weighted spread of the two halves a
 bin creates. Lower cost = y is simpler to describe after
@@ -522,7 +554,7 @@ default workhorse optimizer here.
 
 ## explain
 
-*taught in:* [xai-eg, lesson 12](ezr-lua/xai-eg.lua)
+*taught in:* [xai-eg, lesson 12](ezr-lua/xai-eg.lua) · [xai-eg (lisp), lesson 11](ezr-lisp/xai-eg.lisp)
 
 A model a human can argue with: branch tests in the
 data's own vocabulary, leaves small enough to inspect.
@@ -567,7 +599,7 @@ optimizer searches over.
 
 ## predict
 
-*taught in:* [xai-eg, lesson 12](ezr-lua/xai-eg.lua)
+*taught in:* [xai-eg, lesson 12](ezr-lua/xai-eg.lua) · [xai-eg (lisp), lesson 11](ezr-lisp/xai-eg.lisp)
 
 Route a row down the tree by its branch tests; report the
 leaf's mid (mean or [mode](#mode)). Same tree, two uses:
@@ -599,7 +631,7 @@ real, coherent region rather than a void between clusters.
 
 ## tree
 
-*taught in:* [xai-eg, lesson 12](ezr-lua/xai-eg.lua)
+*taught in:* [xai-eg, lesson 12](ezr-lua/xai-eg.lua) · [xai-eg (lisp), lesson 11](ezr-lisp/xai-eg.lisp)
 
 *see:* Breiman et al. (1984) — CART: classification and
 regression trees.
@@ -616,7 +648,7 @@ prediction; branches read as English-ish tests
 
 ## active
 
-*taught in:* [xai-eg, lesson 10](ezr-lua/xai-eg.lua)
+*taught in:* [xai-eg, lesson 10](ezr-lua/xai-eg.lua) · [xai-eg (lisp), lesson 9](ezr-lisp/xai-eg.lisp)
 
 *see:* Settles (2009) — Active Learning literature survey.
 
@@ -628,7 +660,7 @@ Spend the [budget](#budget) where it teaches most.
 
 ## budget
 
-*taught in:* [xai-eg, lesson 10](ezr-lua/xai-eg.lua)
+*taught in:* [xai-eg, lesson 10](ezr-lua/xai-eg.lua) · [xai-eg (lisp), lesson 9](ezr-lisp/xai-eg.lisp)
 
 The number of y-labels we may buy. In real tables the x
 values are cheap and the y values dear (a benchmark, a
@@ -637,7 +669,7 @@ label spent (lessons 10-13).
 
 ## goals
 
-*taught in:* [xai-eg, lesson 6](ezr-lua/xai-eg.lua)
+*taught in:* [xai-eg, lesson 6](ezr-lua/xai-eg.lua) · [xai-eg (lisp), lesson 6](ezr-lisp/xai-eg.lisp)
 
 The y columns: names ending "+" (maximize), "-"
 (minimize), "!" (classify). Goals plus [norm](#norm)
@@ -645,7 +677,7 @@ define [heaven](#heaven) (lessons 6, 8).
 
 ## holdout
 
-*taught in:* [xai-eg, lesson 13](ezr-lua/xai-eg.lua)
+*taught in:* [xai-eg, lesson 13](ezr-lua/xai-eg.lua) · [xai-eg (lisp), lesson 12](ezr-lisp/xai-eg.lisp)
 
 Judge on rows never seen in training: shuffle, train on
 half under the [budget](#budget), let the tree rank the
@@ -653,7 +685,7 @@ other half, check only the top few (lesson 13).
 
 ## win
 
-*taught in:* [xai-eg, lesson 13](ezr-lua/xai-eg.lua)
+*taught in:* [xai-eg, lesson 13](ezr-lua/xai-eg.lua) · [xai-eg (lisp), lesson 12](ezr-lisp/xai-eg.lisp)
 
 A grade for any row: 100 = as good as the best row in the
 table, 0 = no better than the median, computed from the

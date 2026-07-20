@@ -36,7 +36,8 @@ uppercase = numeric; trailing +/- = goal to maximize or
 minimize; trailing X = ignore; ? cells = missing.
 
 Every OPTION below is a flag (e.g. --seed 1 --file x.csv).
-Every TEST and STUDY runs by its flag (e.g. --all --tree).")
+Every TEST and STUDY runs by its flag (e.g. --all --tree).
+Also: --join --transcript --check (course upkeep).")
 
 ; Settings slots ARE the CLI flags (see cli, help)
 (defstruct (settings (:conc-name))
@@ -663,7 +664,8 @@ Every TEST and STUDY runs by its flag (e.g. --all --tree).")
               of (find-package :xai)
               when (and (fboundp s)
                         (eql 0 (search prefix (string s)))
-                        (not (member s '(eg--all eg--study))))
+                        (not (member s '(eg--all eg--study eg--join
+                                          eg--transcript eg--check))))
               collect s)
         #'string< :key #'string))
 

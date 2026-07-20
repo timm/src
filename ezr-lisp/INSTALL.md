@@ -1,5 +1,6 @@
 FILES="xai.lisp
        xai-eg.lisp
+       xai-eg.out
        dtlz.lisp
        report.lisp"
 : <<'DOCS'
