@@ -375,8 +375,8 @@ def tree(tbl, rows, Y=None, accum=Num, lvl=0):
   t = o(at=None, mid=mid(adds((Y(r) for r in rows), accum())),
         n=len(rows), rows=rows)
   if len(rows) >= 2*the.leaf and lvl < the.maxd:
-    if bin := min((c for at in tbl.x
-        for c in bins(tbl,rows,at,Y,accum)), default=0):
+    if bin:=min((c for at in tbl.x for c in 
+                 bins(tbl,rows,at,Y,accum)), default=0):
       _, at, v = bin
       col = tbl.cols[at]
       yes, no = [], []
