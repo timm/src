@@ -43,6 +43,7 @@ tiny.cc/moot).
     --budget labeling cap          (50)
     --more   labels per round      (4)
     --best   pool keep fraction    (0.66)
+    --cap    acquire pool cap      (1024)
     --leaf   tree min leaf rows    (3)
     --maxd   tree max depth        (4)
     --check  rows checked on test  (5)
@@ -63,6 +64,9 @@ The stats for comparisons (Cliff's delta, KS, Cohen,
     branch.py     the library: table, disty, acquire,
                   tree, walk, holdout
     branch-eg.py  tutorial + tests + comparison stats
+    REPORT.md     study: prunings as a free model zoo;
+                  ROC coverage, fairness for free (RQ1-7)
+    fair4.png     the study's one figure (see REPORT.md)
 
 ## SEE ALSO
 

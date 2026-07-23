@@ -99,7 +99,7 @@ def test_tree():
 def test_klass():
   "Same tree code classifies: accum=Sym, Y=a symbol."
   t  = Tbl(csv(the.file))
-  at = next(a for a in t.x if a not in t.num)   # origin
+  at = next(a for a in t.x if is_sym(t.cols[a]))    # origin
   t2 = o(**vars(t)); t2.x = [a for a in t.x if a != at]
   w  = tree(t2, t.rows, lambda r: r[at], Sym)
   b  = min(walk(w),
@@ -127,7 +127,8 @@ one min() over the generator; nothing is materialized.
 def cond(t, w):
   v = round(w.v, the.round) if type(w.v) == float else w.v
   return "%s%s%s" % (t.names[w.at],
-                     "<=" if w.at in t.num else "==", v)
+                     "==" if is_sym(t.cols[w.at])
+                     else "<=", v)
 
 def show(t, w):
   if w.at is None: return "%.2f" % w.mu
@@ -184,6 +185,7 @@ result sets differ only if Cohen (d > 0.35), Cliff's delta
 | `ks(xs,ys)` | 0..1 | max gap between the two CDFs |
 | `cohen(xs,ys)` | bool | mean gap small vs pooled sd? |
 | `same(xs,ys)` | bool | statistically indistinguishable? |
+| `confuse(log)` | dict | class -> o(n,pd,pf) from (got,want) |
 """
 
 def cliffs(xs, ys):
@@ -219,6 +221,36 @@ def test_same():
   c = [random.gauss(14, 1) for _ in range(40)]
   print(same(a, b), same(a, c))
   assert same(a, b) and not same(a, c)
+
+def confuse(log):
+  "Per-class o(n,pd,pf) from a [(got, want),...] log"
+  out = {}
+  for got, want in log:
+    for k in (got, want):
+      out[k] = out.get(k) or o(n=0,tp=0,fp=0,tn=0,fn=0)
+  for got, want in log:
+    for k, c in out.items():
+      if want == k:
+        c.n += 1
+        if got == k: c.tp += 1
+        else:        c.fn += 1
+      elif got == k: c.fp += 1
+      else:          c.tn += 1
+  for c in out.values():
+    c.pd = c.tp / (c.tp + c.fn + TINY)
+    c.pf = c.fp / (c.fp + c.tn + TINY)
+  return out
+
+def test_confuse():
+  "Known log gives known pd, pf."
+  log = ([("a","a")]*3 + [("b","a")] + [("b","b")]*2
+         + [("a","b")])
+  cs = confuse(log)
+  for k, c in sorted(cs.items()):
+    print(k, "n", c.n, "pd %.2f pf %.2f" % (c.pd, c.pf))
+  assert cs["a"].n == 4 and round(cs["a"].pd, 2) == .75
+  assert round(cs["a"].pf, 2) == .33
+  assert round(cs["b"].pd, 2) == .67
 
 def test_compare():
   "Active acquire vs same-budget random labels, 20 runs."

@@ -11,7 +11,7 @@ OPTIONS: (defaults below are parsed into `the`):
   --budget labeling cap          = 50
   --more   labels per round      = 4
   --best   pool keep fraction    = 0.66
-  --cap    max rows kept         = 1024
+  --cap    acquire pool cap      = 1024
   --leaf   tree min leaf rows    = 3
   --maxd   tree max depth        = 4
   --check  rows checked on test  = 5
@@ -19,7 +19,8 @@ OPTIONS: (defaults below are parsed into `the`):
   -h       print this help
 
 TESTS: (in branch-eg.py; run with their bare name):
-  tbl disty acquire tree klass walk holdout same compare
+  tbl disty acquire tree klass walk holdout
+  same confuse compare
   all      run every test above, reseting seed each
 """
 """
@@ -42,19 +43,17 @@ MOOT = (os.environ.get("MOOT")
 #--------------------------------------------------------------
 def Tbl(src):
   src = iter(src)
-  t = o(names=next(src), rows=[], x=[], y={}, num=set(),
-        cols={}, klass=None)
+  t = o(names=next(src), cols={}, x=[], y={}, rows=[],
+        klass=None)
+  return adds(list(src), Cols(t))
+
+def Cols(t):
   for at, s in enumerate(t.names):
-    if s[0].isupper(): t.num.add(at); t.cols[at] = Num()
-    if s[-1] != "X":
-      if   s[-1] == "!":  t.klass = at
-      elif s[-1] in "+-": t.y[at] = s[-1] == "+"
-      else: t.x.append(at)
-  t.rows = some(list(src), the.cap)
-  for row in t.rows:
-    for at in t.num:
-      if (v := row[at]) != "?":
-        t.cols[at] = add(t.cols[at], v)
+    t.cols[at] = Num() if s[0].isupper() else Sym()
+    if s[-1] == "X": continue
+    if   s[-1] == "!":  t.klass = at
+    elif s[-1] in "+-": t.y[at] = s[-1] == "+"
+    else: t.x.append(at)
   return t
 
 #--------------------------------------------------------------
@@ -64,16 +63,18 @@ def norm(t, at, v):
   return 1 / (1 + exp(-1.7 * max(-3, min(3, z))))
 
 def disty(t, row):
-  d = [abs(norm(t, at, row[at]) - g)
-       for at, g in t.y.items() if row[at] != "?"]
-  return (sum(x*x for x in d) / len(d)) ** .5
+  d = n = 0
+  for at, g in t.y.items():
+    if (v := row[at]) != "?":
+      d += (norm(t, at, v) - g)**2; n += 1
+  return (d / n) ** .5
 
 def distx(t, r1, r2):
   d = n = 0
   for at in t.x:
     u, v = r1[at], r2[at]
     if u == v == "?": g = 1
-    elif at not in t.num: g = u != v
+    elif is_sym(t.cols[at]): g = u != v
     else:
       u, v = norm(t, at, u), norm(t, at, v)
       if u == "?": u = 1 if v < .5 else 0
@@ -94,7 +95,7 @@ def project(rows, x, y, east=None, west=None):
 def acquire(t, rows):
   y = lambda r: disty(t, r)
   x = lambda a, b: distx(t, a, b)
-  return sorted(sway3(shuffle(rows), y, x,
+  return sorted(sway3(some(rows, the.cap), y, x,
                       the.budget - the.check), key=y)
 
 def sway3(rows, y, x, cap, lab=None, east=None, west=None):
@@ -141,6 +142,11 @@ def count(sym, v):
   return sym
 
 def add(i, v):
+  if isinstance(i, o):
+    i.rows += [v]
+    for at, c in i.cols.items(): i.cols[at] = add(c, v[at])
+    return i
+  if v == "?": return i
   if is_sym(i): return count(i, v)
   n, mu, m2 = i
   n += 1; d = v - mu; mu += d/n
@@ -168,19 +174,21 @@ def score(a, b):
 
 def has(t, row, at, v):
   x = row[at]
-  return x == "?" or (x <= v if at in t.num else x == v)
+  return x == "?" or (x == v if is_sym(t.cols[at])
+                      else x <= v)
 
 def bins(t, rows, at, Y, accum=Num):
   xy  = [(r[at], Y(r)) for r in rows if r[at] != "?"]
   n   = len(xy)
   tot = adds((y for _,y in xy), accum())
   bin = lambda here,k: (score(here, sub(tot,here)), at, k)
-  if at not in t.num:
-    for k in {x for x,_ in xy}:
-      ys = [y for x,y in xy if x == k]
-      if 0 < len(ys) < n: yield bin(adds(ys, accum()), k)
+  if is_sym(t.cols[at]):
+    d = {}
+    for x, y in xy: d[x] = add(d.get(x) or accum(), y)
+    if len(d) > 1:
+      for k, here in d.items(): yield bin(here, k)
   else:
-    xy.sort(); me = accum()
+    xy.sort(key=lambda z: z[0]); me = accum()
     for j,(x,y) in enumerate(xy):
       me = add(me, y)
       if j+1 < n and x != xy[j+1][0]: yield bin(me, x)
@@ -189,12 +197,12 @@ def tree(t, rows, Y=None, accum=Num, lvl=0):
   Y  = Y or (lambda r: disty(t, r))
   ys = adds(map(Y, rows), accum())
   w  = o(at=None, n=len(rows), mu=mid(ys), leafs=1,
-         here=var(ys) if is_sym(ys) else mid(ys))
+         ys=ys, here=var(ys) if is_sym(ys) else mid(ys))
   w.score = w.here
   if len(rows) >= 2*the.leaf and lvl < the.maxd:
     if b := min((c for at in t.x
                  for c in bins(t,rows,at,Y,accum)),
-                default=None):
+                default=None, key=lambda c: c[0]):
       _, at, v = b
       yes, no = [], []
       for r in rows:
@@ -209,7 +217,7 @@ def tree(t, rows, Y=None, accum=Num, lvl=0):
 
 def leafed(x):
   return o(at=None, n=x.n, mu=x.mu, here=x.here,
-           score=x.here, leafs=1)
+           score=x.here, leafs=1, ys=x.ys)
 
 #--------------------------------------------------------------
 def walk(w):
