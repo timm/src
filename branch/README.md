@@ -1,18 +1,18 @@
-# bonsai
+# branch
 
 ## NAME
 
-bonsai - actively label a few rows, grow one regression
+branch - actively label a few rows, grow one regression
 tree, then prune it every possible way and keep the best
 small tree
 
 ## SYNOPSIS
 
-    python3 bonsai-eg.py [--key=val ...] [test ...]
+    python3 branch-eg.py [--key=val ...] [test ...]
 
 ## DESCRIPTION
 
-Labels are dear; trees are cheap. bonsai spends a small
+Labels are dear; trees are cheap. branch spends a small
 label budget with an active learner (`acquire`: label
 `more` rows per round, project the pool onto the line
 joining the best and worst labels, keep the `best`
@@ -50,19 +50,19 @@ tiny.cc/moot).
 
 ## TESTS
 
-Run any by bare name, e.g. `python3 bonsai-eg.py walk`:
+Run any by bare name, e.g. `python3 branch-eg.py walk`:
 
     tbl disty acquire tree walk holdout same compare
     all      the whole course
 
 The stats for comparisons (Cliff's delta, KS, Cohen,
-`same`) live in bonsai-eg.py, not the library.
+`same`) live in branch-eg.py, not the library.
 
 ## FILES
 
-    bonsai.py     the library: table, disty, acquire,
+    branch.py     the library: table, disty, acquire,
                   tree, walk, holdout
-    bonsai-eg.py  tutorial + tests + comparison stats
+    branch-eg.py  tutorial + tests + comparison stats
 
 ## SEE ALSO
 

@@ -1,17 +1,17 @@
 #!/usr/bin/env python3 -B
 """
-bonsai-eg.py: tutorial and tests for bonsai (in bonsai.py).
+branch-eg.py: tutorial and tests for branch (in branch.py).
 
 Run any test by its bare name; pass --key=val to override:
-  python3 bonsai-eg.py walk
-  python3 bonsai-eg.py all
+  python3 branch-eg.py walk
+  python3 branch-eg.py all
 
 One -eg file per engine file, loaded below in tutorial
 order; prose lives in string blocks; every sample is pasted
 from a real run, never hand-typed.
 """
 from bisect import bisect_left, bisect_right
-from bonsai import *
+from branch import *
 
 """
 
@@ -96,6 +96,18 @@ def test_tree():
   print("n %d  mu %.3f  score %.3f" % (w.n, w.mu, w.score))
   assert w.score <= w.mu
 
+def test_klass():
+  "Same tree code classifies: accum=Sym, Y=a symbol."
+  t  = Tbl(csv(the.file))
+  at = next(a for a in t.x if a not in t.num)   # origin
+  t2 = o(**vars(t)); t2.x = [a for a in t.x if a != at]
+  w  = tree(t2, t.rows, lambda r: r[at], Sym)
+  b  = min(walk(w),
+           key=lambda x: (x.score, x.leafs))
+  print("root ent %.2f  best leaf ent %.2f  mode %s"
+        % (w.here, b.score, b.mu if b.at is None else "-"))
+  assert b.score <= w.here
+
 #-- walk-eg ----------------------------------------------------
 """
 
@@ -109,17 +121,32 @@ one min() over the generator; nothing is materialized.
 |------|---------|------|
 | `walk(w)` | iter | every pruning, scored at the root |
 | `leafed(x)` | o | a subtree collapsed to one leaf |
+| `show(t,w)` | str | one pruning as (cut yes no); leaf=mu |
 """
 
+def cond(t, w):
+  v = round(w.v, the.round) if type(w.v) == float else w.v
+  return "%s%s%s" % (t.names[w.at],
+                     "<=" if w.at in t.num else "==", v)
+
+def show(t, w):
+  if w.at is None: return "%.2f" % w.mu
+  return "(%s %s %s)" % (cond(t, w), show(t, w.yes),
+                         show(t, w.no))
+
 def test_walk():
-  "Prunings share the full tree's best score."
-  t = Tbl(csv(the.file))
-  w = tree(t, acquire(t, t.rows))
-  n = sum(1 for _ in walk(w))
-  b = min(walk(w), key=lambda x: x.score)
+  "Every pruning printed, best first; winner marked."
+  t  = Tbl(csv(the.file))
+  w  = tree(t, acquire(t, t.rows))
+  ts = sorted(walk(w),
+              key=lambda x: (x.score, x.leafs))
+  for x in ts:
+    print("%s %.3f %d  %s" % ("->" if x is ts[0] else "  ",
+                              x.score, x.leafs,
+                              show(t, x)))
   print("prunings %d  full %.3f  best %.3f"
-        % (n, w.score, b.score))
-  assert n >= 1 and b.score <= w.score
+        % (len(ts), w.score, ts[0].score))
+  assert len(ts) >= 1 and ts[0].score <= w.score
 
 #-- main-eg ----------------------------------------------------
 """

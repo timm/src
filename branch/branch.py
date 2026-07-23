@@ -1,9 +1,9 @@
 #!/usr/bin/env python3 -B
 """
-bonsai: prune one regression tree into many small trees.
+branch: prune one regression tree into many small trees.
 (c) 2026, Tim Menzies <timm@ieee.org>, MIT license
 
-USAGE: python3 bonsai-eg.py [--key=val ...] [test ...]
+USAGE: python3 branch-eg.py [--key=val ...] [test ...]
 
 OPTIONS: (defaults below are parsed into `the`):
   --file   data file  = $MOOT/optimize/misc/auto93.csv
@@ -18,8 +18,8 @@ OPTIONS: (defaults below are parsed into `the`):
   --round  decimals shown        = 3
   -h       print this help
 
-TESTS: (in bonsai-eg.py; run with their bare name):
-  tbl disty acquire tree walk holdout same compare
+TESTS: (in branch-eg.py; run with their bare name):
+  tbl disty acquire tree klass walk holdout same compare
   all      run every test above, reseting seed each
 """
 """
@@ -33,31 +33,35 @@ best pruning is one min() over a generator, and that tree
 sorts the holdout.
 """
 import os, re, sys, random
+from math import exp, log2
 from types import SimpleNamespace as o
-BIG  = 1e32
 TINY = 1e-32
 MOOT = (os.environ.get("MOOT")
         or os.path.expanduser("~/gits/moot"))
 
+#--------------------------------------------------------------
 def Tbl(src):
   src = iter(src)
   t = o(names=next(src), rows=[], x=[], y={}, num=set(),
-        lo={}, hi={})
+        cols={}, klass=None)
   for at, s in enumerate(t.names):
-    if s[0].isupper(): t.num.add(at)
+    if s[0].isupper(): t.num.add(at); t.cols[at] = Num()
     if s[-1] != "X":
-      if s[-1] in "+-": t.y[at] = s[-1] == "+"
+      if   s[-1] == "!":  t.klass = at
+      elif s[-1] in "+-": t.y[at] = s[-1] == "+"
       else: t.x.append(at)
   t.rows = some(list(src), the.cap)
   for row in t.rows:
     for at in t.num:
       if (v := row[at]) != "?":
-        t.lo[at] = min(v, t.lo.get(at,  BIG))
-        t.hi[at] = max(v, t.hi.get(at, -BIG))
+        t.cols[at] = add(t.cols[at], v)
   return t
 
+#--------------------------------------------------------------
 def norm(t, at, v):
-  return (v - t.lo[at])/(t.hi[at] - t.lo[at] + TINY)
+  if v == "?": return v
+  z = (v - t.cols[at][1]) / (sd(t.cols[at]) + TINY)
+  return 1 / (1 + exp(-1.7 * max(-3, min(3, z))))
 
 def disty(t, row):
   d = [abs(norm(t, at, row[at]) - g)
@@ -68,101 +72,153 @@ def distx(t, r1, r2):
   d = n = 0
   for at in t.x:
     u, v = r1[at], r2[at]
-    if u == "?" and v == "?": g = 1
-    elif at not in t.num:     g = u != v
+    if u == v == "?": g = 1
+    elif at not in t.num: g = u != v
     else:
-      if u != "?": u = norm(t, at, u)
-      if v != "?": v = norm(t, at, v)
+      u, v = norm(t, at, u), norm(t, at, v)
       if u == "?": u = 1 if v < .5 else 0
       if v == "?": v = 1 if u < .5 else 0
       g = abs(u - v)
     d += g*g; n += 1
   return (d/n) ** .5
 
-def acquire(t, rows):
-  Y = lambda r: disty(t, r)
-  X = lambda a, b: distx(t, a, b)
-  rows, lab = shuffle(rows), []
-  while rows and len(lab) < the.budget - the.check:
-    lab  = sorted(lab + rows[:the.more], key=Y)
-    rows = rows[the.more:]
-    e, w = lab[0], lab[-1]
-    c    = X(e, w) + TINY
-    p    = lambda r: (X(e,r)**2 + c*c - X(w,r)**2)/(2*c)
-    rows = sorted(rows, key=p)[:int(the.best*len(rows))]
-  return lab
+#--------------------------------------------------------------
+def project(rows, x, y, east=None, west=None):
+  far  = lambda r: max(rows, key=lambda z: x(z, r))
+  east = east or far(rows[0])
+  west = west or far(east)
+  if y(east) > y(west): east, west = west, east
+  c = x(east, west) + TINY
+  return lambda r: (x(east,r)**2 + c*c - x(west,r)**2)/(2*c)
 
-
+def acquire(t, rows):
+  y = lambda r: disty(t, r)
+  x = lambda a, b: distx(t, a, b)
+  return sorted(sway3(shuffle(rows), y, x,
+                      the.budget - the.check), key=y)
+
+def sway3(rows, y, x, cap, lab=None, east=None, west=None):
+  b4  = rows[:]
+  lab = lab or {}
+  while len(rows) >= 2*the.leaf:
+    more = min(the.more, cap - len(lab))
+    less = int(max(1, the.best * len(rows)))
+    new  = []
+    for r in rows:
+      if   id(r) in lab         : new += [r]
+      elif (more := more-1) >= 0: new += [r]; lab[id(r)]=r
+    if len(lab) >= cap: return lab.values()
+    rows = sorted(rows,
+                  key=project(new, x, y, east, west))[:less]
+  if len(lab) < len(b4):
+    seen = sorted(lab.values(), key=y)
+    return sway3(shuffle(b4), y, x, cap,
+                 lab, seen[0], seen[-1])
+  return lab.values()
+
+#--------------------------------------------------------------
+Sym = dict
 def Num(n=0, mu=0, m2=0): return (n, mu, m2)
 
+def is_sym(i): return isinstance(i, dict)
+
+def size(i): return sum(i.values()) if is_sym(i) else i[0]
+
+def mid(i): return max(i, key=i.get) if is_sym(i) else i[1]
+
+def var(i): return ent(i) if is_sym(i) else sd(i)
+
+def ent(d):
+  N = size(d)
+  return -sum(v/N*log2(v/N) for v in d.values() if v)
+
+def sd(i):
+  n,_,m2 = i
+  return 0 if n < 2 else (max(0,m2)/(n-1))**.5
+
+def count(sym, v):
+  sym[v] = sym.get(v, 0) + 1
+  return sym
+
 def add(i, v):
+  if is_sym(i): return count(i, v)
   n, mu, m2 = i
   n += 1; d = v - mu; mu += d/n
   return (n, mu, m2 + d*(v - mu))
 
-def adds(src):
-  i = Num()
+def adds(src, i=None):
+  i = Num() if i is None else i
   for v in src: i = add(i, v)
   return i
 
 def sub(i, j):
+  if is_sym(i):
+    return {k: n for k in i
+            if (n := i[k] - j.get(k, 0)) > 0}
   (ni,mui,m2i), (nj,muj,m2j) = i, j
   if (n := ni - nj) <= 0: return Num()
   d = muj - mui
   return (n, (ni*mui - nj*muj)/n,
           max(0, m2i - m2j - d*d*ni*nj/n))
 
-def sd(i):
-  n,_,m2 = i
-  return 0 if n < 2 else (max(0,m2)/(n-1))**.5
-
+#--------------------------------------------------------------
 def score(a, b):
-  return (sd(a)*a[0] + sd(b)*b[0]) / (a[0] + b[0] + TINY)
+  return ((var(a)*size(a) + var(b)*size(b))
+          / (size(a) + size(b) + TINY))
 
 def has(t, row, at, v):
   x = row[at]
   return x == "?" or (x <= v if at in t.num else x == v)
 
-def bins(t, rows, at, Y):
+def bins(t, rows, at, Y, accum=Num):
   xy  = [(r[at], Y(r)) for r in rows if r[at] != "?"]
   n   = len(xy)
-  tot = adds(y for _,y in xy)
+  tot = adds((y for _,y in xy), accum())
   bin = lambda here,k: (score(here, sub(tot,here)), at, k)
   if at not in t.num:
     for k in {x for x,_ in xy}:
       ys = [y for x,y in xy if x == k]
-      if 0 < len(ys) < n: yield bin(adds(ys), k)
+      if 0 < len(ys) < n: yield bin(adds(ys, accum()), k)
   else:
-    xy.sort(); me = Num()
+    xy.sort(); me = accum()
     for j,(x,y) in enumerate(xy):
       me = add(me, y)
       if j+1 < n and x != xy[j+1][0]: yield bin(me, x)
 
-def tree(t, rows, lvl=0):
-  Y = lambda r: disty(t, r)
-  w = o(at=None, n=len(rows), mu=adds(map(Y, rows))[1])
-  w.score = w.mu
+def tree(t, rows, Y=None, accum=Num, lvl=0):
+  Y  = Y or (lambda r: disty(t, r))
+  ys = adds(map(Y, rows), accum())
+  w  = o(at=None, n=len(rows), mu=mid(ys), leafs=1,
+         here=var(ys) if is_sym(ys) else mid(ys))
+  w.score = w.here
   if len(rows) >= 2*the.leaf and lvl < the.maxd:
     if b := min((c for at in t.x
-                 for c in bins(t,rows,at,Y)), default=None):
+                 for c in bins(t,rows,at,Y,accum)),
+                default=None):
       _, at, v = b
-      yes = [r for r in rows if has(t, r, at, v)]
-      no  = [r for r in rows if not has(t, r, at, v)]
+      yes, no = [], []
+      for r in rows:
+        (yes if has(t, r, at, v) else no).append(r)
       if yes and no:
         w.at, w.v = at, v
-        w.yes = tree(t, yes, lvl+1)
-        w.no  = tree(t, no,  lvl+1)
+        w.yes = tree(t, yes, Y, accum, lvl+1)
+        w.no  = tree(t, no,  Y, accum, lvl+1)
         w.score = min(w.yes.score, w.no.score)
+        w.leafs = w.yes.leafs + w.no.leafs
   return w
 
-def leafed(x): return o(at=None, n=x.n, mu=x.mu, score=x.mu)
+def leafed(x):
+  return o(at=None, n=x.n, mu=x.mu, here=x.here,
+           score=x.here, leafs=1)
 
+#--------------------------------------------------------------
 def walk(w):
   if w.at is None: yield w; return
   for yes in sides(w.yes):
     for no in sides(w.no):
       yield o(at=w.at, v=w.v, n=w.n, yes=yes, no=no,
-              score=min(yes.score, no.score))
+              score=min(yes.score, no.score),
+              leafs=yes.leafs + no.leafs)
 
 def sides(x):
   yield leafed(x)
@@ -173,17 +229,19 @@ def leaf(t, w, row):
     w = w.yes if has(t, row, w.at, w.v) else w.no
   return w.mu
 
+#--------------------------------------------------------------
 def holdout(t, get=None):
   rows = shuffle(t.rows)
   half = len(rows)//2
   train, test = rows[:half], rows[half:]
   lab  = (get or acquire)(t, train)
-  best = min(walk(tree(t, lab)), key=lambda x: x.score)
+  best = min(walk(tree(t, lab)),
+             key=lambda x: (x.score, x.leafs))
   top  = sorted(test, key=lambda r: leaf(t, best, r))
   return best, min(top[:the.check],
                    key=lambda r: disty(t, r)), test
 
-
+#--------------------------------------------------------------
 def thing(s):
   if (s[1:] if s[:1]=="-" else s).isdigit(): return int(s)
   try: return float(s)
@@ -206,6 +264,7 @@ def shuffle(lst): return random.sample(lst, len(lst))
 
 def some(lst, k): return random.sample(lst, min(k, len(lst)))
 
+#--------------------------------------------------------------
 def main(funs):
   if "-h" in sys.argv: return print(__doc__)
   for a in sys.argv[1:]:
