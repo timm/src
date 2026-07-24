@@ -1,0 +1,24 @@
+title: "Simple Ain't Stupid"
+subtitle: "200 Lessons in SE, AI, and Python from 2000
+  Lines of Code"
+author: "Tim Menzies"
+date: "2026 (draft)"
+documentclass: tufte-book
+classoption:
+  - justified
+  - nols
+  - nobib
+bibliography: refs.bib
+link-citations: true
+nocite: "@knuth84, @gabriel96"
+header-includes:
+  - "\\makeatletter\\newcommand{\\subtitle}[1]{\\gdef\\@subtitle{#1}}\\let\\@subtitle\\@empty\\makeatother"
+  - "\\makeatletter\\let\\@oldmaketitle\\maketitle\\renewcommand{\\maketitle}{\\@oldmaketitle\\ifx\\@subtitle\\@empty\\else{\\bigskip\\noindent\\Large\\itshape\\@subtitle\\par}\\fi}\\makeatother"
+  - \usepackage{fvextra}
+  - \usepackage{etoolbox}
+  - "\\BeforeBeginEnvironment{Shaded}{\\vspace{-5pt}}"
+  - "\\AfterEndEnvironment{Shaded}{\\vspace{-5pt}}"
+  - "\\BeforeBeginEnvironment{verbatim}{\\vspace{-5pt}}"
+  - "\\AfterEndEnvironment{verbatim}{\\vspace{-5pt}}"
+  - \DefineVerbatimEnvironment{Highlighting}{Verbatim}{breaklines,commandchars=\\\{\}}
+  - \hypersetup{colorlinks=true, linkcolor=black, urlcolor=black, citecolor=black}
