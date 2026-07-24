@@ -39,12 +39,16 @@ def some(lst, k):
   return lst[:] if k >= len(lst) else random.sample(lst, k)
 
 #-- columns -----------------------------------------------------
-def Num(at=0, name=" "):
+def Col(name="", at=0):
+  "Named columns get their kind from their first letter."
+  return (Sym if name[:1].islower() else Num)(name, at)
+
+def Num(name="", at=0):
   "Summary of a numeric column."
   return o(it=Num, at=at, name=name, n=0, mu=0, m2=0,
            heaven=0 if name.endswith("-") else 1)
 
-def Sym(at=0, name=" "):
+def Sym(name="", at=0):
   "Summary of a symbolic column."
   return o(it=Sym, at=at, name=name, n=0, has={})
 
@@ -100,15 +104,12 @@ def norm(col, v):
 def Tbl(src):
   "First row names the columns; the rest are data."
   src = iter(src)
-  return adds(src, _tbl(next(src)))
-
-def _tbl(names):
-  "An empty table: column summaries, roles, no rows yet."
-  cols = [(Num if s[0].isupper() else Sym)(at, s)
-          for at, s in enumerate(names)]
-  return o(it=Tbl, names=names, cols=cols, rows=[],
+  names = next(src)
+  cols = [Col(s, at) for at, s in enumerate(names)]
+  tbl = o(it=Tbl, names=names, cols=cols, rows=[],
            x=[c.at for c in cols if c.name[-1] not in "X+-"],
            y=[c.at for c in cols if c.name[-1] in "+-"])
+  return adds(src, tbl)
 
 def clone(tbl, rows=[]):
   "A fresh table with the same header; optionally refill."

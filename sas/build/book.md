@@ -330,13 +330,13 @@ book keeps the two ends. Names become `Sym` and numbers become `Num`; the middle
 get treated as one or the other.
 
 ```python
-def Sym(at=0, name=" "):
+def Sym(name="", at=0):
   "Summary of a symbolic column."
   return o(it=Sym, at=at, name=name, n=0, has={})
 ```
 
 ```python
-def Num(at=0, name=" "):
+def Num(name="", at=0):
   "Summary of a numeric column."
   return o(it=Num, at=at, name=name, n=0, mu=0, m2=0,
            heaven=0 if name.endswith("-") else 1)
@@ -562,7 +562,12 @@ data, not declarations.
 def Tbl(src):
   "First row names the columns; the rest are data."
   src = iter(src)
-  return adds(src, _tbl(next(src)))
+  names = next(src)
+  cols = [Col(s, at) for at, s in enumerate(names)]
+  tbl = o(it=Tbl, names=names, cols=cols, rows=[],
+           x=[c.at for c in cols if c.name[-1] not in "X+-"],
+           y=[c.at for c in cols if c.name[-1] in "+-"])
+  return adds(src, tbl)
 ```
 
 Two details deserve a look. Firstly, `Num` and `Sym` are plain functions returning
