@@ -67,6 +67,8 @@ The stats for comparisons (Cliff's delta, KS, Cohen,
     REPORT.md     study: prunings as a free model zoo;
                   ROC coverage, fairness for free;
                   feature selection vs JSS'26 (RQ1-8)
+    REPORT-jul24.md  study: branch vs two published rigs;
+                  XAI utility + stability (4 RQs)
     fair4.png     figure: rungs x datasets (REPORT.md)
     table10_branch.png  figure: branch as selector (RQ8)
 
