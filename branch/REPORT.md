@@ -23,7 +23,13 @@ trees (cf. sandbox/ezr2.py) buys size, not reach (RQ6).
 And small means SMALL: over 20 repeats per dataset, the
 lowest-d2h winner uses a median of 4 variables (37% use
 at most 3, 85% at most 5, never more than 8 -- of up to
-24 on offer) (RQ7).
+24 on offer) (RQ7). Those few variables transfer: used as
+a feature selector for downstream LightGBM (the JSS'26
+"Minimal Data" rig, 20 moot datasets), branch's 2-4
+attributes from 45 labels tie or beat SHAP / ReliefF /
+ANOVA rankings and match all-features on everything
+narrower than 20 columns -- but wide data (x >= 39) still
+wants full supervision (RQ8).
 
 ## Why
 
@@ -328,6 +334,67 @@ nothing to enumerate -- and it is the practical case for
 fft-style tools: a 2-3 variable tree is auditable by
 reading it aloud.
 
+## RQ8: can branch drive feature selection for other learners?
+
+Rayegan & Menzies' "Minimal Data, Maximum Clarity" (JSS
+2026; their Table 10) scores feature selectors by
+downstream utility: select features, train an independent
+regressor on just those columns, optimize, report win =
+percent of the gap from median to best d2h closed by the
+chosen row. We reran their rig (their code, their
+protocol: 80/20 split, 20 repeats, LightGBM downstream,
+win of the best of 10 picked rows) on 20 datasets spread
+across the moot space, swapping their EZR selector for
+branch: acquire labels 45 rows, one tree on their d2h,
+best pruning by (score, leafs), and that pruning's N
+distinct split attributes ARE the selection. SHAP, ReliefF
+and ANOVA then pick their own top-N (same N); "All" keeps
+every column. First, their published Table 10 reproduced
+from their shipped code: 49/50 lgbm cells exact on the
+first 10 datasets (one off-by-one from ReliefF's unseeded
+sampling). Then the swap:
+
+![branch as selector: downstream lgbm wins, paper-style
+coloring](table10_branch.png)
+
+branch picked N = 2-4 attributes on every dataset (of up
+to 128 on offer) from 45 labels; the paper's EZR budget on
+the same datasets was 75-150. Downstream lgbm wins,
+branch vs each rival (win/tie/loss over 20 datasets):
+
+    vs SHAP   +3 =13 -4
+    vs RLF    +8  =7 -5
+    vs anova  +6 =10 -4
+    vs All    +2  =9 -9
+
+Binned by feature count, fraction of datasets reaching
+90% of the row's best (their Fig. 12 analog):
+
+    bin    n   branch  SHAP  RLF  anova  All
+    x<=6   9     77%    88%  77%   77%  100%
+    7-19   6    100%   100%  83%   83%  100%
+    20-99  3     33%    33%  33%   66%   66%
+    100+   2     50%   100%  50%    0%  100%
+
+**Answer:** on narrow-to-mid data (x < 20, 15 of 20
+datasets), yes: branch ties or beats every ranking rival
+and loses to All by at most 1 point -- 2-4 columns from 45
+labels carry full-supervision performance, RQ7 made
+actionable. On wide data the cheap ride ends: SQL-AM
+(x=39) -15 vs All, FFM-125 (x=128) -31, and the Fig.12
+analog shows only All and SHAP surviving the 90% bar
+there -- the same large-feature falloff the paper reports
+for every label-limited method, branch included. Two
+readings of the wide failures: FFM-125's SHAP-at-N=4
+scores 92, so four columns CAN work there -- branch picked
+the wrong four (45 labels too few to rank 128 columns);
+but on SQL-AM every subset method trails All, so
+sometimes no small subset suffices. One shared blind
+spot: on healthCloseIsses-hard every selector (branch,
+SHAP, RLF, anova alike) collapses to ~40 vs All's 66 --
+subset selection itself, not branch, is the wrong move on
+that landscape.
+
 ## Discussion: why doesn't this explode?
 
 Rashomon-set enumerators (TreeFARMS and kin) blow up on
@@ -366,4 +433,9 @@ boundaries. Privileged = mode / >= median is a heuristic;
 real protected-group definitions are legal, not
 statistical. Six datasets, all small, all binary-ized to
 minority-vs-rest; maxd 4 caps the zoo. RQ6 is an
-observation awaiting numbers.
+observation awaiting numbers. RQ8 compares 20-repeat
+MEANS with no statistical gate (the source rig reports
+Scott-Knott ranks; our win/tie/loss counts treat a
+1-point gap as a loss), runs one branch seed per dataset,
+and its wide-data bins hold 2-3 datasets each -- one
+dataset moves a bin cell by 33-50 points.

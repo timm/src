@@ -65,8 +65,10 @@ The stats for comparisons (Cliff's delta, KS, Cohen,
                   Tree, walk, holdout
     branch-eg.py  tutorial + tests + comparison stats
     REPORT.md     study: prunings as a free model zoo;
-                  ROC coverage, fairness for free (RQ1-7)
-    fair4.png     the study's one figure (see REPORT.md)
+                  ROC coverage, fairness for free;
+                  feature selection vs JSS'26 (RQ1-8)
+    fair4.png     figure: rungs x datasets (REPORT.md)
+    table10_branch.png  figure: branch as selector (RQ8)
 
 ## SEE ALSO
 
