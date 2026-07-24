@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html;charset=utf-8">
+  <title>dtlz.py</title>
+  <link rel="stylesheet" href="pycco.css">
+<style>p {text-align:right} #section-0 p, #section-1 p {text-align:left}</style></head>
+<body>
+<div id='container'>
+  <div id="background"></div>
+  <div class='section'>
+    <div class='docs'><p align="center">
+<a href="https://timm.github.io/src/"><img alt="home" src="https://img.shields.io/badge/🏠-home-gold"></a>
+<a href="https://github.com/timm/src/tree/main/ezr-py"><img alt="src" src="https://img.shields.io/badge/src-ezr--py-black"></a>
+<a href="xai.html"><img alt="code" src="https://img.shields.io/badge/code-4%20pages-2ea44f"></a>
+<a href="xai-eg.html"><img alt="tests" src="https://img.shields.io/badge/tests-2%20pages-06b6d4"></a>
+<a href="https://github.com/timm/src/actions/workflows/tests-ezr-py.yml"><img alt="ci" src="https://github.com/timm/src/actions/workflows/tests-ezr-py.yml/badge.svg"></a>
+<a href="https://github.com/timm/src/issues"><img alt="issues" src="https://img.shields.io/badge/issues-report-red"></a>
+<a href="https://github.com/timm/src/blob/main/LICENSE.md"><img alt="license" src="https://img.shields.io/badge/license-MIT-brightgreen"></a>
+<img alt="language" src="https://img.shields.io/badge/language-python-9558B2">
+<img alt="runs on" src="https://img.shields.io/badge/runs%20on-python3-EE4C2C">
+<a href="https://timm.fyi"><img alt="author" src="https://img.shields.io/badge/author-timm-blueviolet"></a>
+</p><p><a href="xaiplus-eg.html">&lt; prev</a> | <a href="report.html">next &gt;</a></p><h1><a href="https://github.com/timm/src/blob/main/ezr-py/dtlz.py">dtlz.py</a></h1></div>
+  </div>
+  <div class='clearall'>
+  <div class='section' id='section-0'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-0'>#</a>
+      </div>
+      <pre><code class="language-text">dtlz.py: drive xai with an EXTERNAL MODEL instead of a CSV.
+
+The DTLZ1-7 benchmarks are live models: a row's x-values are decision
+variables; its goals are computed on demand by overriding xai.labelled.
+This is how an outside user plugs their own (expensive) model into xai.
+
+  python3 dtlz.py                 # default model: dtlz2
+  python3 dtlz.py --model=dtlz4   # any of dtlz1..dtlz7
+  python3 dtlz.py --model=dtlz7 --M=3 --N=8
+</code></pre>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">sys</span><span class="o">,</span><span class="w"> </span><span class="nn">random</span><span class="o">,</span><span class="w"> </span><span class="nn">xai</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">math</span><span class="w"> </span><span class="kn">import</span> <span class="n">cos</span><span class="p">,</span> <span class="n">sin</span><span class="p">,</span> <span class="n">pi</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-1'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-1'>#</a>
+      </div>
+      <h2>models</h2>
+<p>Each maps x in [0,1]^N -&gt; M objectives to MINIMIZE. k = N-M+1 of the
+x&rsquo;s form the &ldquo;distance&rdquo; group xm; the rest shape the front.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="k">def</span><span class="w"> </span><span class="nf">_g1</span><span class="p">(</span><span class="n">xm</span><span class="p">):</span>  <span class="k">return</span> <span class="mi">100</span><span class="o">*</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">xm</span><span class="p">)</span> <span class="o">+</span> <span class="nb">sum</span><span class="p">((</span><span class="n">v</span><span class="o">-</span><span class="mf">.5</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="n">cos</span><span class="p">(</span><span class="mi">20</span><span class="o">*</span><span class="n">pi</span><span class="o">*</span><span class="p">(</span><span class="n">v</span><span class="o">-</span><span class="mf">.5</span><span class="p">))</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">xm</span><span class="p">))</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-2'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-2'>#</a>
+      </div>
+      
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="k">def</span><span class="w"> </span><span class="nf">_g2</span><span class="p">(</span><span class="n">xm</span><span class="p">):</span>  <span class="k">return</span> <span class="nb">sum</span><span class="p">((</span><span class="n">v</span><span class="o">-</span><span class="mf">.5</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">xm</span><span class="p">)</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-3'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-3'>#</a>
+      </div>
+      
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="k">def</span><span class="w"> </span><span class="nf">_g6</span><span class="p">(</span><span class="n">xm</span><span class="p">):</span>  <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">v</span><span class="o">**</span><span class="mf">0.1</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">xm</span><span class="p">)</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-4'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-4'>#</a>
+      </div>
+      
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="k">def</span><span class="w"> </span><span class="nf">_sphere</span><span class="p">(</span><span class="n">M</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">th</span><span class="p">):</span>             <span class="c1"># cos/sin product shared by dtlz2-6</span>
+  <span class="n">f</span> <span class="o">=</span> <span class="p">[]</span>
+  <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">M</span><span class="p">):</span>
+    <span class="n">v</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">+</span> <span class="n">g</span>
+    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">M</span><span class="o">-</span><span class="mi">1</span><span class="o">-</span><span class="n">i</span><span class="p">):</span> <span class="n">v</span> <span class="o">*=</span> <span class="n">cos</span><span class="p">(</span><span class="n">th</span><span class="p">[</span><span class="n">j</span><span class="p">])</span>
+    <span class="k">if</span> <span class="n">i</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span> <span class="n">v</span> <span class="o">*=</span> <span class="n">sin</span><span class="p">(</span><span class="n">th</span><span class="p">[</span><span class="n">M</span><span class="o">-</span><span class="mi">1</span><span class="o">-</span><span class="n">i</span><span class="p">])</span>
+    <span class="n">f</span> <span class="o">+=</span> <span class="p">[</span><span class="n">v</span><span class="p">]</span>
+  <span class="k">return</span> <span class="n">f</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-5'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-5'>#</a>
+      </div>
+      
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="k">def</span><span class="w"> </span><span class="nf">dtlz1</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">M</span><span class="p">):</span>                   <span class="c1"># linear front (sum fi = 0.5)</span>
+  <span class="n">g</span><span class="p">,</span> <span class="n">f</span> <span class="o">=</span> <span class="n">_g1</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">M</span><span class="o">-</span><span class="mi">1</span><span class="p">:]),</span> <span class="p">[]</span>
+  <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">M</span><span class="p">):</span>
+    <span class="n">v</span> <span class="o">=</span> <span class="mf">0.5</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="n">g</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">M</span><span class="o">-</span><span class="mi">1</span><span class="o">-</span><span class="n">i</span><span class="p">):</span> <span class="n">v</span> <span class="o">*=</span> <span class="n">x</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">i</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span> <span class="n">v</span> <span class="o">*=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">x</span><span class="p">[</span><span class="n">M</span><span class="o">-</span><span class="mi">1</span><span class="o">-</span><span class="n">i</span><span class="p">])</span>
+    <span class="n">f</span> <span class="o">+=</span> <span class="p">[</span><span class="n">v</span><span class="p">]</span>
+  <span class="k">return</span> <span class="n">f</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-6'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-6'>#</a>
+      </div>
+      
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="k">def</span><span class="w"> </span><span class="nf">dtlz2</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">M</span><span class="p">):</span> <span class="k">return</span> <span class="n">_sphere</span><span class="p">(</span><span class="n">M</span><span class="p">,</span> <span class="n">_g2</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">M</span><span class="o">-</span><span class="mi">1</span><span class="p">:]),</span> <span class="p">[</span><span class="n">v</span><span class="o">*</span><span class="n">pi</span><span class="o">/</span><span class="mi">2</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">x</span><span class="p">[:</span><span class="n">M</span><span class="o">-</span><span class="mi">1</span><span class="p">]])</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-7'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-7'>#</a>
+      </div>
+      
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="k">def</span><span class="w"> </span><span class="nf">dtlz3</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">M</span><span class="p">):</span> <span class="k">return</span> <span class="n">_sphere</span><span class="p">(</span><span class="n">M</span><span class="p">,</span> <span class="n">_g1</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">M</span><span class="o">-</span><span class="mi">1</span><span class="p">:]),</span> <span class="p">[</span><span class="n">v</span><span class="o">*</span><span class="n">pi</span><span class="o">/</span><span class="mi">2</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">x</span><span class="p">[:</span><span class="n">M</span><span class="o">-</span><span class="mi">1</span><span class="p">]])</span>     <span class="c1"># multi-modal</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-8'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-8'>#</a>
+      </div>
+      
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="k">def</span><span class="w"> </span><span class="nf">dtlz4</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">M</span><span class="p">):</span> <span class="k">return</span> <span class="n">_sphere</span><span class="p">(</span><span class="n">M</span><span class="p">,</span> <span class="n">_g2</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">M</span><span class="o">-</span><span class="mi">1</span><span class="p">:]),</span> <span class="p">[</span><span class="n">v</span><span class="o">**</span><span class="mi">100</span><span class="o">*</span><span class="n">pi</span><span class="o">/</span><span class="mi">2</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">x</span><span class="p">[:</span><span class="n">M</span><span class="o">-</span><span class="mi">1</span><span class="p">]])</span> <span class="c1"># biased</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-9'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-9'>#</a>
+      </div>
+      
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="k">def</span><span class="w"> </span><span class="nf">_degen</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">M</span><span class="p">,</span> <span class="n">g</span><span class="p">):</span>               <span class="c1"># dtlz5/6 theta remap -&gt; degenerate curve</span>
+  <span class="n">th</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">pi</span><span class="o">/</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="n">pi</span><span class="o">/</span><span class="p">(</span><span class="mi">4</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="n">g</span><span class="p">))</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="mi">2</span><span class="o">*</span><span class="n">g</span><span class="o">*</span><span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">M</span><span class="o">-</span><span class="mi">1</span><span class="p">)]</span>
+  <span class="k">return</span> <span class="n">_sphere</span><span class="p">(</span><span class="n">M</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">th</span><span class="p">)</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-10'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-10'>#</a>
+      </div>
+      
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="k">def</span><span class="w"> </span><span class="nf">dtlz5</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">M</span><span class="p">):</span> <span class="k">return</span> <span class="n">_degen</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">M</span><span class="p">,</span> <span class="n">_g2</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">M</span><span class="o">-</span><span class="mi">1</span><span class="p">:]))</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-11'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-11'>#</a>
+      </div>
+      
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="k">def</span><span class="w"> </span><span class="nf">dtlz6</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">M</span><span class="p">):</span> <span class="k">return</span> <span class="n">_degen</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">M</span><span class="p">,</span> <span class="n">_g6</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">M</span><span class="o">-</span><span class="mi">1</span><span class="p">:]))</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-12'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-12'>#</a>
+      </div>
+      
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="k">def</span><span class="w"> </span><span class="nf">dtlz7</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">M</span><span class="p">):</span>                   <span class="c1"># disconnected front</span>
+  <span class="n">k</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">-</span> <span class="n">M</span> <span class="o">+</span> <span class="mi">1</span>
+  <span class="n">g</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">+</span> <span class="mi">9</span><span class="o">/</span><span class="n">k</span> <span class="o">*</span> <span class="nb">sum</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">M</span><span class="o">-</span><span class="mi">1</span><span class="p">:])</span>
+  <span class="n">f</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">x</span><span class="p">[:</span><span class="n">M</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+  <span class="n">h</span> <span class="o">=</span> <span class="n">M</span> <span class="o">-</span> <span class="nb">sum</span><span class="p">((</span><span class="n">fi</span><span class="o">/</span><span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="n">g</span><span class="p">))</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="n">sin</span><span class="p">(</span><span class="mi">3</span><span class="o">*</span><span class="n">pi</span><span class="o">*</span><span class="n">fi</span><span class="p">))</span> <span class="k">for</span> <span class="n">fi</span> <span class="ow">in</span> <span class="n">f</span><span class="p">)</span>
+  <span class="k">return</span> <span class="n">f</span> <span class="o">+</span> <span class="p">[(</span><span class="mi">1</span><span class="o">+</span><span class="n">g</span><span class="p">)</span><span class="o">*</span><span class="n">h</span><span class="p">]</span>
+
+<span class="n">MODELS</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">globals</span><span class="p">()</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">k</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;dtlz&quot;</span><span class="p">)}</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-13'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-13'>#</a>
+      </div>
+      <h2>knobs</h2>
+<p>CLI knobs: model, M objectives, N decision vars</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="n">arg</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">k</span><span class="p">,</span> <span class="n">d</span><span class="p">:</span> <span class="nb">next</span><span class="p">((</span><span class="n">xai</span><span class="o">.</span><span class="n">thing</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;=&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">])</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span>
+                         <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;--&quot;</span><span class="o">+</span><span class="n">k</span><span class="o">+</span><span class="s2">&quot;=&quot;</span><span class="p">)),</span> <span class="n">d</span><span class="p">)</span>
+<span class="n">NAME</span> <span class="o">=</span> <span class="n">arg</span><span class="p">(</span><span class="s2">&quot;model&quot;</span><span class="p">,</span> <span class="s2">&quot;dtlz2&quot;</span><span class="p">);</span> <span class="n">MODEL</span> <span class="o">=</span> <span class="n">MODELS</span><span class="p">[</span><span class="n">NAME</span><span class="p">]</span>
+<span class="n">M</span>    <span class="o">=</span> <span class="n">arg</span><span class="p">(</span><span class="s2">&quot;M&quot;</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="n">N</span>    <span class="o">=</span> <span class="n">arg</span><span class="p">(</span><span class="s2">&quot;N&quot;</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span>                 <span class="c1"># &gt;4 decision vars by default</span>
+<span class="n">names</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;X</span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">)]</span> <span class="o">+</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;F</span><span class="si">{</span><span class="n">m</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">-&quot;</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">M</span><span class="p">)]</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-14'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-14'>#</a>
+      </div>
+      <h2>seam</h2>
+<p>the unlabelled pool + the label seam</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="k">def</span><span class="w"> </span><span class="nf">fresh_pool</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="mi">1000</span><span class="p">):</span>
+  <span class="k">return</span> <span class="p">[[</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">)]</span> <span class="o">+</span> <span class="p">[</span><span class="s2">&quot;?&quot;</span><span class="p">]</span><span class="o">*</span><span class="n">M</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">)]</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-15'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-15'>#</a>
+      </div>
+      <p>xai&rsquo;s seam: goals come from the model, folded into
+tbl.cols so disty can normalize objectives as they arrive</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="k">def</span><span class="w"> </span><span class="nf">labelled</span><span class="p">(</span><span class="n">row</span><span class="p">):</span>
+  <span class="k">if</span> <span class="s2">&quot;?&quot;</span> <span class="ow">in</span> <span class="n">row</span><span class="p">[</span><span class="n">N</span><span class="p">:]:</span>
+    <span class="n">row</span><span class="p">[</span><span class="n">N</span><span class="p">:]</span> <span class="o">=</span> <span class="n">MODEL</span><span class="p">(</span><span class="n">row</span><span class="p">[:</span><span class="n">N</span><span class="p">],</span> <span class="n">M</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">at</span> <span class="ow">in</span> <span class="n">tbl</span><span class="o">.</span><span class="n">y</span><span class="p">:</span> <span class="n">tbl</span><span class="o">.</span><span class="n">cols</span><span class="p">[</span><span class="n">at</span><span class="p">]</span> <span class="o">=</span> <span class="n">xai</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">tbl</span><span class="o">.</span><span class="n">cols</span><span class="p">[</span><span class="n">at</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="n">at</span><span class="p">])</span>
+  <span class="k">return</span> <span class="n">row</span>
+<span class="n">xai</span><span class="o">.</span><span class="n">labelled</span> <span class="o">=</span> <span class="n">labelled</span>            <span class="c1"># labelled() reads the global `tbl`</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-16'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-16'>#</a>
+      </div>
+      
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="k">def</span><span class="w"> </span><span class="nf">instance</span><span class="p">(</span><span class="n">row</span><span class="p">):</span>
+  <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  x  &quot;</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%.2f</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">v</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">row</span><span class="p">[:</span><span class="n">N</span><span class="p">]))</span>
+  <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  f  &quot;</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%.3f</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">v</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">row</span><span class="p">[</span><span class="n">N</span><span class="p">:])</span> <span class="o">+</span>
+        <span class="s2">&quot;   (disty </span><span class="si">%.3f</span><span class="s2">, lower=better)&quot;</span> <span class="o">%</span> <span class="n">xai</span><span class="o">.</span><span class="n">disty</span><span class="p">(</span><span class="n">tbl</span><span class="p">,</span> <span class="n">row</span><span class="p">))</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;model </span><span class="si">%s</span><span class="s2">   N=</span><span class="si">%d</span><span class="s2"> x-vars   M=</span><span class="si">%d</span><span class="s2"> objectives&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">NAME</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="n">M</span><span class="p">))</span>
+<span class="n">xai</span><span class="o">.</span><span class="n">the</span><span class="o">.</span><span class="n">budget</span> <span class="o">=</span> <span class="mi">30</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-17'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-17'>#</a>
+      </div>
+      <p>(1) pure: acquire ranks the whole pool, no train/test split</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span> <span class="n">tbl</span> <span class="o">=</span> <span class="n">xai</span><span class="o">.</span><span class="n">Tbl</span><span class="p">([</span><span class="n">names</span><span class="p">]</span> <span class="o">+</span> <span class="n">fresh_pool</span><span class="p">())</span>
+<span class="n">got</span> <span class="o">=</span> <span class="n">xai</span><span class="o">.</span><span class="n">acquire</span><span class="p">(</span><span class="n">tbl</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">the best option found (one instance):&quot;</span><span class="p">)</span>
+<span class="n">instance</span><span class="p">(</span><span class="n">got</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-18'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-18'>#</a>
+      </div>
+      <p>(2) explanatory model: which x-ranges reach good goals</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">why? an explanatory model -- which x-ranges reach good goals:&quot;</span><span class="p">)</span>
+<span class="n">xai</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">tbl</span><span class="p">,</span> <span class="n">xai</span><span class="o">.</span><span class="n">tree</span><span class="p">(</span><span class="n">tbl</span><span class="p">,</span> <span class="n">got</span><span class="p">))</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-19'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-19'>#</a>
+      </div>
+      <p>(3) test the model on new data: train/test split via holdout</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span> <span class="n">tbl</span> <span class="o">=</span> <span class="n">xai</span><span class="o">.</span><span class="n">Tbl</span><span class="p">([</span><span class="n">names</span><span class="p">]</span> <span class="o">+</span> <span class="n">fresh_pool</span><span class="p">())</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">does that model generalize? best pick on unseen test data:&quot;</span><span class="p">)</span>
+<span class="n">instance</span><span class="p">(</span><span class="n">xai</span><span class="o">.</span><span class="n">holdout</span><span class="p">(</span><span class="n">tbl</span><span class="p">))</span>
+
+</pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+</div>
+</body>
