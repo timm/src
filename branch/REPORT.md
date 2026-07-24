@@ -46,7 +46,7 @@ counts, demographics); post-hoc leak columns are X'd out.
 Rows capped at 2048; positive class = minority class.
 
 **Models.** One 50:50 split. One classification tree
-(branch's `tree`, accum=Sym, Y=klass, maxd 4) on the train
+(branch's `Tree`, accum=Sym, Y=klass, maxd 4) on the train
 half. Four method rungs, simple to elaborate:
 
     one tree        the full tree, leaf-mode prediction

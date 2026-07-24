@@ -53,16 +53,16 @@ tiny.cc/moot).
 
 Run any by bare name, e.g. `python3 branch-eg.py walk`:
 
-    tbl disty acquire tree walk holdout same compare
+    tbl disty acquire tree walk holdout tied compare
     all      the whole course
 
 The stats for comparisons (Cliff's delta, KS, Cohen,
-`same`) live in branch-eg.py, not the library.
+`differ`/`tied`) live in branch-eg.py, not the library.
 
 ## FILES
 
     branch.py     the library: table, disty, acquire,
-                  tree, walk, holdout
+                  Tree, walk, holdout
     branch-eg.py  tutorial + tests + comparison stats
     REPORT.md     study: prunings as a free model zoo;
                   ROC coverage, fairness for free (RQ1-7)

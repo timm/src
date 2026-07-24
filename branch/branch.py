@@ -20,7 +20,7 @@ OPTIONS: (defaults below are parsed into `the`):
 
 TESTS: (in branch-eg.py; run with their bare name):
   tbl disty acquire tree klass walk holdout
-  same confuse compare
+  tied confuse compare
   all      run every test above, reseting seed each
 """
 """
@@ -37,92 +37,30 @@ import os, re, sys, random
 from math import exp, log2
 from types import SimpleNamespace as o
 TINY = 1e-32
-MOOT = (os.environ.get("MOOT")
-        or os.path.expanduser("~/gits/moot"))
-
-#--------------------------------------------------------------
-def Tbl(src):
-  src = iter(src)
-  t = o(names=next(src), cols={}, x=[], y={}, rows=[],
-        klass=None)
-  return adds(list(src), Cols(t))
-
-def Cols(t):
-  for at, s in enumerate(t.names):
-    t.cols[at] = Num() if s[0].isupper() else Sym()
-    if s[-1] == "X": continue
-    if   s[-1] == "!":  t.klass = at
-    elif s[-1] in "+-": t.y[at] = s[-1] == "+"
-    else: t.x.append(at)
-  return t
-
-#--------------------------------------------------------------
-def norm(t, at, v):
-  if v == "?": return v
-  z = (v - t.cols[at][1]) / (sd(t.cols[at]) + TINY)
-  return 1 / (1 + exp(-1.7 * max(-3, min(3, z))))
-
-def disty(t, row):
-  d = n = 0
-  for at, g in t.y.items():
-    if (v := row[at]) != "?":
-      d += (norm(t, at, v) - g)**2; n += 1
-  return (d / n) ** .5
-
-def distx(t, r1, r2):
-  d = n = 0
-  for at in t.x:
-    u, v = r1[at], r2[at]
-    if u == v == "?": g = 1
-    elif is_sym(t.cols[at]): g = u != v
-    else:
-      u, v = norm(t, at, u), norm(t, at, v)
-      if u == "?": u = 1 if v < .5 else 0
-      if v == "?": v = 1 if u < .5 else 0
-      g = abs(u - v)
-    d += g*g; n += 1
-  return (d/n) ** .5
-
-#--------------------------------------------------------------
-def project(rows, x, y, east=None, west=None):
-  far  = lambda r: max(rows, key=lambda z: x(z, r))
-  east = east or far(rows[0])
-  west = west or far(east)
-  if y(east) > y(west): east, west = west, east
-  c = x(east, west) + TINY
-  return lambda r: (x(east,r)**2 + c*c - x(west,r)**2)/(2*c)
-
-def acquire(t, rows):
-  y = lambda r: disty(t, r)
-  x = lambda a, b: distx(t, a, b)
-  return sorted(sway3(some(rows, the.cap), y, x,
-                      the.budget - the.check), key=y)
-
-def sway3(rows, y, x, cap, lab=None, east=None, west=None):
-  b4  = rows[:]
-  lab = lab or {}
-  while len(rows) >= 2*the.leaf:
-    more = min(the.more, cap - len(lab))
-    less = int(max(1, the.best * len(rows)))
-    new  = []
-    for r in rows:
-      if   id(r) in lab         : new += [r]
-      elif (more := more-1) >= 0: new += [r]; lab[id(r)]=r
-    if len(lab) >= cap: return lab.values()
-    rows = sorted(rows,
-                  key=project(new, x, y, east, west))[:less]
-  if len(lab) < len(b4):
-    seen = sorted(lab.values(), key=y)
-    return sway3(shuffle(b4), y, x, cap,
-                 lab, seen[0], seen[-1])
-  return lab.values()
+MOOT = (os.environ.get("MOOT") or
+        os.path.expanduser("~/gits/moot"))
 
 #--------------------------------------------------------------
 Sym = dict
-def Num(n=0, mu=0, m2=0): return (n, mu, m2)
+Num = lambda n=0, mu=0, m2=0: (n, mu, m2)
 
-def is_sym(i): return isinstance(i, dict)
+def is_sym(i): return type(i) is dict
 
+def Tbl(src):
+  src = iter(src)
+  tbl = o(names=next(src), cols={},x=[],y={},rows=[],klass=None)
+  return adds(src, Cols(tbl))
+
+def Cols(tbl):
+  for at, s in enumerate(tbl.names):
+    tbl.cols[at] = Num() if s[0].isupper() else Sym()
+    if s[-1] == "X": continue
+    if   s[-1] == "!"  : tbl.klass = at
+    elif s[-1] in "+-" : tbl.y[at] = s[-1] == "+"
+    else: tbl.x += [at]
+  return tbl
+
+#--------------------------------------------------------------
 def size(i): return sum(i.values()) if is_sym(i) else i[0]
 
 def mid(i): return max(i, key=i.get) if is_sym(i) else i[1]
@@ -168,86 +106,149 @@ def sub(i, j):
           max(0, m2i - m2j - d*d*ni*nj/n))
 
 #--------------------------------------------------------------
+def norm(tbl, at, v):
+  if v == "?": return v
+  z = (v - tbl.cols[at][1]) / (sd(tbl.cols[at]) + TINY)
+  return 1 / (1 + exp(-1.7 * max(-3, min(3, z))))
+
+def disty(tbl, row):
+  d = n = 0
+  for at, g in tbl.y.items():
+    if (v := row[at]) != "?":
+      n += 1; d += (norm(tbl, at, v) - g)**2
+  return (d / n) ** .5
+
+def distx(tbl, r1, r2):
+  d = n = 0
+  for at in tbl.x:
+    u, v = r1[at], r2[at]
+    if u == v == "?": g = 1
+    elif is_sym(tbl.cols[at]): g = u != v
+    else:
+      u, v = norm(tbl, at, u), norm(tbl, at, v)
+      if u == "?": u = 1 if v < .5 else 0
+      if v == "?": v = 1 if u < .5 else 0
+      g = abs(u - v)
+    n += 1; d += g*g
+  return (d/n) ** .5
+
+#--------------------------------------------------------------
+def project(rows, x, y, east=None, west=None):
+  far  = lambda r: max(rows, key=lambda z: x(z, r))
+  east = east or far(rows[0])
+  west = west or far(east)
+  if y(east) > y(west): east, west = west, east
+  c = x(east, west) + TINY
+  return lambda r: (x(east,r)**2 + c*c - x(west,r)**2)/(2*c)
+
+def acquire(tbl, rows):
+  y = lambda r: disty(tbl, r)
+  x = lambda a, b: distx(tbl, a, b)
+  return sorted(sway3(some(rows, the.cap), y, x,
+                      the.budget - the.check), key=y)
+
+def sway3(rows, y, x, cap, lab=None, east=None, west=None):
+  b4  = rows[:]
+  lab = lab or {}
+  while len(rows) >= 2*the.leaf:
+    more = min(the.more, cap - len(lab))
+    less = int(max(1, the.best * len(rows)))
+    new  = []
+    for r in rows:
+      if   id(r) in lab         : new += [r]
+      elif (more := more-1) >= 0: new += [r]; lab[id(r)]=r
+    if len(lab) >= cap: return lab.values()
+    rows = sorted(rows,
+                  key=project(new, x, y, east, west))[:less]
+  if len(lab) < len(b4):
+    seen = sorted(lab.values(), key=y)
+    return sway3(shuffle(b4), y, x, cap,
+                 lab, seen[0], seen[-1])
+  return lab.values()
+
+#--------------------------------------------------------------
 def score(a, b):
   return ((var(a)*size(a) + var(b)*size(b))
           / (size(a) + size(b) + TINY))
 
-def has(t, row, at, v):
+def has(tbl, row, at, v):
   x = row[at]
-  return x == "?" or (x == v if is_sym(t.cols[at])
+  return x == "?" or (x == v if is_sym(tbl.cols[at])
                       else x <= v)
 
-def bins(t, rows, at, Y, accum=Num):
+def bins(tbl, rows, at, Y, accum=Num):
   xy  = [(r[at], Y(r)) for r in rows if r[at] != "?"]
   n   = len(xy)
   tot = adds((y for _,y in xy), accum())
   bin = lambda here,k: (score(here, sub(tot,here)), at, k)
-  if is_sym(t.cols[at]):
+  if is_sym(tbl.cols[at]):
     d = {}
     for x, y in xy: d[x] = add(d.get(x) or accum(), y)
     if len(d) > 1:
       for k, here in d.items(): yield bin(here, k)
   else:
-    xy.sort(key=lambda z: z[0]); me = accum()
+    xy.sort(key=lambda z: z[0]); here = accum()
     for j,(x,y) in enumerate(xy):
-      me = add(me, y)
-      if j+1 < n and x != xy[j+1][0]: yield bin(me, x)
+      here = add(here, y)
+      if j+1 < n and x != xy[j+1][0]: yield bin(here, x)
 
-def tree(t, rows, Y=None, accum=Num, lvl=0):
-  Y  = Y or (lambda r: disty(t, r))
+def Tree(tbl, rows, Y=None, accum=Num, lvl=0):
+  Y  = Y or (lambda r: disty(tbl, r))
   ys = adds(map(Y, rows), accum())
-  w  = o(at=None, n=len(rows), mu=mid(ys), leafs=1,
-         ys=ys, here=var(ys) if is_sym(ys) else mid(ys))
-  w.score = w.here
+  tree = o(at=None, n=len(rows), mu=mid(ys), leafs=1,
+           ys=ys, here=var(ys) if is_sym(ys) else mid(ys))
+  tree.score = tree.here
   if len(rows) >= 2*the.leaf and lvl < the.maxd:
-    if b := min((c for at in t.x
-                 for c in bins(t,rows,at,Y,accum)),
+    if b := min((c for at in tbl.x
+                 for c in bins(tbl,rows,at,Y,accum)),
                 default=None, key=lambda c: c[0]):
       _, at, v = b
       yes, no = [], []
       for r in rows:
-        (yes if has(t, r, at, v) else no).append(r)
+        (yes if has(tbl, r, at, v) else no).append(r)
       if yes and no:
-        w.at, w.v = at, v
-        w.yes = tree(t, yes, Y, accum, lvl+1)
-        w.no  = tree(t, no,  Y, accum, lvl+1)
-        w.score = min(w.yes.score, w.no.score)
-        w.leafs = w.yes.leafs + w.no.leafs
-  return w
+        tree.at, tree.v = at, v
+        tree.yes   = Tree(tbl, yes, Y, accum, lvl+1)
+        tree.no    = Tree(tbl, no,  Y, accum, lvl+1)
+        tree.score = min(tree.yes.score, tree.no.score)
+        tree.leafs = tree.yes.leafs + tree.no.leafs
+  return tree
 
 def leafed(x):
   return o(at=None, n=x.n, mu=x.mu, here=x.here,
            score=x.here, leafs=1, ys=x.ys)
 
 #--------------------------------------------------------------
-def walk(w):
-  if w.at is None: yield w; return
-  for yes in sides(w.yes):
-    for no in sides(w.no):
-      yield o(at=w.at, v=w.v, n=w.n, yes=yes, no=no,
+def walk(tree):
+  if tree.at is None: yield tree; return
+  for yes in sides(tree.yes):
+    for no in sides(tree.no):
+      yield o(at=tree.at, v=tree.v, n=tree.n,
+              yes=yes, no=no,
               score=min(yes.score, no.score),
               leafs=yes.leafs + no.leafs)
 
-def sides(x):
-  yield leafed(x)
-  if x.at is not None: yield from walk(x)
+def sides(tree):
+  yield leafed(tree)
+  if tree.at is not None: yield from walk(tree)
 
-def leaf(t, w, row):
-  while w.at is not None:
-    w = w.yes if has(t, row, w.at, w.v) else w.no
-  return w.mu
+def leaf(tbl, tree, row):
+  while tree.at is not None:
+    tree = (tree.yes if has(tbl, row, tree.at, tree.v)
+            else tree.no)
+  return tree.mu
 
 #--------------------------------------------------------------
-def holdout(t, get=None):
-  rows = shuffle(t.rows)
+def holdout(tbl, get=None):
+  rows = shuffle(tbl.rows)
   half = len(rows)//2
   train, test = rows[:half], rows[half:]
-  lab  = (get or acquire)(t, train)
-  best = min(walk(tree(t, lab)),
+  lab  = (get or acquire)(tbl, train)
+  best = min(walk(Tree(tbl, lab)),
              key=lambda x: (x.score, x.leafs))
-  top  = sorted(test, key=lambda r: leaf(t, best, r))
+  top  = sorted(test, key=lambda r: leaf(tbl, best, r))
   return best, min(top[:the.check],
-                   key=lambda r: disty(t, r)), test
+                   key=lambda r: disty(tbl, r)), test
 
 #--------------------------------------------------------------
 def thing(s):

@@ -31,22 +31,23 @@ ideal goal point (0 = best).
 | call | returns | what |
 |------|---------|------|
 | `Tbl(src)` | o | rows, x, y, num, lo, hi |
-| `disty(t,row)` | 0..1 | distance to best goals |
+| `disty(tbl,row)` | 0..1 | distance to best goals |
 """
 
 def test_tbl():
   "auto93 shape: 398 rows, 3 goals."
-  t = Tbl(csv(the.file))
-  print(len(t.rows), [t.names[a] for a in t.y])
-  assert len(t.rows) == 398 and len(t.y) == 3
+  tbl = Tbl(csv(the.file))
+  print(len(tbl.rows), [tbl.names[a] for a in tbl.y])
+  print(tbl.y.values())
+  assert len(tbl.rows) == 398 and len(tbl.y) == 3
 
 def test_disty():
   "Sorting by disty puts light thrifty cars first."
-  t  = Tbl(csv(the.file))
-  rs = sorted(t.rows, key=lambda r: disty(t, r))
-  print(rs[0], "%.3f" % disty(t, rs[0]))
-  print(rs[-1], "%.3f" % disty(t, rs[-1]))
-  assert disty(t, rs[0]) < .2 < .8 < disty(t, rs[-1])
+  tbl  = Tbl(csv(the.file))
+  rs = sorted(tbl.rows, key=lambda r: disty(tbl, r))
+  print(rs[0], "%.3f" % disty(tbl, rs[0]))
+  print(rs[-1], "%.3f" % disty(tbl, rs[-1]))
+  assert disty(tbl, rs[0]) < .2 < .8 < disty(tbl, rs[-1])
 
 #-- acquire-eg -------------------------------------------------
 """
@@ -59,18 +60,20 @@ at budget - check.
 
 | call | returns | what |
 |------|---------|------|
-| `distx(t,r1,r2)` | 0..1 | x-space distance |
-| `acquire(t,rows)` | rows | labelled rows, best first |
+| `distx(tbl,r1,r2)` | 0..1 | x-space distance |
+| `acquire(tbl,rows)` | rows | labelled rows, best first |
 """
 
 def test_acquire():
   "Budget respected; labels skew far better than the pool."
-  t   = Tbl(csv(the.file))
-  lab = acquire(t, t.rows)
-  mu  = lambda rs: sum(disty(t,r) for r in rs)/len(rs)
-  print(len(lab), "%.3f vs %.3f" % (mu(lab), mu(t.rows)))
+  tbl   = Tbl(csv(the.file))
+  lab = acquire(tbl, tbl.rows)
+  mu  = lambda rs: sum(disty(tbl,r) for r in rs)/len(rs)
+  lo  = lambda rs: disty(tbl,rs[-1])
+  print(len(lab), "%.3f vs %.3f : lo %.3f" % (
+        mu(lab), mu(tbl.rows), lo(tbl.rows)))
   assert len(lab) <= the.budget - the.check
-  assert mu(lab) < mu(t.rows)
+  assert mu(lab) < mu(tbl.rows)
 
 #-- tree-eg ----------------------------------------------------
 """
@@ -84,29 +87,30 @@ root in O(1).
 
 | call | returns | what |
 |------|---------|------|
-| `bins(t,rows,at,Y)` | iter | (cost,at,v) for one column |
-| `tree(t,rows)` | o | regression tree, scored nodes |
-| `leaf(t,w,row)` | mu | route a row; leaf's mean d2h |
+| `bins(tbl,rows,at,Y)` | iter | (cost,at,v) for one column |
+| `Tree(tbl,rows)` | o | regression tree, scored nodes |
+| `leaf(tbl,tree,row)` | mu | route a row; leaf's mean d2h |
 """
 
 def test_tree():
   "Root score = best leaf mean; deeper = purer."
-  t = Tbl(csv(the.file))
-  w = tree(t, acquire(t, t.rows))
-  print("n %d  mu %.3f  score %.3f" % (w.n, w.mu, w.score))
-  assert w.score <= w.mu
+  tbl = Tbl(csv(the.file))
+  tree = Tree(tbl, acquire(tbl, tbl.rows))
+  print("n %d  mu %.3f  score %.3f"
+        % (tree.n, tree.mu, tree.score))
+  assert tree.score <= tree.mu
 
 def test_klass():
   "Same tree code classifies: accum=Sym, Y=a symbol."
-  t  = Tbl(csv(the.file))
-  at = next(a for a in t.x if is_sym(t.cols[a]))    # origin
-  t2 = o(**vars(t)); t2.x = [a for a in t.x if a != at]
-  w  = tree(t2, t.rows, lambda r: r[at], Sym)
-  b  = min(walk(w),
+  tbl  = Tbl(csv(the.file))
+  at = next(a for a in tbl.x if is_sym(tbl.cols[a]))    # origin
+  tbl2 = o(**vars(tbl)); tbl2.x = [a for a in tbl.x if a != at]
+  tree  = Tree(tbl2, tbl.rows, lambda r: r[at], Sym)
+  b  = min(walk(tree),
            key=lambda x: (x.score, x.leafs))
   print("root ent %.2f  best leaf ent %.2f  mode %s"
-        % (w.here, b.score, b.mu if b.at is None else "-"))
-  assert b.score <= w.here
+        % (tree.here, b.score, b.mu if b.at is None else "-"))
+  assert b.score <= tree.here
 
 #-- walk-eg ----------------------------------------------------
 """
@@ -119,35 +123,36 @@ one min() over the generator; nothing is materialized.
 
 | call | returns | what |
 |------|---------|------|
-| `walk(w)` | iter | every pruning, scored at the root |
+| `walk(tree)` | iter | every pruning, scored at the root |
 | `leafed(x)` | o | a subtree collapsed to one leaf |
-| `show(t,w)` | str | one pruning as (cut yes no); leaf=mu |
+| `show(tbl,tree)` | str | one pruning as (cut yes no); leaf=mu |
 """
 
-def cond(t, w):
-  v = round(w.v, the.round) if type(w.v) == float else w.v
-  return "%s%s%s" % (t.names[w.at],
-                     "==" if is_sym(t.cols[w.at])
+def cond(tbl, tree):
+  v = (round(tree.v, the.round)
+       if type(tree.v) == float else tree.v)
+  return "%s%s%s" % (tbl.names[tree.at],
+                     "==" if is_sym(tbl.cols[tree.at])
                      else "<=", v)
 
-def show(t, w):
-  if w.at is None: return "%.2f" % w.mu
-  return "(%s %s %s)" % (cond(t, w), show(t, w.yes),
-                         show(t, w.no))
+def show(tbl, tree):
+  if tree.at is None: return "%.2f" % tree.mu
+  return "(%s %s %s)" % (cond(tbl, tree), show(tbl, tree.yes),
+                         show(tbl, tree.no))
 
 def test_walk():
   "Every pruning printed, best first; winner marked."
-  t  = Tbl(csv(the.file))
-  w  = tree(t, acquire(t, t.rows))
-  ts = sorted(walk(w),
+  tbl  = Tbl(csv(the.file))
+  tree  = Tree(tbl, acquire(tbl, tbl.rows))
+  ts = sorted(walk(tree),
               key=lambda x: (x.score, x.leafs))
   for x in ts:
     print("%s %.3f %d  %s" % ("->" if x is ts[0] else "  ",
                               x.score, x.leafs,
-                              show(t, x)))
+                              show(tbl, x)))
   print("prunings %d  full %.3f  best %.3f"
-        % (len(ts), w.score, ts[0].score))
-  assert len(ts) >= 1 and ts[0].score <= w.score
+        % (len(ts), tree.score, ts[0].score))
+  assert len(ts) >= 1 and ts[0].score <= tree.score
 
 #-- main-eg ----------------------------------------------------
 """
@@ -159,32 +164,34 @@ row means the tiny tree generalized.
 
 | call | returns | what |
 |------|---------|------|
-| `holdout(t,get?)` | tree, row, test | get overrides acquire |
+| `holdout(tbl,get?)` | tree, row, test | get overrides acquire |
 """
 
 def test_holdout():
   "Best pruning's test pick beats the median test row."
-  t = Tbl(csv(the.file))
-  _, got, test = holdout(t)
-  ys = sorted(disty(t, r) for r in test)
+  tbl = Tbl(csv(the.file))
+  _, got, test = holdout(tbl)
+  ys = sorted(disty(tbl, r) for r in test)
   print("got %.*f  best %.*f  median %.*f" % (
-    the.round, disty(t, got), the.round, ys[0],
+    the.round, disty(tbl, got), the.round, ys[0],
     the.round, ys[len(ys)//2]))
-  assert disty(t, got) <= ys[len(ys)//2]
+  assert disty(tbl, got) <= ys[len(ys)//2]
 
 #-- stats-eg ---------------------------------------------------
 """
 
-Comparisons need a conservative equality: `same` says two
-result sets differ only if Cohen (d > 0.35), Cliff's delta
-(> 0.195) and Kolmogorov-Smirnov (95%) all agree.
+Comparisons must earn a difference: `differ` says yes only
+if Cohen (d > 0.35), Cliff's delta (> 0.195) and
+Kolmogorov-Smirnov (95%) ALL reject; anything less is
+`tied` (no winner declared -- which is weaker than "same").
 
 | call | returns | what |
 |------|---------|------|
 | `cliffs(xs,ys)` | 0..1 | effect size (0 = identical) |
 | `ks(xs,ys)` | 0..1 | max gap between the two CDFs |
 | `cohen(xs,ys)` | bool | mean gap small vs pooled sd? |
-| `same(xs,ys)` | bool | statistically indistinguishable? |
+| `differ(xs,ys)` | bool | all three tests reject? |
+| `tied(xs,ys)` | bool | not differ; no winner declared |
 | `confuse(log)` | dict | class -> o(n,pd,pf) from (got,want) |
 """
 
@@ -207,20 +214,22 @@ def cohen(xs, ys, eps=0.35):
   pool = (((n-1)*sd(x)**2 + (m-1)*sd(y)**2)/(n+m-2))**.5
   return abs(x[1] - y[1]) <= eps * (pool + TINY)
 
-def same(xs, ys, cliff=0.195, conf=1.36):
-  if not cohen(xs, ys): return False
-  if cliffs(xs, ys) > cliff: return False
+def differ(xs, ys, cliff=0.195, conf=1.36):
   n, m = len(xs), len(ys)
-  return ks(xs, ys) <= conf * ((n + m) / (n * m)) ** .5
+  return (not cohen(xs, ys)
+          and cliffs(xs, ys) > cliff
+          and ks(xs, ys) > conf*((n + m)/(n * m))**.5)
 
-def test_same():
-  "Same distribution reads same; shifted reads different."
+def tied(xs, ys): return not differ(xs, ys)
+
+def test_tied():
+  "Same distribution ties; a shifted one differs."
   random.seed(1)
   a = [random.gauss(10, 1) for _ in range(40)]
   b = [random.gauss(10, 1) for _ in range(40)]
   c = [random.gauss(14, 1) for _ in range(40)]
-  print(same(a, b), same(a, c))
-  assert same(a, b) and not same(a, c)
+  print(tied(a, b), differ(a, c))
+  assert tied(a, b) and differ(a, c)
 
 def confuse(log):
   "Per-class o(n,pd,pf) from a [(got, want),...] log"
@@ -254,18 +263,18 @@ def test_confuse():
 
 def test_compare():
   "Active acquire vs same-budget random labels, 20 runs."
-  t = Tbl(csv(the.file))
-  rand = lambda t, rows: sorted(
+  tbl = Tbl(csv(the.file))
+  rand = lambda tbl, rows: sorted(
     some(rows, the.budget - the.check),
-    key=lambda r: disty(t, r))
+    key=lambda r: disty(tbl, r))
   out = {}
   for k, get in [("active", None), ("random", rand)]:
     out[k] = []
     for i in range(20):
       random.seed(the.seed + i)
-      out[k] += [disty(t, holdout(t, get)[1])]
+      out[k] += [disty(tbl, holdout(tbl, get)[1])]
   mu = lambda xs: sum(xs)/len(xs)
-  v  = ("tie" if same(out["active"], out["random"]) else
+  v  = ("tie" if tied(out["active"], out["random"]) else
         "active" if mu(out["active"]) < mu(out["random"])
         else "random")
   print("active %.3f  random %.3f  %s"
