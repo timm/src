@@ -47,20 +47,6 @@ the parts. The whole is one line of dispatch:
 
 %%code src/lib.py add
 
-Also, look at the `inc` argument in both updaters: the same code run with inc = -1
-makes a summary *forget*. That trick earns a name:
-
-%%code src/lib.py sub
-
-Since add and sub both return v, they compose. The idiom add(i, sub(j, v)) pops a
-value from summary j and pushes it into summary i, so a value walks between summaries
-in one line. Chapter 13 builds sliding windows from nothing else. Here is the round
-trip, exact to nine decimals, then the walk:
-
-%%run python3 src/lib_eg.py unadd
-
-%%run python3 src/lib_eg.py move
-
 ## Entropy is just counting
 
 For a bag of symbols with counts k out of n, the entropy
@@ -140,7 +126,7 @@ conservative. When this book says "beats", it has cleared all three bars.
 ## Lessons sighted
 
 **NOIR** and the two surviving scales; Welford's one-pass
-update; reversible summaries (every add has a sub);
+update;
 entropy as counted surprise; cdf normalization and
 epsilon hygiene; the Minkowski family; seeds as lab
 equipment

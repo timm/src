@@ -48,30 +48,26 @@ def Sym(at=0, name=" "):
   "Summary of a symbolic column."
   return o(it=Sym, at=at, name=name, n=0, has={})
 
-def count(sym, v, inc=1):
-  "Update symbol counts; inc=-1 downdates them."
-  sym.n += inc
-  sym.has[v] = inc + sym.has.get(v, 0)
+def count(sym, v):
+  "Update symbol counts."
+  sym.n += 1
+  sym.has[v] = 1 + sym.has.get(v, 0)
 
-def welford(num, v, inc=1):
-  "One-pass mean and spread update; inc=-1 forgets."
-  num.n += inc
-  if inc < 0 and num.n < 2:
-    num.mu = num.m2 = num.n = 0
-  else:
-    d       = v - num.mu
-    num.mu += inc * d / num.n
-    num.m2 += inc * d * (v - num.mu)
+def welford(num, v):
+  "One-pass update of mean and spread."
+  num.n  += 1
+  d       = v - num.mu
+  num.mu += d / num.n
+  num.m2 += d * (v - num.mu)
 
-def add(col, v, inc=1):
-  "Fold v into col. Returns v."
-  if v != "?":
-    (count if col.it is Sym else welford)(col, v, inc)
+def add(i, v):
+  "Fold a value into a column, or a row into a table."
+  if i.it is Tbl:
+    i.rows += [v]
+    for col in i.cols: add(col, v[col.at])
+  elif v != "?":
+    (count if i.it is Sym else welford)(i, v)
   return v
-
-def sub(col, v):
-  "The undo of add: col forgets v. Returns v."
-  return add(col, v, -1)
 
 def adds(lst, col=None):
   "Fold many values; guess Num or Sym from the first."
@@ -103,33 +99,27 @@ def norm(col, v):
 #-- tables ------------------------------------------------------
 def Tbl(src):
   "First row names the columns; the rest are data."
-  src   = iter(src)
-  names = next(src)
-  cols  = [(Num if s[0].isupper() else Sym)(at, s)
-           for at, s in enumerate(names)]
-  tbl   = o(it=Tbl, names=names, cols=cols, rows=[],
-            x=[c.at for c in cols
-               if c.name[-1] not in "X+-"],
-            y=[c.at for c in cols if c.name[-1] in "+-"])
-  for row in src: addRow(tbl, row)
-  return tbl
+  src = iter(src)
+  return adds(src, _tbl(next(src)))
 
-def addRow(tbl, row, inc=1):
-  "Fold one row into every column summary."
-  if inc > 0: tbl.rows += [row]
-  for col in tbl.cols: add(col, row[col.at], inc)
-  return row
+def _tbl(names):
+  "An empty table: column summaries, roles, no rows yet."
+  cols = [(Num if s[0].isupper() else Sym)(at, s)
+          for at, s in enumerate(names)]
+  return o(it=Tbl, names=names, cols=cols, rows=[],
+           x=[c.at for c in cols if c.name[-1] not in "X+-"],
+           y=[c.at for c in cols if c.name[-1] in "+-"])
 
 def clone(tbl, rows=[]):
   "A fresh table with the same header; optionally refill."
   return Tbl([tbl.names] + rows)
 
 #-- distance ----------------------------------------------------
-def distx(tbl, r1, r2):
+def distx(tbl, row1, row2):
   "Difference between two rows, over the x columns; 0..1."
   d = n = 0
   for at in tbl.x:
-    col, a, b = tbl.cols[at], r1[at], r2[at]
+    col, a, b = tbl.cols[at], row1[at], row2[at]
     if a == "?" and b == "?": g = 1
     elif col.it is Sym:       g = a != b
     else:
@@ -149,6 +139,21 @@ def disty(tbl, row):
       d += abs(norm(col, v) - col.heaven) ** the.p
       n += 1
   return (d / (n + TINY)) ** (1 / the.p)
+
+#-- clusters ----------------------------------------------------
+def fastmap(tbl, rows=None):
+  "Divide a table in two, splitting on two far points."
+  rows = rows or tbl.rows
+  far  = lambda row1: max(some(rows, the.few),
+                key=lambda row2: distx(tbl, row1, row2))
+  a    = far(random.choice(rows))
+  b    = far(a)
+  c    = distx(tbl, a, b) + TINY
+  x    = lambda row: (distx(tbl, a, row)**2 + c*c
+                      - distx(tbl, b, row)**2) / (2*c)
+  rows = sorted(rows, key=x)
+  n    = len(rows) // 2
+  return a, b, clone(tbl, rows[:n]), clone(tbl, rows[n:])
 
 #-- statistics --------------------------------------------------
 def cohen(xs, ys, d=0.35):

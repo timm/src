@@ -362,24 +362,21 @@ moves by d/n, and m2 grows by d times the *new* gap (v - mu). The standard devia
 is (m2 / (n - 1)) raised to 0.5, on demand.
 
 ```python
-def welford(num, v, inc=1):
-  "One-pass mean and spread update; inc=-1 forgets."
-  num.n += inc
-  if inc < 0 and num.n < 2:
-    num.mu = num.m2 = num.n = 0
-  else:
-    d       = v - num.mu
-    num.mu += inc * d / num.n
-    num.m2 += inc * d * (v - num.mu)
+def welford(num, v):
+  "One-pass update of mean and spread."
+  num.n  += 1
+  d       = v - num.mu
+  num.mu += d / num.n
+  num.m2 += d * (v - num.mu)
 ```
 
 One pass. No stored raws. Constant memory. Symbols are easier. Count them:
 
 ```python
-def count(sym, v, inc=1):
-  "Update symbol counts; inc=-1 downdates them."
-  sym.n += inc
-  sym.has[v] = inc + sym.has.get(v, 0)
+def count(sym, v):
+  "Update symbol counts."
+  sym.n += 1
+  sym.has[v] = 1 + sym.has.get(v, 0)
 ```
 
 Now the public face. `add` reads the column's `it` tag, skips the "?" that marks a
@@ -387,35 +384,14 @@ missing value, and hands the rest to the right updater. All the cleverness lives
 the parts. The whole is one line of dispatch:
 
 ```python
-def add(col, v, inc=1):
-  "Fold v into col. Returns v."
-  if v != "?":
-    (count if col.it is Sym else welford)(col, v, inc)
+def add(i, v):
+  "Fold a value into a column, or a row into a table."
+  if i.it is Tbl:
+    i.rows += [v]
+    for col in i.cols: add(col, v[col.at])
+  elif v != "?":
+    (count if i.it is Sym else welford)(i, v)
   return v
-```
-
-Also, look at the `inc` argument in both updaters: the same code run with inc = -1
-makes a summary *forget*. That trick earns a name:
-
-```python
-def sub(col, v):
-  "The undo of add: col forgets v. Returns v."
-  return add(col, v, -1)
-```
-
-Since add and sub both return v, they compose. The idiom add(i, sub(j, v)) pops a
-value from summary j and pushes it into summary i, so a value walks between summaries
-in one line. Chapter 13 builds sliding windows from nothing else. Here is the round
-trip, exact to nine decimals, then the walk:
-
-```
-$ python3 src/lib_eg.py unadd
-mu 9.948 sd 2.215 (before: 9.948 2.215)
-```
-
-```
-$ python3 src/lib_eg.py move
-i: n 75 mu 6.236 sd 2.322
 ```
 
 ## Entropy is just counting
@@ -529,7 +505,7 @@ conservative. When this book says "beats", it has cleared all three bars.
 ## Lessons sighted
 
 **NOIR** and the two surviving scales; Welford's one-pass
-update; reversible summaries (every add has a sub);
+update;
 entropy as counted surprise; cdf normalization and
 epsilon hygiene; the Minkowski family; seeds as lab
 equipment
@@ -585,16 +561,8 @@ data, not declarations.
 ```python
 def Tbl(src):
   "First row names the columns; the rest are data."
-  src   = iter(src)
-  names = next(src)
-  cols  = [(Num if s[0].isupper() else Sym)(at, s)
-           for at, s in enumerate(names)]
-  tbl   = o(it=Tbl, names=names, cols=cols, rows=[],
-            x=[c.at for c in cols
-               if c.name[-1] not in "X+-"],
-            y=[c.at for c in cols if c.name[-1] in "+-"])
-  for row in src: addRow(tbl, row)
-  return tbl
+  src = iter(src)
+  return adds(src, _tbl(next(src)))
 ```
 
 Two details deserve a look. Firstly, `Num` and `Sym` are plain functions returning

@@ -50,32 +50,6 @@ def test_cols():
   print("num mu %.3f sd %.3f" % (mid(n), var(n)))
   assert abs(mid(n)) < 0.05 and abs(var(n) - 1) < 0.05
 
-def test_unadd():
-  "add() then sub(): summaries forget, exactly."
-  random.seed(the.seed)
-  vs = [random.gauss(10, 2) for _ in range(100)]
-  n  = adds(vs)
-  b4 = (mid(n), var(n))
-  extra = [add(n, random.gauss(99, 5)) for _ in range(50)]
-  for v in extra: sub(n, v)
-  print("mu %.3f sd %.3f (before: %.3f %.3f)" %
-        (mid(n), var(n), *b4))
-  assert abs(mid(n) - b4[0]) < 1e-9
-  assert abs(var(n) - b4[1]) < 1e-9
-
-def test_move():
-  "add(i, sub(j, v)): values walk from summary j to i."
-  random.seed(the.seed)
-  a = [random.gauss(5, 1) for _ in range(50)]
-  b = [random.gauss(9, 1) for _ in range(50)]
-  i, j = adds(a), adds(b)
-  for v in b[25:]: add(i, sub(j, v))
-  k = adds(a + b[25:])
-  print("i: n %s mu %.3f sd %.3f" % (i.n, mid(i), var(i)))
-  assert i.n == 75 and j.n == 25
-  assert abs(mid(i) - mid(k)) < 1e-9
-  assert abs(var(i) - var(k)) < 1e-9
-
 def test_tbl():
   "Tbl build: column roles and goal stats."
   tbl = Tbl(csv(the.file))
@@ -107,6 +81,21 @@ def test_dist():
   print()
   for r in body[5:]: line(r)
   assert disty(tbl, rows[0]) <= disty(tbl, rows[-1])
+
+def test_fastmap():
+  "Split a table in two; halves get their own summaries."
+  tbl = Tbl(csv(the.file))
+  a, b, west, east = fastmap(tbl)
+  goal = tbl.cols[tbl.y[-1]]
+  print("poles apart %.3f" % distx(tbl, a, b))
+  print("west %s east %s rows" %
+        (len(west.rows), len(east.rows)))
+  print("%s mu: west %.1f east %.1f" %
+        (goal.name, mid(west.cols[goal.at]),
+         mid(east.cols[goal.at])))
+  assert len(west.rows) + len(east.rows) == len(tbl.rows)
+  assert abs(len(west.rows) - len(east.rows)) <= 1
+  assert distx(tbl, a, b) > 0
 
 def test_stats():
   "Validate same(): small shift = same, big = different."
