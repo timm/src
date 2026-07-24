@@ -192,8 +192,7 @@ Csv cells arrive as strings. One function coerces each cell: "23" becomes an int
 stays as our mark for missing, and anything else stays text.
 
 ```python
-def thing(s):
-  "Coerce one csv cell: int, float, bool, else string."
+def thing(s): # string to int, float, bool, or string
   for fn in (int, float):
     try: return fn(s)
     except ValueError: pass
@@ -222,7 +221,6 @@ dot-accessible bags of slots, and whose repr prints those slots sorted.
 
 ```python
 class o:
-  "Dot-access struct. Its repr prints the public slots."
   def __init__(i, **d): i.__dict__.update(**d)
   def __repr__(i):
     return "{" + " ".join(":%s %s" % (k, v)
@@ -239,7 +237,7 @@ change.
 
 ```
 $ python3 src/lib_eg.py the
-{:few 128 :file data/auto93.csv :p 2 :seed 1234567891}
+{:few 128 :file data/auto93.csv :p 2 :seed 1234567891 :stop 32}
 ```
 
 The command line can override any knob, because the flag parser walks `vars(the)` and
@@ -247,7 +245,7 @@ matches names. Watch the same test, run with `--p=1`:
 
 ```
 $ python3 src/lib_eg.py the --p=1
-{:few 128 :file data/auto93.csv :p 1 :seed 1234567891}
+{:few 128 :file data/auto93.csv :p 1 :seed 1234567891 :stop 32}
 ```
 
 No parser was written for that flag. The settings object is the parser's schema, by
@@ -259,12 +257,10 @@ Files are read by a generator, so no table is ever loaded twice or held whole wh
 stream will do:
 
 ```python
-def csv(file):
-  "Stream a csv file, one row of coerced cells at a time."
+def csv(file): # stream rows of coerced cells
   with open(file) as f:
     for line in f:
-      line = line.split("%")[0].strip()
-      if line:
+      if (line := line.split("%")[0].strip()):
         yield [thing(s) for s in line.split(",")]
 ```
 
@@ -290,8 +286,7 @@ present, else the default. Hence: look up `"test_" + word`, falling back to a
 function that just complains.
 
 ```python
-def main(g):
-  "For each bare command-line word w, run test_w, seeded."
+def main(g): # for each bare word w, run test_w, seeded
   cli(the.__dict__)
   todo = [s for s in sys.argv[1:]
           if not s.startswith("-")] or ["all"]
@@ -330,14 +325,12 @@ book keeps the two ends. Names become `Sym` and numbers become `Num`; the middle
 get treated as one or the other.
 
 ```python
-def Sym(name="", at=0):
-  "Summary of a symbolic column."
+def Sym(name="", at=0): # summary of a symbolic column
   return o(it=Sym, at=at, name=name, n=0, has={})
 ```
 
 ```python
-def Num(name="", at=0):
-  "Summary of a numeric column."
+def Num(name="", at=0): # summary of a numeric column
   return o(it=Num, at=at, name=name, n=0, mu=0, m2=0,
            heaven=0 if name.endswith("-") else 1)
 ```
@@ -362,21 +355,16 @@ moves by d/n, and m2 grows by d times the *new* gap (v - mu). The standard devia
 is (m2 / (n - 1)) raised to 0.5, on demand.
 
 ```python
-def welford(num, v):
-  "One-pass update of mean and spread."
-  num.n  += 1
-  d       = v - num.mu
-  num.mu += d / num.n
+def welford(num, v): # one-pass mean and spread update
+  num.n += 1; d = v - num.mu; num.mu += d / num.n
   num.m2 += d * (v - num.mu)
 ```
 
 One pass. No stored raws. Constant memory. Symbols are easier. Count them:
 
 ```python
-def count(sym, v):
-  "Update symbol counts."
-  sym.n += 1
-  sym.has[v] = 1 + sym.has.get(v, 0)
+def count(sym, v): # update symbol counts
+  sym.n += 1; sym.has[v] = 1 + sym.has.get(v, 0)
 ```
 
 Now the public face. `add` reads the column's `it` tag, skips the "?" that marks a
@@ -384,8 +372,7 @@ missing value, and hands the rest to the right updater. All the cleverness lives
 the parts. The whole is one line of dispatch:
 
 ```python
-def add(i, v):
-  "Fold a value into a column, or a row into a table."
+def add(i, v): # fold value into col, row into tbl
   if i.it is Tbl:
     i.rows += [v]
     for col in i.cols: add(col, v[col.at])
@@ -408,20 +395,16 @@ away the working. House rule.] In code, the two middles
 share one roof, and so do the two spreads:
 
 ```python
-def mid(col):
-  "Central tendency: mean (Num) or mode (Sym)."
-  return col.mu if col.it is Num else \
-         max(col.has, key=col.has.get)
+def mid(col): # center: mean (Num) or mode (Sym)
+ return col.mu if col.it is Num else max(col.has,key=col.has.get)
 ```
 
 ```python
-def var(col):
-  "Dispersion: standard deviation (Num) or entropy (Sym)."
-  if col.it is Sym:
-    return -sum(k/col.n * math.log(k/col.n, 2)
-                for k in col.has.values() if k > 0)
-  return 0 if col.n < 2 else (max(col.m2, 0)
-                              / (col.n - 1)) ** 0.5
+def var(col): # spread: sd (Num) or entropy (Sym)
+  if col.it is Sym: return -sum(k/col.n * math.log(k/col.n, 2)
+                                for k in col.has.values() if k>0)
+  elif col.n < 2  : return 0
+  else            : return (max(col.m2, 0) / (col.n - 1)) ** 0.5
 ```
 
 The demo checks the entropy arithmetic above, then checks Welford against 10,000
@@ -438,18 +421,20 @@ num mu 0.007 sd 1.002
 In auto93, weight runs in the thousands of pounds while acceleration runs in the tens
 of seconds. Any distance computed on raw values would be a weight measure wearing a
 distance costume. Hence, before comparing, we normalize using the normal: map each
-number to its column's cdf, the fraction of the bell curve at or below v, computed
-from mu and sd via the error function.^[An older habit rescales by the seen range, (v
-- lo) / (hi - lo). That wants two more slots and its own epsilon, and one wild
-outlier squashes everyone else into a corner. The cdf runs on what Welford already
-keeps.] Whatever the units, the result runs 0..1.
+number to its column's cdf, the fraction of the bell curve at or below v. We compute
+that with the logistic curve 1 / (1 + e^(-1.702 z)), where z = (v - mu) / sd. Why
+1.702? That constant pulls the logistic onto the gaussian cdf, to within 0.01
+everywhere [@camilli94]. And unlike the error function, e^x exists in every language
+this code will ever be ported to.^[An older habit rescales by the seen range, (v -
+lo) / (hi - lo). That wants two more slots and its own epsilon, and one wild outlier
+squashes everyone else into a corner. The cdf runs on what Welford already keeps.]
+Whatever the units, the result runs 0..1.
 
 ```python
-def norm(col, v):
-  "Map v to 0..1: the gaussian cdf of v (Nums only)."
+def norm(col, v): # v's cdf, via logistic; 0..1 (Nums only)
   if v == "?" or col.it is Sym: return v
-  return 0.5 * (1 + math.erf(
-    (v - col.mu) / (var(col) * 2 ** 0.5 + TINY)))
+  z = (v - col.mu) / (var(col) + TINY)
+  return 1 / (1 + math.exp(-1.702 * max(-3, min(3, z))))
 ```
 
 A tiny epsilon guards the degenerate column whose sd is zero. Numerical hygiene of
@@ -478,23 +463,29 @@ printed draws then certify a port before any learner runs.
 ## The trust test
 
 Later chapters keep saying "X beats Y". Such talk is cheap, so we tax it. Two lists
-of results are called the same unless three tests all agree they differ: Cohen's rule
-(means closer than 0.35 pooled standard deviations are the same) [@cohen88], Cliff's
-delta (rank overlap above the 0.197 threshold is the same) [@cliff93; @hess04], and
-Kolmogorov-Smirnov (cdf gap under the 5% critical value 1.36 sqrt((n + m) / nm) is
-the same) [@massey51]. Watch the conjunction work on a gaussian nudged by ever-larger
-shifts. A shift of 0.1 standard deviations passes as same. From 0.3 on, the tests
-call it different:
+of results are called the same unless three tests all agree they differ, and one
+sort powers all three: differ() sorts both lists once, then Cohen's rule reads three
+indexes per list (middles at least 0.35 spreads apart, where the spread is the 10th-
+to-90th percentile stretch over 2.56, since that stretch is 2.56 sds on a gaussian)
+[@cohen88], Cliff's delta binary-searches (rank shift beyond the 0.197 threshold)
+[@cliff93; @hess04], and Kolmogorov-Smirnov merges (cdf gap over the 5% critical
+value 1.36 sqrt((n + m) / nm)) [@massey51]. The last two are the standard
+prescription for empirical work (one effect-size test, one significance test); the
+first is a cheap tie-breaker that keeps variance-only wobbles from passing as
+victories. Watch the conjunction work on a gaussian nudged by ever-larger shifts.
+Shifts of 0.1, 0.3, even 0.5 standard deviations pass as same (at 0.5, Cohen and
+Cliff see a difference but Kolmogorov-Smirnov holds out). Only from a full standard
+deviation do all three agree, and only then is the pair called different:
 
 ```
 $ python3 src/lib_eg.py stats
-shift  same   cliffs cohen
- +0.0  True   0.00   True
- +0.1  True   0.11   True
- +0.3  False  0.21   True
- +0.5  False  0.34   False
- +1.0  False  0.56   False
- +2.0  False  0.82   False
+shift  differ cliffs cohen
+ +0.0  False  0.00   False
+ +0.1  False  0.11   False
+ +0.3  False  0.21   False
+ +0.5  False  0.34   True
+ +1.0  True   0.56   True
+ +2.0  True   0.82   True
 ```
 
 Note the humility this buys. Any single test can be gamed, and p-values alone say
@@ -541,6 +532,7 @@ the = o(
   seed = 1234567891,        # every random stream starts here
   p    = 2,                 # minkowski coefficient
   few  = 128,               # sample size for cheap guesses
+  stop = 32,                # min rows before a split halts
   file = "data/auto93.csv") # default table (via MOOT)
 ```
 
@@ -559,14 +551,12 @@ schema file exists to drift out of date. It is also schema *on read*: types come
 data, not declarations.
 
 ```python
-def Tbl(src):
-  "First row names the columns; the rest are data."
-  src = iter(src)
-  names = next(src)
+def Tbl(src): # first row names columns; rest is data
+  src = iter(src); names = next(src)
   cols = [Col(s, at) for at, s in enumerate(names)]
   tbl = o(it=Tbl, names=names, cols=cols, rows=[],
-           x=[c.at for c in cols if c.name[-1] not in "X+-"],
-           y=[c.at for c in cols if c.name[-1] in "+-"])
+           x=[c for c in cols if c.name[-1] not in "X+-"],
+           y=[c for c in cols if c.name[-1] in "+-"])
   return adds(src, tbl)
 ```
 
@@ -591,8 +581,7 @@ re-learns a fresh summary over just those rows, using the same header. Clusters,
 leaves, and sliding windows are all, underneath, clones.
 
 ```python
-def clone(tbl, rows=[]):
-  "A fresh table with the same header; optionally refill."
+def clone(tbl, rows=[]): # same header, fresh summaries
   return Tbl([tbl.names] + rows)
 ```
 
@@ -606,15 +595,12 @@ goal values to heaven, where heaven is 0 for a minimize column and 1 for a maxim
 column. Zero is best.
 
 ```python
-def disty(tbl, row):
-  "Distance from a row's goals to heaven; 0=best, 1=worst."
-  d = n = 0
-  for col in (tbl.cols[a] for a in tbl.y):
-    v = row[col.at]
-    if v != "?":
-      d += abs(norm(col, v) - col.heaven) ** the.p
-      n += 1
-  return (d / (n + TINY)) ** (1 / the.p)
+def disty(tbl, row): # goal gap to heaven; 0=best
+  d,n = 0,TINY
+  for col in tbl.y:
+    if (v := row[col.at]) != "?":
+      d, n = d + abs(norm(col, v) - col.heaven)**the.p, n+1
+  return (d / n) ** (1 / the.p)
 ```
 
 This paragraph is the definition of **distance to heaven**: collapse many objectives
@@ -629,17 +615,17 @@ Sort all 398 cars by `disty` and print the five best, then the five worst:
 ```
 $ python3 src/lib_eg.py dist
 Clndrs  Volume  HpX  Model  origin  Lbs-  Acc+  Mpg+  disty
-     4      90   48     78       2  1985  21.5    40  0.073
-     4      85   65     81       3  1975  19.4    40  0.085
+     4      90   48     78       2  1985  21.5    40  0.074
      4      90   48     80       2  2085  21.7    40  0.087
-     4      97   52     82       2  2130  24.6    40  0.094
+     4      85   65     81       3  1975  19.4    40  0.087
+     4      97   52     82       2  2130  24.6    40  0.092
      4      79   58     77       2  1825  18.6    40  0.095
 
-     8     440  215     73       1  4735    11    10  0.961
-     8     455  225     70       1  4425    10    10  0.962
-     8     440  215     70       1  4312   8.5    10  0.964
-     8     454  220     70       1  4354     9    10  0.964
-     8     455  225     73       1  4951    11    10  0.965
+     8     440  215     73       1  4735    11    10  0.953
+     8     455  225     70       1  4425    10    10  0.954
+     8     440  215     70       1  4312   8.5    10  0.956
+     8     454  220     70       1  4354     9    10  0.956
+     8     455  225     73       1  4951    11    10  0.957
 ```
 
 Notice the shape. Light, late, high-mpg cars float to the top. Big old guzzlers sink.

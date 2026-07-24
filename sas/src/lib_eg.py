@@ -12,20 +12,17 @@ of this file, never hand-typed.
 """
 from lib import *
 
-def test_the():
-  "Print the settings (after any command-line overrides)."
+def test_the(): # print settings, after cli overrides
   print(the)
   assert the.p >= 1
 
-def test_thing():
-  "String coercion round-trip."
+def test_thing(): # string coercion round-trip
   got = [thing(s) for s in
          ["23", "3.14", "-1e2", "True", "False", "?", "ab"]]
   print(got)
   assert got == [23, 3.14, -100.0, True, False, "?", "ab"]
 
-def test_rand():
-  "Seeded shuffle repeats; some() respects k."
+def test_rand(): # seeded shuffle repeats; some honors k
   random.seed(1); a = shuffle(list(range(20)))
   random.seed(1); b = shuffle(list(range(20)))
   print(a[:8])
@@ -33,15 +30,13 @@ def test_rand():
   assert len(some(a, 5)) == 5
   assert len(some(a, 999)) == 20
 
-def test_idioms():
-  "Sort rows by a computed score; transpose with zip."
+def test_idioms(): # sort by computed key; zip transpose
   rows = [[1, 10], [3, 30], [2, 20]]
   print(sorted(rows, key=lambda r: -r[1]))
   print(list(zip(*rows)))
   assert list(zip(*rows))[1] == (10, 30, 20)
 
-def test_cols():
-  "Sym mode+entropy on a known bag; Num mu,sd via gauss."
+def test_cols(): # sym mode+entropy; num mu,sd via gauss
   s = adds("aaaabbc", Sym())
   print("sym mid %s ent %.3f" % (mid(s), var(s)))
   assert mid(s) == "a" and abs(var(s) - 1.379) < 0.01
@@ -50,22 +45,20 @@ def test_cols():
   print("num mu %.3f sd %.3f" % (mid(n), var(n)))
   assert abs(mid(n)) < 0.05 and abs(var(n) - 1) < 0.05
 
-def test_tbl():
-  "Tbl build: column roles and goal stats."
+def test_tbl(): # column roles and goal stats
   tbl = Tbl(csv(the.file))
   print("rows %s |x| %s |y| %s" % (len(tbl.rows),
         len(tbl.x), len(tbl.y)))
   if "auto93" in the.file:
     assert len(tbl.rows) == 398
     assert len(tbl.x) == 4 and len(tbl.y) == 3
-    mpg = tbl.cols[tbl.y[-1]]
+    mpg = tbl.y[-1]
     print("%s mu %.2f sd %.2f" %
           (mpg.name, mid(mpg), var(mpg)))
     assert abs(mid(mpg) - 23.84) < 0.5
     assert abs(var(mpg) - 8.34) < 0.5
 
-def test_dist():
-  "Rows sorted by disty: header, top 5, blank, bottom 5."
+def test_dist(): # disty sort: top 5, blank, bottom 5
   tbl  = Tbl(csv(the.file))
   rows = sorted(tbl.rows, key=lambda r: disty(tbl, r))
   hdr  = list(tbl.names) + ["disty"]
@@ -82,11 +75,10 @@ def test_dist():
   for r in body[5:]: line(r)
   assert disty(tbl, rows[0]) <= disty(tbl, rows[-1])
 
-def test_fastmap():
-  "Split a table in two; halves get their own summaries."
+def test_halve(): # halves get their own summaries
   tbl = Tbl(csv(the.file))
-  a, b, west, east = fastmap(tbl)
-  goal = tbl.cols[tbl.y[-1]]
+  a, b, west, east = halve(tbl)
+  goal = tbl.y[-1]
   print("poles apart %.3f" % distx(tbl, a, b))
   print("west %s east %s rows" %
         (len(west.rows), len(east.rows)))
@@ -97,20 +89,42 @@ def test_fastmap():
   assert abs(len(west.rows) - len(east.rows)) <= 1
   assert distx(tbl, a, b) > 0
 
-def test_stats():
-  "Validate same(): small shift = same, big = different."
+def test_node(): # tree: small leaves, no rows lost
+  tbl = Tbl(csv(the.file))
+  t = Node(tbl)
+  def leaves(n):
+    if not n.west: return [n]
+    return leaves(n.west) + leaves(n.east)
+  ls = leaves(t)
+  print("leaves %s sizes %s" % (len(ls),
+        sorted(len(l.here.rows) for l in ls)))
+  assert sum(len(l.here.rows) for l in ls) == len(tbl.rows)
+  assert all(len(l.here.rows) < 2*the.stop for l in ls)
+
+def test_leaf(): # walker drops rows into sane groups
+  tbl = Tbl(csv(the.file))
+  t = Node(tbl)
+  rows = sorted(tbl.rows, key=lambda r: disty(tbl, r))
+  best, worst = leaf(t, rows[0]), leaf(t, rows[-1])
+  m = lambda n: mid(n.here.y[-1])
+  print("%s mu: best leaf %.1f worst leaf %.1f" %
+        (tbl.y[-1].name, m(best), m(worst)))
+  assert not best.west and not worst.west
+  if "auto93" in the.file:
+    assert m(best) > m(worst)
+
+def test_stats(): # small shift = same, big = different
   random.seed(the.seed)
-  a = [random.gauss(0, 1) for _ in range(20)]
+  a = sorted(random.gauss(0, 1) for _ in range(20))
   shift = lambda d: [x + d for x in a]
-  print("shift  same   cliffs cohen")
+  print("shift  differ cliffs cohen")
   for d in (0, 0.1, 0.3, 0.5, 1.0, 2.0):
     b = shift(d)
-    print(" %+.1f  %-5s  %.2f   %s" % (d, same(a, b),
+    print(" %+.1f  %-5s  %.2f   %s" % (d, differ(a, b),
           cliffs(a, b), cohen(a, b)))
-  assert same(a, a) and not same(a, shift(2))
+  assert not differ(a, a) and differ(a, shift(2))
 
-def test_all():
-  "Run every other test_*, reseeding before each."
+def test_all(): # run every test_*, reseeding each
   bad = 0
   for name, fn in list(globals().items()):
     if name.startswith("test_") and name != "test_all":

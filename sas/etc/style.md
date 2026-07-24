@@ -53,6 +53,7 @@ Parts before wholes. Show the small named helpers first, then the dispatcher tha
 Every add has a sub. A summary that learns must be shown forgetting, in the same lesson: sub(i,v) is add(i,v,-1). Demo the round trip, then the composition add(i, sub(j,v)) that moves a value from summary j to summary i.
 No quantity without its code. If the prose names a computed thing (entropy, standard deviation, cdf), the defining code appears in that same section via %%code. Worked arithmetic in prose supplements the code; it never substitutes for it.
 Line widths: source code stays under 65 characters; prose in chapter files may run to 85. make lines polices both.
+Function docs are trailing comments, not docstrings: `def f(x): # what it does`, whole line under 65. Docstrings appear only as module headers. (Deliberate divergence from the repo-wide docstring rule: the comment survives %%code extraction into the book, and costs no line.)
 The toolkit is the vehicle, not the claim. The story is that much of SE and AI comes from a small number of core ideas plus vast amounts of ceremony, and we show the core without the ceremony. EZR is what fell out of chasing that; never write as if it were the point, or the only good tool.
 LaTeX conventions (NUDGE proposal and kin)
 List macros: \bi ... \ei (itemize), \be ... \ee (enumerate). Never mix a macro opener with a raw closer (\bi ... \end{itemize} does not compile).

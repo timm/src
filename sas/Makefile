@@ -42,6 +42,21 @@ data:                   ## fetch example tables (MOOT)
 	curl -sL -o data/auto93.csv \
 	  https://raw.githubusercontent.com/timm/moot/master/optimize/misc/auto93.csv
 
+SRC = src/*.py
+
+loc:                    ## function size deciles (mean LOC)
+	@awk 'FNR==1  {if (f) print n; f=""} \
+	      /^def / {if (f) print n; f=$$2; n=0} \
+	      f && NF {n++} \
+	      END     {if (f) print n}' $(SRC) | sort -n | \
+	  awk '{a[NR]=$$1} \
+	   END{for(d=1; d<=10; d++){ \
+	     lo=int((d-1)*NR/10)+1; hi=int(d*NR/10); s=0; \
+	     for(i=lo; i<=hi; i++) s+=a[i]; \
+	     m=(hi>=lo) ? s/(hi-lo+1) : 0; \
+	     printf "%3d%% %5.1f %s\n", d*10, m, \
+	       substr("########################",1,int(m+0.5))}}'
+
 lines:                  ## style gate: code>65, prose>85
 	awk 'length > 65 {print FILENAME": "FNR": "$$0}' \
 	  src/*.py etc/*.py; true

@@ -74,11 +74,14 @@ samples from a unit gaussian:
 In auto93, weight runs in the thousands of pounds while acceleration runs in the tens
 of seconds. Any distance computed on raw values would be a weight measure wearing a
 distance costume. Hence, before comparing, we normalize using the normal: map each
-number to its column's cdf, the fraction of the bell curve at or below v, computed
-from mu and sd via the error function.^[An older habit rescales by the seen range, (v
-- lo) / (hi - lo). That wants two more slots and its own epsilon, and one wild
-outlier squashes everyone else into a corner. The cdf runs on what Welford already
-keeps.] Whatever the units, the result runs 0..1.
+number to its column's cdf, the fraction of the bell curve at or below v. We compute
+that with the logistic curve 1 / (1 + e^(-1.702 z)), where z = (v - mu) / sd. Why
+1.702? That constant pulls the logistic onto the gaussian cdf, to within 0.01
+everywhere [@camilli94]. And unlike the error function, e^x exists in every language
+this code will ever be ported to.^[An older habit rescales by the seen range, (v -
+lo) / (hi - lo). That wants two more slots and its own epsilon, and one wild outlier
+squashes everyone else into a corner. The cdf runs on what Welford already keeps.]
+Whatever the units, the result runs 0..1.
 
 %%code src/lib.py norm
 
@@ -108,13 +111,19 @@ printed draws then certify a port before any learner runs.
 ## The trust test
 
 Later chapters keep saying "X beats Y". Such talk is cheap, so we tax it. Two lists
-of results are called the same unless three tests all agree they differ: Cohen's rule
-(means closer than 0.35 pooled standard deviations are the same) [@cohen88], Cliff's
-delta (rank overlap above the 0.197 threshold is the same) [@cliff93; @hess04], and
-Kolmogorov-Smirnov (cdf gap under the 5% critical value 1.36 sqrt((n + m) / nm) is
-the same) [@massey51]. Watch the conjunction work on a gaussian nudged by ever-larger
-shifts. A shift of 0.1 standard deviations passes as same. From 0.3 on, the tests
-call it different:
+of results are called the same unless three tests all agree they differ, and one
+sort powers all three: differ() sorts both lists once, then Cohen's rule reads three
+indexes per list (middles at least 0.35 spreads apart, where the spread is the 10th-
+to-90th percentile stretch over 2.56, since that stretch is 2.56 sds on a gaussian)
+[@cohen88], Cliff's delta binary-searches (rank shift beyond the 0.197 threshold)
+[@cliff93; @hess04], and Kolmogorov-Smirnov merges (cdf gap over the 5% critical
+value 1.36 sqrt((n + m) / nm)) [@massey51]. The last two are the standard
+prescription for empirical work (one effect-size test, one significance test); the
+first is a cheap tie-breaker that keeps variance-only wobbles from passing as
+victories. Watch the conjunction work on a gaussian nudged by ever-larger shifts.
+Shifts of 0.1, 0.3, even 0.5 standard deviations pass as same (at 0.5, Cohen and
+Cliff see a difference but Kolmogorov-Smirnov holds out). Only from a full standard
+deviation do all three agree, and only then is the pair called different:
 
 %%run python3 src/lib_eg.py stats
 

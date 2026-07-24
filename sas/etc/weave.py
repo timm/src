@@ -15,13 +15,21 @@ A directive that fails kills the build. That is the point.
 import ast, pathlib, subprocess, sys
 
 def code(path, name):
-  "Extract one top-level def or class, by name, via ast."
+  "Extract one def or class, by name, minus docstring."
   src = pathlib.Path(path).read_text()
   for node in ast.parse(src).body:
     if getattr(node, "name", None) == name:
       lines = src.splitlines()
-      return "\n".join(lines[node.lineno - 1
-                             : node.end_lineno])
+      skip = ()
+      d = node.body and node.body[0]
+      if (isinstance(d, ast.Expr) and
+          isinstance(d.value, ast.Constant) and
+          isinstance(d.value.value, str)):
+        skip = range(d.lineno - 1, d.end_lineno)
+      return "\n".join(
+        lines[i] for i in range(node.lineno - 1,
+                                node.end_lineno)
+        if i not in skip)
   sys.exit("weave: no %s in %s" % (name, path))
 
 def run(cmd):
