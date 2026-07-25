@@ -152,7 +152,7 @@ paper will ever get. Four sources, all procedural:
 - (c) The standards. Score the draft against the ACM
   SIGSOFT Empirical Standards checklists that apply
   (here: SystematicReviews, OptimizationStudies,
-  Benchmarking; see practices.md). Every unmet Essential
+  Benchmarking; see the bench skill). Every unmet Essential
   is a desk-reject risk; say which Desirables were
   skipped and why.
 - (d) Nearest-neighbor delta. Find the ten papers nearest

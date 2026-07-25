@@ -1,7 +1,7 @@
 # Draft coding stats (keyword pass over OpenAlex abstracts)
 
 Flags: SE software task; MO multi-objective/search; EX explanation; BM benchmark/compare.
-'none' rows mostly = abstract withheld by publisher; hand-audit during full-text read (see practices.md, Brereton 2007).
+'none' rows mostly = abstract withheld by publisher; hand-audit during full-text read (see the bench skill, Brereton 2007).
 
 | group | recent (n=43) | classic (n=11) |
 |-------|-----:|------:|

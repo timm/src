@@ -38,9 +38,21 @@ cite the long one.
 
 ## Prompt divisions
 
-Seven, each a skill in .claude/skills/<name>/SKILL.md
+Eight, each a skill in .claude/skills/<name>/SKILL.md
 (short quotable form first, detail after). Supporting
-machinery in the rightmost column:
+machinery in the rightmost column.
+
+Provenance of the style content: synthesis of (1) the
+proposal-voice style.md (SLES/DRR/BINGO/EZR, amended
+July 2026), whose rules carry over unless overridden,
+and (2) habits observed in the papers in pdf/ and
+pdf/mine/: Agrawal ICSE'18, Chakraborty FSE'21,
+Ganguly's optimizer tournament (2607.11705), SNAP2
+(2607.02583), the fuzzing IST preprint (2512.18102).
+Target: text that passes as a first-draft Menzies
+paper, not LLM output. Skill edits are audit-and-add:
+smallest span that fixes the problem; move sections
+whole, never retype.
 
 | division  | drives steps | contents                        | machinery                       |
 |-----------|--------------|---------------------------------|---------------------------------|
@@ -61,7 +73,10 @@ machinery in the rightmost column:
 | critics   | 5,10,11,12   | assemble-your-critics; Shaw     |                                 |
 |           |              | reader questions; Laurie's      |                                 |
 |           |              | Laws; human discussion          |                                 |
-| ship      | 14           | self-test checklist; repro      | practices.md (stats gates)      |
+| bench     | 9,14         | datasets, baselines, stats      | [verify] marks resolved by      |
+|           |              | gates, reporting norms of the   | the coded papers                |
+|           |              | target field (per-project)      |                                 |
+| ship      | 14           | self-test checklist; repro      |                                 |
 |           |              | package; contributions end in   |                                 |
 |           |              | URL                             |                                 |
 

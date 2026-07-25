@@ -1,3 +1,21 @@
+---
+name: bench
+description: Benchmark furniture and stats gates the target field expects -- datasets, baselines, indicators, statistics, reporting. Per-project; rewrite for each paper's field. Use at HOWTO steps 9, 14.
+---
+
+# bench
+
+## Short form
+
+- Public datasets by canonical name; report per-dataset, persist raw per-run numbers.
+- Floor = random search; ceiling = strongest SOTA with a public, runnable implementation.
+- 20+ repeats; distributions not means; significance AND effect size, conjunctively; Scott-Knott for multi-treatment rankings.
+- Budgets (labels bought, wall-clock) stated up front.
+- Replication package to SIGSOFT artifact standard; construct-validity paragraph; include tasks where the method loses.
+- [verify] marks must be confirmed against the coded papers before any number ships.
+
+## Detail
+
 # Accepted benchmarking practices in this field (draft)
 
 Working list for the benchmarking section. Sources: ACM

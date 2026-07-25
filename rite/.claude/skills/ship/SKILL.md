@@ -8,7 +8,7 @@ description: Gate before submission: the full self-test checklist, stats gates, 
 ## Short form
 
 - Run every line of the checklist below; any failure -> another loop iteration.
-- Stats gates and benchmark furniture: see ../practices.md.
+- Stats gates and benchmark furniture: see the bench skill.
 - Ship = replication package (code, data, seeds, raw results); last contribution bullet is its URL.
 
 ## Detail

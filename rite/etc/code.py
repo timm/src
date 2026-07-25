@@ -61,7 +61,7 @@ with open("../lit/coding.md", "w") as f:
           "Flags: %s."
           "\n'none' rows mostly = abstract withheld by "
           "publisher; hand-audit during full-text read "
-          "(see practices.md, Brereton 2007).\n\n"
+          "(see the bench skill, Brereton 2007).\n\n"
           "| group | recent (n=%s) | classic (n=%s) |\n"
           "|-------|-----:|------:|\n"
           % (LEGEND, sum(recent.values()),

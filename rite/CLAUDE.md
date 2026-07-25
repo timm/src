@@ -6,19 +6,18 @@ rewrite the per-project files below, rerun the pipeline.
 
 ## Read before editing
 
-README.md (the goal; scripts parse it), then etc/style.md
-(now an index: the style content lives in seven skills
-under .claude/skills/, one per prompt division -- these
-govern ALL prose, including the banned-LLM-tells list and
-the shipping self-test), then HOWTO.md (the 14-step loop,
-mapped to those skills), then practices.md (the benchmark
-norms this paper will be judged against).
+README.md (the goal; scripts parse it), then HOWTO.md
+(the 14-step loop and the eight prompt divisions), then
+the skills under .claude/skills/ -- they govern ALL
+prose, including the banned-LLM-tells list (prose), the
+shipping self-test (ship), and the benchmark norms this
+paper will be judged against (bench).
 
 ## Template vs per-project
 
 Template -- reuse unchanged on a new topic:
 
-    CLAUDE.md, HOWTO.md, .claude/skills/, etc/style.md,
+    CLAUDE.md, HOWTO.md, .claude/skills/ (except bench),
     etc/*.py (except flags.py)
 
 Per-project -- rewrite or regenerate per topic:
@@ -26,8 +25,9 @@ Per-project -- rewrite or regenerate per topic:
     README.md      goal: and years: lines; SSOT for the
                    literature search (fetch.py reads it)
     etc/flags.py   coding vocabulary; SSOT for the flags
-    practices.md   accepted benchmarking practices of the
-                   target field, with [verify] marks
+    .claude/skills/bench/
+                   benchmarking norms of the target
+                   field, with [verify] marks
     lit/           pipeline output + hand-written notes
     pdf/           hand-archived source/method papers
 
@@ -69,4 +69,5 @@ Per-project -- rewrite or regenerate per topic:
    classics to have open-access PDFs. The download rate
    is itself a finding: report it, never silently drop
    the missing papers.
-6. All prose, including this file, obeys etc/style.md.
+6. All prose, including this file, obeys the prose and
+   structure skills in .claude/skills/.
