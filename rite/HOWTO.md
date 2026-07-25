@@ -38,30 +38,31 @@ cite the long one.
 
 ## Prompt divisions
 
-Seven. Today they live as sections of etc/style.md plus
-CLAUDE.md and the etc/ pipeline; the map:
+Seven, each a skill in .claude/skills/<name>/SKILL.md
+(short quotable form first, detail after). Supporting
+machinery in the rightmost column:
 
-| division  | drives steps | contents                        | lives in                        |
+| division  | drives steps | contents                        | machinery                       |
 |-----------|--------------|---------------------------------|---------------------------------|
-| choose    | 1,3,4,7      | Newell springboard; Wheeler     | style.md: Newell, Wheeler       |
+| choose    | 1,3,4,7      | Newell springboard; Wheeler     |                                 |
 |           |              | counterweight; toolkit audit    |                                 |
-| search    | 2,6          | goal + years SSOT; knee;        | README.md; CLAUDE.md pipeline;  |
+| search    | 2,6          | recent by velocity; knee;       | README.md (goal SSOT);          |
 |           |              | snowball; download-rate rule    | fetch/snowball/getpdfs.py       |
-| encode    | 6,13         | two flag facets; thr not        | flags.py; code/recode.py;       |
-|           |              | binary, never abstract-only;    | style.md: ABSTRACT CARRIES      |
-|           |              | cutoff sensitivity; Venn        |                                 |
-|           |              | subset reading                  |                                 |
-| structure | 8,9          | skeleton; section duties;       | style.md: skeleton, Section     |
-|           |              | where each coding artifact      | order and duties, Widom's five  |
-|           |              | lands (tech facet -> Methods)   |                                 |
-| prose     | 8,9,13       | sentence mechanics; banned LLM  | style.md: mechanics, tells,     |
-|           |              | tells; LaTeX; abstract rules;   | LaTeX, ABSTRACT CARRIES,        |
-|           |              | elevator speech                 | opening moves                   |
-| critics   | 5,10,11,12   | assemble-your-critics; Shaw     | style.md: Assemble your         |
-|           |              | reader questions; Laurie's      | critics, Shaw, Laurie           |
+| encode    | 6,13         | two flag facets; thr not        | flags.py (flag SSOT);           |
+|           |              | binary, never abstract-only;    | code/recode.py                  |
+|           |              | cutoff sensitivity; own-        |                                 |
+|           |              | abstract check                  |                                 |
+| structure | 8,9          | skeleton; section duties;       |                                 |
+|           |              | artifact placement (tech facet  |                                 |
+|           |              | -> Methods); Widom as audit     |                                 |
+| prose     | 8,9,13       | sentence mechanics; banned LLM  |                                 |
+|           |              | tells; LaTeX; opening moves;    |                                 |
+|           |              | elevator speech                 |                                 |
+| critics   | 5,10,11,12   | assemble-your-critics; Shaw     |                                 |
+|           |              | reader questions; Laurie's      |                                 |
 |           |              | Laws; human discussion          |                                 |
-| ship      | 14           | self-test checklist; repro      | style.md: Quick self-test;      |
-|           |              | package; contributions end in   | practices.md (stats gates)      |
+| ship      | 14           | self-test checklist; repro      | practices.md (stats gates)      |
+|           |              | package; contributions end in   |                                 |
 |           |              | URL                             |                                 |
 
 Rule of the loop: steps 1-7 are cheap and mostly

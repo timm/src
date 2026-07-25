@@ -7,15 +7,19 @@ rewrite the per-project files below, rerun the pipeline.
 ## Read before editing
 
 README.md (the goal; scripts parse it), then etc/style.md
-(governs ALL prose, including its banned-LLM-tells list
-and the self-test), then practices.md (the benchmark
+(now an index: the style content lives in seven skills
+under .claude/skills/, one per prompt division -- these
+govern ALL prose, including the banned-LLM-tells list and
+the shipping self-test), then HOWTO.md (the 14-step loop,
+mapped to those skills), then practices.md (the benchmark
 norms this paper will be judged against).
 
 ## Template vs per-project
 
 Template -- reuse unchanged on a new topic:
 
-    CLAUDE.md, etc/style.md, etc/*.py (except flags.py)
+    CLAUDE.md, HOWTO.md, .claude/skills/, etc/style.md,
+    etc/*.py (except flags.py)
 
 Per-project -- rewrite or regenerate per topic:
 
