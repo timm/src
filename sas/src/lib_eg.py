@@ -75,18 +75,18 @@ def test_dist(): # disty sort: top 5, blank, bottom 5
   for r in body[5:]: line(r)
   assert disty(tbl, rows[0]) <= disty(tbl, rows[-1])
 
-def test_halve(): # halves get their own summaries
+def test_halve(): # split rows; summarize halves on demand
   tbl = Tbl(csv(the.file))
   a, b, west, east = halve(tbl)
   goal = tbl.cols.y[-1]
+  w, e = clone(tbl, west), clone(tbl, east)
   print("poles apart %.3f" % distx(tbl, a, b))
-  print("west %s east %s rows" %
-        (len(west.rows), len(east.rows)))
+  print("west %s east %s rows" % (len(west), len(east)))
   print("%s mu: west %.1f east %.1f" %
-        (goal.name, mid(west.cols.all[goal.at]),
-         mid(east.cols.all[goal.at])))
-  assert len(west.rows) + len(east.rows) == len(tbl.rows)
-  assert abs(len(west.rows) - len(east.rows)) <= 1
+        (goal.name, mid(w.cols.all[goal.at]),
+         mid(e.cols.all[goal.at])))
+  assert len(west) + len(east) == len(tbl.rows)
+  assert abs(len(west) - len(east)) <= 1
   assert distx(tbl, a, b) > 0
 
 def test_node(): # tree: small leaves, no rows lost

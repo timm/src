@@ -395,13 +395,13 @@ def entropy(sym): # diversity of symbolic distribution
 
 ```python
 def mid(col): # center: mean (Num) or mode (Sym)
-  return mode(col) if col.it is Sym else col.mu
+ return col.mu if col.it is Num else max(col.has,key=col.has.get)
 ```
 
 ```python
 def div(col): # diversity: sd (Num) or entropy (Sym)
-  if col.it is Sym: return entropy(col)
-  return 0 if col.n < 2 else sqrt(max(col.m2, 0) / (col.n - 1))
+  return entropy(col) if col.it is Sym else (
+         0 if col.n < 2 else sqrt(max(col.m2, 0) / (col.n - 1)))
 ```
 
 The demo checks the entropy arithmetic above, then checks Welford against 10,000
