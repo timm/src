@@ -1,0 +1,61 @@
+seen	cites	year	doi	title
+9	5944	2018	10.1109/access.2018.2870052	Peeking Inside the Black-Box: A Survey on Explainable Artificial Intelligence (XAI)
+9	15565	2016	10.1145/2939672.2939778	"Why Should I Trust You?"
+7	9258	2019	10.1016/j.inffus.2019.12.012	Explainable Artificial Intelligence (XAI): Concepts, taxonomies, opportunities and challenges toward responsible AI
+7	21936	2017	10.1109/iccv.2017.74	Grad-CAM: Visual Explanations from Deep Networks via Gradient-Based Localization
+6	82563	2015	10.1038/nature14539	Deep learning
+6	4815	2019	10.1145/3236009	A survey of methods for explaining black box models
+6	2101	2017	10.1609/aimag.v38i3.2741	European Union Regulations on Algorithmic Decision Making and a “Right to Explanation”
+6	1358	2019	10.1007/978-3-030-28954-6	Explainable AI: Interpreting, Explaining and Visualizing Deep Learning
+5	2731	2017	10.1016/j.dsp.2017.10.011	Methods for interpreting and understanding deep neural networks
+5	1783	2019	10.3390/electronics8080832	Machine Learning Interpretability: A Survey on Methods and Metrics
+5	7622	2017	10.48550/arxiv.1705.07874	A Unified Approach to Interpreting Model Predictions
+4	22301	1997	10.1016/s0925-2312(97)90018-7	Advances in neural information processing systems 7
+4	14677	2015		Advances in Neural Information Processing Systems 28
+4	9323	2019	10.1038/s42256-019-0048-x	Stop explaining black box machine learning models for high stakes decisions and use interpretable models instead
+4	2254	2020	10.1109/tnnls.2020.3027314	A Survey on Explainable Artificial Intelligence (XAI): Toward Medical XAI
+4	1796	2014	10.1080/10618600.2014.907095	Peeking Inside the Black Box: Visualizing Statistical Learning With Plots of Individual Conditional Expectation
+4	1006	2019	10.1038/s41467-019-08987-4	Unmasking Clever Hans predictors and assessing what machines really learn
+4	544	2016		Examples are not enough, learn to criticize! Criticism for Interpretability
+4	397	2020	10.1007/s13218-020-00636-z	Measuring the Quality of Explanations: The System Causability Scale (SCS)
+4	3166	2017	10.48550/arxiv.1702.08608	Towards A Rigorous Science of Interpretable Machine Learning
+4	2093	2018	10.1609/aaai.v32i1.11491	Anchors: High-Precision Model-Agnostic Explanations
+4	1700	None		
+4	1658	2015	10.1145/2783258.2788613	Intelligible Models for HealthCare
+4	859	2019	10.1145/3290605.3300831	Designing Theory-Driven User-Centric Explainable AI
+4	732	2018	10.1145/3173574.3174156	Trends and Trajectories for Explainable, Accountable and Intelligible Systems
+4	334	2017	10.48550/arxiv.1710.00794	What Does Explainable AI Really Mean? A New Conceptualization of Perspectives
+3	4612	2015	10.1371/journal.pone.0130140	On Pixel-Wise Explanations for Non-Linear Classifier Decisions by Layer-Wise Relevance Propagation
+3	2250	2020	10.1007/s11023-020-09548-1	GPT-3: Its Nature, Scope, Limits, and Consequences
+3	2247	2013	10.1007/s10115-013-0679-x	Explaining prediction models and individual predictions with feature contributions
+3	1925	2020	10.1186/s12911-020-01332-6	Explainability for artificial intelligence in healthcare: a multidisciplinary perspective
+3	863	2022	10.1214/21-ss133	Interpretable machine learning: Fundamental principles and 10 grand challenges
+3	605	2023	10.1016/j.frl.2023.103662	ChatGPT for (Finance) research: The Bananarama Conjecture
+3	571	2014	10.1145/2594473.2594475	Comprehensible classification models
+3	375	2019	10.1038/s42256-019-0055-y	Establishing the rules for building trustworthy AI
+3	267	2021	10.1016/j.inffus.2021.11.003	Counterfactuals and causability in explainable artificial intelligence: Theory, algorithms, and applications
+3	254	2011	10.1214/11-aoas495	Prototype selection for interpretable classification
+3	223	2004		An explainable artificial intelligence system for small-unit tactical behavior
+3	96	2014	10.1007/s10618-014-0368-8	A peek into the black box: exploring classifiers by randomization
+3	1405	2023	10.1126/science.adg7879	ChatGPT is fun, but not an author
+3	1133	2018	10.23919/mipro.2018.8400040	Explainable artificial intelligence: A survey
+3	5537	2023	10.1016/j.lindif.2023.102274	ChatGPT for good? On opportunities and challenges of large language models for education
+3	2107	2019	10.1073/pnas.1900654116	Definitions, methods, and applications in interpretable machine learning
+3	1780	2019	10.1002/widm.1312	Causability and explainability of artificial intelligence in medicine
+3	1414	2021	10.1016/s2589-7500(21)00208-9	The false hope of current approaches to explainable artificial intelligence in health care
+3	1400	2016	10.1016/j.patcog.2016.11.008	Explaining nonlinear classification decisions with deep Taylor decomposition
+3	881	2016	10.1007/s40708-016-0042-6	Interactive machine learning for health informatics: when do we need the human-in-the-loop?
+3	821	2018	10.1162/tacl_a_00041	Data Statements for Natural Language Processing: Toward Mitigating System Bias and Enabling Better Science
+3	557	2021	10.1016/j.inffus.2021.05.009	Notions of explainability and evaluation approaches for explainable artificial intelligence
+3	466	2017	10.1177/2053951717743530	Fairer machine learning in the real world: Mitigating discrimination without collecting sensitive data
+3	385	2020	10.1080/10580530.2020.1849465	Explainable Artificial Intelligence: Objectives, Stakeholders, and Future Research Opportunities
+3	13422	2024	10.4230/oasics.dx.2024.27	On a Method to Measure Supervised Multiclass Model’s Interpretability: Application to Degradation Diagnosis (Short Paper)
+3	10865	2016	10.1109/cvpr.2016.319	Learning Deep Features for Discriminative Localization
+3	2173	2016	10.2139/ssrn.2477899	Big Data's Disparate Impact
+3	1362	2014	10.1109/sp16517.2014	2014 IEEE Symposium on Security and Privacy
+3	1033	2017	10.48550/arxiv.1708.08296	Explainable Artificial Intelligence: Understanding, Visualizing and Interpreting Deep Learning Models
+3	735	2019	10.1145/3287560.3287574	Explaining Explanations in AI
+3	684	2008	10.1145/1401890.1401959	Discrimination-aware data mining
+3	669	2016	10.1145/2939672.2939874	Interpretable Decision Sets
+3	269	2019	10.48550/arxiv.1909.03012	One Explanation Does Not Fit All: A Toolkit and Taxonomy of AI Explainability Techniques
+3	71	2019	10.48550/arxiv.1901.08558	Quantifying Interpretability and Trust in Machine Learning Systems
