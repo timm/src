@@ -212,6 +212,13 @@ project. A project that can say both, start immediately.
   method and the result that earned it. No new material
   in the conclusion. If intro and conclusion disagree,
   one of them is lying; fix it.
+- Where the coding artifacts land: topic-facet groups
+  and the Venn -> intro + lit review (they ARE the gap
+  argument); technology facet -> Methods (what rivals
+  use vs what we use); abstract-vs-fulltext agreement,
+  threshold choice, download rate -> Threats (instrument
+  validity, selection bias). A table in the wrong
+  section argues the wrong point.
 
 ## Widom's five (audit, not outline)
 
@@ -438,10 +445,12 @@ not named there, then for most readers it is not in the
 paper at all.
 
 Hence the rule: before submission, run our own coding
-grid on our own title plus abstract. Every flag the full
-paper earns, the abstract must earn on its own. If the
-abstract of our paper would be miscoded by our own
-pipeline, rewrite the abstract, not the pipeline.
+grid on our own title plus abstract. Every flag the body
+earns at the thr threshold (>=0.5 matches per 1k words;
+etc/recode.py), the abstract must earn on its own. Same
+coder, both texts, zero disagreement. If the abstract of
+our paper would be miscoded by our own pipeline, rewrite
+the abstract, not the pipeline.
 
 (Aside: it has not escaped our attention that we spent a
 career coding other people's abstracts, then wondered
@@ -590,7 +599,8 @@ to act on them, not the week of the deadline.
   the intro? Especially (3), why the naive approach
   fails, and (5)'s limitations?
 - Run the coding grid on our own title+abstract: does it
-  earn every flag the full paper earns?
+  earn every flag the body earns at thr? Zero flips
+  allowed.
 - Does the thesis figure's caption walk the argument?
 - Last contribution bullet = replication URL?
 - Count dashes. More than two? Cut.
