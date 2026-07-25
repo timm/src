@@ -15,7 +15,7 @@ thresholded), group tables, top tf-idf terms per paper."""
 import os, re, math, subprocess
 from collections import Counter
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
-from flags import FLAGS
+from flags import FLAGS, LONG, TECH, TECH_LONG
 PER1K = 0.5   # matches per 1000 words to count a flag
 
 STOP = set("""the a an and or of to in for with on by is
@@ -52,16 +52,17 @@ def fulltext(pdf):
   except Exception:
     return ""
 
-def flags(text, n1k=False):
+def flags(text, n1k=False, fam=None):
+  fam = fam or FLAGS
   n = max(1, len(text.split()))
   out = {}
-  for k, p in FLAGS.items():
+  for k, p in fam.items():
     m = len(re.findall(p, text.lower()))
     out[k] = (m / n * 1000 >= PER1K) if n1k else m > 0
   return out
 
-def group(g): return "".join(k for k in FLAGS
-                             if g[k]) or "none"
+def group(g): return "x".join(k for k in FLAGS
+                              if g[k]) or "none"
 
 def load(src): # coding.tsv rows: SE MO EX BM title
   rows = [l.rstrip("\n").split("\t")
@@ -69,10 +70,26 @@ def load(src): # coding.tsv rows: SE MO EX BM title
   return [({k: r[i] == "y" for i, k in
             enumerate(FLAGS)}, r[4]) for r in rows]
 
-report = ["# Abstract vs full-text coding",""]
+report = ["# Abstract vs full-text coding", "",
+  "## Flag legend (topic facet)", ""]
+report += ["- %s: %s" % (k, LONG[k]) for k in FLAGS]
+report += ["",
+  "A group like SExMOxBM is an AND: that exact set of",
+  "flags fired, no others. Each paper appears in exactly",
+  "one group row.", "",
+  "Columns: abs = fired in title+abstract; full-bin =",
+  "any single match anywhere in the full text; full-thr",
+  "= fired at >=%s matches per 1000 words of full text."
+  % PER1K, "",
+  "Length-normalised term frequency is standard IR",
+  "practice (Salton & Buckley 1988); the %s cutoff" % PER1K,
+  "itself is ours, not from the literature. Before any",
+  "of these numbers reach a paper, sensitivity-check the",
+  "cutoff (vary it; show the group table is stable).", ""]
 docs, names = [], []
 tbl = Counter(); flips = Counter(); n_pdf = 0
 combA = Counter(); combB = Counter(); combT = Counter()
+techB = Counter(); techT = Counter()
 
 for lst in ("recent", "classics"):
   old = load("../lit/%s/coding.tsv" % lst)
@@ -89,6 +106,10 @@ for lst in ("recent", "classics"):
     for k in FLAGS:
       tbl[(k, a_flags[k], fb[k], ft[k])] += 1
       if a_flags[k] != ft[k]: flips[k] += 1
+    tb = flags(text, fam=TECH)
+    tt = flags(text, n1k=True, fam=TECH)
+    for k in TECH:
+      techB[k] += tb[k]; techT[k] += tt[k]
     ws = words(text)
     docs.append(Counter(ws)); names.append(
       "%s/%02d %s" % (lst, i, title[:48]))
@@ -115,6 +136,17 @@ for g in sorted(set(combA)|set(combB)|set(combT),
     key=lambda g: -(combA[g]+combB[g]+combT[g])):
   report += ["| %s | %s | %s | %s |"
              % (g, combA[g], combB[g], combT[g])]
+
+report += ["", "## Technology facet (same %s papers; "
+  "DRAFT, hand-audit while reading)" % n_pdf, "",
+  "Topic flags above say which literature a paper is in;",
+  "these say how its method works. Full text only",
+  "(abstracts under-report methodology).", "",
+  "| tech | full-bin=y | full-thr=y | meaning |",
+  "|---|---|---|---|"]
+for k in TECH:
+  report += ["| %s | %s | %s | %s |"
+             % (k, techB[k], techT[k], TECH_LONG[k])]
 
 df = Counter()
 for d in docs:

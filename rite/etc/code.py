@@ -38,7 +38,7 @@ def code(src, dst):
     got = {k: bool(re.search(p, text))
            for k, p in FLAGS.items()}
     out.append((title, got))
-    key = "".join(k for k in FLAGS if got[k]) or "none"
+    key = "x".join(k for k in FLAGS if got[k]) or "none"
     combos[key] = combos.get(key, 0) + 1
   with open(dst, "w") as f:
     f.write("SE\tMO\tEX\tBM\ttitle\n")
