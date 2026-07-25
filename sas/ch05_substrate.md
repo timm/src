@@ -22,13 +22,25 @@ This is **CoC** (convention over configuration): the data describes itself, and 
 schema file exists to drift out of date. It is also schema *on read*: types come from
 data, not declarations.
 
+`Tbl` reads the name row, builds one summary per column, splits the summaries out
+by role (all, x, y), and carries a rows list plus a `mid` slot (the table's center
+row, cached; adding a row clears it) that later chapters fill:
+
 %%code src/lib.py Tbl
 
-Two details deserve a look. Firstly, `Num` and `Sym` are plain functions returning
-`o` structs tagged with an `it` slot, and one `add` serves both. That is duck typing
-doing the work inheritance is usually hired for: two types, one protocol (add, mid,
-var), no class hierarchy. Secondly, `addRow` folds a row into every column summary
-incrementally. The table never recomputes. It only ever updates.
+Chapter 4 promised `add`'s code. Here it is, now with its full reach: a value into
+a column, a row into every column, a row into a table (which also clears the cached
+`mid`):
+
+%%code src/lib.py add
+
+Two details deserve a look. Firstly, `Num`, `Sym`, and `Tbl` are plain functions
+returning `o` structs tagged with an `it` slot, and one `add` serves all three
+(`mid` and `div` read the two column kinds). That is duck typing doing the work
+inheritance is usually hired for: three types, one shared verb, no class hierarchy.
+Secondly, `add` on a table
+folds the row into every column summary incrementally. The table never recomputes.
+It only ever updates.
 
 %%run python3 src/lib_eg.py tbl
 

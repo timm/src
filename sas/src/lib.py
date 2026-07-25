@@ -5,7 +5,8 @@ and the statistics that police every claim in this book.
 Reads its knobs from about.py. Imports nothing else but
 the standard library.
 """
-import random, bisect, math, sys
+import random, bisect, sys
+from math import exp, log, sqrt
 from about import o, the
 
 TINY = 1e-32
@@ -45,54 +46,64 @@ def Sym(name="", at=0): # summary of a symbolic column
 def count(sym, v): # update symbol counts
   sym.n += 1; sym.has[v] = 1 + sym.has.get(v, 0)
 
-def welford(num, v): # one-pass mean and spread update
+def welford(num, v): # one-pass update of mu and m2
   num.n += 1; d = v - num.mu; num.mu += d / num.n
   num.m2 += d * (v - num.mu)
 
-def mid(col): # center: mean (Num) or mode (Sym)
- return col.mu if col.it is Num else max(col.has,key=col.has.get)
+#-- queries -----------------------------------------------------
+def entropy(sym): # diversity of symbolic distribution
+  f = lambda p: p*log(p,2)
+  return -sum(f(n/sym.n) for n in sym.has.values() if n > 0)
 
-def var(col): # spread: sd (Num) or entropy (Sym)
-  if col.it is Sym: return -sum(k/col.n * math.log(k/col.n, 2)
-                                for k in col.has.values() if k>0)
-  elif col.n < 2  : return 0
-  else            : return (max(col.m2, 0) / (col.n - 1)) ** 0.5
+def mode(sym): # return most common symbol
+  return max(sym.has, key=sym.has.get)
+
+def mid(col): # center: mean (Num) or mode (Sym)
+  return mode(col) if col.it is Sym else col.mu
+
+def div(col): # diversity: sd (Num) or entropy (Sym)
+  if col.it is Sym: return entropy(col)
+  return 0 if col.n < 2 else sqrt(max(col.m2, 0) / (col.n - 1))
 
 def norm(col, v): # v's cdf, via logistic; 0..1 (Nums only)
   if v == "?" or col.it is Sym: return v
-  z = (v - col.mu) / (var(col) + TINY)
-  return 1 / (1 + math.exp(-1.702 * max(-3, min(3, z))))
+  z = (v - col.mu) / (div(col) + TINY)
+  return 1 / (1 + exp(-1.702 * max(-3, min(3, z))))
 
 #-- tables ------------------------------------------------------
 def Tbl(src): # first row names columns; rest is data
-  src = iter(src); names = next(src)
-  cols = [Col(s, at) for at, s in enumerate(names)]
-  tbl = o(it=Tbl, names=names, cols=cols, rows=[],
-           x=[c for c in cols if c.name[-1] not in "X+-"],
-           y=[c for c in cols if c.name[-1] in "+-"])
-  return adds(src, tbl)
+  src   = iter(src)
+  names = next(src)
+  all   = [Col(s, at) for at, s in enumerate(names)]
+  cols  = o(names=names, all=all,
+            x=[c for c in all if c.name[-1] not in "X+-"],
+            y=[c for c in all if c.name[-1] in "+-"])
+  return adds(src, o(it=Tbl, rows=[], cols=cols, mid=None))
 
 def add(i, v): # fold value into col, row into tbl
   if i.it is Tbl:
-    i.rows += [v]
-    for col in i.cols: add(col, v[col.at])
+    i.rows += [v]; i.mid = None
+    for col in i.cols.all: add(col, v[col.at])
   elif v != "?":
     (count if i.it is Sym else welford)(i, v)
   return v
 
 def adds(lst, col=None): # fold many; guess col kind from first
-  for v in lst:
-    col = col or (Num if isinstance(v,(int,float)) else Sym)()
-    add(col, v)
+  col = col or Num()
+  for v in lst: add(col, v)
   return col
 
 def clone(tbl, rows=[]): # same header, fresh summaries
-  return Tbl([tbl.names] + rows)
+  return Tbl([tbl.cols.names] + rows)
+
+def mids(tbl): # return centroid of this tbl
+  tbl.mid = tbl.mid or [mid(col) for col in tbl.cols.all]
+  return tbl.mid
 
 #-- distance ----------------------------------------------------
 def distx(tbl, row1, row2): # row gap over x cols; 0..1
   d,n = 0,TINY
-  for col in tbl.x:
+  for col in tbl.cols.x:
     a, b = row1[col.at], row2[col.at]
     if a == "?" and b == "?": g = 1
     elif col.it is Sym:       g = a != b
@@ -106,7 +117,7 @@ def distx(tbl, row1, row2): # row gap over x cols; 0..1
 
 def disty(tbl, row): # goal gap to heaven; 0=best
   d,n = 0,TINY
-  for col in tbl.y:
+  for col in tbl.cols.y:
     if (v := row[col.at]) != "?":
       d, n = d + abs(norm(col, v) - col.heaven)**the.p, n+1
   return (d / n) ** (1 / the.p)

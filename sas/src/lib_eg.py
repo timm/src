@@ -38,30 +38,30 @@ def test_idioms(): # sort by computed key; zip transpose
 
 def test_cols(): # sym mode+entropy; num mu,sd via gauss
   s = adds("aaaabbc", Sym())
-  print("sym mid %s ent %.3f" % (mid(s), var(s)))
-  assert mid(s) == "a" and abs(var(s) - 1.379) < 0.01
+  print("sym mid %s ent %.3f" % (mid(s), div(s)))
+  assert mid(s) == "a" and abs(div(s) - 1.379) < 0.01
   random.seed(the.seed)
   n = adds(random.gauss(0, 1) for _ in range(10000))
-  print("num mu %.3f sd %.3f" % (mid(n), var(n)))
-  assert abs(mid(n)) < 0.05 and abs(var(n) - 1) < 0.05
+  print("num mu %.3f sd %.3f" % (mid(n), div(n)))
+  assert abs(mid(n)) < 0.05 and abs(div(n) - 1) < 0.05
 
 def test_tbl(): # column roles and goal stats
   tbl = Tbl(csv(the.file))
   print("rows %s |x| %s |y| %s" % (len(tbl.rows),
-        len(tbl.x), len(tbl.y)))
+        len(tbl.cols.x), len(tbl.cols.y)))
   if "auto93" in the.file:
     assert len(tbl.rows) == 398
-    assert len(tbl.x) == 4 and len(tbl.y) == 3
-    mpg = tbl.y[-1]
+    assert len(tbl.cols.x) == 4 and len(tbl.cols.y) == 3
+    mpg = tbl.cols.y[-1]
     print("%s mu %.2f sd %.2f" %
-          (mpg.name, mid(mpg), var(mpg)))
+          (mpg.name, mid(mpg), div(mpg)))
     assert abs(mid(mpg) - 23.84) < 0.5
-    assert abs(var(mpg) - 8.34) < 0.5
+    assert abs(div(mpg) - 8.34) < 0.5
 
 def test_dist(): # disty sort: top 5, blank, bottom 5
   tbl  = Tbl(csv(the.file))
   rows = sorted(tbl.rows, key=lambda r: disty(tbl, r))
-  hdr  = list(tbl.names) + ["disty"]
+  hdr  = list(tbl.cols.names) + ["disty"]
   fmt  = lambda r: [str(v) for v in r] + \
                    ["%.3f" % disty(tbl, r)]
   body = [fmt(r) for r in rows[:5] + rows[-5:]]
@@ -78,13 +78,13 @@ def test_dist(): # disty sort: top 5, blank, bottom 5
 def test_halve(): # halves get their own summaries
   tbl = Tbl(csv(the.file))
   a, b, west, east = halve(tbl)
-  goal = tbl.y[-1]
+  goal = tbl.cols.y[-1]
   print("poles apart %.3f" % distx(tbl, a, b))
   print("west %s east %s rows" %
         (len(west.rows), len(east.rows)))
   print("%s mu: west %.1f east %.1f" %
-        (goal.name, mid(west.cols[goal.at]),
-         mid(east.cols[goal.at])))
+        (goal.name, mid(west.cols.all[goal.at]),
+         mid(east.cols.all[goal.at])))
   assert len(west.rows) + len(east.rows) == len(tbl.rows)
   assert abs(len(west.rows) - len(east.rows)) <= 1
   assert distx(tbl, a, b) > 0
@@ -106,9 +106,9 @@ def test_leaf(): # walker drops rows into sane groups
   t = Node(tbl)
   rows = sorted(tbl.rows, key=lambda r: disty(tbl, r))
   best, worst = leaf(t, rows[0]), leaf(t, rows[-1])
-  m = lambda n: mid(n.here.y[-1])
+  m = lambda n: mid(n.here.cols.y[-1])
   print("%s mu: best leaf %.1f worst leaf %.1f" %
-        (tbl.y[-1].name, m(best), m(worst)))
+        (tbl.cols.y[-1].name, m(best), m(worst)))
   assert not best.west and not worst.west
   if "auto93" in the.file:
     assert m(best) > m(worst)

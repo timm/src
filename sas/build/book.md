@@ -355,7 +355,7 @@ moves by d/n, and m2 grows by d times the *new* gap (v - mu). The standard devia
 is (m2 / (n - 1)) raised to 0.5, on demand.
 
 ```python
-def welford(num, v): # one-pass mean and spread update
+def welford(num, v): # one-pass update of mu and m2
   num.n += 1; d = v - num.mu; num.mu += d / num.n
   num.m2 += d * (v - num.mu)
 ```
@@ -367,19 +367,10 @@ def count(sym, v): # update symbol counts
   sym.n += 1; sym.has[v] = 1 + sym.has.get(v, 0)
 ```
 
-Now the public face. `add` reads the column's `it` tag, skips the "?" that marks a
-missing value, and hands the rest to the right updater. All the cleverness lives in
-the parts. The whole is one line of dispatch:
-
-```python
-def add(i, v): # fold value into col, row into tbl
-  if i.it is Tbl:
-    i.rows += [v]
-    for col in i.cols: add(col, v[col.at])
-  elif v != "?":
-    (count if i.it is Sym else welford)(i, v)
-  return v
-```
+The public face of both updaters is one function, `add`, which reads a summary's
+`it` tag, skips the "?" that marks a missing value, and hands the value to the
+right updater. Its code waits for Chapter 5, where it also learns to fold rows into
+tables. All the cleverness lives in the parts shown above.
 
 ## Entropy is just counting
 
@@ -392,19 +383,25 @@ and the counts are 4, 2, 1. The three terms are
 -(1/7) log2 (1/7) = 0.401. Their sum is 0.461 + 0.516 +
 0.401 = 1.379 bits.^[Purists will note we never round
 away the working. House rule.] In code, the two middles
-share one roof, and so do the two spreads:
+share one roof, and so do the two diversities. (We say
+"diversity", div, not "variance", since variance names
+sd squared and we report sd.)
 
 ```python
-def mid(col): # center: mean (Num) or mode (Sym)
- return col.mu if col.it is Num else max(col.has,key=col.has.get)
+def entropy(sym): # diversity of symbolic distribution
+  f = lambda p: p*log(p,2)
+  return -sum(f(n/sym.n) for n in sym.has.values() if n > 0)
 ```
 
 ```python
-def var(col): # spread: sd (Num) or entropy (Sym)
-  if col.it is Sym: return -sum(k/col.n * math.log(k/col.n, 2)
-                                for k in col.has.values() if k>0)
-  elif col.n < 2  : return 0
-  else            : return (max(col.m2, 0) / (col.n - 1)) ** 0.5
+def mid(col): # center: mean (Num) or mode (Sym)
+  return mode(col) if col.it is Sym else col.mu
+```
+
+```python
+def div(col): # diversity: sd (Num) or entropy (Sym)
+  if col.it is Sym: return entropy(col)
+  return 0 if col.n < 2 else sqrt(max(col.m2, 0) / (col.n - 1))
 ```
 
 The demo checks the entropy arithmetic above, then checks Welford against 10,000
@@ -433,8 +430,8 @@ Whatever the units, the result runs 0..1.
 ```python
 def norm(col, v): # v's cdf, via logistic; 0..1 (Nums only)
   if v == "?" or col.it is Sym: return v
-  z = (v - col.mu) / (var(col) + TINY)
-  return 1 / (1 + math.exp(-1.702 * max(-3, min(3, z))))
+  z = (v - col.mu) / (div(col) + TINY)
+  return 1 / (1 + exp(-1.702 * max(-3, min(3, z))))
 ```
 
 A tiny epsilon guards the degenerate column whose sd is zero. Numerical hygiene of
@@ -550,21 +547,42 @@ This is **CoC** (convention over configuration): the data describes itself, and 
 schema file exists to drift out of date. It is also schema *on read*: types come from
 data, not declarations.
 
+`Tbl` reads the name row, builds one summary per column, splits the summaries out
+by role (all, x, y), and carries a rows list plus a `mid` slot (the table's center
+row, cached; adding a row clears it) that later chapters fill:
+
 ```python
 def Tbl(src): # first row names columns; rest is data
-  src = iter(src); names = next(src)
-  cols = [Col(s, at) for at, s in enumerate(names)]
-  tbl = o(it=Tbl, names=names, cols=cols, rows=[],
-           x=[c for c in cols if c.name[-1] not in "X+-"],
-           y=[c for c in cols if c.name[-1] in "+-"])
-  return adds(src, tbl)
+  src   = iter(src)
+  names = next(src)
+  all   = [Col(s, at) for at, s in enumerate(names)]
+  cols  = o(names=names, all=all,
+            x=[c for c in all if c.name[-1] not in "X+-"],
+            y=[c for c in all if c.name[-1] in "+-"])
+  return adds(src, o(it=Tbl, rows=[], cols=cols, mid=None))
 ```
 
-Two details deserve a look. Firstly, `Num` and `Sym` are plain functions returning
-`o` structs tagged with an `it` slot, and one `add` serves both. That is duck typing
-doing the work inheritance is usually hired for: two types, one protocol (add, mid,
-var), no class hierarchy. Secondly, `addRow` folds a row into every column summary
-incrementally. The table never recomputes. It only ever updates.
+Chapter 4 promised `add`'s code. Here it is, now with its full reach: a value into
+a column, a row into every column, a row into a table (which also clears the cached
+`mid`):
+
+```python
+def add(i, v): # fold value into col, row into tbl
+  if i.it is Tbl:
+    i.rows += [v]; i.mid = None
+    for col in i.cols.all: add(col, v[col.at])
+  elif v != "?":
+    (count if i.it is Sym else welford)(i, v)
+  return v
+```
+
+Two details deserve a look. Firstly, `Num`, `Sym`, and `Tbl` are plain functions
+returning `o` structs tagged with an `it` slot, and one `add` serves all three
+(`mid` and `div` read the two column kinds). That is duck typing doing the work
+inheritance is usually hired for: three types, one shared verb, no class hierarchy.
+Secondly, `add` on a table
+folds the row into every column summary incrementally. The table never recomputes.
+It only ever updates.
 
 ```
 $ python3 src/lib_eg.py tbl
@@ -582,7 +600,7 @@ leaves, and sliding windows are all, underneath, clones.
 
 ```python
 def clone(tbl, rows=[]): # same header, fresh summaries
-  return Tbl([tbl.names] + rows)
+  return Tbl([tbl.cols.names] + rows)
 ```
 
 ## Distance to heaven
@@ -597,7 +615,7 @@ column. Zero is best.
 ```python
 def disty(tbl, row): # goal gap to heaven; 0=best
   d,n = 0,TINY
-  for col in tbl.y:
+  for col in tbl.cols.y:
     if (v := row[col.at]) != "?":
       d, n = d + abs(norm(col, v) - col.heaven)**the.p, n+1
   return (d / n) ** (1 / the.p)

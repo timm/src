@@ -41,11 +41,10 @@ One pass. No stored raws. Constant memory. Symbols are easier. Count them:
 
 %%code src/lib.py count
 
-Now the public face. `add` reads the column's `it` tag, skips the "?" that marks a
-missing value, and hands the rest to the right updater. All the cleverness lives in
-the parts. The whole is one line of dispatch:
-
-%%code src/lib.py add
+The public face of both updaters is one function, `add`, which reads a summary's
+`it` tag, skips the "?" that marks a missing value, and hands the value to the
+right updater. Its code waits for Chapter 5, where it also learns to fold rows into
+tables. All the cleverness lives in the parts shown above.
 
 ## Entropy is just counting
 
@@ -58,11 +57,15 @@ and the counts are 4, 2, 1. The three terms are
 -(1/7) log2 (1/7) = 0.401. Their sum is 0.461 + 0.516 +
 0.401 = 1.379 bits.^[Purists will note we never round
 away the working. House rule.] In code, the two middles
-share one roof, and so do the two spreads:
+share one roof, and so do the two diversities. (We say
+"diversity", div, not "variance", since variance names
+sd squared and we report sd.)
+
+%%code src/lib.py entropy
 
 %%code src/lib.py mid
 
-%%code src/lib.py var
+%%code src/lib.py div
 
 The demo checks the entropy arithmetic above, then checks Welford against 10,000
 samples from a unit gaussian:
