@@ -70,10 +70,16 @@ def load(src): # coding.tsv rows: SE MO EX BM title
   return [({k: r[i] == "y" for i, k in
             enumerate(FLAGS)}, r[4]) for r in rows]
 
+def table(rows):  # aligned markdown; row 0 = header
+  w = [max(len(str(r[i])) for r in rows)
+       for i in range(len(rows[0]))]
+  def fmt(r):
+    return "| " + " | ".join(
+      str(c).ljust(n) for c, n in zip(r, w)) + " |"
+  sep = "|" + "|".join("-" * (n + 2) for n in w) + "|"
+  return [fmt(rows[0]), sep] + [fmt(r) for r in rows[1:]]
+
 report = ["# Abstract vs full-text coding", "",
-  "## Flag legend (topic facet)", ""]
-report += ["- %s: %s" % (k, LONG[k]) for k in FLAGS]
-report += ["",
   "A group like SExMOxBM is an AND: that exact set of",
   "flags fired, no others. Each paper appears in exactly",
   "one group row.", "",
@@ -117,8 +123,9 @@ for lst in ("recent", "classics"):
 report += ["%s PDFs with usable text." % n_pdf, "",
   "## Per-flag agreement, abstract vs full text",
   "(binary = any match; thr = >=%s per 1k words)" % PER1K,
-  "", "| flag | abs=y | full-bin=y | full-thr=y |"
-  " flips abs->thr |", "|---|---|---|---|---|"]
+  ""]
+rows = [["flag", "abs=y", "full-bin=y", "full-thr=y",
+         "flips abs->thr", "flips bin->thr", "meaning"]]
 for k in FLAGS:
   ay = sum(v for (f,a,b,t),v in tbl.items()
            if f==k and a)
@@ -126,27 +133,28 @@ for k in FLAGS:
            if f==k and b)
   ty = sum(v for (f,a,b,t),v in tbl.items()
            if f==k and t)
-  report += ["| %s | %s | %s | %s | %s |"
-             % (k, ay, by, ty, flips[k])]
+  bt = sum(v for (f,a,b,t),v in tbl.items()
+           if f==k and b != t)
+  rows += [[k, ay, by, ty, flips[k], bt, LONG[k]]]
+report += table(rows)
 
 report += ["", "## Group tables (same %s papers)" % n_pdf,
-  "", "| group | abstract | full-bin | full-thr |",
-  "|---|---|---|---|"]
+  ""]
+rows = [["group", "abstract", "full-bin", "full-thr"]]
 for g in sorted(set(combA)|set(combB)|set(combT),
     key=lambda g: -(combA[g]+combB[g]+combT[g])):
-  report += ["| %s | %s | %s | %s |"
-             % (g, combA[g], combB[g], combT[g])]
+  rows += [[g, combA[g], combB[g], combT[g]]]
+report += table(rows)
 
 report += ["", "## Technology facet (same %s papers; "
   "DRAFT, hand-audit while reading)" % n_pdf, "",
   "Topic flags above say which literature a paper is in;",
   "these say how its method works. Full text only",
-  "(abstracts under-report methodology).", "",
-  "| tech | full-bin=y | full-thr=y | meaning |",
-  "|---|---|---|---|"]
+  "(abstracts under-report methodology).", ""]
+rows = [["tech", "full-bin=y", "full-thr=y", "meaning"]]
 for k in TECH:
-  report += ["| %s | %s | %s | %s |"
-             % (k, techB[k], techT[k], TECH_LONG[k])]
+  rows += [[k, techB[k], techT[k], TECH_LONG[k]]]
+report += table(rows)
 
 df = Counter()
 for d in docs:

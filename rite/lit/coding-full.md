@@ -1,12 +1,5 @@
 # Abstract vs full-text coding
 
-## Flag legend (topic facet)
-
-- SE: software engineering task (defects, testing, requirements, code)
-- MO: multi-objective / search-based optimization
-- EX: explanation / interpretability / XAI
-- BM: benchmarking / empirical comparison
-
 A group like SExMOxBM is an AND: that exact set of
 flags fired, no others. Each paper appears in exactly
 one group row.
@@ -26,30 +19,30 @@ cutoff (vary it; show the group table is stable).
 ## Per-flag agreement, abstract vs full text
 (binary = any match; thr = >=0.5 per 1k words)
 
-| flag | abs=y | full-bin=y | full-thr=y | flips abs->thr |
-|---|---|---|---|---|
-| SE | 9 | 22 | 21 | 12 |
-| MO | 3 | 21 | 10 | 9 |
-| EX | 8 | 22 | 18 | 12 |
-| BM | 5 | 22 | 20 | 15 |
+| flag | abs=y | full-bin=y | full-thr=y | flips abs->thr | flips bin->thr | meaning                                                          |
+|------|-------|------------|------------|----------------|----------------|------------------------------------------------------------------|
+| SE   | 9     | 22         | 21         | 12             | 1              | software engineering task (defects, testing, requirements, code) |
+| MO   | 3     | 21         | 10         | 9              | 11             | multi-objective / search-based optimization                      |
+| EX   | 8     | 22         | 18         | 12             | 4              | explanation / interpretability / XAI                             |
+| BM   | 5     | 22         | 20         | 15             | 2              | benchmarking / empirical comparison                              |
 
 ## Group tables (same 22 papers)
 
-| group | abstract | full-bin | full-thr |
-|---|---|---|---|
-| SExMOxEXxBM | 0 | 21 | 6 |
-| SExEXxBM | 0 | 1 | 9 |
-| EX | 6 | 0 | 0 |
-| SE | 5 | 0 | 0 |
-| none | 4 | 0 | 0 |
-| SExBM | 2 | 0 | 1 |
-| SExMOxBM | 0 | 0 | 3 |
-| SExMOxEX | 1 | 0 | 1 |
-| EXxBM | 1 | 0 | 1 |
-| SExEX | 0 | 0 | 1 |
-| SExMO | 1 | 0 | 0 |
-| MOxBM | 1 | 0 | 0 |
-| BM | 1 | 0 | 0 |
+| group       | abstract | full-bin | full-thr |
+|-------------|----------|----------|----------|
+| SExMOxEXxBM | 0        | 21       | 6        |
+| SExEXxBM    | 0        | 1        | 9        |
+| EX          | 6        | 0        | 0        |
+| SE          | 5        | 0        | 0        |
+| none        | 4        | 0        | 0        |
+| SExMOxBM    | 0        | 0        | 3        |
+| SExBM       | 2        | 0        | 1        |
+| SExMOxEX    | 1        | 0        | 1        |
+| EXxBM       | 1        | 0        | 1        |
+| MOxBM       | 1        | 0        | 0        |
+| SExMO       | 1        | 0        | 0        |
+| SExEX       | 0        | 0        | 1        |
+| BM          | 1        | 0        | 0        |
 
 ## Technology facet (same 22 papers; DRAFT, hand-audit while reading)
 
@@ -57,14 +50,14 @@ Topic flags above say which literature a paper is in;
 these say how its method works. Full text only
 (abstracts under-report methodology).
 
-| tech | full-bin=y | full-thr=y | meaning |
-|---|---|---|---|
-| EXACT | 3 | 0 | exact solvers (integer/linear/constraint programming, SAT/SMT) |
-| EVO | 20 | 3 | evolutionary / genetic / Pareto search (NSGA, SPEA, MOEA/D) |
-| SMBO | 9 | 2 | sequential model-based optimization (Bayesian, surrogates, SMAC) |
-| SYM | 17 | 5 | symbolic / rule-based reasoning (trees, rule lists, logic, fuzzy) |
-| AGG | 4 | 0 | aggregation / scalarization (weighted sums, utility, desirability) |
-| NN | 22 | 22 | neural methods (deep learning, transformers, LLMs) |
+| tech  | full-bin=y | full-thr=y | meaning                                                            |
+|-------|------------|------------|--------------------------------------------------------------------|
+| EXACT | 3          | 0          | exact solvers (integer/linear/constraint programming, SAT/SMT)     |
+| EVO   | 20         | 3          | evolutionary / genetic / Pareto search (NSGA, SPEA, MOEA/D)        |
+| SMBO  | 9          | 2          | sequential model-based optimization (Bayesian, surrogates, SMAC)   |
+| SYM   | 17         | 5          | symbolic / rule-based reasoning (trees, rule lists, logic, fuzzy)  |
+| AGG   | 4          | 0          | aggregation / scalarization (weighted sums, utility, desirability) |
+| NN    | 22         | 22         | neural methods (deep learning, transformers, LLMs)                 |
 
 ## Top tf-idf terms per paper (stemmed)
 
