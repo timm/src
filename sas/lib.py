@@ -50,16 +50,20 @@ def welford(num, v): # one-pass update of mu and m2
   num.n += 1; d = v - num.mu; num.mu += d / num.n
   num.m2 += d * (v - num.mu)
 
+#-- queries -----------------------------------------------------
 def entropy(sym): # diversity of symbolic distribution
   f = lambda p: p*log(p,2)
   return -sum(f(n/sym.n) for n in sym.has.values() if n > 0)
 
+def mode(sym): # return most common symbol
+  return max(sym.has, key=sym.has.get)
+
 def mid(col): # center: mean (Num) or mode (Sym)
- return col.mu if col.it is Num else max(col.has,key=col.has.get)
+  return mode(col) if col.it is Sym else col.mu
 
 def div(col): # diversity: sd (Num) or entropy (Sym)
-  return entropy(col) if col.it is Sym else (
-         0 if col.n < 2 else sqrt(max(col.m2, 0) / (col.n - 1)))
+  if col.it is Sym: return entropy(col)
+  return 0 if col.n < 2 else sqrt(max(col.m2, 0) / (col.n - 1))
 
 def norm(col, v): # v's cdf, via logistic; 0..1 (Nums only)
   if v == "?" or col.it is Sym: return v
@@ -84,7 +88,7 @@ def add(i, v): # fold value into col, row into tbl
     (count if i.it is Sym else welford)(i, v)
   return v
 
-def adds(lst, col=None): # fold many; Num unless told otherwise
+def adds(lst, col=None): # fold many; guess col kind from first
   col = col or Num()
   for v in lst: add(col, v)
   return col
@@ -119,36 +123,37 @@ def disty(tbl, row): # goal gap to heaven; 0=best
   return (d / n) ** (1 / the.p)
 
 #-- clusters ----------------------------------------------------
-def project(tbl, row, a, b, c): # project row onto the a-b line
-  return (distx(tbl,a,row)**2 + c*c
-          - distx(tbl,b,row)**2) / (2*c + TINY)
-
-def halve(tbl, rows=None): # split rows on far poles, best first
+def halve(tbl, rows=None): # split on far poles, best first
   rows = rows or tbl.rows
+  dx   = lambda r, r2: distx(tbl, r, r2) + TINY
+  dy   = lambda r: disty(tbl, r)
   far  = lambda r: max(some(rows, the.few),
-                       key=lambda r2: distx(tbl, r, r2))
+                       key=lambda r2: dx(r, r2))
   a    = far(random.choice(rows))
   b    = far(a)
-  c    = distx(tbl, a, b)
-  if disty(tbl, b) < disty(tbl, a): a, b = b, a
-  rows = sorted(rows, key=lambda r: project(tbl, r, a, b, c))
-  n    = len(rows) // 2
-  return a, b, rows[:n], rows[n:]
+  c    = dx(a, b)
+  if dy(b) < dy(a): a, b = b, a
+  cos  = lambda row: (dx(a,row)**2 + c*c - dx(b,row)**2)/(2*c)
+  rows = sorted(rows, key=cos); n = len(rows) // 2
+  return a, b, clone(tbl, rows[:n]), clone(tbl, rows[n:])
 
-def Node(tbl, rows=None): # tree of halves
+def Node(tbl, rows=None): # tree of separations
   rows = rows or tbl.rows
   node = o(it=Node, here=clone(tbl, rows),
            a=None, b=None, west=None, east=None)
   if len(rows) >= 2 * the.stop:
-    node.a, node.b, west, east = halve(tbl, rows)
-    if west and east:
-      node.west, node.east = Node(tbl,west), Node(tbl,east)
+    a, b, west, east = halve(tbl, rows)
+    if west.rows and east.rows:
+      node.a, node.b = a, b
+      node.west = Node(tbl, west.rows)
+      node.east = Node(tbl, east.rows)
   return node
 
 def leaf(node, row): # walk row down to its leaf group
   while node.west:
-    d = lambda pole: distx(node.here, row, pole)
-    node = node.west if d(node.a) <= d(node.b) else node.east
+    near = distx(node.here, row, node.a)
+    far  = distx(node.here, row, node.b)
+    node = node.west if near <= far else node.east
   return node
 
 #-- statistics --------------------------------------------------
