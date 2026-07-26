@@ -25,11 +25,11 @@
 :- dynamic (<++)/2, (<+)/2, (<~)/2, (<~~)/2, (?)/1.
 :- discontiguous (<++)/2, (<+)/2, (<~)/2, (<~~)/2.
 
-% model: hard f wants one bundle, small (a,b) or big (c,d,e),
-% but e also breaks f; hard g is made by d or e; softgoals p,q
+% model: f and g are hard because they are unmarked roots;
+% f wants one bundle, small (a,b) or big (c,d,e), but e also
+% breaks f; g is made by d or e; softgoals p,q
 % (marked ?) ride on a and e; a and b help each other, a cycle
 % the labeller must survive. Worlds differ with the order tried.
-hard(f).  hard(g).
 ? p.
 ? q.
 
@@ -43,6 +43,15 @@ p <+  a.
 q <++ e.
 
 w(<++, 1.0).  w(<+, 0.5).  w(<~, -0.5).  w(<~~, -1.0).
+
+% hard = a root (a head in no body) that is not marked "?".
+leaf(X and Y,N) :- !, (leaf(X,N) ; leaf(Y,N)).
+leaf(X or Y,N)  :- !, (leaf(X,N) ; leaf(Y,N)).
+leaf(N,N).
+
+head(N) :- w(Op,_), call(Op,N,_).
+used(N) :- w(Op,_), call(Op,_,B), leaf(B,N).
+hard(N) :- head(N), \+ used(N), \+ ? N.
 
 seen(N,V)    :- b_getval(seen,S), get_assoc(N,S,V).
 bassert(N,V) :- b_getval(seen,S0), put_assoc(N,S0,V,S),
@@ -89,7 +98,7 @@ any([]).
 any([G|Gs]) :- (label(G,1.0) -> true ; true), any(Gs).
 
 % one row: X the labels, Y how many softgoals were achieved.
-row(X,Y) :- findall(H,hard(H),Hs), findall(P,? P,Ps),
+row(X,Y) :- setof(H,hard(H),Hs), findall(P,? P,Ps),
             between(1,100,_),
             empty_assoc(E), b_setval(seen,E),
             random_permutation(Hs,Rs), all(Rs), !,
