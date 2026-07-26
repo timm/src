@@ -27,11 +27,14 @@
 
 % model: hard f wants one bundle, small (a,b) or big (c,d,e),
 % but e also breaks f; hard g is made by d or e; softgoals p,q
-% (marked ?) ride on a and e. Worlds differ with the order tried.
+% (marked ?) ride on a and e; a and b help each other, a cycle
+% the labeller must survive. Worlds differ with the order tried.
 hard(f).  hard(g).
 ? p.
 ? q.
 
+a <+  b.                % a loop: a and b help each other
+b <+  a.
 f <+  a and b.
 f <+  c and d and e.
 f <~~ e.
