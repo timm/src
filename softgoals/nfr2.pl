@@ -36,7 +36,7 @@ eval(K,V) --> ( { var(V) } -> { random_permutation([2,-2],Ps), member(V,Ps) }
 % so a -2 target fails here by unification (falsity is assumed,
 % never derived); edges leave V pending for combine.
 agenda(K,2,or,Bs)    :- findall(B, (K <- B), Bs), Bs \= [].
-agenda(K,_,edges,Es) :- findall(E, ((K <~ Es0), member(E,Es0)), Es), Es \= [].
+agenda(K,_,and,Es)   :- findall(E, ((K <~ Es0), member(E,Es0)), Es), Es \= [].
 
 walk(or,Bs,_)  --> { member(B,Bs),             % or: do ONE of them
                      random_permutation(B,Ls) },
