@@ -24,20 +24,26 @@ believe(K,V)  --> peek(A0),
 
 % ---- one evaluator -------------------------------------------------------
 eval(K,V) --> believed(K,W), !, { V = W }.     % memo, or a loop: share V
-eval(K,V) --> { V \== -2,                      % falsity is assumed, not derived
-                findall(B, (K <- B), Bs), Bs \= [] }, !,
-              believe(K,2), { V = 2,           % head first, loops close true
-                random_permutation(Bs, Rs),  member(Body, Rs),   % choice-or
-                random_permutation(Body, Ls) },
-              lits(Ls).                                          % and
-eval(K,V) --> { findall(E, ((K <~ Es), member(E,Es)), Edges), Edges \= [] }, !,
-              believe(K,V),                    % head first, V still pending
-              { random_permutation(Edges, Rs) },
-              foldl(contrib, Rs, Vs),          % max-or lives in contrib/or
-              { combine(Vs, V) }.
+eval(K,V) --> { agenda(K,V,Todo) }, !,         % random list of stuff to prove
+              believe(K,V),                    % head first: rules close true,
+              walk(Todo,V).                    % edge loops share pending V
 eval(K,V) --> ( { var(V) } -> { random_permutation([2,-2],Ps), member(V,Ps) }
               ; [] ),
               believe(K,V).                    % bare leaf: assume it
+
+% agenda head carries the value contract: rules only ever prove 2,
+% so a -2 target fails here by unification (falsity is assumed,
+% never derived); edges leave V pending for combine.
+agenda(K,2,or(Rs))    :- findall(B, (K <- B), Bs), Bs \= [],
+                         random_permutation(Bs,Rs).
+agenda(K,_,edges(Rs)) :- findall(E, ((K <~ Es), member(E,Es)), Es1),
+                         Es1 \= [], random_permutation(Es1,Rs).
+
+walk(or(Bs),_)    --> { member(B,Bs),                            % choice-or
+                        random_permutation(B,Ls) },
+                      lits(Ls).                                  % and
+walk(edges(Es),V) --> foldl(contrib,Es,Vs),    % max-or lives in contrib/or
+                      { combine(Vs,V) }.
 
 lits([])     --> [].
 lits([L|Ls]) --> { kv(L,K,T) }, eval(K,T), lits(Ls).
