@@ -8,6 +8,8 @@
 :- dynamic (<-)/2, (<~)/2.
 :- discontiguous (<-)/2, (<~)/2.
 
+permute(Xs,Ys) :- random_permutation(Xs,Ys).
+
 % ---- belief set: assoc-list threaded invisibly as DCG state --------------
 kv(not X,    X,       no) :- !.
 kv(lab(G,V), soft(G), V)  :- !.
@@ -25,9 +27,9 @@ believe(X)  --> peek(A0), { kv(X,K,V) },       % memberchk = member + cut
 prove(L)  --> believed(L), !.                  % loop, or old news: visit once
 prove(L)  --> { findall(B, (L <- B), Bs), Bs \= [] }, !,
               believe(L),                      % head first, so loops close
-              { random_permutation(Bs, Rs),  
+              { permute(Bs, Rs),  
 	        member(Body, Rs),       % ors
-                random_permutation(Body, Ls) 
+                permute(Body, Ls) 
 	      }, 
 	      proves(Ls).          % ands
 prove(L)  --> believe(L).                      % no rules: assume it
@@ -39,10 +41,10 @@ proves([L|Ls]) --> prove(L), proves(Ls).
 soft(G,V) --> believed(lab(G,W)), !, { V=W }.  % memo, or a loop: share V
 soft(G,V) --> { findall(E, ((G <~ Es), member(E,Es)), Edges), Edges \= [] }, !,
               believe(lab(G,V)),           % head first, V still unbound, so
-              { random_permutation(Edges, Rs) },   % loops close on the same
+              { permute(Edges, Rs) },   % loops close on the same
               foldl(contrib, Rs, Vs),              % variable: self-support
               { combine(Vs, V) }.                  % iff the fixpoint holds
-soft(G,V) --> { random_permutation([2,-2], Ps), member(V,Ps) },  % abducible
+soft(G,V) --> { permute([2,-2], Ps), member(V,Ps) },  % abducible
               believe(lab(G,V)).
 
 contrib(make(X), V) --> soft(X,V).                                % full, same

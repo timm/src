@@ -25,6 +25,8 @@
 :- dynamic (<++)/2, (<+)/2, (<~)/2, (<~~)/2, (?)/1.
 :- discontiguous (<++)/2, (<+)/2, (<~)/2, (<~~)/2.
 
+permute(Xs,Ys) :- random_permutation(Xs,Ys).
+
 % model: f and g are hard because they are unmarked roots;
 % f wants one bundle, small (a,b) or big (c,d,e), but e also
 % breaks f; g is made by d or e; softgoals p,q
@@ -70,7 +72,7 @@ label(N,V) :- seen(N,V0), !, V0 == V.
 label(N,V) :- findall(W-Bs,
                 (w(Op,W), findall(B,call(Op,N,B),Bs), Bs\=[]),
                 Es0),
-              random_permutation(Es0,Es),
+              permute(Es0,Es),
               bassert(N,V), edges(Es,V,no-Met),
               (Es == [] -> true ; Met == yes).
 
@@ -81,7 +83,7 @@ edges([W-Bs|Es],V,M0-M) :- expect(V,W,E),
                            edges(Es,V,M1-M).
 
 % or = one of, random order; and = all of them.
-or(Bs,V)        :- random_permutation(Bs,Rs), member(B,Rs),
+or(Bs,V)        :- permute(Bs,Rs), member(B,Rs),
                    want(B,V).
 want(X or Y,V)  :- !, or([X,Y],V).
 want(X and Y,V) :- !, want(X,V), want(Y,V).
@@ -101,7 +103,7 @@ any([G|Gs]) :- (label(G,1.0) -> true ; true), any(Gs).
 row(X,Y) :- setof(H,hard(H),Hs), findall(P,? P,Ps),
             between(1,100,_),
             empty_assoc(E), b_setval(seen,E),
-            random_permutation(Hs,Rs), all(Rs), !,
+            permute(Hs,Rs), all(Rs), !,
             any(Ps),
             b_getval(seen,S), assoc_to_list(S,L),
             findall(N=V,member(N-V,L),X),

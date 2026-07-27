@@ -10,6 +10,8 @@
 :- dynamic (<-)/2, (<~)/2.
 :- discontiguous (<-)/2, (<~)/2.
 
+permute(Xs,Ys) :- random_permutation(Xs,Ys).
+
 % ---- belief set: Node-Value list threaded as DCG state -------------------
 kv(not X, X, -2) :- !.
 kv(X,     X,  2).
@@ -26,9 +28,9 @@ believe(K,V)  --> peek(A0),
 eval(K,V) --> believed(K,W), !, { V = W }.     % memo, or a loop: share V
 eval(K,V) --> { agenda(K,V,How,Xs) }, !,       % the stuff to prove...
               believe(K,V),                    % (head first: rules close true,
-              { random_permutation(Xs,Rs) },   %  edge loops share pending V)
+              { permute(Xs,Rs) },   %  edge loops share pending V)
               walk(How,Rs,V).                  % ...walked in random order
-eval(K,V) --> ( { var(V) } -> { random_permutation([2,-2],Ps), member(V,Ps) }
+eval(K,V) --> ( { var(V) } -> { permute([2,-2],Ps), member(V,Ps) }
               ; [] ),
               believe(K,V).                    % bare leaf: assume it
 
@@ -39,7 +41,7 @@ agenda(K,2,or,Bs)    :- findall(B, (K <- B), Bs), Bs \= [].
 agenda(K,_,and,Es)   :- findall(E, ((K <~ Es0), member(E,Es0)), Es), Es \= [].
 
 walk(or,Bs,_)  --> { member(B,Bs),             % or: do ONE of them
-                     random_permutation(B,Ls) },
+                     permute(B,Ls) },
                    lits(Ls).
 walk(and,Es,V) --> foldl(contrib,Es,Vs),       % and: do ALL of them
                    { combine(Vs,V) }.
