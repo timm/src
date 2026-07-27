@@ -24,9 +24,10 @@ believe(K,V)  --> peek(A0),
 
 % ---- one evaluator -------------------------------------------------------
 eval(K,V) --> believed(K,W), !, { V = W }.     % memo, or a loop: share V
-eval(K,V) --> { agenda(K,V,Todo) }, !,         % random list of stuff to prove
-              believe(K,V),                    % head first: rules close true,
-              walk(Todo,V).                    % edge loops share pending V
+eval(K,V) --> { agenda(K,V,How,Xs) }, !,       % the stuff to prove...
+              believe(K,V),                    % (head first: rules close true,
+              { random_permutation(Xs,Rs) },   %  edge loops share pending V)
+              walk(How,Rs,V).                  % ...walked in random order
 eval(K,V) --> ( { var(V) } -> { random_permutation([2,-2],Ps), member(V,Ps) }
               ; [] ),
               believe(K,V).                    % bare leaf: assume it
@@ -34,16 +35,15 @@ eval(K,V) --> ( { var(V) } -> { random_permutation([2,-2],Ps), member(V,Ps) }
 % agenda head carries the value contract: rules only ever prove 2,
 % so a -2 target fails here by unification (falsity is assumed,
 % never derived); edges leave V pending for combine.
-agenda(K,2,or(Rs))    :- findall(B, (K <- B), Bs), Bs \= [],
-                         random_permutation(Bs,Rs).
-agenda(K,_,edges(Rs)) :- findall(E, ((K <~ Es), member(E,Es)), Es1),
-                         Es1 \= [], random_permutation(Es1,Rs).
+agenda(K,2,or,Bs)    :- findall(B, (K <- B), Bs), Bs \= [].
+agenda(K,_,edges,Es) :- findall(E, ((K <~ Es0), member(E,Es0)), Es),
+                        Es \= [].
 
-walk(or(Bs),_)    --> { member(B,Bs),                            % choice-or
-                        random_permutation(B,Ls) },
-                      lits(Ls).                                  % and
-walk(edges(Es),V) --> foldl(contrib,Es,Vs),    % max-or lives in contrib/or
-                      { combine(Vs,V) }.
+walk(or,Bs,_)    --> { member(B,Bs),                             % choice-or
+                       random_permutation(B,Ls) },
+                     lits(Ls).                                   % and
+walk(edges,Es,V) --> foldl(contrib,Es,Vs),     % max-or lives in contrib/or
+                     { combine(Vs,V) }.
 
 lits([])     --> [].
 lits([L|Ls]) --> { kv(L,K,T) }, eval(K,T), lits(Ls).
