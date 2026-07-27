@@ -19,10 +19,8 @@ kv(X,     X,  2).
 peek(A,A,A).
 push(X,A,[X|A]).
 
-believed(K,V) --> peek(A), { memberchk(K-V1,A), V = V1 }.
-believe(K,V)  --> peek(A0),
-                  ( { memberchk(K-V1,A0) } -> { V1 == V }
-                  ; push(K-V) ).
+believed(K,V) --> peek(A),   { memberchk(K-V1,A), V = V1 }.
+believe(K,V)  --> peek(A0), ({ memberchk(K-V1,A0) } -> { V1==V } ; push(K-V)).
 
 % ---- one evaluator -------------------------------------------------------
 eval(K,V) --> believed(K,W), !, { V = W }.     % memo, or a loop: share V
@@ -30,21 +28,17 @@ eval(K,V) --> { agenda(K,V,How,Xs) }, !,       % the stuff to prove...
               believe(K,V),                    % (head first: rules close true,
               { permute(Xs,Rs) },   %  edge loops share pending V)
               walk(How,Rs,V).                  % ...walked in random order
-eval(K,V) --> ( { var(V) } -> { permute([2,-2],Ps), member(V,Ps) }
-              ; [] ),
-              believe(K,V).                    % bare leaf: assume it
+eval(K,V) --> ({var(V)} -> {permute([2,-2],Ps), member(V,Ps)} ; [] ), 
+              believe(K,V).                    
 
 % agenda head carries the value contract: rules only ever prove 2,
 % so a -2 target fails here by unification (falsity is assumed,
 % never derived); edges leave V pending for combine.
-agenda(K,2,or,Bs)    :- findall(B, (K <- B), Bs), Bs \= [].
-agenda(K,_,and,Es)   :- findall(E, ((K <~ Es0), member(E,Es0)), Es), Es \= [].
+agenda(K,2,or,Bs)  :- findall(B, (K <- B), Bs), Bs \= [].
+agenda(K,_,and,Es) :- findall(E, ((K <~ Es0), member(E,Es0)), Es), Es \= [].
 
-walk(or,Bs,_)  --> { member(B,Bs),             % or: do ONE of them
-                     permute(B,Ls) },
-                   lits(Ls).
-walk(and,Es,V) --> foldl(contrib,Es,Vs),       % and: do ALL of them
-                   { combine(Vs,V) }.
+walk(or,Bs,_)  --> { member(B,Bs), permute(B,Ls) }, lits(Ls).
+walk(and,Es,V) --> foldl(contrib,Es,Vs), { combine(Vs,V) }.
 
 lits([])     --> [].
 lits([L|Ls]) --> { kv(L,K,T) }, eval(K,T), lits(Ls).
