@@ -16,6 +16,7 @@ Short sentences must still be sentences. Complete clauses with verbs. See the fr
 Rhetorical questions drive sections: "But do all SE tasks need such complexity? Perhaps not."
 It is fine for a paragraph to end flat, without a tidy landing.
 One idea per sentence. When a sentence grows two clauses, split it.
+No run-ons. Two independent clauses spliced by a comma (or by nothing) are two sentences; give each its own period. A long sentence is fine only when its clauses are properly joined and it still carries one idea.
 Connectives (use these, in roughly this frequency order)
 "Hence" (the workhorse), "That said,", "Also,", "Further,", "Note that", "To say that another way,", "Just to repeat a point made above,".
 "Firstly, ... Secondly, ..." for two-part bad news; extends to "Thirdly, Fourthly, Fifthly" for evidence ledgers.
