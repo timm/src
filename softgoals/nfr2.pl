@@ -1,0 +1,73 @@
+% nfr2.pl : nfr.pl with prove and soft merged into one eval//2.
+% The or-policy is picked by the defining database, not a flag:
+% rules (H <- Body) give choice-or (commit to one body, minimal
+% assumptions); edges (G <~ Es) give max-or (label all, combine).
+% Horn is the 5-valued algebra restricted to {2,-2}: a literal L
+% demands its kv target exactly; believing the head IS the value.
+:- op(900, fy, not).
+:- op(1100, xfx, <-).
+:- op(1100, xfx, <~).
+:- dynamic (<-)/2, (<~)/2.
+:- discontiguous (<-)/2, (<~)/2.
+
+% ---- belief set: Node-Value list threaded as DCG state -------------------
+kv(not X, X, -2) :- !.
+kv(X,     X,  2).
+
+peek(A,A,A).
+push(X,A,[X|A]).
+
+believed(K,V) --> peek(A), { memberchk(K-V1,A), V = V1 }.
+believe(K,V)  --> peek(A0),
+                  ( { memberchk(K-V1,A0) } -> { V1 == V }
+                  ; push(K-V) ).
+
+% ---- one evaluator -------------------------------------------------------
+eval(K,V) --> believed(K,W), !, { V = W }.     % memo, or a loop: share V
+eval(K,V) --> { V \== -2,                      % falsity is assumed, not derived
+                findall(B, (K <- B), Bs), Bs \= [] }, !,
+              believe(K,2), { V = 2,           % head first, loops close true
+                random_permutation(Bs, Rs),  member(Body, Rs),   % choice-or
+                random_permutation(Body, Ls) },
+              lits(Ls).                                          % and
+eval(K,V) --> { findall(E, ((K <~ Es), member(E,Es)), Edges), Edges \= [] }, !,
+              believe(K,V),                    % head first, V still pending
+              { random_permutation(Edges, Rs) },
+              foldl(contrib, Rs, Vs),          % max-or lives in contrib/or
+              { combine(Vs, V) }.
+eval(K,V) --> ( { var(V) } -> { random_permutation([2,-2],Ps), member(V,Ps) }
+              ; [] ),
+              believe(K,V).                    % bare leaf: assume it
+
+lits([])     --> [].
+lits([L|Ls]) --> { kv(L,K,T) }, eval(K,T), lits(Ls).
+
+% ---- contributions -------------------------------------------------------
+contrib(make(X), V) --> eval(X,V).                                % full, same
+contrib(break(X),V) --> eval(X,W), { V is -W }.                   % full, flip
+contrib(help(X), V) --> eval(X,W), { V is  sign(W)*min(1,abs(W)) }.
+contrib(hurt(X), V) --> eval(X,W), { V is -sign(W)*min(1,abs(W)) }.
+contrib(and(Xs), V) --> foldl(eval,Xs,Vs), { min_list(Vs,V) }.
+contrib(or(Xs),  V) --> foldl(eval,Xs,Vs), { max_list(Vs,V) }.
+contrib(task(P), V) --> lits([P]), { V = 2 }.          % bridge to horn side
+
+combine(Vs, V) :- term_variables(Vs, Us), grounds(Us),  % pending loop labels
+                  include([X]>>(X>0), Vs, Ps), include([X]>>(X<0), Vs, Ns),
+                  ( Ps=[] -> P=0 ; max_list(Ps,P) ),
+                  ( Ns=[] -> N=0 ; min_list(Ns,N) ),
+                  \+ (P =:= 2, N =:= -2),              % sat meets denied
+                  V is max(-2, min(2, P+N)).
+
+grounds([]).
+grounds([U|Us]) :- member(U, [2,1,0,-1,-2]), grounds(Us).
+
+% ---- top ----------------------------------------------------------------
+abduce(G,As)   :- kv(G,K,T), eval(K,T,[],A), picks(A,As).
+soften(G,V,As) :- eval(G,V,[],A), picks(A,As).
+
+picks(A,As) :- msort(A,Ps), findall(X,(member(K-V,Ps),leaf(K,V,X)),As).
+leaf(K,_,_)        :- (K <- _), !, fail.       % derived: hide, show leaves
+leaf(K,_,_)        :- (K <~ _), !, fail.
+leaf(K, 2, K)      :- !.
+leaf(K,-2, not K)  :- !.
+leaf(K, V, lab(K,V)).
