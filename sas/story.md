@@ -1,34 +1,41 @@
+
 # Sophisticated AI: Simple Ain't Stupid
 
 Tim Menzies   
 timm@ieee.org
 
-"Simplicity is the ultimate sophistication"         
-- William Gaddis, The Recognitions (1955) p. 457; 
+> "Simplicity is the ultimate sophistication"         
+> - William Gaddis, The Recognitions (1955) p. 457; 
 
 ## 1. Introduction
 
-Ask anyone: AI is very complicated. It needs models with a
-trillion parameters. Those models cost tens of millions of
-dollars to train, and hundreds of dollars each day to run. No one
-can say how the models work. Thus, we must always be nervous
-about what they tell us. In this view, sophistication means size.
+![](sas.png){#logo width=400}
 
-Sophistication of that size has problems. Big AI is a rented
-telescope: powerful, but pointed by someone else. Only a few
-large companies can pay for such training, so science now depends
-on tools that science cannot inspect. The models change without
-notice, so yesterday's results may not run tomorrow. Their
-answers can be wrong in confident ways, so every output needs a
-human check. Also, each new model asks for exponentially more, so
-we keep running out of the environmental, power, and financial
-resources this kind of AI needs.
+Everybody knows that AI has to be  very complicated, right? Serious
+AI needs a trillion parameters, at the very least. Serious models
+cost tens of millions of dollars to train, and hundreds of dollars
+a day to run. No one can say how they work, which only proves how
+advanced they are. Naturally, we must be nervous about everything
+they tell us; that is the price of progress. In this view,
+sophistication means size.
 
-For these reasons, we are moved to look for a simpler approach.  We
-argue (in the next chapter) that a very simple kind of AI is possible.
-This AI can explain itself. It can train useful models in milliseconds,
-from very little data. If our argument is correct, then many tasks
-that seem to need massive AI have a much simpler solution.
+But  everybody also knows that sophistication of that size has
+problems. Big AI is a rented telescope: powerful, but pointed by
+someone else. Only a few large companies can pay for such training,
+so science now depends on tools that science cannot inspect. The
+models change without notice, so yesterday's results may not run
+tomorrow. Their answers can be wrong in confident ways, so every
+output needs a human check. Also, each new model asks for exponentially
+more, so we keep running out of the environmental, power, and
+financial resources this kind of AI needs.
+
+In fairness, AI is not always simple; some problems truly need
+the big machinery. The current trap runs the other way: we assume
+complexity without first checking if it is necessary. This book is
+that check. The next chapters collect our simple methods: AI that
+explains itself, that trains useful models in milliseconds, from
+very little data. As you read them, keep score. For your own work,
+how often would these shortcuts be enough?
 
 We make this concrete with an example. Suppose we want to buy a
 car. Someone tells us that a good car accelerates quickly, uses
@@ -46,7 +53,7 @@ to the car would help it, the most.
 This table lists many other ways our AI could support us:
 
 | task                                             | AI tool                   |
-|--------------------------------------------------|---------------------------|
+|--------------------------------------------------|:-------------------------:|
 | Guess the fuel use before we see the sticker     | prediction                |
 | Spot a strange car: a typo, or a scam            | anomaly detection         |
 | Notice when the lot quietly changes under us     | drift                     |
@@ -70,9 +77,9 @@ lines of Python sit under all of them, and most chapters of this
 book add only a few dozen lines more.
 
 Second, each task in the table is simpler than its reputation
-because, fundamentally, _AI is simple_.
+because, often, _AI is simple_.
 The next chapter shows that, mathematically, finding good
-solutions for any of these tasks is surprisingly easy. Thus,
+solutions for any of these tasks can be surprisingly easy. Thus,
 "simple" and "does much" do not conflict. William Gaddis (quote
 above) would call this approach highly sophisticated. The
 sophistication of this AI is not in its size. It is in how little
@@ -85,13 +92,44 @@ So we end this introduction with an invitation. Reflect on these
 examples. Then check, for yourself, if the simpler approach to AI
 is also the more sophisticated one.
 
-A note on audience: this is a book for programmers who already
-know some Python. If that is not you, then before starting here,
-maybe you should first read:
+### Audience
 
-- Allen Downey's "Think Python" (3rd ed., 2024), 
-- Eric Matthes' "Python Crash Course" (3rd ed., 2023), 
-- or Joel Grus's "Data Science from Scratch" (2nd ed., 2019). 
+This book is for anyone worried that, flying over details with
+LLMs, we miss what happens under the hood.  It is a book of deep study;
+of mastery; of long-term creation inspred by Donald Knuth who
+famously said:
+
+> ... is a wonderful thing for people whose role in life is to
+> be on top of things. But not for me; my role is to be on the
+> bottom of things.
+
+These chapters go down to the bottom of AI's machinery. Once
+there, we report good news: much of that machinery can be simplified,
+then shared across many AI tasks. The book maps those low-level
+details in working code, after the manner of two classics of the
+code walk-through: Lions' commentary on UNIX[^lions] and
+Norvig's paradigms of AI programming, in Lisp[^norvig]. It
+tries (but  may not always succeed) to be worthy of that company.
+
+To present those low-level details, we use Python.
+If you are not familiar with that language then
+before starting here, maybe you should first read Downey's *Think Python*[^downey],
+Matthes' *Python Crash Course*[^matthes], or Grus's *Data
+Science from Scratch*[^grus].
+
+[^lions]: John Lions, "Lions' Commentary on UNIX 6th Edition,
+with Source Code", 1977.
+
+[^norvig]: Peter Norvig, "Paradigms of Artificial Intelligence
+Programming: Case Studies in Common Lisp", Morgan Kaufmann, 1992.
+
+[^downey]: Allen Downey, "Think Python", 3rd ed., O'Reilly, 2024.
+
+[^matthes]: Eric Matthes, "Python Crash Course", 3rd ed.,
+No Starch Press, 2023.
+
+[^grus]: Joel Grus, "Data Science from Scratch", 2nd ed.,
+O'Reilly, 2019.
 
 The last one also previews this book's habit: build the tools yourself.
 
@@ -336,3 +374,7 @@ The first thing we need to do is
 
 
 # References
+
+Donald E. Knuth, on why he gave up email in 1990:
+knuth.stanford.edu (personal site).
+

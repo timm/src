@@ -1,8 +1,30 @@
 <style>
-pre { background: #eeeeee; padding: 0.8em 1em;
+pre { background: light-dark(#eeeeee, #2c2c2c); padding: 0.8em 1em;
       border-radius: 4px; overflow-x: auto; }
 body { max-width: 46em; margin: auto; padding: 0 1em;
        font-family: Optima, Candara, 'Gill Sans', 'Segoe UI', sans-serif; line-height: 1.45; }
-code { background: #eeeeee; }
+code { background: light-dark(#eeeeee, #2c2c2c); }
 pre code { background: none; }
+img#logo { float: right; margin: 0 0 1em 1em; }
+:root { color-scheme: light dark; }
+h1, h2, h3 { text-wrap: balance; }
+p { text-wrap: pretty; }
+h2 { font-variant: small-caps; border-bottom: 1px solid #8884; }
+blockquote { border-left: 3px solid #8884; padding-left: 1em;
+             font-style: italic; }
+#mode { position: fixed; top: .6em; right: .6em; width: 2em;
+        height: 2em; border: 1px solid #8886; border-radius: 50%;
+        background: none; cursor: pointer; }
+table { border-collapse: collapse; margin: 0 auto; }
+td, th { border-bottom: 1px solid #8886; padding: .25em .6em; }
 </style>
+<script>
+addEventListener('DOMContentLoaded', () => {
+  const b = document.createElement('button');
+  b.id = 'mode'; b.textContent = '◐'; b.title = 'light/dark';
+  let dark = matchMedia('(prefers-color-scheme: dark)').matches;
+  b.onclick = () => { dark = !dark;
+    document.documentElement.style.colorScheme = dark ? 'dark' : 'light'; };
+  document.body.prepend(b);
+});
+</script>

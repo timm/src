@@ -10,7 +10,7 @@ help:                   ## list targets
 
 story:                  ## render story.md to tmp/story.html, open it
 	@mkdir -p tmp
-	@pandoc story.md -s --syntax-highlighting=tango \
+	@pandoc story.md --template=etc/story.template \
 	  -H etc/story-head.html -o tmp/story.html
 	@open -a "Google Chrome" tmp/story.html
 
