@@ -40,12 +40,34 @@ addEventListener('DOMContentLoaded', () => {
 <h1 id="sophisticated-ai-simple-aint-stupid">Sophisticated AI: Simple
 Ain’t Stupid</h1>
 <p>Tim Menzies<br />
-timm@ieee.org</p>
+timm@ieee.org<br />
+August, 2026</p>
+<p><a href="https://github.com/timm/src/releases"><img
+src="https://img.shields.io/badge/version-0.1-8B5CF6" alt="v0.1" /></a>
+<a href="https://timm.fyi"><img
+src="https://img.shields.io/badge/%C2%A9_2026-Tim_Menzies-1D4ED8"
+alt="©2026" /></a> <a
+href="https://creativecommons.org/licenses/by/4.0/"><img
+src="https://img.shields.io/badge/text-CC_BY_4.0-EF9421?logo=creativecommons&amp;logoColor=white"
+alt="text CC BY 4.0" /></a> <a
+href="https://opensource.org/license/mit/"><img
+src="https://img.shields.io/badge/code-MIT-3DA639?logo=opensourceinitiative&amp;logoColor=white"
+alt="code MIT" /></a><br />
+<a href="https://github.com/timm/src/issues"><img
+src="https://img.shields.io/github/issues/timm/src?logo=github"
+alt="issues" /></a> <a
+href="https://github.com/timm/src/commits/main"><img
+src="https://img.shields.io/github/last-commit/timm/src"
+alt="last commit" /></a> <a href="#"><img
+src="https://img.shields.io/badge/DOI-tbd-lightgrey" alt="DOI" /></a> <a
+href="https://github.com/timm/src"><img
+src="https://img.shields.io/badge/src-github.com%2Ftimm%2Fsrc-181717?logo=github"
+alt="src" /></a></p>
+<h2 id="introduction">1. Introduction</h2>
 <blockquote>
 <p>“Simplicity is the ultimate sophistication”<br />
 - William Gaddis, The Recognitions (1955) p. 457;</p>
 </blockquote>
-<h2 id="introduction">1. Introduction</h2>
 <p><img src="sas.png" id="logo" width="400" /></p>
 <p>Everybody knows that AI has to be very complicated, right? Serious AI
 needs a trillion parameters, at the very least. Serious models cost tens
@@ -59,16 +81,23 @@ else. Only a few large companies can pay for such training, so science
 now depends on tools that science cannot inspect. The models change
 without notice, so yesterday’s results may not run tomorrow. Their
 answers can be wrong in confident ways, so every output needs a human
-check. Also, each new model asks for exponentially more, so we keep
-running out of the environmental, power, and financial resources this
-kind of AI needs.</p>
-<p>In fairness, AI is not always simple; some problems truly need the
-big machinery. The current trap runs the other way: we assume complexity
-without first checking if it is necessary. This book is that check. The
-next chapters collect our simple methods: AI that explains itself, that
-trains useful models in milliseconds, from very little data. As you read
-them, keep score. For your own work, how often would these shortcuts be
-enough?</p>
+check. Also, each new model needs exponentially more resources, so now
+we are running out of the environmental, power, and financial resources
+that kind of AI needs.</p>
+<p>To be sure, some problems truly need this big machinery. Yet just
+because AI is sometimes complex, it does not follow that it is always
+complex. The current trap is to assume complexity without first checking
+if it is necessary. This book is that check. Its wager is
+Saint-Exupéry’s:</p>
+<blockquote>
+<p>Perfection comes not when there is nothing left to add, but when
+there is nothing left to throw away.</p>
+</blockquote>
+<p>That is, in this book, the sophisticated move is knowing what to
+leave out. The next chapters collect our simple methods: AI that
+explains itself, that trains useful models in milliseconds, from very
+little data. As you read them, keep score. For your own work, how often
+would these shortcuts be enough?</p>
 <p>We make this concrete with an example. Suppose we want to buy a car.
 Someone tells us that a good car accelerates quickly, uses less fuel,
 and weighs less (since a lighter car is cheaper to build, and cheaper to
@@ -166,44 +195,52 @@ dozen lines more.</p>
 because, often, <em>AI is simple</em>. The next chapter shows that,
 mathematically, finding good solutions for any of these tasks can be
 surprisingly easy. Thus, “simple” and “does much” do not conflict.
-William Gaddis (quote above) would call this approach highly
+William Gaddis (quote above) might have called this approach highly
 sophisticated. The sophistication of this AI is not in its size. It is
 in how little the AI needs:</p>
 <ul>
 <li>No trillion parameters</li>
 <li>Usually, less than a hundred rows of data.</li>
 </ul>
+<p>That is sophistication measured in results, not in size.</p>
 <p>So we end this introduction with an invitation. Reflect on these
 examples. Then check, for yourself, if the simpler approach to AI is
 also the more sophisticated one.</p>
 <h3 id="audience">Audience</h3>
-<p>This book is for anyone worried that, flying over details with LLMs,
-we miss what happens under the hood. It is a book of deep study; of
-mastery; of long-term creation inspred by Donald Knuth who famously
-said:</p>
-<blockquote>
-<p>… is a wonderful thing for people whose role in life is to be on top
-of things. But not for me; my role is to be on the bottom of things.</p>
-</blockquote>
-<p>These chapters go down to the bottom of AI’s machinery. Once there,
-we report good news: much of that machinery can be simplified, then
-shared across many AI tasks. The book maps those low-level details in
-working code, after the manner of two classics of the code walk-through:
-Lions’ commentary on UNIX<a href="#fn1" class="footnote-ref" id="fnref1"
-role="doc-noteref"><sup>1</sup></a> and Norvig’s paradigms of AI
-programming, in Lisp<a href="#fn2" class="footnote-ref" id="fnref2"
-role="doc-noteref"><sup>2</sup></a>. It tries (but may not always
-succeed) to be worthy of that company.</p>
-<p>To present those low-level details, we use Python. If you are not
-familiar with that language then before starting here, maybe you should
-first read Downey’s <em>Think Python</em><a href="#fn3"
-class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a>,
-Matthes’ <em>Python Crash Course</em><a href="#fn4" class="footnote-ref"
-id="fnref4" role="doc-noteref"><sup>4</sup></a>, or Grus’s <em>Data
-Science from Scratch</em><a href="#fn5" class="footnote-ref" id="fnref5"
-role="doc-noteref"><sup>5</sup></a>.</p>
-<p>The last one also previews this book’s habit: build the tools
-yourself.</p>
+<p>This book is for anyone worried that coding with LLMs means flying
+over the details, missing what really happens under the hood. It is for
+people who, like Donald Knuth, want their role to be “on the bottom of
+things”<a href="#fn1" class="footnote-ref" id="fnref1"
+role="doc-noteref"><sup>1</sup></a>. Down at the bottom of AI’s
+machinery there is good news: much of it can be simplified, then shared
+across many tasks.</p>
+<p>We show this in working Python, in the walk-through style of Lions’
+UNIX commentary<a href="#fn2" class="footnote-ref" id="fnref2"
+role="doc-noteref"><sup>2</sup></a> and Norvig’s paradigms of AI
+programming<a href="#fn3" class="footnote-ref" id="fnref3"
+role="doc-noteref"><sup>3</sup></a> (we try, but may not always succeed,
+to live up to their standards). If Python is new to you, first read
+Downey’s <em>Think Python</em><a href="#fn4" class="footnote-ref"
+id="fnref4" role="doc-noteref"><sup>4</sup></a>, Matthes’ <em>Python
+Crash Course</em><a href="#fn5" class="footnote-ref" id="fnref5"
+role="doc-noteref"><sup>5</sup></a>, or Grus’s <em>Data Science from
+Scratch</em><a href="#fn6" class="footnote-ref" id="fnref6"
+role="doc-noteref"><sup>6</sup></a>. The Grus book one also previews
+this book’s habit: build the tools yourself.</p>
+<h3 id="about-the-author">About the author</h3>
+<p>Tim Menzies (<a href="https://timm.fyi">timm.fyi</a>) has worked on
+AI since the 1980s: a Ph.D. from UNSW; years of research with NASA on
+software quality; now a professor of computer science at NC State,
+Fellow of three learned societies, author of 500+ refereed papers, and
+editor-in-chief of a journal whose submission rate has tripled on his
+watch. Four decades of this keep teaching him the same lesson: most of a
+search space is empty, so simple methods go much further than anyone
+expects. He has rewritten this book’s little learner in a dozen
+languages, counting the characters each time like a monk counting beads.
+He drinks Xinyang Maojian poured past clay tea-pigs, and reads Cold War
+tradecraft for fun; he has a weakness for the quiet operators who won
+wars nobody saw. Hence the heresy of this book: the decisive
+intelligence is usually the small one nobody was watching.</p>
 <h2 id="some-ai-is-simple">2. Some AI is Simple?</h2>
 <p>(If maths is not your thing, feel free to skip this chapter.)</p>
 <p>Some AI problems are very, very hard. Suppose we want an agent that
@@ -212,8 +249,8 @@ advance, to cover all future situations. This is reward-free
 exploration: learn a model of everything, before anyone says what “good”
 means. The theory prices that appetite. For S states, A actions, plans
 of length H, accuracy e, and confidence C, the samples needed are<a
-href="#fn6" class="footnote-ref" id="fnref6"
-role="doc-noteref"><sup>6</sup></a>:</p>
+href="#fn7" class="footnote-ref" id="fnref7"
+role="doc-noteref"><sup>7</sup></a>:</p>
 <pre><code>n(reward free)  &gt;=  S^2 * A * H^3 * log(1/(1-C)) / e^2   (1)</code></pre>
 <p>Even small problems make reward-free exploration expensive. Consider
 one-step plans (H=1) over six variables with six states each (A=6^6).
@@ -240,91 +277,91 @@ probability 1-(1-p)^n. That equation rearranges to:</p>
 <pre><code>n(neo)  &gt;  log(1-C) / log(1-p)                            (3)</code></pre>
 <p>How big is p? Cohen tells us that two numbers are indistinguishable
 when their difference is under 20% of their standard deviation.<a
-href="#fn7" class="footnote-ref" id="fnref7"
-role="doc-noteref"><sup>7</sup></a> Suppose our scores are Gaussian;
+href="#fn8" class="footnote-ref" id="fnref8"
+role="doc-noteref"><sup>8</sup></a> Suppose our scores are Gaussian;
 that is, the bell curve, which effectively runs from -3sd to +3sd, a
 spread of 6sd. Then that 20% covers p = 0.2/6, which is about 3% of the
 whole range. Set p=0.03 and C=0.95. Equation (3) then asks for about 98
 samples. Call NEO small AI. A hundred labels is an afternoon, not a data
 center.</p>
-<p>One more assumption makes this simpler again. It is not unreasonable
-to think that someone has modeled this kind of problem before. If so,
-their old model can guess which of two new solutions is better. Such
-guesses let us explore new data with a binary chop. This method, called
-FASTNEO, needs only:</p>
+<p>xxxx REUSE One more assumption makes this simpler again. It is not
+unreasonable to think that someone has modeled this kind of problem
+before. If so, their old model can guess which of two new solutions is
+better. Such guesses let us explore new data with a binary chop. This
+method, called FASTNEO, needs only:</p>
 <pre><code>n(fastneo)  &gt;  log2( log(1-C) / log(1-p) )                (4)</code></pre>
 <p>Equation (4) says log2(98) samples, which rounds up to seven. Seven.
 Fifteen orders of magnitude separate equation (1) from equation (4).
 Hence the plan of this book: hunt for the tasks where near enough is
 good enough. And this is not only theory. On more than 100 SE
 optimization tasks, a few dozen labels reached over 90% of the best
-known results<a href="#fn8" class="footnote-ref" id="fnref8"
-role="doc-noteref"><sup>8</sup></a>.</p>
+known results<a href="#fn9" class="footnote-ref" id="fnref9"
+role="doc-noteref"><sup>9</sup></a>.</p>
 <p>Nor is that one paper’s quirk. Decades of results say that software
 problems often shrink to a few “keys”: a few variables, or a few rows,
-that control the rest<a href="#fn9" class="footnote-ref" id="fnref9"
-role="doc-noteref"><sup>9</sup></a>. For example:</p>
+that control the rest<a href="#fn10" class="footnote-ref" id="fnref10"
+role="doc-noteref"><sup>10</sup></a>. For example:</p>
 <ul>
 <li>Defect predictors work with less than half a dozen static code
-attributes.<a href="#fn10" class="footnote-ref" id="fnref10"
-role="doc-noteref"><sup>10</sup></a></li>
-<li>Effort estimation needs only small, well-chosen data.<a href="#fn11"
-class="footnote-ref" id="fnref11"
+attributes.<a href="#fn11" class="footnote-ref" id="fnref11"
 role="doc-noteref"><sup>11</sup></a></li>
-<li>Security review of 28,750 Mozilla functions needed only 271 labeled
-exemplars.<a href="#fn12" class="footnote-ref" id="fnref12"
+<li>Effort estimation needs only small, well-chosen data.<a href="#fn12"
+class="footnote-ref" id="fnref12"
 role="doc-noteref"><sup>12</sup></a></li>
-<li>Labeling 6,000 GitHub commits needed only 300 exemplars.<a
-href="#fn13" class="footnote-ref" id="fnref13"
+<li>Security review of 28,750 Mozilla functions needed only 271 labeled
+exemplars.<a href="#fn13" class="footnote-ref" id="fnref13"
 role="doc-noteref"><sup>13</sup></a></li>
-<li>Configuring complex systems needs only tiny decision trees.<a
+<li>Labeling 6,000 GitHub commits needed only 300 exemplars.<a
 href="#fn14" class="footnote-ref" id="fnref14"
 role="doc-noteref"><sup>14</sup></a></li>
-<li>Sampling plus simple learners predicts the performance of
-configurable systems.<a href="#fn15" class="footnote-ref" id="fnref15"
+<li>Configuring complex systems needs only tiny decision trees.<a
+href="#fn15" class="footnote-ref" id="fnref15"
 role="doc-noteref"><sup>15</sup></a></li>
-<li>Cloud data applications can be tested with a few dozen inputs.<a
-href="#fn16" class="footnote-ref" id="fnref16"
+<li>Sampling plus simple learners predicts the performance of
+configurable systems.<a href="#fn16" class="footnote-ref" id="fnref16"
 role="doc-noteref"><sup>16</sup></a></li>
-<li>Test suites shrink by orders of magnitude when tests only cover the
-keys.<a href="#fn17" class="footnote-ref" id="fnref17"
+<li>Cloud data applications can be tested with a few dozen inputs.<a
+href="#fn17" class="footnote-ref" id="fnref17"
 role="doc-noteref"><sup>17</sup></a></li>
-<li>Issue lifetimes are predicted by very simple models.<a href="#fn18"
-class="footnote-ref" id="fnref18"
+<li>Test suites shrink by orders of magnitude when tests only cover the
+keys.<a href="#fn18" class="footnote-ref" id="fnref18"
 role="doc-noteref"><sup>18</sup></a></li>
-<li>Simple parameter tuning beats complex deep analytics for many SE
-tasks.<a href="#fn19" class="footnote-ref" id="fnref19"
+<li>Issue lifetimes are predicted by very simple models.<a href="#fn19"
+class="footnote-ref" id="fnref19"
 role="doc-noteref"><sup>19</sup></a></li>
-<li>NASA requirements models collapse to a few control variables.<a
-href="#fn20" class="footnote-ref" id="fnref20"
+<li>Simple parameter tuning beats complex deep analytics for many SE
+tasks.<a href="#fn20" class="footnote-ref" id="fnref20"
 role="doc-noteref"><sup>20</sup></a></li>
-<li>Avionics control systems reduce to a few automatically found
-variables.<a href="#fn21" class="footnote-ref" id="fnref21"
+<li>NASA requirements models collapse to a few control variables.<a
+href="#fn21" class="footnote-ref" id="fnref21"
 role="doc-noteref"><sup>21</sup></a></li>
-<li>Real code is repetitive, so its statistics are simple and
-exploitable.<a href="#fn22" class="footnote-ref" id="fnref22"
+<li>Avionics control systems reduce to a few automatically found
+variables.<a href="#fn22" class="footnote-ref" id="fnref22"
 role="doc-noteref"><sup>22</sup></a></li>
-<li>20% of the code holds 80% of the errors.<a href="#fn23"
-class="footnote-ref" id="fnref23"
+<li>Real code is repetitive, so its statistics are simple and
+exploitable.<a href="#fn23" class="footnote-ref" id="fnref23"
 role="doc-noteref"><sup>23</sup></a></li>
-<li>Power laws in fine-grained changes explain why: developers work in
-small corners.<a href="#fn24" class="footnote-ref" id="fnref24"
+<li>20% of the code holds 80% of the errors.<a href="#fn24"
+class="footnote-ref" id="fnref24"
 role="doc-noteref"><sup>24</sup></a></li>
-<li>Most rows can be discarded without losing the signal.<a href="#fn25"
-class="footnote-ref" id="fnref25"
+<li>Power laws in fine-grained changes explain why: developers work in
+small corners.<a href="#fn25" class="footnote-ref" id="fnref25"
 role="doc-noteref"><sup>25</sup></a></li>
-<li>Most columns can be discarded, too.<a href="#fn26"
+<li>Most rows can be discarded without losing the signal.<a href="#fn26"
 class="footnote-ref" id="fnref26"
 role="doc-noteref"><sup>26</sup></a></li>
-<li>SAT solvers race when a few “backdoor” variables are set first.<a
-href="#fn27" class="footnote-ref" id="fnref27"
+<li>Most columns can be discarded, too.<a href="#fn27"
+class="footnote-ref" id="fnref27"
 role="doc-noteref"><sup>27</sup></a></li>
-<li>A few principal components usually carry the signal; the oldest
-key-finder of all.<a href="#fn28" class="footnote-ref" id="fnref28"
+<li>SAT solvers race when a few “backdoor” variables are set first.<a
+href="#fn28" class="footnote-ref" id="fnref28"
 role="doc-noteref"><sup>28</sup></a></li>
-<li>Even outside computing: hospital nutrition audits reduce to a few
-items.<a href="#fn29" class="footnote-ref" id="fnref29"
+<li>A few principal components usually carry the signal; the oldest
+key-finder of all.<a href="#fn29" class="footnote-ref" id="fnref29"
 role="doc-noteref"><sup>29</sup></a></li>
+<li>Even outside computing: hospital nutrition audits reduce to a few
+items.<a href="#fn30" class="footnote-ref" id="fnref30"
+role="doc-noteref"><sup>30</sup></a></li>
 </ul>
 <p>Twenty sightings, one moral: the above maths is not necessarily
 crazy. Systems that look huge are often governed by a few keys, and a
@@ -368,123 +405,125 @@ reports the expected value within the relevant group.</p>
 <li>Don’t think, remember.</li>
 </ul>
 <h1 id="references">References</h1>
-<p>Donald E. Knuth, on why he gave up email in 1990: knuth.stanford.edu
-(personal site).</p>
 <section id="footnotes" class="footnotes footnotes-end-of-document"
 role="doc-endnotes">
 <hr />
 <ol>
-<li id="fn1"><p>John Lions, “Lions’ Commentary on UNIX 6th Edition, with
-Source Code”, 1977.<a href="#fnref1" class="footnote-back"
+<li id="fn1"><p>Knuth, explaining why he gave up email in 1990: “Email
+is a wonderful thing for people whose role in life is to be on top of
+things. But not for me; my role is to be on the bottom of things.”<a
+href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>John Lions, “Lions’ Commentary on UNIX 6th Edition, with
+Source Code”, 1977.<a href="#fnref2" class="footnote-back"
 role="doc-backlink">↩︎</a></p></li>
-<li id="fn2"><p>Peter Norvig, “Paradigms of Artificial Intelligence
+<li id="fn3"><p>Peter Norvig, “Paradigms of Artificial Intelligence
 Programming: Case Studies in Common Lisp”, Morgan Kaufmann, 1992.<a
-href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn3"><p>Allen Downey, “Think Python”, 3rd ed., O’Reilly, 2024.<a
 href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn4"><p>Eric Matthes, “Python Crash Course”, 3rd ed., No Starch
-Press, 2023.<a href="#fnref4" class="footnote-back"
+<li id="fn4"><p>Allen Downey, “Think Python”, 3rd ed., O’Reilly, 2024.<a
+href="#fnref4" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn5"><p>Eric Matthes, “Python Crash Course”, 3rd ed., No Starch
+Press, 2023.<a href="#fnref5" class="footnote-back"
 role="doc-backlink">↩︎</a></p></li>
-<li id="fn5"><p>Joel Grus, “Data Science from Scratch”, 2nd ed.,
-O’Reilly, 2019.<a href="#fnref5" class="footnote-back"
+<li id="fn6"><p>Joel Grus, “Data Science from Scratch”, 2nd ed.,
+O’Reilly, 2019.<a href="#fnref6" class="footnote-back"
 role="doc-backlink">↩︎</a></p></li>
-<li id="fn6"><p>Kishan Kumar Ganguly and Tim Menzies, “How Low Can You
-Go? The Data-Light SE Challenge”, arXiv:2512.13524.<a href="#fnref6"
+<li id="fn7"><p>Kishan Kumar Ganguly and Tim Menzies, “How Low Can You
+Go? The Data-Light SE Challenge”, arXiv:2512.13524.<a href="#fnref7"
 class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn7"><p>J. Cohen, “Statistical Power Analysis for the Behavioral
+<li id="fn8"><p>J. Cohen, “Statistical Power Analysis for the Behavioral
 Sciences”, 2nd ed., Lawrence Erlbaum, 1988. There, d = 0.2 standard
-deviations marks a “small” effect.<a href="#fnref7"
+deviations marks a “small” effect.<a href="#fnref8"
 class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn8"><p>Kishan Kumar Ganguly and Tim Menzies, “How Low Can You
-Go? The Data-Light SE Challenge”, arXiv:2512.13524.<a href="#fnref8"
+<li id="fn9"><p>Kishan Kumar Ganguly and Tim Menzies, “How Low Can You
+Go? The Data-Light SE Challenge”, arXiv:2512.13524.<a href="#fnref9"
 class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn9"><p>T. Menzies, “Shockingly Simple: ‘Keys’ for Better AI for
-SE”, IEEE Software 38(2), 2021, doi:10.1109/MS.2020.3043014. That column
-collects the sightings above.<a href="#fnref9" class="footnote-back"
-role="doc-backlink">↩︎</a></p></li>
-<li id="fn10"><p>T. Menzies, J. Greenwald, and A. Frank, “Data mining
+<li id="fn10"><p>T. Menzies, “Shockingly Simple: ‘Keys’ for Better AI
+for SE”, IEEE Software 38(2), 2021, doi:10.1109/MS.2020.3043014. That
+column collects the sightings above.<a href="#fnref10"
+class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn11"><p>T. Menzies, J. Greenwald, and A. Frank, “Data mining
 static code attributes to learn defect predictors”, IEEE Trans. Software
-Eng. 33(1):2-13, 2007. doi:10.1109/TSE.2007.256941<a href="#fnref10"
+Eng. 33(1):2-13, 2007. doi:10.1109/TSE.2007.256941<a href="#fnref11"
 class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn11"><p>Z. Chen, T. Menzies, D. Port, and B. Boehm, “Finding
+<li id="fn12"><p>Z. Chen, T. Menzies, D. Port, and B. Boehm, “Finding
 the right data for software cost modeling”, IEEE Software 22(6):38-46,
-2005. doi:10.1109/MS.2005.151<a href="#fnref11" class="footnote-back"
+2005. doi:10.1109/MS.2005.151<a href="#fnref12" class="footnote-back"
 role="doc-backlink">↩︎</a></p></li>
-<li id="fn12"><p>Z. Yu, C. Theisen, L. Williams, and T. Menzies,
+<li id="fn13"><p>Z. Yu, C. Theisen, L. Williams, and T. Menzies,
 “Improving vulnerability inspection efficiency using active learning”,
 IEEE Trans. Software Eng., 2019. doi:10.1109/TSE.2019.2949275<a
-href="#fnref12" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn13"><p>H. Tu, Z. Yu, and T. Menzies, “Better data labelling
+href="#fnref13" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn14"><p>H. Tu, Z. Yu, and T. Menzies, “Better data labelling
 with EMBLEM (and how that impacts defect prediction)”, IEEE Trans.
-Software Eng., 2020. doi:10.1109/TSE.2020.2986415<a href="#fnref13"
+Software Eng., 2020. doi:10.1109/TSE.2020.2986415<a href="#fnref14"
 class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn14"><p>V. Nair, Z. Yu, T. Menzies, N. Siegmund, and S. Apel,
+<li id="fn15"><p>V. Nair, Z. Yu, T. Menzies, N. Siegmund, and S. Apel,
 “Finding faster configurations using FLASH”, IEEE Trans. Software Eng.
-46(7):794-811, 2020. doi:10.1109/TSE.2018.2870895<a href="#fnref14"
+46(7):794-811, 2020. doi:10.1109/TSE.2018.2870895<a href="#fnref15"
 class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn15"><p>C. Kaltenecker, A. Grebhahn, N. Siegmund, and S. Apel,
+<li id="fn16"><p>C. Kaltenecker, A. Grebhahn, N. Siegmund, and S. Apel,
 “The interplay of sampling and machine learning for software performance
 prediction”, IEEE Software 37(4):58-66, 2020.
-doi:10.1109/MS.2020.2987024<a href="#fnref15" class="footnote-back"
+doi:10.1109/MS.2020.2987024<a href="#fnref16" class="footnote-back"
 role="doc-backlink">↩︎</a></p></li>
-<li id="fn16"><p>Q. Zhang, J. Wang, M.A. Gulzar, R. Padhye, and M. Kim,
+<li id="fn17"><p>Q. Zhang, J. Wang, M.A. Gulzar, R. Padhye, and M. Kim,
 “BigFuzz: efficient fuzz testing for data analytics using framework
-abstraction”, ASE 2020.<a href="#fnref16" class="footnote-back"
+abstraction”, ASE 2020.<a href="#fnref17" class="footnote-back"
 role="doc-backlink">↩︎</a></p></li>
-<li id="fn17"><p>J. Chen, X. Shen, and T. Menzies, “Building very small
-test suites (with SNAP)”, arXiv:1905.05358, 2019.<a href="#fnref17"
+<li id="fn18"><p>J. Chen, X. Shen, and T. Menzies, “Building very small
+test suites (with SNAP)”, arXiv:1905.05358, 2019.<a href="#fnref18"
 class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn18"><p>M. Rees-Jones, M. Martin, and T. Menzies, “Better
+<li id="fn19"><p>M. Rees-Jones, M. Martin, and T. Menzies, “Better
 predictors for issue lifetime”, arXiv:1702.07735, 2017.<a
-href="#fnref18" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn19"><p>A. Agrawal, W. Fu, D. Chen, X. Shen, and T. Menzies,
+href="#fnref19" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn20"><p>A. Agrawal, W. Fu, D. Chen, X. Shen, and T. Menzies,
 “How to ‘DODGE’ complex software analytics”, IEEE Trans. Software Eng.,
-2019. doi:10.1109/TSE.2019.2945020<a href="#fnref19"
+2019. doi:10.1109/TSE.2019.2945020<a href="#fnref20"
 class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn20"><p>G. Mathew, T. Menzies, N. Ernst, and J. Klein,
+<li id="fn21"><p>G. Mathew, T. Menzies, N. Ernst, and J. Klein,
 “’SHORT’er reasoning about larger requirements models”, RE 2017,
 pp.154-163, doi:10.1109/RE.2017.31; M.S. Feather and T. Menzies,
 “Converging on the optimal attainment of requirements”, RE 2002,
-pp.263-270, doi:10.1109/ICRE.2002.1048537<a href="#fnref20"
+pp.263-270, doi:10.1109/ICRE.2002.1048537<a href="#fnref21"
 class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn21"><p>G. Gay, T. Menzies, M. Davies, and K. Gundy-Burlet,
+<li id="fn22"><p>G. Gay, T. Menzies, M. Davies, and K. Gundy-Burlet,
 “Automatically finding the control variables for complex system
 behavior”, Automated Software Eng. 17(4):439-468, 2010.
-doi:10.1007/s10515-010-0072-x<a href="#fnref21" class="footnote-back"
+doi:10.1007/s10515-010-0072-x<a href="#fnref22" class="footnote-back"
 role="doc-backlink">↩︎</a></p></li>
-<li id="fn22"><p>A. Hindle, E.T. Barr, Z. Su, M. Gabel, and P. Devanbu,
+<li id="fn23"><p>A. Hindle, E.T. Barr, Z. Su, M. Gabel, and P. Devanbu,
 “On the naturalness of software”, ICSE 2012, pp.837-847.<a
-href="#fnref22" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn23"><p>T.J. Ostrand, E.J. Weyuker, and R.M. Bell, “Where the
+href="#fnref23" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn24"><p>T.J. Ostrand, E.J. Weyuker, and R.M. Bell, “Where the
 bugs are”, ACM SIGSOFT Software Eng. Notes 29(4):86-96, 2004,
 doi:10.1145/1013886.1007524; M. Hamill and K. Goseva- Popstojanova,
 “Common trends in software fault and failure data”, IEEE Trans. Software
-Eng. 35(4):484-496, 2009. doi:10.1109/TSE.2009.3<a href="#fnref23"
+Eng. 35(4):484-496, 2009. doi:10.1109/TSE.2009.3<a href="#fnref24"
 class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn24"><p>Z. Lin and J. Whitehead, “Why power laws? An
+<li id="fn25"><p>Z. Lin and J. Whitehead, “Why power laws? An
 explanation from fine-grained code changes”, MSR 2015, pp.68-75.
-doi:10.1109/MSR.2015.14<a href="#fnref24" class="footnote-back"
+doi:10.1109/MSR.2015.14<a href="#fnref25" class="footnote-back"
 role="doc-backlink">↩︎</a></p></li>
-<li id="fn25"><p>J.A. Olvera-Lopez, J.A. Carrasco-Ochoa, J.F. Martinez-
+<li id="fn26"><p>J.A. Olvera-Lopez, J.A. Carrasco-Ochoa, J.F. Martinez-
 Trinidad, and J. Kittler, “A review of instance selection methods”,
 Artificial Intelligence Review 34(2):133-143, 2010.
-doi:10.1007/s10462-010-9165-y<a href="#fnref25" class="footnote-back"
+doi:10.1007/s10462-010-9165-y<a href="#fnref26" class="footnote-back"
 role="doc-backlink">↩︎</a></p></li>
-<li id="fn26"><p>R. Kohavi and G.H. John, “Wrappers for feature subset
+<li id="fn27"><p>R. Kohavi and G.H. John, “Wrappers for feature subset
 selection”, Artificial Intelligence 97(1-2):273-324, 1997.
-doi:10.1016/S0004-3702(97)00043-X<a href="#fnref26"
+doi:10.1016/S0004-3702(97)00043-X<a href="#fnref27"
 class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn27"><p>R. Williams, C.P. Gomes, and B. Selman, “Backdoors to
-typical case complexity”, IJCAI 2003, pp.1173-1178.<a href="#fnref27"
+<li id="fn28"><p>R. Williams, C.P. Gomes, and B. Selman, “Backdoors to
+typical case complexity”, IJCAI 2003, pp.1173-1178.<a href="#fnref28"
 class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn28"><p>K. Pearson, “On lines and planes of closest fit to
+<li id="fn29"><p>K. Pearson, “On lines and planes of closest fit to
 systems of points in space”, Philosophical Magazine 2(11):559-572, 1901.
-doi:10.1080/14786440109462720<a href="#fnref28" class="footnote-back"
+doi:10.1080/14786440109462720<a href="#fnref29" class="footnote-back"
 role="doc-backlink">↩︎</a></p></li>
-<li id="fn29"><p>S.N. Partington, T.J. Menzies, T.A. Colburn, B.E.
+<li id="fn30"><p>S.N. Partington, T.J. Menzies, T.A. Colburn, B.E.
 Saelens, and K. Glanz, “Reduced-item food audits based on the nutrition
 environment measures surveys”, American J. Preventive Medicine
-49(4):e23-e33, 2015. doi:10.1016/j.amepre.2015.04.036<a href="#fnref29"
+49(4):e23-e33, 2015. doi:10.1016/j.amepre.2015.04.036<a href="#fnref30"
 class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 </ol>
 </section>

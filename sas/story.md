@@ -2,12 +2,23 @@
 # Sophisticated AI: Simple Ain't Stupid
 
 Tim Menzies   
-timm@ieee.org
+timm@ieee.org   
+August, 2026  
+
+[![v0.1](https://img.shields.io/badge/version-0.1-8B5CF6)](https://github.com/timm/src/releases)
+[![©2026](https://img.shields.io/badge/%C2%A9_2026-Tim_Menzies-1D4ED8)](https://timm.fyi)
+[![text CC BY 4.0](https://img.shields.io/badge/text-CC_BY_4.0-EF9421?logo=creativecommons&logoColor=white)](https://creativecommons.org/licenses/by/4.0/)
+[![code MIT](https://img.shields.io/badge/code-MIT-3DA639?logo=opensourceinitiative&logoColor=white)](https://opensource.org/license/mit/)    
+[![issues](https://img.shields.io/github/issues/timm/src?logo=github)](https://github.com/timm/src/issues)
+[![last commit](https://img.shields.io/github/last-commit/timm/src)](https://github.com/timm/src/commits/main)
+[![DOI](https://img.shields.io/badge/DOI-tbd-lightgrey)](#)
+[![src](https://img.shields.io/badge/src-github.com%2Ftimm%2Fsrc-181717?logo=github)](https://github.com/timm/src)
+
+## 1. Introduction
 
 > "Simplicity is the ultimate sophistication"         
 > - William Gaddis, The Recognitions (1955) p. 457; 
 
-## 1. Introduction
 
 ![](sas.png){#logo width=400}
 
@@ -25,14 +36,23 @@ someone else. Only a few large companies can pay for such training,
 so science now depends on tools that science cannot inspect. The
 models change without notice, so yesterday's results may not run
 tomorrow. Their answers can be wrong in confident ways, so every
-output needs a human check. Also, each new model asks for exponentially
-more, so we keep running out of the environmental, power, and
-financial resources this kind of AI needs.
+output needs a human check. Also, each new model needs exponentially
+more resources, so now we are running out of the environmental,
+power, and financial resources that kind of AI needs. 
 
-In fairness, AI is not always simple; some problems truly need
-the big machinery. The current trap runs the other way: we assume
-complexity without first checking if it is necessary. This book is
-that check. The next chapters collect our simple methods: AI that
+To be
+sure, some problems truly need this big machinery.
+Yet just because AI is sometimes complex, it does not follow
+that it is always complex. The current trap is to assume
+complexity without first checking if it is necessary. This book
+is that check. Its wager is Saint-Exupéry's: 
+
+> Perfection comes not when there is nothing 
+> left to add, but when there is nothing 
+> left to throw away.
+
+That is, in this book, the sophisticated move is knowing what to
+leave out. The next chapters collect our simple methods: AI that
 explains itself, that trains useful models in milliseconds, from
 very little data. As you read them, keep score. For your own work,
 how often would these shortcuts be enough?
@@ -81,12 +101,14 @@ because, often, _AI is simple_.
 The next chapter shows that, mathematically, finding good
 solutions for any of these tasks can be surprisingly easy. Thus,
 "simple" and "does much" do not conflict. William Gaddis (quote
-above) would call this approach highly sophisticated. The
+above) might have called this approach highly sophisticated. The
 sophistication of this AI is not in its size. It is in how little
 the AI needs:
 
 - No trillion parameters
 - Usually, less than a hundred rows of data.
+
+That is sophistication measured in results, not in size.
 
 So we end this introduction with an invitation. Reflect on these
 examples. Then check, for yourself, if the simpler approach to AI
@@ -94,28 +116,26 @@ is also the more sophisticated one.
 
 ### Audience
 
-This book is for anyone worried that, flying over details with
-LLMs, we miss what happens under the hood.  It is a book of deep study;
-of mastery; of long-term creation inspred by Donald Knuth who
-famously said:
+This book is for anyone worried that coding with LLMs means
+flying over the details, missing what really happens under the
+hood. It is for people who, like Donald Knuth, want their role
+to be "on the bottom of things"[^knuth]. Down at the bottom of
+AI's machinery there is good news: much of it can be
+simplified, then shared across many tasks.
 
-> ... is a wonderful thing for people whose role in life is to
-> be on top of things. But not for me; my role is to be on the
-> bottom of things.
+We show this in working Python, in the walk-through style of
+Lions' UNIX commentary[^lions] and Norvig's paradigms of AI
+programming[^norvig] (we try,  but may not always succeed, to
+live up to their standards). If Python is new to you, first read
+Downey's *Think Python*[^downey], Matthes' *Python Crash
+Course*[^matthes], or Grus's *Data Science from
+Scratch*[^grus].
+The Grus book one also previews this book's habit: build the tools yourself.
 
-These chapters go down to the bottom of AI's machinery. Once
-there, we report good news: much of that machinery can be simplified,
-then shared across many AI tasks. The book maps those low-level
-details in working code, after the manner of two classics of the
-code walk-through: Lions' commentary on UNIX[^lions] and
-Norvig's paradigms of AI programming, in Lisp[^norvig]. It
-tries (but  may not always succeed) to be worthy of that company.
-
-To present those low-level details, we use Python.
-If you are not familiar with that language then
-before starting here, maybe you should first read Downey's *Think Python*[^downey],
-Matthes' *Python Crash Course*[^matthes], or Grus's *Data
-Science from Scratch*[^grus].
+[^knuth]: Knuth, explaining why he gave up email in 1990:
+"Email is a wonderful thing for people whose role in life is to
+be on top of things. But not for me; my role is to be on the
+bottom of things."
 
 [^lions]: John Lions, "Lions' Commentary on UNIX 6th Edition,
 with Source Code", 1977.
@@ -131,7 +151,24 @@ No Starch Press, 2023.
 [^grus]: Joel Grus, "Data Science from Scratch", 2nd ed.,
 O'Reilly, 2019.
 
-The last one also previews this book's habit: build the tools yourself.
+### About the author
+
+Tim Menzies ([timm.fyi](https://timm.fyi)) has worked on AI
+since the 1980s: a Ph.D. from UNSW; years of research with NASA
+on software quality; now a professor of computer science at NC
+State, Fellow of three learned societies, author of 500+
+refereed papers, and editor-in-chief of a journal whose
+submission rate has tripled on his watch. Four decades of this
+keep teaching him the same lesson: most of a search space is
+empty, so simple methods go much further than anyone expects.
+He has rewritten this book's little learner in a dozen
+languages, counting the characters each time like a monk
+counting beads. He drinks Xinyang Maojian poured past clay
+tea-pigs, and reads Cold War tradecraft for fun; he has a
+weakness for the quiet operators who won wars nobody saw. Hence
+the heresy of this book: the decisive intelligence is usually
+the small one nobody was watching.
+
 
 ## 2. Some AI is Simple?
 
@@ -188,6 +225,7 @@ of the whole range. Set p=0.03 and C=0.95. Equation (3) then asks
 for about 98 samples. Call NEO small AI. A hundred labels is an
 afternoon, not a data center.
 
+xxxx REUSE
 One more assumption makes this simpler again. It is not
 unreasonable to think that someone has modeled this kind of
 problem before. If so, their old model can guess which of two new
@@ -374,7 +412,4 @@ The first thing we need to do is
 
 
 # References
-
-Donald E. Knuth, on why he gave up email in 1990:
-knuth.stanford.edu (personal site).
 
