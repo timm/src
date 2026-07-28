@@ -1,6 +1,6 @@
-% CSITDepartment  (node/2 edge/3 dep/2 dec/3 leaf/1 topgoal/1)
-:- discontiguous node/2, edge/3, dep/2, dec/3, leaf/1, topgoal/1.
-:- dynamic node/2, edge/3, dep/2, dec/3, leaf/1, topgoal/1.
+% CSITDepartment  (nfr2 dialect: <- rules, <~ contribution lists)
+:- discontiguous (<-)/2, (<~)/2, node/2, leaf/1, topgoal/1.
+:- dynamic (<-)/2, (<~)/2, node/2, leaf/1, topgoal/1.
 node(easilyAccessableTechnologyInstructions1,softgoal).
 leaf(easilyAccessableTechnologyInstructions1).
 node(properlyAndSuitablyEquippedInITToAccomplishCSNeeds1,softgoal).
@@ -187,165 +187,201 @@ node(increaseITTrainingResources,softgoal).
 node(providePeerToPeerAccessRegionalOffices,goal).
 topgoal(providePeerToPeerAccessRegionalOffices).
 node(increaseITMethodsToAcquireFeedback1,softgoal).
-edge(properlyAndSuitablyEquippedInITToAccomplishFundraisingNeeds,properlyAndSuitablyEquippedInITToAccomplishCSNeeds,0.5).
-edge(implementEmailForCounsellors,properlyAndSuitablyEquippedInITToAccomplishServiceGoals,0.5).
-edge(installDesktopSoftware,properlyAndSuitablyEquippedInITToAccomplishServiceGoals,0.5).
-dec(acquireAndImplementEmployeeSoftware,implementMaintainComputerSystemsForEmployeeUse,or).
-dec(acquireSoftware,implementBulletinBoard,or).
-dep(integrateITSystems,itSystemsBeIntegrated).
-dec(manageAndImplementWebSite,satisfyCSITNeeds,or).
-edge(effectiveITTraining,properlyAndSuitablyEquippedInITToAccomplishCSNeeds,0.5).
-edge(hardwareBeAcquiredForFree,costEffectiveTechnology,0.5).
-dep(freeHardware,hardwareBeAcquiredForFree).
-dec(hardwareBeAcquired,acquireTelephoneSwitch,or).
-edge(increaseITMethodsToAcquireFeedback1,improveQualityAssuranceTechnology1,0.5).
-edge(performanceReviewInformationBeCollectedInDataBase1,improveQualityAssuranceTechnology1,0.5).
-dep(feedbackFormBeImplemented,feedbackFormSoftware).
-dec(telephonyBeImplementedAndManaged,satisfyCSITNeeds,or).
-dep(improveQualityAssuranceTechnology1,improveQualityAssuranceTechnology).
-dec(acquireSoftware,implementActivityManager,or).
-edge(acquireITResources,properlyAndSuitablyEquippedInITToAccomplishCSNeeds,0.5).
-dec(acquireSoftware,implementDirectorEnterpriseThroughBluePumpkin,or).
-dep(webServer1,payForWebServer).
-edge(implementDirectorEnterpriseThroughBluePumpkin,supportAnalysisCounsellorsTime1,0.5).
-edge(acquireSoftwareForFree,costEffectiveTechnology,0.5).
-dec(acquireSoftware,provideDocumentLibrarySystem1,or).
-dec(implementDirectorEnterpriseThroughBluePumpkin,acquireAndImplementEmployeeSoftware,or).
-dec(anITTrainerBePresent1,itDeptProvidesOrientationAndTraining,or).
-dec(acquireSoftware,implementSymposiumSystem,or).
-dec(implementMaintainComputerSystemsForEmployeeUse,satisfyCSITNeeds,or).
-dep(anITTrainerBePresent1,anITTrainerBePresent).
-dep(implementEmailForCounsellors,implementEmailForCounsellors1).
-dec(payForSoftware,webSoftwareBeAcquired,or).
-dec(hardwareBeAcquiredForFree,hardwareBeAcquired,or).
-dec(useVPN,implementAndManageTechnologyInRegionalOffices,or).
-edge(aTrainingComputerBePresent1,costEffectiveTraining,-0.5).
-edge(useInformalBuddySystemForTraining,costEffectiveTraining,0.5).
-dep(itResources,acquireITResources).
-dep(freeWebServer,acquireWebServerForFree).
-dep(putContentOntoWebsite1,putContentOntoWebsite).
-edge(increaseITTrainingResources,increaseITTrainingForCounsellors1,0.5).
-edge(adequatelyCustomizableCSTechnology,fitBetweenSystemCapabilitiesAndCSRequirements,0.5).
-dep(hardware,payForHardware).
-edge(increaseITResources,keepUpWithNewTechnology,0.5).
-dec(acquireSoftware,implementIVR,or).
-edge(payForHardware,costEffectiveTechnology,-0.5).
-edge(itProvidersHaveKnowledgeOfCounselling,sensitiveToTheEnvironmentITEquipmentWillBeIntroducedTo,0.5).
-dec(manageDonorAccountingDataBase,satisfyCSITNeeds,or).
-edge(itProvidersHaveKnowledgeOfFundraisingAndMarketing,sensitiveToTheEnvironmentITEquipmentWillBeIntroducedTo,0.5).
-dec(performDonorAccountingDataBaseMaintenance,manageDonorAccountingDataBase,or).
-edge(anITTrainerBePresent1,costEffectiveTraining,-0.5).
-dep(implementCategorizationTool,implementCategorizationTool1).
-dep(performanceReviewInformationBeCollectedInDataBase1,performanceReviewInformationBeCollectedInDataBase).
-dep(properlyAndSuitablyEquippedInITToAccomplishCSNeeds,properlyAndSuitablyEquippedInITToAccomplishCSNeeds1).
-edge(provideDocumentLibrarySystem1,properlyAndSuitablyEquippedInITToAccomplishFundraisingNeeds,0.5).
-dep(increaseAccessSpeedRegionalOfficesToDL1,increaseAccessSpeedRegionalOfficesToDL).
-dec(webCounsellingSoftwareBeImplemented,manageAndImplementWebSite,or).
-edge(fitBetweenSystemCapabilitiesAndCSRequirements,properlyAndSuitablyEquippedInITToAccomplishCSNeeds,0.5).
-dec(itTrainingSupportBeGivenToEmployees,satisfyCSITNeeds,or).
-edge(expandITDepartment,increaseITTrainingResources,0.5).
-edge(increasedEmphasisOnITInHiringProcessOfCounsellors1,effectiveITTraining,0.5).
-dec(itDeptProvidesOrientationAndTraining,itTrainingSupportBeGivenToEmployees,or).
-edge(itBeUpgraded,keepUpWithNewTechnology,0.5).
-edge(adjustToSoftwareChanges,properlyAndSuitablyEquippedInITToAccomplishCSNeeds,0.5).
-dec(provideOnlineDonorTechnology1,manageAndImplementWebSite,or).
-dec(payForUpgrades,itBeUpgraded,or).
-dec(implementActivityManager,acquireAndImplementEmployeeSoftware,or).
-dec(implementEmailForCounsellors,acquireAndImplementEmployeeSoftware,or).
-edge(implementDirectorEnterpriseThroughBluePumpkin,properlyAndSuitablyEquippedInITToAccomplishServiceGoals,-0.5).
-dec(implementIVR,telephonyBeImplementedAndManaged,or).
-dec(implementCategorizationTool,acquireAndImplementEmployeeSoftware,or).
-edge(useT1,increaseAccessSpeedRegionalOfficesToDL1,1).
-dep(aTrainingComputerBePresent1,aTrainingComputerBePresent).
-edge(properlyAndSuitablyEquippedInITToAccomplishServiceGoals,properlyAndSuitablyEquippedInITToAccomplishCSNeeds,0.5).
-edge(aTrainingComputerBePresent1,effectiveITTraining,0.5).
-dep(increasedEmphasisOnITInHiringProcessOfCounsellors,increasedEmphasisOnITInHiringProcessOfCounsellors1).
-edge(itBeUpgraded,adjustToSoftwareChanges,-0.5).
-dec(getWebEventTechnology,manageAndImplementWebSite,or).
-dep(callsBeRecordedIntoADataBase1,callsBeRecordedIntoADataBase).
-dec(useInformalBuddySystemForTraining,itTrainingSupportBeGivenToEmployees,or).
-dec(acquireSoftware,getWebEventTechnology,or).
-edge(useT1,costEffectiveTechnology,-0.5).
-dec(implementAndManageTechnologyInRegionalOffices,implementMaintainComputerSystemsForEmployeeUse,or).
-dec(acquireWebServerForFree,webServerBeAcquired,or).
-dep(upgrades,payForUpgrades).
-dep(manageDonorAccountingDataBase,donorAccountingDataBase).
-dep(telephonyBeImplementedAndManaged,telephonyBeImplementedAndManaged1).
-edge(implementActivityManager,supportAnalysisCounsellorsTime1,0.5).
-edge(itDeptProvidesOrientationAndTraining,effectiveITTraining,0.5).
-dep(software,payForSoftware).
-edge(callsBeRecordedIntoADataBase1,improveQualityAssuranceTechnology1,0.5).
-dep(improveCallRecordingEquipment1,improveCallRecordingEquipment).
-edge(aTrainingComputerBePresent1,increaseITTrainingForCounsellors1,0.5).
-dep(implementBulletinBoard,implementBulletinBoard1).
-dep(freeSoftware,acquireSoftwareForFree).
-dec(acquireSoftware,installDesktopSoftware,or).
-dec(hardwareBeAcquired,implementMaintainComputerSystemsForEmployeeUse,or).
-edge(costEffectiveTraining,increaseITResources,0.5).
-edge(itBeUpgraded,properlyAndSuitablyEquippedInITToAccomplishCSNeeds,0.5).
-edge(sensitiveToTheEnvironmentITEquipmentWillBeIntroducedTo,properlyAndSuitablyEquippedInITToAccomplishCSNeeds,0.5).
-dec(acquireTelephoneSwitch,telephonyBeImplementedAndManaged,or).
-edge(manageDonorAccountingDataBase,properlyAndSuitablyEquippedInITToAccomplishFundraisingNeeds,0.5).
-dec(networkPCs,implementMaintainComputerSystemsForEmployeeUse,or).
-dec(putContentOntoWebsite1,manageAndImplementWebSite,or).
-dec(provideTechnologyToCreateAndSendDocuments,implementMaintainComputerSystemsForEmployeeUse,or).
-dep(supportAnalysisCounsellorsTime1,supportAnalysisCounsellorsTime).
-dec(useCurrentMethod,providePeerToPeerAccessRegionalOffices,or).
-edge(implementBulletinBoard,properlyAndSuitablyEquippedInITToAccomplishServiceGoals,0.5).
-edge(implementBulletinBoard,properlyAndSuitablyEquippedInITToAccomplishServiceGoals,-0.5).
-edge(anITTrainerBePresent1,increaseITTrainingForCounsellors1,0.5).
-edge(implementActivityManager,properlyAndSuitablyEquippedInITToAccomplishServiceGoals,0.5).
-edge(implementActivityManager,properlyAndSuitablyEquippedInITToAccomplishServiceGoals,-0.5).
-edge(implementCategorizationTool,properlyAndSuitablyEquippedInITToAccomplishServiceGoals,0.5).
-dep(webSoftwareBeAcquired,webSoftware).
-edge(integrateITSystems,simpleTechnology1,0.5).
-edge(improveCallRecordingEquipment1,improveQualityAssuranceTechnology1,0.5).
-dec(installDesktopSoftware,acquireAndImplementEmployeeSoftware,or).
-dec(acquireSoftwareForFree,webSoftwareBeAcquired,or).
-dep(simpleTechnology1,simpleTechnology).
-dec(acquireSoftwareForFree,acquireSoftware,or).
-edge(increaseITResources,expandITDepartment,1).
-dep(implementPhoneFeedback1,implementPhoneFeedback).
-dec(provideDocumentLibrarySystem1,acquireAndImplementEmployeeSoftware,or).
-dep(webServerBeAcquired,webServer).
-dec(providePeerToPeerAccessRegionalOffices,implementAndManageTechnologyInRegionalOffices,or).
-dep(oracle,useOracleForDataBase).
-dep(freeUpgrades,acquireUpgradesForFree).
-dec(payForHardware,hardwareBeAcquired,or).
-edge(increaseITTrainingResources,effectiveITTraining,0.5).
-dep(decreaseClumsinessTechnology1,decreaseClumsinessTechnology).
-edge(payForSoftware,costEffectiveTechnology,-0.5).
-edge(csBeNotForProfit,keepUpWithNewTechnology,-0.5).
-dec(installDesktopSoftware,implementDesktops,or).
-dec(acquireSoftware,feedbackFormBeImplemented,or).
-dec(implementSymposiumSystem,telephonyBeImplementedAndManaged,or).
-dep(provideOnlineDonorTechnology1,provideOnlineDonorTechnology).
-edge(useCurrentMethod,costEffectiveTechnology,0.5).
-edge(feedbackFormBeImplemented,increaseITMethodsToAcquireFeedback1,0.5).
-dec(implementDesktops,implementMaintainComputerSystemsForEmployeeUse,or).
-dec(useOracleForDataBase,manageDonorAccountingDataBase,or).
-edge(increaseITResources,increaseITTrainingResources,0.5).
-edge(considerationOfFeedbackFromCounsellors,properlyAndSuitablyEquippedInITToAccomplishServiceGoals,0.5).
-dec(payForWebServer,webServerBeAcquired,or).
-dec(acquireSoftware,implementCategorizationTool,or).
-dep(increaseITTrainingForCounsellors1,increaseITTrainingForCounsellors).
-dec(callCenterServerAndSchedulingSystemBeIntegrated,integrateITSystems,or).
-dep(implementCategorizationTool,provideCompiledCallData).
-dep(easilyAccessableTechnologyInstructions1,easilyAccessableTechnologyInstructions).
-edge(implementPhoneFeedback1,properlyAndSuitablyEquippedInITToAccomplishServiceGoals,0.5).
-dep(provideDocumentLibrarySystem1,provideDocumentLibrarySystem).
-edge(costEffectiveTechnology,increaseITTrainingResources,0.5).
-edge(useOracleForDataBase,costEffectiveTechnology,0.5).
-dep(considerationOfFeedbackFromCounsellors,considerationOfFeedbackITProviders).
-dec(payForSoftware,acquireSoftware,or).
-dec(useT1,providePeerToPeerAccessRegionalOffices,or).
-edge(acquireWebServerForFree,costEffectiveTechnology,0.5).
-dep(increaseITResources1,increaseITResources).
-dep(increaseITMethodsToAcquireFeedback1,increaseITMethodsToAcquireFeedback).
-dec(webSoftwareBeAcquired,webCounsellingSoftwareBeImplemented,or).
-edge(payForWebServer,costEffectiveTechnology,-0.5).
-dec(implementBulletinBoard,acquireAndImplementEmployeeSoftware,or).
-edge(costEffectiveTechnology,expandITDepartment,0.5).
-dec(webServerBeAcquired,manageAndImplementWebSite,or).
-edge(keepUpWithNewTechnology,properlyAndSuitablyEquippedInITToAccomplishCSNeeds,0.5).
-dep(getWebEventTechnology,getWebEventTechnology1).
+aTrainingComputerBePresent <- [aTrainingComputerBePresent1].
+acquireAndImplementEmployeeSoftware <-
+  [ implementDirectorEnterpriseThroughBluePumpkin ].
+acquireAndImplementEmployeeSoftware <- [implementActivityManager].
+acquireAndImplementEmployeeSoftware <- [implementEmailForCounsellors].
+acquireAndImplementEmployeeSoftware <- [implementCategorizationTool].
+acquireAndImplementEmployeeSoftware <- [installDesktopSoftware].
+acquireAndImplementEmployeeSoftware <-
+  [ provideDocumentLibrarySystem1 ].
+acquireAndImplementEmployeeSoftware <- [implementBulletinBoard].
+acquireITResources <- [itResources].
+acquireSoftware <- [acquireSoftwareForFree].
+acquireSoftware <- [payForSoftware].
+acquireSoftwareForFree <- [freeSoftware].
+acquireTelephoneSwitch <- [hardwareBeAcquired].
+acquireUpgradesForFree <- [freeUpgrades].
+acquireWebServerForFree <- [freeWebServer].
+anITTrainerBePresent <- [anITTrainerBePresent1].
+callsBeRecordedIntoADataBase <- [callsBeRecordedIntoADataBase1].
+considerationOfFeedbackITProviders <-
+  [ considerationOfFeedbackFromCounsellors ].
+decreaseClumsinessTechnology <- [decreaseClumsinessTechnology1].
+donorAccountingDataBase <- [manageDonorAccountingDataBase].
+easilyAccessableTechnologyInstructions <-
+  [ easilyAccessableTechnologyInstructions1 ].
+feedbackFormBeImplemented <- [acquireSoftware].
+feedbackFormSoftware <- [feedbackFormBeImplemented].
+getWebEventTechnology <- [acquireSoftware].
+getWebEventTechnology1 <- [getWebEventTechnology].
+hardwareBeAcquired <- [hardwareBeAcquiredForFree].
+hardwareBeAcquired <- [payForHardware].
+hardwareBeAcquiredForFree <- [freeHardware].
+implementActivityManager <- [acquireSoftware].
+implementAndManageTechnologyInRegionalOffices <- [useVPN].
+implementAndManageTechnologyInRegionalOffices <-
+  [ providePeerToPeerAccessRegionalOffices ].
+implementBulletinBoard <- [acquireSoftware].
+implementBulletinBoard1 <- [implementBulletinBoard].
+implementCategorizationTool <- [acquireSoftware].
+implementCategorizationTool1 <- [implementCategorizationTool].
+implementDesktops <- [installDesktopSoftware].
+implementDirectorEnterpriseThroughBluePumpkin <- [acquireSoftware].
+implementEmailForCounsellors1 <- [implementEmailForCounsellors].
+implementIVR <- [acquireSoftware].
+implementMaintainComputerSystemsForEmployeeUse <-
+  [ acquireAndImplementEmployeeSoftware ].
+implementMaintainComputerSystemsForEmployeeUse <-
+  [ implementAndManageTechnologyInRegionalOffices ].
+implementMaintainComputerSystemsForEmployeeUse <-
+  [ hardwareBeAcquired ].
+implementMaintainComputerSystemsForEmployeeUse <- [networkPCs].
+implementMaintainComputerSystemsForEmployeeUse <-
+  [ provideTechnologyToCreateAndSendDocuments ].
+implementMaintainComputerSystemsForEmployeeUse <- [implementDesktops].
+implementPhoneFeedback <- [implementPhoneFeedback1].
+implementSymposiumSystem <- [acquireSoftware].
+improveCallRecordingEquipment <- [improveCallRecordingEquipment1].
+improveQualityAssuranceTechnology <-
+  [ improveQualityAssuranceTechnology1 ].
+increaseAccessSpeedRegionalOfficesToDL <-
+  [ increaseAccessSpeedRegionalOfficesToDL1 ].
+increaseITMethodsToAcquireFeedback <-
+  [ increaseITMethodsToAcquireFeedback1 ].
+increaseITResources <- [increaseITResources1].
+increaseITTrainingForCounsellors <-
+  [ increaseITTrainingForCounsellors1 ].
+increasedEmphasisOnITInHiringProcessOfCounsellors1 <-
+  [ increasedEmphasisOnITInHiringProcessOfCounsellors ].
+installDesktopSoftware <- [acquireSoftware].
+integrateITSystems <-
+  [ callCenterServerAndSchedulingSystemBeIntegrated ].
+itBeUpgraded <- [payForUpgrades].
+itDeptProvidesOrientationAndTraining <- [anITTrainerBePresent1].
+itSystemsBeIntegrated <- [integrateITSystems].
+itTrainingSupportBeGivenToEmployees <-
+  [ itDeptProvidesOrientationAndTraining ].
+itTrainingSupportBeGivenToEmployees <-
+  [ useInformalBuddySystemForTraining ].
+manageAndImplementWebSite <- [webCounsellingSoftwareBeImplemented].
+manageAndImplementWebSite <- [provideOnlineDonorTechnology1].
+manageAndImplementWebSite <- [getWebEventTechnology].
+manageAndImplementWebSite <- [putContentOntoWebsite1].
+manageAndImplementWebSite <- [webServerBeAcquired].
+manageDonorAccountingDataBase <-
+  [ performDonorAccountingDataBaseMaintenance ].
+manageDonorAccountingDataBase <- [useOracleForDataBase].
+payForHardware <- [hardware].
+payForSoftware <- [software].
+payForUpgrades <- [upgrades].
+payForWebServer <- [webServer1].
+performanceReviewInformationBeCollectedInDataBase <-
+  [ performanceReviewInformationBeCollectedInDataBase1 ].
+properlyAndSuitablyEquippedInITToAccomplishCSNeeds1 <-
+  [ properlyAndSuitablyEquippedInITToAccomplishCSNeeds ].
+provideCompiledCallData <- [implementCategorizationTool].
+provideDocumentLibrarySystem <- [provideDocumentLibrarySystem1].
+provideDocumentLibrarySystem1 <- [acquireSoftware].
+provideOnlineDonorTechnology <- [provideOnlineDonorTechnology1].
+providePeerToPeerAccessRegionalOffices <- [useCurrentMethod].
+providePeerToPeerAccessRegionalOffices <- [useT1].
+putContentOntoWebsite <- [putContentOntoWebsite1].
+satisfyCSITNeeds <- [manageAndImplementWebSite].
+satisfyCSITNeeds <- [telephonyBeImplementedAndManaged].
+satisfyCSITNeeds <- [implementMaintainComputerSystemsForEmployeeUse].
+satisfyCSITNeeds <- [manageDonorAccountingDataBase].
+satisfyCSITNeeds <- [itTrainingSupportBeGivenToEmployees].
+simpleTechnology <- [simpleTechnology1].
+supportAnalysisCounsellorsTime <- [supportAnalysisCounsellorsTime1].
+telephonyBeImplementedAndManaged <- [implementIVR].
+telephonyBeImplementedAndManaged <- [acquireTelephoneSwitch].
+telephonyBeImplementedAndManaged <- [implementSymposiumSystem].
+telephonyBeImplementedAndManaged1 <-
+  [ telephonyBeImplementedAndManaged ].
+useOracleForDataBase <- [oracle].
+webCounsellingSoftwareBeImplemented <- [webSoftwareBeAcquired].
+webServer <- [webServerBeAcquired].
+webServerBeAcquired <- [acquireWebServerForFree].
+webServerBeAcquired <- [payForWebServer].
+webSoftware <- [webSoftwareBeAcquired].
+webSoftwareBeAcquired <- [payForSoftware].
+webSoftwareBeAcquired <- [acquireSoftwareForFree].
+adjustToSoftwareChanges <~ [hurt(itBeUpgraded)].
+costEffectiveTechnology <~
+  [ help(hardwareBeAcquiredForFree),
+    help(acquireSoftwareForFree),
+    hurt(payForHardware),
+    hurt(useT1),
+    hurt(payForSoftware),
+    help(useCurrentMethod),
+    help(useOracleForDataBase),
+    help(acquireWebServerForFree),
+    hurt(payForWebServer) ].
+costEffectiveTraining <~
+  [ hurt(aTrainingComputerBePresent1),
+    help(useInformalBuddySystemForTraining),
+    hurt(anITTrainerBePresent1) ].
+effectiveITTraining <~
+  [ help(increasedEmphasisOnITInHiringProcessOfCounsellors1),
+    help(aTrainingComputerBePresent1),
+    help(itDeptProvidesOrientationAndTraining),
+    help(increaseITTrainingResources) ].
+expandITDepartment <~
+  [ make(increaseITResources),
+    help(costEffectiveTechnology) ].
+fitBetweenSystemCapabilitiesAndCSRequirements <~
+  [ help(adequatelyCustomizableCSTechnology) ].
+improveQualityAssuranceTechnology1 <~
+  [ help(increaseITMethodsToAcquireFeedback1),
+    help(performanceReviewInformationBeCollectedInDataBase1),
+    help(callsBeRecordedIntoADataBase1),
+    help(improveCallRecordingEquipment1) ].
+increaseAccessSpeedRegionalOfficesToDL1 <~ [make(useT1)].
+increaseITMethodsToAcquireFeedback1 <~
+  [ help(feedbackFormBeImplemented) ].
+increaseITResources <~ [help(costEffectiveTraining)].
+increaseITTrainingForCounsellors1 <~
+  [ help(increaseITTrainingResources),
+    help(aTrainingComputerBePresent1),
+    help(anITTrainerBePresent1) ].
+increaseITTrainingResources <~
+  [ help(expandITDepartment),
+    help(increaseITResources),
+    help(costEffectiveTechnology) ].
+keepUpWithNewTechnology <~
+  [ help(increaseITResources),
+    help(itBeUpgraded),
+    hurt(csBeNotForProfit) ].
+properlyAndSuitablyEquippedInITToAccomplishCSNeeds <~
+  [ help(properlyAndSuitablyEquippedInITToAccomplishFundraisingNeeds),
+    help(effectiveITTraining),
+    help(acquireITResources),
+    help(fitBetweenSystemCapabilitiesAndCSRequirements),
+    help(adjustToSoftwareChanges),
+    help(properlyAndSuitablyEquippedInITToAccomplishServiceGoals),
+    help(itBeUpgraded),
+    help(sensitiveToTheEnvironmentITEquipmentWillBeIntroducedTo),
+    help(keepUpWithNewTechnology) ].
+properlyAndSuitablyEquippedInITToAccomplishFundraisingNeeds <~
+  [ help(provideDocumentLibrarySystem1),
+    help(manageDonorAccountingDataBase) ].
+properlyAndSuitablyEquippedInITToAccomplishServiceGoals <~
+  [ help(implementEmailForCounsellors),
+    help(installDesktopSoftware),
+    hurt(implementDirectorEnterpriseThroughBluePumpkin),
+    help(implementBulletinBoard),
+    hurt(implementBulletinBoard),
+    help(implementActivityManager),
+    hurt(implementActivityManager),
+    help(implementCategorizationTool),
+    help(considerationOfFeedbackFromCounsellors),
+    help(implementPhoneFeedback1) ].
+sensitiveToTheEnvironmentITEquipmentWillBeIntroducedTo <~
+  [ help(itProvidersHaveKnowledgeOfCounselling),
+    help(itProvidersHaveKnowledgeOfFundraisingAndMarketing) ].
+simpleTechnology1 <~ [help(integrateITSystems)].
+supportAnalysisCounsellorsTime1 <~
+  [ help(implementDirectorEnterpriseThroughBluePumpkin),
+    help(implementActivityManager) ].

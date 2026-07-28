@@ -1,6 +1,6 @@
-% Kids and Youth  (node/2 edge/3 dep/2 dec/3 leaf/1 topgoal/1)
-:- discontiguous node/2, edge/3, dep/2, dec/3, leaf/1, topgoal/1.
-:- dynamic node/2, edge/3, dep/2, dec/3, leaf/1, topgoal/1.
+% Kids and Youth  (nfr2 dialect: <- rules, <~ contribution lists)
+:- discontiguous (<-)/2, (<~)/2, node/2, leaf/1, topgoal/1.
+:- dynamic (<-)/2, (<~)/2, node/2, leaf/1, topgoal/1.
 node(kidsUseAskACounsellorSection,task).
 node(getEffectiveHelp,softgoal).
 node(kidsUsePhoneCounselling,task).
@@ -117,84 +117,93 @@ node(comfortablenessWithService,softgoal).
 node(useBulletinBoardWithReplies,task).
 node(connectWithOtherKids,softgoal).
 node(readGetInformedSectionOfWebSite,task).
-dep(similarityWithOtherKidsProblems,similarityWithOtherKidsProblems1).
-edge(patientCounselor1,getEffectiveHelp,0.5).
-dec(useAskACounsellorSection,helpBeAcquired,or).
-dep(useTextMessaging,kidsUseTextMessaging).
-edge(confidentialityService,safetyOfServiceUsage,0.5).
-dec(useCyberCafPortalChatRoom,helpBeAcquired,or).
-dep(friendlyWebSite1,friendlyWebSite).
-edge(ownershipOfServiceKids,comfortablenessWithService,0.5).
-dep(patientCounselor,patientCounselor1).
-edge(effectiveHelpInCrisis,getEffectiveHelp,0.5).
-edge(highQualityService,getEffectiveHelp,0.5).
-dep(implementPollsAboutKids,readPollsAboutKids).
-dep(connectBackToTheCommunity1,connectBackToTheCommunity).
-edge(decreasePhoneWaitingTime,effectiveHelpInCrisis,0.5).
-dep(implementOneOnOneChatRooms,useOneOnOneChatRooms).
-dep(useAskACounsellorSection,kidsUseAskACounsellorSection).
-dep(provideFeedback,feedback).
-edge(provideFeedback,privacy,-0.5).
-dep(readGeneralQuestionsAndAnswers,kidsReadGeneralQuestionsAndAnswers).
-edge(anonymityService,safetyOfServiceUsage,0.5).
-dep(useCyberCafPortalChatRoom,kidsUseCyberCafPortalChatRoom).
-dep(anonymityServices,anonymityService).
-edge(availabilityService,getEffectiveHelp,0.5).
-edge(easyAccessToPostReply,getEffectiveHelp,0.5).
-edge(supportAndBeSupportedByOtherKids,comfortablenessWithService,0.5).
-dep(ownershipOfServicesKids,ownershipOfServiceKids).
-dec(usePhoneCounselling,helpBeAcquired,or).
-edge(immediacyService,effectiveHelpInCrisis,0.5).
-edge(servicesBeFree1,comfortablenessWithService,0.5).
-edge(immediacyService,effectiveHelpInNonCrisisSituation,0.5).
-dep(implementCyberCafPortalChatRoom,useCyberCafPortalChatRoom).
-dep(servicesBeFree1,servicesBeFree).
-dec(readPollsAboutKids,informationBeAcquiredOnWebsite,or).
-dep(usePhoneCounselling,kidsUsePhoneCounselling).
-edge(childrenDecideWhenToHangUpAndCall,privacy,0.5).
-dep(implementGeneralQuestionsAndAnswers,readGeneralQuestionsAndAnswers).
-dep(implementEmailCounselling,useEmailCounselling).
-dep(maintainAskACounsellorSection,useAskACounsellorSection).
-edge(immediacyService,safetyOfServiceUsage,0.5).
-dep(readPollsAboutKids,kidsReadPollsAboutKids).
-dep(implementVoiceCounselling,useVoiceCounselling).
-dec(useVideoCounselling,helpBeAcquired,or).
-dep(decreasePhoneWaitingTime1,decreasePhoneWaitingTime).
-edge(anonymityService,comfortablenessWithService,0.5).
-dec(useEmailCounselling,helpBeAcquired,or).
-dec(readGeneralQuestionsAndAnswers,informationBeAcquiredOnWebsite,or).
-dep(useBulletinBoardWithReplies,kidsUseBulletinBoardWithReplies).
-dep(readGetInformedSectionOfWebSite,kidsUseGetInformedSectionOfWebSite).
-edge(similarityWithOtherKidsProblems1,comfortablenessWithService,0.5).
-edge(friendlyWebSite,getEffectiveHelp,0.5).
-dec(useVoiceCounselling,helpBeAcquired,or).
-dep(useVideoCounselling,kidsUseVideoCounselling).
-dep(maintainPhoneCounselling,usePhoneCounselling).
-edge(confidentialityService,privacy,0.5).
-edge(ventEmotions,getEffectiveHelp,0.5).
-edge(beInformedOfServiceAnonymity,comfortablenessWithService,0.5).
-dep(availabilityServices,availabilityService).
-edge(connectWithOtherKids,supportAndBeSupportedByOtherKids,0.5).
-edge(provideFeedback,comfortablenessWithService,-0.5).
-dep(beInformedOfServiceAnonymity,informKidsAboutAnonymityOfService).
-dep(implementBulletinBoardWithReplies,useBulletinBoardWithReplies).
-dec(readGetInformedSectionOfWebSite,informationBeAcquiredOnWebsite,or).
-edge(confidentialityService,comfortablenessWithService,0.5).
-edge(patientCounselor1,comfortablenessWithService,0.5).
-edge(anonymityService,privacy,0.5).
-dep(useOneOnOneChatRooms,kidsUseOneOnOneChatRooms).
-dep(useVoiceCounselling,kidsUseVoiceCounselling).
-dec(useTextMessaging,helpBeAcquired,or).
-dec(useOneOnOneChatRooms,helpBeAcquired,or).
-dep(highQualityServices,highQualityService).
-dep(connectWithOtherKids1,connectWithOtherKids).
-dep(easyAccessToPostReply1,easyAccessToPostReply).
-dep(maintainGetInformedSectionOfWebSite,readGetInformedSectionOfWebSite).
-edge(patientCounselor1,ventEmotions,0.5).
-edge(ownershipOfServiceKids,childrenDecideWhenToHangUpAndCall,1).
-dep(immediacyServices,immediacyService).
-dep(implementVideoCounselling,useVideoCounselling).
-dep(useEmailCounselling,kidsUseEmailCounselling).
-dep(confidentialityServices,confidentialityService).
-dep(implementTextMessaging,useTextMessaging).
-edge(effectiveHelpInNonCrisisSituation,getEffectiveHelp,0.5).
+anonymityService <- [anonymityServices].
+availabilityService <- [availabilityServices].
+confidentialityService <- [confidentialityServices].
+connectBackToTheCommunity <- [connectBackToTheCommunity1].
+connectWithOtherKids <- [connectWithOtherKids1].
+decreasePhoneWaitingTime <- [decreasePhoneWaitingTime1].
+easyAccessToPostReply <- [easyAccessToPostReply1].
+feedback <- [provideFeedback].
+friendlyWebSite <- [friendlyWebSite1].
+helpBeAcquired <- [useAskACounsellorSection].
+helpBeAcquired <- [useCyberCafPortalChatRoom].
+helpBeAcquired <- [usePhoneCounselling].
+helpBeAcquired <- [useVideoCounselling].
+helpBeAcquired <- [useEmailCounselling].
+helpBeAcquired <- [useVoiceCounselling].
+helpBeAcquired <- [useTextMessaging].
+helpBeAcquired <- [useOneOnOneChatRooms].
+highQualityService <- [highQualityServices].
+immediacyService <- [immediacyServices].
+informKidsAboutAnonymityOfService <- [beInformedOfServiceAnonymity].
+informationBeAcquiredOnWebsite <- [readPollsAboutKids].
+informationBeAcquiredOnWebsite <- [readGeneralQuestionsAndAnswers].
+informationBeAcquiredOnWebsite <- [readGetInformedSectionOfWebSite].
+kidsReadGeneralQuestionsAndAnswers <-
+  [ readGeneralQuestionsAndAnswers ].
+kidsReadPollsAboutKids <- [readPollsAboutKids].
+kidsUseAskACounsellorSection <- [useAskACounsellorSection].
+kidsUseBulletinBoardWithReplies <- [useBulletinBoardWithReplies].
+kidsUseCyberCafPortalChatRoom <- [useCyberCafPortalChatRoom].
+kidsUseEmailCounselling <- [useEmailCounselling].
+kidsUseGetInformedSectionOfWebSite <-
+  [ readGetInformedSectionOfWebSite ].
+kidsUseOneOnOneChatRooms <- [useOneOnOneChatRooms].
+kidsUsePhoneCounselling <- [usePhoneCounselling].
+kidsUseTextMessaging <- [useTextMessaging].
+kidsUseVideoCounselling <- [useVideoCounselling].
+kidsUseVoiceCounselling <- [useVoiceCounselling].
+ownershipOfServiceKids <- [ownershipOfServicesKids].
+patientCounselor1 <- [patientCounselor].
+readGeneralQuestionsAndAnswers <-
+  [ implementGeneralQuestionsAndAnswers ].
+readGetInformedSectionOfWebSite <-
+  [ maintainGetInformedSectionOfWebSite ].
+readPollsAboutKids <- [implementPollsAboutKids].
+servicesBeFree <- [servicesBeFree1].
+similarityWithOtherKidsProblems1 <- [similarityWithOtherKidsProblems].
+useAskACounsellorSection <- [maintainAskACounsellorSection].
+useBulletinBoardWithReplies <- [implementBulletinBoardWithReplies].
+useCyberCafPortalChatRoom <- [implementCyberCafPortalChatRoom].
+useEmailCounselling <- [implementEmailCounselling].
+useOneOnOneChatRooms <- [implementOneOnOneChatRooms].
+usePhoneCounselling <- [maintainPhoneCounselling].
+useTextMessaging <- [implementTextMessaging].
+useVideoCounselling <- [implementVideoCounselling].
+useVoiceCounselling <- [implementVoiceCounselling].
+childrenDecideWhenToHangUpAndCall <~ [make(ownershipOfServiceKids)].
+comfortablenessWithService <~
+  [ help(ownershipOfServiceKids),
+    help(supportAndBeSupportedByOtherKids),
+    help(servicesBeFree1),
+    help(anonymityService),
+    help(similarityWithOtherKidsProblems1),
+    help(beInformedOfServiceAnonymity),
+    hurt(provideFeedback),
+    help(confidentialityService),
+    help(patientCounselor1) ].
+effectiveHelpInCrisis <~
+  [ help(decreasePhoneWaitingTime),
+    help(immediacyService) ].
+effectiveHelpInNonCrisisSituation <~ [help(immediacyService)].
+getEffectiveHelp <~
+  [ help(patientCounselor1),
+    help(effectiveHelpInCrisis),
+    help(highQualityService),
+    help(availabilityService),
+    help(easyAccessToPostReply),
+    help(friendlyWebSite),
+    help(ventEmotions),
+    help(effectiveHelpInNonCrisisSituation) ].
+privacy <~
+  [ hurt(provideFeedback),
+    help(childrenDecideWhenToHangUpAndCall),
+    help(confidentialityService),
+    help(anonymityService) ].
+safetyOfServiceUsage <~
+  [ help(confidentialityService),
+    help(anonymityService),
+    help(immediacyService) ].
+supportAndBeSupportedByOtherKids <~ [help(connectWithOtherKids)].
+ventEmotions <~ [help(patientCounselor1)].

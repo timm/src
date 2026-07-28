@@ -1,6 +1,6 @@
-% CSSAProgram  (node/2 edge/3 dep/2 dec/3 leaf/1 topgoal/1)
-:- discontiguous node/2, edge/3, dep/2, dec/3, leaf/1, topgoal/1.
-:- dynamic node/2, edge/3, dep/2, dec/3, leaf/1, topgoal/1.
+% CSSAProgram  (nfr2 dialect: <- rules, <~ contribution lists)
+:- discontiguous (<-)/2, (<~)/2, node/2, leaf/1, topgoal/1.
+:- dynamic (<-)/2, (<~)/2, node/2, leaf/1, topgoal/1.
 node(acquireVolunteerOutreachSkills1,softgoal).
 node(experienceForResume,softgoal).
 node(speaches,resource).
@@ -137,171 +137,192 @@ node(reduceMisconceptions1,softgoal).
 node(saSAreEnthusiastic,softgoal).
 node(speakAtFundraisers1,task).
 node(giveCSPresentations3,task).
-dep(saSAreOutgoing1,saSAreOutgoing).
-edge(keepInTouchWithVolunteers,increaseInvolvementOfSAS,0.5).
-dec(presenationBeInitiated,giveCSPresentations1,or).
-edge(giveCSPresentations1,acquirePublicSpeakingSkills2,0.5).
-edge(runFundraiserInSchools1,acquireFundraisingSkills2,0.5).
-dep(speakAtFundraisers,speakAtFundraisers2).
-edge(putOnSATrainingConferences,engageVolunteers,0.5).
-edge(happinessStudentAmbassadors,saSAreEnthusiastic,0.5).
-edge(retrainSAS,acquirePublicSpeakingSkills2,0.5).
-edge(increaseSkills,happinessStudentAmbassadors2,0.5).
-dep(saSAreConfident1,saSAreConfident).
-edge(runFundraiserInSchools2,spreadAwareness,0.5).
-dec(askForHelpWithPresentations,giveCSPresentations1,or).
-edge(speakAtFundraisers,acquirePublicSpeakingSkills2,0.5).
-edge(acquireVolunteerOutreachSkills,beOutgoing,0.5).
-edge(planSocialEvents,makeNewFriends2,0.5).
-dep(giveCSPresentations2,giveCSPresentations3).
-dep(runFundraiserInSchools1,runFundraiserInSchools).
-edge(makeNewFriends,happinessStudentAmbassadors2,0.5).
-edge(acquireFundraisingSkills,beOrganized,0.5).
-dep(providePromotionResources,promotionResources).
-edge(saSAreEnthusiastic,engageVolunteers,0.5).
-edge(acquireFundraisingSkills,beOutgoing,0.5).
-edge(trainSAS,acquirePublicSpeakingSkills2,0.5).
-dep(sendOutEmails1,sendOutEmails2).
-dep(helpWithPresentations,helpWithPresentations1).
-edge(writeArticlesForNewspaper1,spreadAwareness,0.5).
-dep(reduceMisconceptions1,reduceMisconceptions).
-edge(morePromotionResourcesAvailable,engageVolunteers,0.5).
-dep(giveBackToCommunity1,giveBackToCommunity).
-dep(speaches,getSpeaches).
-edge(kidsBeUsedToCommunicateWithOtherKids,trustOfKids1,0.5).
-edge(beOrganized,increaseSkills,0.5).
-dep(helpPutOnSATrainingConferences1,putOnSATrainingConferences2).
-edge(attendCSMeetings,acquireFundraisingSkills2,0.5).
-dep(sendOutEmails,sendOutEmails1).
-edge(planAndPutOnReconnectionConferences,increaseInvolvementOfSAS,0.5).
-dep(trustOfKids1,trustOfKids).
-edge(writeArticlesForNewspaper1,keepInTouchWithVolunteers,0.5).
-dep(beOutgoing,saSAreOutgoing1).
-edge(attendSAMeetings,makeNewFriends2,0.5).
-edge(morePromotionResourcesAvailable,spreadAwareness,0.5).
-dep(helpWithPresentations1,findHelpWithPresentations1).
-dep(haveTimeForSchool2,haveTimeForSchool1).
-dep(writeArticlesForNewspaper,writeArticlesForNewspaper2).
-dep(haveTimeForSchool1,haveTimeForSchool).
-edge(helpPutOnSATrainingConferences,makeNewFriends2,0.5).
-dep(saSAreOrganized1,saSAreOrganized).
-edge(planAndPutOnReconnectionConferences,keepInTouchWithVolunteers,0.5).
-dep(writeArticlesForNewspaper2,writeArticlesForNewspaper1).
-edge(happinessStudentAmbassadors,qualitySAServices1,0.5).
-edge(sendOutEmails2,keepInTouchWithVolunteers,0.5).
-edge(acquireVolunteerOutreachSkills,beConfident,0.5).
-edge(provideSpeaches,qualitySAServices1,0.5).
-dep(planAndPutOnReconnectionConferences1,planAndPutOnReconnectionConferences).
-dec(initiatePresentationWithSchools,presenationBeInitiated,or).
-edge(runFundraiserInSchools1,acquireVolunteerOutreachSkills2,0.5).
-edge(retrainSAS,acquireFundraisingSkills2,0.5).
-dep(helpPutOnSATrainingConferences,helpPutOnSATrainingConferences1).
-dep(spreadAwareness,engagementStudentAmbassadorsInPromotingAwareness).
-edge(trainSAS,acquireFundraisingSkills2,0.5).
-edge(kidsBeUsedToCommunicateWithOtherKids,improveImageToKids1,0.5).
-dep(spreadAwareness,spreadAwareness1).
-edge(experienceForResume,happinessStudentAmbassadors2,0.5).
-edge(highPresentationAttendance,expansionOfSAServices,0.5).
-edge(happinessStudentAmbassadors,engageVolunteers,0.5).
-dec(trainSAS,helpPutOnSATrainingConferences,or).
-edge(acquirePublicSpeakingSkills,beOutgoing,0.5).
-dep(planAndPutOnReconnectionConferences2,planAndPutOnReconnectionConferences1).
-edge(speakAtFundraisers1,spreadAwareness,0.5).
-edge(morePromotionResourcesAvailable,qualitySAServices1,0.5).
-dep(giveBackToCommunity2,giveBackToCommunity1).
-edge(qualitySAServices1,engageVolunteers,0.5).
-edge(helpWithPresentations,giveBackToCommunity2,0.5).
-edge(saSAreConfident,qualitySAServices1,0.5).
-dec(writeArticlesForNewspaper,communityServiceHoursCompleted1,or).
-dep(runFundraiserInSchools,runFundraiserInSchools2).
-dep(happinessStudentAmbassadors2,happinessStudentAmbassadors1).
-edge(increaseInvolvementOfSAS,expansionOfSAServices,0.5).
-dep(acquireFundraisingSkills1,acquireFundraisingSkills).
-edge(acquirePublicSpeakingSkills,beConfident,0.5).
-dep(saSAreEnthusiastic1,saSAreEnthusiastic).
-dec(attendCSMeetings,communityServiceHoursCompleted1,or).
-dep(acquirePublicSpeakingSkills1,acquirePublicSpeakingSkills).
-dep(promotionResources1,providePromotionResources).
-edge(positiveReputationCS,engageVolunteers,0.5).
-dec(attendSAMeetings,communityServiceHoursCompleted1,or).
-edge(positiveReputationCS,highPresentationAttendance,0.5).
-dep(provideSpeaches,speaches).
-dep(helpPlanAndPutOnReconnectionConferences,helpPlanAndPutOnReconnectionConferences1).
-dep(permissionForPresentationsBeGiven,initiatePresentationWithSchools).
-edge(trainSAS,acquireVolunteerOutreachSkills2,0.5).
-dep(beEnthusiastic,saSAreEnthusiastic1).
-dep(happinessStudentAmbassadors1,happinessStudentAmbassadors).
-dec(giveCSPresentations1,communityServiceHoursCompleted1,or).
-dep(makeNewFriends1,makeNewFriends).
-dec(sendOutEmails,findHelpWithPresentations1,or).
-edge(communityServiceHoursCompleted1,haveTimeForSchool2,-0.5).
-dep(beOrganized,saSAreOrganized1).
-dep(increaseWritingSkills1,increaseWritingSkills).
-dep(findHelpWithPresentations,askForHelpWithPresentations).
-edge(writeArticlesForNewspaper,increaseWritingSkills2,0.5).
-dep(qualitySAServices1,qualitySAServices).
-edge(retrainSAS,acquireVolunteerOutreachSkills2,0.5).
-edge(increaseSkills,experienceForResume,0.5).
-edge(runFundraiserInSchools1,acquirePublicSpeakingSkills2,0.5).
-dep(speakAtFundraisers1,speakAtFundraisers3).
-edge(providePromotionResources,qualitySAServices1,0.5).
-edge(happinessStudentAmbassadors,saSAreOutgoing,0.5).
-dep(acquirePublicSpeakingSkills2,acquirePublicSpeakingSkills1).
-dep(promotionResources,getPromotionResources).
-dep(putOnSATrainingConferences1,putOnSATrainingConferences).
-edge(speakAtFundraisers1,reduceMisconceptions1,0.5).
-dep(putOnSATrainingConferences2,putOnSATrainingConferences1).
-edge(haveTimeForSchool,happinessStudentAmbassadors2,0.5).
-dep(communityServiceHoursCompleted1,communityServiceHoursCompleted).
-dec(helpPutOnSATrainingConferences,communityServiceHoursCompleted1,or).
-dep(beConfident,saSAreConfident1).
-edge(giveBackToCommunity,happinessStudentAmbassadors2,0.5).
-edge(communityServiceHoursCompleted2,happinessStudentAmbassadors2,0.5).
-edge(acquireVolunteerOutreachSkills,beEnthusiastic,0.5).
-edge(increasedSAResources1,morePromotionResourcesAvailable,0.5).
-edge(saSAreOrganized,qualitySAServices1,0.5).
-dep(acquireVolunteerOutreachSkills1,acquireVolunteerOutreachSkills).
-edge(acquirePublicSpeakingSkills,beEnthusiastic,0.5).
-edge(attendCSMeetings,acquireVolunteerOutreachSkills2,0.5).
-edge(kidsBeUsedToCommunicateWithOtherKids,qualitySAServices1,0.5).
-edge(acquireFundraisingSkills,beEnthusiastic,0.5).
-dep(positiveReputationCS1,positiveReputationCS).
-dep(communityServiceHoursCompleted,communityServiceHoursCompleted2).
-edge(helpPlanAndPutOnReconnectionConferences,acquirePublicSpeakingSkills2,0.5).
-dep(acquireFundraisingSkills2,acquireFundraisingSkills1).
-edge(giveCSPresentations2,reduceMisconceptions1,0.5).
-dep(improveImageToKids1,improveImageToKids).
-dep(createLifeLongVolunteerSpirit1,createLifeLongVolunteerSpirit).
-edge(helpPlanAndPutOnReconnectionConferences,acquireVolunteerOutreachSkills2,0.5).
-edge(runFundraiserInSchools1,giveBackToCommunity2,0.5).
-dec(getPromotionResources,giveCSPresentations1,or).
-dep(acquireVolunteerOutreachSkills2,acquireVolunteerOutreachSkills1).
-dep(makeNewFriends2,makeNewFriends1).
-edge(spreadAwareness,expansionOfSAServices,0.5).
-edge(engageVolunteers,createLifeLongVolunteerSpirit1,0.5).
-edge(speakAtFundraisers,giveBackToCommunity2,0.5).
-dep(helpPlanAndPutOnReconnectionConferences1,planAndPutOnReconnectionConferences2).
-dec(runFundraiserInSchools1,communityServiceHoursCompleted1,or).
-edge(beConfident,increaseSkills,0.5).
-dec(askForHelpWithPresentations,speakAtFundraisers,or).
-dec(retrainSAS,helpPlanAndPutOnReconnectionConferences,or).
-edge(beOutgoing,makeNewFriends,0.5).
-edge(writeArticlesForNewspaper,makeNewFriends2,0.5).
-dep(findHelpWithPresentations1,findHelpWithPresentations).
-edge(happinessStudentAmbassadors,increaseInvolvementOfSAS,0.5).
-dep(giveCSPresentations,giveCSPresentations2).
-edge(giveCSPresentations1,giveBackToCommunity2,0.5).
-dec(schoolInitiatesPresenation,presenationBeInitiated,or).
-edge(giveCSPresentations2,spreadAwareness,0.5).
-dec(helpPlanAndPutOnReconnectionConferences,communityServiceHoursCompleted1,or).
-dep(speakAtFundraisers2,speakAtFundraisers1).
-dep(giveCSPresentations1,giveCSPresentations).
-edge(helpWithPresentations,makeNewFriends2,0.5).
-edge(speakAtFundraisers,acquireFundraisingSkills2,0.5).
-edge(engageVolunteers,expansionOfSAServices,0.5).
-dep(increaseWritingSkills2,increaseWritingSkills1).
-dep(increasedSAResources1,increasedSAResources).
-edge(giveCSPresentations1,acquireVolunteerOutreachSkills2,0.5).
-dec(speakAtFundraisers,communityServiceHoursCompleted1,or).
-dep(schoolInitiatesPresenation1,schoolInitiatesPresenation).
-edge(providePromotionResources,morePromotionResourcesAvailable,-0.5).
+acquireFundraisingSkills <- [acquireFundraisingSkills1].
+acquireFundraisingSkills1 <- [acquireFundraisingSkills2].
+acquirePublicSpeakingSkills <- [acquirePublicSpeakingSkills1].
+acquirePublicSpeakingSkills1 <- [acquirePublicSpeakingSkills2].
+acquireVolunteerOutreachSkills <- [acquireVolunteerOutreachSkills1].
+acquireVolunteerOutreachSkills1 <- [acquireVolunteerOutreachSkills2].
+askForHelpWithPresentations <- [findHelpWithPresentations].
+communityServiceHoursCompleted <- [communityServiceHoursCompleted1].
+communityServiceHoursCompleted1 <- [writeArticlesForNewspaper].
+communityServiceHoursCompleted1 <- [attendCSMeetings].
+communityServiceHoursCompleted1 <- [attendSAMeetings].
+communityServiceHoursCompleted1 <- [giveCSPresentations1].
+communityServiceHoursCompleted1 <- [helpPutOnSATrainingConferences].
+communityServiceHoursCompleted1 <- [runFundraiserInSchools1].
+communityServiceHoursCompleted1 <-
+  [ helpPlanAndPutOnReconnectionConferences ].
+communityServiceHoursCompleted1 <- [speakAtFundraisers].
+communityServiceHoursCompleted2 <- [communityServiceHoursCompleted].
+createLifeLongVolunteerSpirit <- [createLifeLongVolunteerSpirit1].
+engagementStudentAmbassadorsInPromotingAwareness <- [spreadAwareness].
+findHelpWithPresentations <- [findHelpWithPresentations1].
+findHelpWithPresentations1 <- [helpWithPresentations1, sendOutEmails].
+getPromotionResources <- [promotionResources].
+getSpeaches <- [speaches].
+giveBackToCommunity <- [giveBackToCommunity1].
+giveBackToCommunity1 <- [giveBackToCommunity2].
+giveCSPresentations <- [giveCSPresentations1].
+giveCSPresentations1 <- [presenationBeInitiated].
+giveCSPresentations1 <- [askForHelpWithPresentations].
+giveCSPresentations1 <- [getPromotionResources].
+giveCSPresentations2 <- [giveCSPresentations].
+giveCSPresentations3 <- [giveCSPresentations2].
+happinessStudentAmbassadors <- [happinessStudentAmbassadors1].
+happinessStudentAmbassadors1 <- [happinessStudentAmbassadors2].
+haveTimeForSchool <- [haveTimeForSchool1].
+haveTimeForSchool1 <- [haveTimeForSchool2].
+helpPlanAndPutOnReconnectionConferences <- [retrainSAS].
+helpPlanAndPutOnReconnectionConferences1 <-
+  [ helpPlanAndPutOnReconnectionConferences ].
+helpPutOnSATrainingConferences <- [trainSAS].
+helpPutOnSATrainingConferences1 <- [helpPutOnSATrainingConferences].
+helpWithPresentations1 <- [helpWithPresentations].
+improveImageToKids <- [improveImageToKids1].
+increaseWritingSkills <- [increaseWritingSkills1].
+increaseWritingSkills1 <- [increaseWritingSkills2].
+increasedSAResources <- [increasedSAResources1].
+initiatePresentationWithSchools <-
+  [ permissionForPresentationsBeGiven ].
+makeNewFriends <- [makeNewFriends1].
+makeNewFriends1 <- [makeNewFriends2].
+planAndPutOnReconnectionConferences <-
+  [ planAndPutOnReconnectionConferences1 ].
+planAndPutOnReconnectionConferences1 <-
+  [ planAndPutOnReconnectionConferences2 ].
+planAndPutOnReconnectionConferences2 <-
+  [ helpPlanAndPutOnReconnectionConferences1 ].
+positiveReputationCS <- [positiveReputationCS1].
+presenationBeInitiated <- [initiatePresentationWithSchools].
+presenationBeInitiated <- [schoolInitiatesPresenation].
+promotionResources <- [providePromotionResources].
+providePromotionResources <- [promotionResources1].
+putOnSATrainingConferences <- [putOnSATrainingConferences1].
+putOnSATrainingConferences1 <- [putOnSATrainingConferences2].
+putOnSATrainingConferences2 <- [helpPutOnSATrainingConferences1].
+qualitySAServices <- [qualitySAServices1].
+reduceMisconceptions <- [reduceMisconceptions1].
+runFundraiserInSchools <- [runFundraiserInSchools1].
+runFundraiserInSchools2 <- [runFundraiserInSchools].
+saSAreConfident <- [saSAreConfident1].
+saSAreConfident1 <- [beConfident].
+saSAreEnthusiastic <- [saSAreEnthusiastic1].
+saSAreEnthusiastic1 <- [beEnthusiastic].
+saSAreOrganized <- [saSAreOrganized1].
+saSAreOrganized1 <- [beOrganized].
+saSAreOutgoing <- [saSAreOutgoing1].
+saSAreOutgoing1 <- [beOutgoing].
+schoolInitiatesPresenation <- [schoolInitiatesPresenation1].
+sendOutEmails1 <- [sendOutEmails].
+sendOutEmails2 <- [sendOutEmails1].
+speaches <- [provideSpeaches].
+speakAtFundraisers <- [askForHelpWithPresentations].
+speakAtFundraisers1 <- [speakAtFundraisers2].
+speakAtFundraisers2 <- [speakAtFundraisers].
+speakAtFundraisers3 <- [speakAtFundraisers1].
+spreadAwareness1 <- [spreadAwareness].
+trustOfKids <- [trustOfKids1].
+writeArticlesForNewspaper1 <- [writeArticlesForNewspaper2].
+writeArticlesForNewspaper2 <- [writeArticlesForNewspaper].
+acquireFundraisingSkills2 <~
+  [ help(runFundraiserInSchools1),
+    help(attendCSMeetings),
+    help(retrainSAS),
+    help(trainSAS),
+    help(speakAtFundraisers) ].
+acquirePublicSpeakingSkills2 <~
+  [ help(giveCSPresentations1),
+    help(retrainSAS),
+    help(speakAtFundraisers),
+    help(trainSAS),
+    help(runFundraiserInSchools1),
+    help(helpPlanAndPutOnReconnectionConferences) ].
+acquireVolunteerOutreachSkills2 <~
+  [ help(runFundraiserInSchools1),
+    help(trainSAS),
+    help(retrainSAS),
+    help(attendCSMeetings),
+    help(helpPlanAndPutOnReconnectionConferences),
+    help(giveCSPresentations1) ].
+beConfident <~
+  [ help(acquireVolunteerOutreachSkills),
+    help(acquirePublicSpeakingSkills) ].
+beEnthusiastic <~
+  [ help(acquireVolunteerOutreachSkills),
+    help(acquirePublicSpeakingSkills),
+    help(acquireFundraisingSkills) ].
+beOrganized <~ [help(acquireFundraisingSkills)].
+beOutgoing <~
+  [ help(acquireVolunteerOutreachSkills),
+    help(acquireFundraisingSkills),
+    help(acquirePublicSpeakingSkills) ].
+createLifeLongVolunteerSpirit1 <~ [help(engageVolunteers)].
+engageVolunteers <~
+  [ help(putOnSATrainingConferences),
+    help(saSAreEnthusiastic),
+    help(morePromotionResourcesAvailable),
+    help(happinessStudentAmbassadors),
+    help(qualitySAServices1),
+    help(positiveReputationCS) ].
+expansionOfSAServices <~
+  [ help(highPresentationAttendance),
+    help(increaseInvolvementOfSAS),
+    help(spreadAwareness),
+    help(engageVolunteers) ].
+experienceForResume <~ [help(increaseSkills)].
+giveBackToCommunity2 <~
+  [ help(helpWithPresentations),
+    help(runFundraiserInSchools1),
+    help(speakAtFundraisers),
+    help(giveCSPresentations1) ].
+happinessStudentAmbassadors2 <~
+  [ help(increaseSkills),
+    help(makeNewFriends),
+    help(experienceForResume),
+    help(haveTimeForSchool),
+    help(giveBackToCommunity),
+    help(communityServiceHoursCompleted2) ].
+haveTimeForSchool2 <~ [hurt(communityServiceHoursCompleted1)].
+highPresentationAttendance <~ [help(positiveReputationCS)].
+improveImageToKids1 <~ [help(kidsBeUsedToCommunicateWithOtherKids)].
+increaseInvolvementOfSAS <~
+  [ help(keepInTouchWithVolunteers),
+    help(planAndPutOnReconnectionConferences),
+    help(happinessStudentAmbassadors) ].
+increaseSkills <~ [help(beOrganized), help(beConfident)].
+increaseWritingSkills2 <~ [help(writeArticlesForNewspaper)].
+keepInTouchWithVolunteers <~
+  [ help(writeArticlesForNewspaper1),
+    help(planAndPutOnReconnectionConferences),
+    help(sendOutEmails2) ].
+makeNewFriends <~ [help(beOutgoing)].
+makeNewFriends2 <~
+  [ help(planSocialEvents),
+    help(attendSAMeetings),
+    help(helpPutOnSATrainingConferences),
+    help(writeArticlesForNewspaper),
+    help(helpWithPresentations) ].
+morePromotionResourcesAvailable <~
+  [ help(increasedSAResources1),
+    hurt(providePromotionResources) ].
+qualitySAServices1 <~
+  [ help(happinessStudentAmbassadors),
+    help(provideSpeaches),
+    help(morePromotionResourcesAvailable),
+    help(saSAreConfident),
+    help(providePromotionResources),
+    help(saSAreOrganized),
+    help(kidsBeUsedToCommunicateWithOtherKids) ].
+reduceMisconceptions1 <~
+  [ help(speakAtFundraisers1),
+    help(giveCSPresentations2) ].
+saSAreEnthusiastic <~ [help(happinessStudentAmbassadors)].
+saSAreOutgoing <~ [help(happinessStudentAmbassadors)].
+spreadAwareness <~
+  [ help(runFundraiserInSchools2),
+    help(writeArticlesForNewspaper1),
+    help(morePromotionResourcesAvailable),
+    help(speakAtFundraisers1),
+    help(giveCSPresentations2) ].
+trustOfKids1 <~ [help(kidsBeUsedToCommunicateWithOtherKids)].

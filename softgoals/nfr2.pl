@@ -7,7 +7,7 @@
 :- op(900, fy, not).
 :- op(1100, xfx, <-).
 :- op(1100, xfx, <~).
-:- dynamic (<-)/2, (<~)/2.
+:- dynamic (<-)/2, (<~)/2, greedy/0.   % greedy: commit or-choices
 :- discontiguous (<-)/2, (<~)/2.
 
 permute(Xs,Ys) :- random_permutation(Xs,Ys).
@@ -35,8 +35,10 @@ eval(K,V) --> ({var(V)} -> {permute([2,-2],Ps), member(V,Ps)} ; [] ),
 % so a -2 target fails here by unification (falsity is assumed,
 % never derived); edges leave V pending for combine.
 agenda(K,2,or,Bs)  :- findall(B, (K <- B), Bs), Bs \= [].
-agenda(K,_,and,Es) :- findall(E, ((K <~ Es0), member(E,Es0)), Es), Es \= [].
+agenda(K,V,and,Es) :- var(V), findall(E, ((K <~ Es0), member(E,Es0)), Es), Es \= [].
 
+walk(or,Bs,_)  --> { greedy, !, random_member(B,Bs), permute(B,Ls) },
+                   lits(Ls).                   % ISAMP mode: no or-retry
 walk(or,Bs,_)  --> { member(B,Bs), permute(B,Ls) }, lits(Ls).
 walk(and,Es,V) --> foldl(contrib,Es,Vs), { combine(Vs,V) }.
 
@@ -45,21 +47,32 @@ lits([L|Ls]) --> { kv(L,K,T) }, eval(K,T), lits(Ls).
 
 % ---- contributions -------------------------------------------------------
 contrib(make(X), V) --> eval(X,V).                                % full, same
-contrib(break(X),V) --> eval(X,W), { V is -W }.                   % full, flip
-contrib(help(X), V) --> eval(X,W), { V is  sign(W)*min(1,abs(W)) }.
-contrib(hurt(X), V) --> eval(X,W), { V is -sign(W)*min(1,abs(W)) }.
-contrib(and(Xs), V) --> foldl(eval,Xs,Vs), { min_list(Vs,V) }.
-contrib(or(Xs),  V) --> foldl(eval,Xs,Vs), { max_list(Vs,V) }.
+contrib(break(X),V) --> eval(X,W), { V = neg(W) }.        % full, flip
+contrib(help(X), V) --> eval(X,W), { V = damp(W) }.
+contrib(hurt(X), V) --> eval(X,W), { V = neg(damp(W)) }.
+contrib(and(Xs), V) --> foldl(eval,Xs,Vs), { V = amin(Vs) }.
+contrib(or(Xs),  V) --> foldl(eval,Xs,Vs), { V = amax(Vs) }.
 contrib(task(P), V) --> lits([P]), { V = 2 }.          % bridge to horn side
 
+% contributions arrive symbolic (a loop label may still be a var);
+% ground the pendings, then evaluate the expressions.
+evalx(X,X)       :- number(X), !.
+evalx(neg(E),V)  :- evalx(E,W), V is -W.
+evalx(damp(E),V) :- evalx(E,W), V is sign(W)*min(1,abs(W)).
+evalx(amin(L),V) :- maplist(evalx,L,Ws), min_list(Ws,V).
+evalx(amax(L),V) :- maplist(evalx,L,Ws), max_list(Ws,V).
+
 combine(Vs, V) :- term_variables(Vs, Us), grounds(Us),  % pending loop labels
-                  include([X]>>(X>0), Vs, Ps), include([X]>>(X<0), Vs, Ns),
+                  maplist(evalx, Vs, Ws),
+                  include([X]>>(X>0), Ws, Ps), include([X]>>(X<0), Ws, Ns),
                   ( Ps=[] -> P=0 ; max_list(Ps,P) ),
                   ( Ns=[] -> N=0 ; min_list(Ns,N) ),
                   \+ (P =:= 2, N =:= -2),              % sat meets denied
                   V is max(-2, min(2, P+N)).
 
-grounds([]).
+grounds([]) :- !.
+grounds(Us) :- length(Us,N), N > 3, !,       % big cyclic cluster: punt to
+               maplist(=(0),Us).             % undecided, else 5^k guesses
 grounds([U|Us]) :- member(U, [2,1,0,-1,-2]), grounds(Us).
 
 % ---- top ----------------------------------------------------------------

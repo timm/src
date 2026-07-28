@@ -1,6 +1,6 @@
-% CSServices  (node/2 edge/3 dep/2 dec/3 leaf/1 topgoal/1)
-:- discontiguous node/2, edge/3, dep/2, dec/3, leaf/1, topgoal/1.
-:- dynamic node/2, edge/3, dep/2, dec/3, leaf/1, topgoal/1.
+% CSServices  (nfr2 dialect: <- rules, <~ contribution lists)
+:- discontiguous (<-)/2, (<~)/2, node/2, leaf/1, topgoal/1.
+:- dynamic (<-)/2, (<~)/2, node/2, leaf/1, topgoal/1.
 node(answer80OfCallsWithin30SecondsOfMessageEnding,goal).
 leaf(answer80OfCallsWithin30SecondsOfMessageEnding).
 topgoal(answer80OfCallsWithin30SecondsOfMessageEnding).
@@ -446,510 +446,627 @@ node(kidsUseBulletinBoardWithReplies1,task).
 leaf(kidsUseBulletinBoardWithReplies1).
 node(sufficientlyModeratedWebServices4,softgoal).
 node(efficientServices,softgoal).
-edge(kidsUseBulletinBoardWithDelayedModeration,correctInterpretationOfCounsel,-0.5).
-edge(avoidPresenceOfPedofiles,avoidBadAdvice,0.5).
-edge(kidsUseVideoCounselling,avoidDialoguesBetweenKidsAndCounsellorsOnTheWeb,-0.5).
-dec(implementNToolToAllowParentsToTalkToEachOther,maintainPHLWebServices2,or).
-dep(technologyThatAllowsDialoguesBetweenKidsBeUsed,connectToOtherKids).
-dec(maintainCSPhoneServices3,maintainImplementCSServices2,or).
-edge(answer80OfCallsWithin30SecondsOfMessageEnding,decreasePhoneWaitingTime2,0.5).
-edge(easierAccessToPostReply,easierNavigationCSWebServices1,0.5).
-dec(putContentOntoWebsite,implementPollsAboutKids,or).
-dep(implementTextMessaging1,implementTextMessaging).
-edge(kidsUseBulletinBoardWithReplies,avoidDialoguesBetweenKidsAndCounsellorsOnTheWeb,-0.5).
-dep(empoweringKidsToHelpThemselves,empoweringKidsToHelpThemselves1).
-dep(webServer,obtainWebServer).
-dep(maintainPHLWebServices1,maintainPHLWebServices).
-dep(maintainPhoneServices3,maintainPhoneServices2).
-dep(anonymityParents1,anonymityParents).
-dec(maintainPHLWebServices,maintainWebServices,or).
-dec(maintainImplementCSServices,servicesBeProvidedForKidsBullyingLine,or).
-dep(implementPhoneFeedback3,implementPhoneFeedback).
-dep(increasePhoneResources2,increasePhoneResources1).
-edge(informKidsAboutAnonymityKidsOfWebServices1,kidsHaveOwnershipOfServices,0.5).
-dep(kidsHaveOwnershipOfServices6,kidsHaveOwnershipOfServices5).
-dep(implementBulletinBoardWithReplies1,implementBulletinBoardWithReplies).
-edge(kidsUseBulletinBoardWithReplies,anonymityCounsellors,0.5).
-dec(obtainNeededSoftware,implementFeedbackForm,or).
-edge(anonymityKids3,improveImageToKids,0.5).
-edge(parentsUseNToolToAllowParentsToTalkToEachOther,connectBackToTheCommunity3,0.5).
-edge(serviceLevelsBeMet,highQualityServices,0.5).
-edge(kidsUseOnlineInformationProvided,connectBackToTheCommunity4,0.5).
-dec(implementFilters,implementCyberCafPortalChatRoom,or).
-dep(anonymityKids1,anonymityKids).
-edge(controlWebServices,avoidPresenceOfPedofiles,0.5).
-dep(controlWebServices,controlWebServices2).
-dep(kidsUseBulletinBoardWithDelayedModeration1,kidsUseBulletinBoardWithDelayedModeration).
-edge(confidentialityKids1,improveImageToKids,0.5).
-dep(maintainWebServices,maintainWebServices2).
-edge(kidsUseVideoCounselling,anonymityCounsellors,-0.5).
-dep(highQualityServices,highQualityServices2).
-dep(similarityOfProblems,similarityOfProblems1).
-edge(implementFeedbackForm,measureSuccessOfServices1,0.5).
-dep(immediacy2,immediacy1).
-edge(sufficientCounsellingResources2,accommodatePhoneTraffic,0.5).
-edge(sufficientCounsellingResources,decreaseResponseTIme2,0.5).
-edge(avoidPresenceOfPedofiles,improveImageToKids,0.5).
-edge(kidsUseAskACounsellorSection,easierToFindPostsWebPostingTechnology,0.5).
-dep(efficientWebServices2,efficientWebServices1).
-dep(webServicesSelfServe1,webServicesSelfServe).
-dec(implementFeedbackForm2,implementFeedbackCollection,or).
-edge(webServicesSelfServe,accommodateWebSiteTraffic,0.5).
-edge(increaseWebResources2,increaseResourcesServices,0.5).
-edge(acquireFeedback,confidentiality,-0.5).
-dep(easierNavigationCSWebServices,easierNavigationCSWebServices2).
-dec(maintainPHLPhoneServices2,parentsUsePhoneCounselling1,or).
-dep(connectBackToTheCommunity9,connectBackToTheCommunity).
-edge(parentsUseBulletinBoardWithReplies,anonymityParents3,0.5).
-edge(maintainPhoneServices,availableServices3,1).
-dep(connectBackToTheCommunity2,connectBackToTheCommunity42).
-edge(kidsUseBulletinBoardWithDelayedModeration,directResponseToKids,-1).
-dec(implementBulletinBoardWithReplies,kidsUseBulletinBoardWithReplies,or).
-dec(kidsReadPollsAboutKids,kidsUseOnlineInformationProvided,or).
-edge(confidentialityKids,reducePrankCalls1,-0.5).
-dep(anonymityKids3,anonymityKids2).
-edge(kidsUseBulletinBoardWithReplies,easierToFindPostsWebPostingTechnology,0.5).
-edge(kidsReadGetInformedSectionOfWebSite,webServicesSelfServe2,0.5).
-dep(kidsHaveOwnershipOfServices1,kidsHaveOwnershipOfServices2).
-dep(maintainPhoneServices,maintainPhoneServices3).
-dep(maintainPHLWebServices1,maintainPHLWebServices3).
-dep(reduceNumberOfStepsWebPostingTechnology1,reduceNumberOfStepsWebPostingTechnology).
-edge(easierAccessToPostReply,directResponseToKids,0.5).
-dep(anonymityCounsellors,anonymityCounsellors1).
-edge(counsellorsBeProfessionallyTrained,highQualityServices,0.5).
-edge(kidsUseEmailCounselling,directResponseToKids,1).
-dec(maintainCSPhoneServices,maintainPhoneServices,or).
-dep(webSiteContent,acquireWebContent).
-edge(realTimeECounsellingBeUsed,decreaseResponseTIme,1).
-dec(provideRecordedMessages,maintainPHLPhoneServices2,or).
-dep(provideWrittenCounselling,implementCyberCafPortalChatRoom).
-edge(kidsUseOneOnOneChatRooms,anonymityCounsellors,0.5).
-dep(availableServices1,availableServices5).
-dep(anonymityParents3,anonymityKids6).
-dep(confidentialityKids4,confidentialityKids5).
-dep(implementPhoneFeedback,implementPhoneFeedback1).
-edge(parentsUseBulletinBoardWithReplies,similarityWithOtherParentsProblems,0.5).
-dec(kidsUseOnlineInformationProvided,maintainImplementCSWebServices,or).
-dep(maintainPHLPhoneServices1,maintainPHLPhoneServices3).
-dep(maintainImplementPHLServices2,maintainImplementPHLServices3).
-edge(anonymityParents,anonymity,0.5).
-dep(webServicesSelfServe2,webServicesSelfServe1).
-dec(implementVideoCounselling1,kidsUseVideoCounselling,or).
-dec(moderatedECounsellingBeUsed,kidsGetInformationThroughECounselling,or).
-edge(parentsUseNToolToAllowParentsToTalkToEachOther,avoidBadAdvice3,-0.5).
-edge(kidsUseBulletinBoardWithDelayedModeration,reduceNumberOfStepsWebPostingTechnology1,0.5).
-dep(implementInformationSection,implementInformationSection1).
-dep(moderateAChat,implementCyberCafPortalChatRoom).
-edge(increasePhoneResources,increaseResourcesServices,0.5).
-dep(implementOneOnOneChatRooms1,implementOneOnOneChatRooms).
-edge(technologyThatDoesNotAllowDialoguesBetweenKidsBeUsed,similarityOfProblems,-0.5).
-edge(realTimeECounsellingBeUsed,directResponseToKids,1).
-edge(decreaseResponseTIme,improveImageToKids,0.5).
-dec(implementBoardWithReplies,maintainPHLWebServices2,or).
-dec(maintainPHLPhoneServices3,maintainImplementPHLServices,or).
-edge(kidsUseTextMessaging,increasedWebServices4,0.5).
-dec(kidsUseEmailCounselling,nonAnonymousTechnologyBeUsed,or).
-edge(relevanceInKidsLives,highQualityServices,0.5).
-dep(kidsReadGeneralQuestionsAndAnswers1,kidsReadGeneralQuestionsAndAnswers).
-dep(informKidsAboutAnonymityKidsOfWebServices1,informKidsAboutAnonymityKidsOfWebServices).
-edge(technologyThatDoesNotAllowDialoguesBetweenKidsBeUsed,avoidDialoguesBetweenKids,1).
-edge(easierNavigationCSWebServices1,friendlyWebSite2,0.5).
-dec(kidsUseVideoCounselling,confidentialTechnologyBeUsed,or).
-dec(implementInformationSection,parentsUseInformationSection,or).
-dep(immediacy,immediacy8).
-dep(kidsUseEmailCounselling1,kidsUseEmailCounselling).
-dep(provideWebCounsellingWithAudio,implementVoiceCounselling).
-edge(kidsReadGeneralQuestionsAndAnswers,webServicesSelfServe2,0.5).
-edge(moderatedECounsellingBeUsed,maintainServicesAboveCompetition1,0.5).
-edge(kidsUseEmailCounselling,anonymityCounsellors,-0.5).
-dep(increaseEmphasisOnOnlineFeedbackForm1,increaseEmphasisOnOnlineFeedbackForm).
-dep(decreaseResponseTIme1,decreaseResponseTIme2).
-dep(sufficientlyModeratedWebServices4,sufficientlyModeratedWebServices3).
-edge(relevanceInKidsLives2,improveImageToKids,0.5).
-dep(moderateDiscussionBoards,maintainAskACounsellorSection).
-dep(decreaseResponseTIme,decreaseResponseTIme1).
-dep(counsellorsBeProfessionallyTrained1,counsellorsBeProfessionallyTrained).
-dep(voiceCounsellingBePerformed,maintainPHLPhoneServices2).
-dep(similarityWithOtherParentsProblems,similarityWithOtherParentsProblems1).
-dep(efficientServices1,efficientServices).
-dec(kidsUseCyberCafPortalChatRoom,nonConfidentialTechnologyBeUsed,or).
-dep(anonymityKids,anonymityKids7).
-dep(availableServices1,availabilityServices).
-dep(availableServices1,availableServices).
-dep(implementVideoCounselling1,implementVideoCounselling).
-dep(increasedWebServices1,increasedWebServices).
-dep(confidentialityKids2,confidentialityKids6).
-edge(kidsUseBulletinBoardWithDelayedModeration,reduceContagionEffectOfHarmfulActions,-0.5).
-dec(kidsUseBulletinBoardWithReplies,anonymousTechnologyBeUsed,or).
-dep(maintainAskACounsellorSection1,maintainAskACounsellorSection).
-dep(increasedWebServices4,increasedWebServices3).
-dec(kidsUseBulletinBoardWithReplies,nonRealTimeECounsellingBeUsed,or).
-dep(measureSuccessOfServices2,measureSuccessOfServices).
-edge(moderatedECounsellingBeUsed,kidsHaveOwnershipOfServices,0.5).
-dep(efficientPhoneServices2,efficientPhoneServices1).
-dep(kidsReadPollsAboutKids1,kidsReadPollsAboutKids).
-edge(maintainWebServices,availableServices4,-0.5).
-dep(immediacy,immediacyServices).
-edge(nonRealTimeECounsellingBeUsed,avoidBadAdvice,0.5).
-dep(feedback1,acquireFeedback).
-dep(increaseWebResources2,increaseWebResources1).
-edge(technologyThatAllowsDialoguesBetweenKidsBeUsed,avoidDialoguesBetweenKids,-1).
-dec(implementEmailCounselling1,kidsUseEmailCounselling,or).
-dep(kidsUseOneOnOneChatRooms,kidsUseOneOnOneChatRooms1).
-dep(connectBackToTheCommunity4,connectBackToTheCommunity7).
-edge(kidsUseEmailCounselling,increasedWebServices4,0.5).
-dec(maintainPHLPhoneServices,maintainPhoneServices,or).
-dep(sufficientlyModeratedWebServices2,sufficientlyModeratedWebServices1).
-dep(avoidBadAdvice5,avoidBadAdvice4).
-edge(kidsUseBulletinBoardWithDelayedModeration,avoidDialoguesBetweenKidsAndCounsellorsOnTheWeb,-0.5).
-dep(kidsHaveOwnershipOfServices2,kidsHaveOwnershipOfServices3).
-dec(blockKidsWhoDisplayInappropriateBehavoir,implementCyberCafPortalChatRoom,or).
-dep(avoidDialoguesBetweenKids,avoidDialogues).
-dep(anonymityKids5,anonymityKids2).
-dep(decreaseResponseTIme3,decreaseResponseTIme2).
-dec(kidsUseOneOnOneChatRooms,technologyThatDoesNotAllowDialoguesBetweenKidsBeUsed,or).
-edge(sufficientCounsellingResources,sufficientlyModeratedWebServices2,0.5).
-edge(anonymity,highQualityServices,0.5).
-edge(realTimeECounsellingBeUsed,avoidBadAdvice,-0.5).
-dep(implementNToolToAllowParentsToTalkToEachOther,implementNToolToAllowParentsToTalkToEachOther1).
-edge(onlyOnlineRequestFromCanadiansAccepted,increaseWebResources,0.5).
-edge(confidentialityParents,confidentiality,0.5).
-dec(kidsUseCyberCafPortalChatRoom,nonAnonymousTechnologyBeUsed,or).
-dep(anonymityParents,anonymityParents5).
-edge(connectBackToTheCommunity9,highQualityServices,0.5).
-dep(connectBackToTheCommunity42,connectBackToTheCommunity5).
-edge(kidsUseBulletinBoardWithReplies,reduceNumberOfStepsWebPostingTechnology1,-0.5).
-dep(maintainWebServices2,maintainWebServices1).
-dec(acquireWebContent,putContentOntoWebsite,or).
-dep(accommodatePhoneTraffic,decreasePhoneWaitingTime).
-dep(immediacy5,immediacy3).
-edge(implementDelay,reduceContagionEffectOfHarmfulActions,0.5).
-edge(effectiveChatRoomFilters,reduceContagionEffectOfHarmfulActions,0.5).
-dep(efficientWebServices1,efficientWebServices).
-dep(controlWebServices2,controlWebServices1).
-dep(performEmailCounselling,implementEmailCounselling1).
-dep(telephonyBeImplementedAndManaged1,telephonyBeImplementedAndManaged).
-edge(confidentialityKids5,highQualityServices,0.5).
-dep(sufficientlyModeratedWebServices1,sufficientlyModeratedWebServices).
-dec(acquireServiceResources,maintainImplementPHLServices2,or).
-dep(maintainPhoneServices2,maintainPhoneServices4).
-dep(parentsUseBulletinBoardWithReplies1,parentsUseBulletinBoardWithReplies).
-dep(kidsHaveOwnershipOfServices3,kidsHaveOwnershipOfServices4).
-dec(kidsUseOneOnOneChatRooms,realTimeECounsellingBeUsed,or).
-edge(kidsUseOneOnOneChatRooms,increasedWebServices4,0.5).
-edge(nonRealTimeECounsellingBeUsed,decreaseResponseTIme,-0.5).
-edge(increasedWebServices,increaseNumberOfServices,0.5).
-edge(confidentialTechnologyBeUsed,confidentialityKids1,1).
-dec(maintainPHLWebServices3,maintainImplementPHLServices,or).
-edge(kidsUseVoiceCounselling,correctInterpretationOfCounsel,0.5).
-dec(kidsUseCyberCafPortalChatRoom,technologyThatAllowsDialoguesBetweenKidsBeUsed,or).
-dec(putContentOntoWebsite,implementGeneralQuestionsAndAnswers,or).
-dep(confidentialityParents,confidentialityServices).
-dep(avoidBadAdvice3,avoidBadAdvice2).
-edge(kidsReadPollsAboutKids,similarityOfProblems,0.5).
-dep(kidsUseVideoCounselling1,kidsUseVideoCounselling).
-edge(directResponseToKids,anonymityCounsellors,-0.5).
-dec(kidsUseBulletinBoardWithReplies,technologyThatAllowsDialoguesBetweenKidsBeUsed,or).
-dec(kidsUseBulletinBoardWithReplies,nonConfidentialTechnologyBeUsed,or).
-dec(kidsUseTextMessaging,realTimeECounsellingBeUsed,or).
-dec(kidsUseVoiceCounselling,moderatedECounsellingBeUsed,or).
-edge(increaseEmphasisOnOnlineFeedbackForm1,measureSuccessOfServices4,0.5).
-edge(sufficientCounsellingResources,accommodateWebSiteTraffic,1).
-dep(kidsUseTextMessaging,kidsUseTextMessaging1).
-edge(efficientServices1,highQualityServices,0.5).
-dep(improveImageToKids,improveImageToKids1).
-edge(maintainServicesAboveCompetition1,improveImageToKids,0.5).
-dep(directResponseToKids1,directResponseToKids2).
-edge(kidsUseBulletinBoardWithDelayedModeration,avoidPresenceOfPedofiles,-1).
-dep(implementPhoneFeedback1,implementPhoneFeedback2).
-dep(immediacy3,immediacy1).
-edge(accommodatePhoneTraffic,efficientPhoneServices2,0.5).
-edge(kidsUseAskACounsellorSection,directResponseToKids,-1).
-dep(connectBackToTheCommunity7,connectBackToTheCommunity6).
-dep(avoidBadAdvice1,avoidBadAdvice5).
-dep(increasePhoneResources,increasePhoneResources2).
-dec(kidsUseVoiceCounselling,confidentialTechnologyBeUsed,or).
-edge(traceCalls,anonymityParents2,-1).
-edge(webSiteContentBeUpdatedDaily,improveWebsiteContent1,0.5).
-edge(immediacy7,friendlyWebSite2,0.5).
-edge(kidsUsePhoneCounselling,confidentialityKids6,0.5).
-dec(maintainImplementCSServices,implementServices,or).
-edge(increasePhoneResources1,accommodatePhoneTraffic,0.5).
-dec(scheduleChatAtSpecificTimes,implementCyberCafPortalChatRoom,or).
-dep(kidsUseCyberCafPortalChatRoom1,kidsUseCyberCafPortalChatRoom).
-dec(maintainImplementPHLServices2,implementServices,or).
-dep(parentsUsePhoneCounselling1,parentsUsePhoneCounselling).
-dec(putContentOntoWebsite,implementGetInformedSectionOfWebSite,or).
-dec(implementVoiceCounselling,kidsUseVoiceCounselling,or).
-dep(maintainImplementPHLServices,maintainImplementPHLServices1).
-edge(anonymityKids,anonymity,0.5).
-dep(maintainImplementCSServices,maintainImplementCSServices3).
-dep(availableServices2,availableServices1).
-dep(implementFeedbackForm1,implementFeedbackForm2).
-edge(immediacy,highQualityServices,0.5).
-edge(easierNavigationCSWebServices2,efficientWebServices2,0.5).
-edge(kidsUseCyberCafPortalChatRoom,avoidDialoguesBetweenKidsAndCounsellorsOnTheWeb,-0.5).
-dec(kidsUseBulletinBoardWithDelayedModeration,moderatedECounsellingBeUsed,or).
-dep(maintainCSPhoneServices1,maintainCSPhoneServices3).
-dep(increaseNumberOfServices,increaseNumberOfServices1).
-dec(kidsUseBulletinBoardWithDelayedModeration,nonConfidentialTechnologyBeUsed,or).
-dep(kidsReadPollsAboutKids,implementPollsAboutKids1).
-dec(kidsUseTextMessaging,technologyThatDoesNotAllowDialoguesBetweenKidsBeUsed,or).
-dep(sufficientlyModeratedWebServices3,sufficientlyModeratedWebServices2).
-dep(highQualityServices,qualityServices).
-edge(kidsUseBulletinBoardWithDelayedModeration,anonymityCounsellors,0.5).
-edge(anonymousTechnologyBeUsed,controlWebServices,-0.5).
-dep(maintainWebServices1,maintainWebServices3).
-edge(avoidDialoguesBetweenKids,reduceContagionEffectOfHarmfulActions,0.5).
-edge(avoidBadAdvice4,highQualityServices,0.5).
-dep(createCounsellingPosts,implementBulletinBoardWithReplies).
-dec(implementBoardWithReplies,parentsUseBulletinBoardWithReplies,or).
-dep(avoidBadAdvice2,avoidBadAdvice1).
-dec(implementTextMessaging,kidsUseTextMessaging,or).
-dep(implementGetInformedSectionOfWebSite,implementGetInformedSectionOfWebSite1).
-edge(kidsReadPollsAboutKids,webServicesSelfServe2,0.5).
-edge(parentsUseNToolToAllowParentsToTalkToEachOther,similarityWithOtherParentsProblems,0.5).
-dep(easierAccessToPostReply,easierAccessToPostReply1).
-dep(friendlyWebSite12,friendlyWebSite).
-edge(realTimeECounsellingBeUsed,immediacy7,1).
-dec(implementCyberCafPortalChatRoom,kidsUseCyberCafPortalChatRoom,or).
-dec(maintainImplementCSWebServices1,maintainWebServices,or).
-edge(kidsUseBulletinBoardWithDelayedModeration,sufficientlyModeratedWebServices4,-0.5).
-edge(accommodateWebSiteTraffic,efficientWebServices2,0.5).
-edge(kidsUseBulletinBoardWithDelayedModeration,easierToFindPostsWebPostingTechnology,-0.5).
-dep(connectBackToTheCommunity9,connectBackToTheCommunity10).
-dec(implementGetInformedSectionOfWebSite,kidsReadGetInformedSectionOfWebSite,or).
-dec(acquireServiceResources,maintainWebServices1,or).
-edge(directResponseToKids,improveImageToKids,0.5).
-edge(technologyThatAllowsDialoguesBetweenKidsBeUsed,similarityOfProblems,0.5).
-edge(kidsReadGeneralQuestionsAndAnswers,similarityOfProblems,0.5).
-edge(kidsHaveOwnershipOfServices5,highQualityServices,0.5).
-dec(kidsUseAskACounsellorSection,nonRealTimeECounsellingBeUsed,or).
-edge(kidsUseTextMessaging,avoidDialoguesBetweenKidsAndCounsellorsOnTheWeb,-0.5).
-dep(kidsUsePhoneCounselling1,kidsUsePhoneCounselling).
-edge(kidsUseEmailCounselling,avoidDialoguesBetweenKidsAndCounsellorsOnTheWeb,-0.5).
-dep(maintainPHLPhoneServices4,maintainPHLPhoneServices2).
-dep(correctInterpretationOfCounsel1,correctInterpretationOfCounsel).
-dec(implementPhoneFeedback2,implementFeedbackCollection,or).
-edge(traceCalls,confidentialityParents2,-0.5).
-edge(improveWebsiteContent2,highQualityServices,0.5).
-dep(confidentialityKids5,confidentialityKids7).
-dec(maintainAskACounsellorSection,kidsUseAskACounsellorSection,or).
-edge(increasedWebServices4,friendlyWebSite2,0.5).
-dep(feedback,acquireFeedback).
-edge(kidsUseEmailCounselling,correctInterpretationOfCounsel,-0.5).
-dec(implementOneOnOneChatRooms,kidsUseOneOnOneChatRooms,or).
-dep(maintainPHLPhoneServices2,maintainPHLPhoneServices1).
-dep(easierNavigationCSWebServices1,easierNavigationCSWebServices).
-dec(kidsUseOneOnOneChatRooms,confidentialTechnologyBeUsed,or).
-dec(implementDelay,implementCyberCafPortalChatRoom,or).
-dec(maintainPhoneServices2,implementServices,or).
-edge(directResponseToKids,friendlyWebSite2,0.5).
-dec(kidsUseEmailCounselling,moderatedECounsellingBeUsed,or).
-edge(moderatedECounsellingBeUsed,improveImageToKids,0.5).
-dep(availableServices4,availableServices2).
-dec(implementBulletinBoardWithDelayedModeration,kidsUseBulletinBoardWithDelayedModeration,or).
-edge(kidsUseTextMessaging,anonymityCounsellors,0.5).
-dep(servicesBeBilingual1,servicesBeBilingual).
-dep(increasedWebServices3,increasedWebServices2).
-edge(technologyThatAllowsDialoguesBetweenKidsBeUsed,avoidBadAdvice,-0.5).
-dec(acquireServiceResources,maintainPhoneServices2,or).
-edge(avoidPresenceOfPedofiles2,highQualityServices,0.5).
-dep(highQualityServices,highQualityServices1).
-edge(efficientPhoneServices,efficientServices1,0.5).
-dep(sufficientCounsellingResources1,sufficientCounsellingResources2).
-dep(decreasePhoneWaitingTime2,decreasePhoneWaitingTime1).
-dep(kidsHaveOwnershipOfServices4,kidsHaveOwnershipOfServices5).
-dec(kidsUseVoiceCounselling,anonymousTechnologyBeUsed,or).
-dep(avoidBadAdvice,avoidBadAdvice2).
-dep(implementGeneralQuestionsAndAnswers,implementGeneralQuestionsAndAnswers1).
-dep(anonymityParents4,anonymityKids6).
-edge(kidsUseAskACounsellorSection,anonymityCounsellors,0.5).
-edge(kidsUseOneOnOneChatRooms,correctInterpretationOfCounsel,-0.5).
-edge(scheduleChatAtSpecificTimes,reduceContagionEffectOfHarmfulActions,0.5).
-dep(maintainPHLWebServices2,maintainPHLWebServices1).
-dep(maintainServicesAboveCompetition1,maintainServicesAboveCompetition).
-dep(anonymityParents2,anonymityParents1).
-dec(implementFeedbackCollection,acquireFeedback,or).
-dep(moderateDiscussionBoards,implementBulletinBoardWithReplies).
-edge(kidsUseAskACounsellorSection,correctInterpretationOfCounsel,-0.5).
-dep(increaseWebResources1,increaseWebResources).
-dep(immediacy1,immediacy).
-dep(relevanceInKidsLives1,relevanceInKidsLives).
-edge(avoidDialoguesBetweenKidsAndCounsellorsOnTheWeb,encourageKidsUsingWebServicesToUsePhoneServices1,0.5).
-edge(parentsUseInformationSection,connectBackToTheCommunity3,0.5).
-dep(confidentialityParents2,confidentialityParents1).
-dep(increaseResourcesServices1,increaseResourcesServices).
-dep(implementBoardWithReplies,implementBoardWithReplies1).
-dep(provideWrittenCounselling,implementTextMessaging).
-edge(parentsUseBulletinBoardWithReplies,connectBackToTheCommunity3,0.5).
-edge(technologyThatDoesNotAllowDialoguesBetweenKidsBeUsed,controlWebServices,0.5).
-dep(feedbackFormSoftware,obtainNeededSoftware).
-edge(maintainPhoneServices,immediacy2,0.5).
-dec(kidsUseTextMessaging,moderatedECounsellingBeUsed,or).
-edge(kidsUseCyberCafPortalChatRoom,correctInterpretationOfCounsel,-0.5).
-edge(nonConfidentialTechnologyBeUsed,confidentialityKids1,-1).
-dep(measureSuccessOfServices1,measureSuccessOfServices).
-edge(confidentialityKids5,confidentiality,0.5).
-dep(createCounsellingPosts,maintainAskACounsellorSection).
-edge(implementAntiPrankingMessage,reducePrankCalls1,0.5).
-edge(kidsUseCyberCafPortalChatRoom,anonymityCounsellors,0.5).
-edge(moderatedECounsellingBeUsed,controlOfCounsellingWork1,-0.5).
-dec(kidsReadGeneralQuestionsAndAnswers,kidsUseOnlineInformationProvided,or).
-edge(parentsUsePhoneCounselling1,anonymityParents4,1).
-dep(parentsUseInformationSection1,parentsUseInformationSection).
-dep(immediacy4,immediacy3).
-dec(kidsUseAskACounsellorSection,moderatedECounsellingBeUsed,or).
-edge(highQualityServices,relevanceInKidsLives,0.5).
-dep(connectBackToTheCommunity3,connectBackToTheCommunity42).
-dep(efficientPhoneServices1,efficientPhoneServices).
-edge(directResponseToKids2,highQualityServices,0.5).
-dec(implementGeneralQuestionsAndAnswers,kidsReadGeneralQuestionsAndAnswers,or).
-edge(kidsUseAskACounsellorSection,increasedWebServices4,0.5).
-dep(avoidPresenceOfPedofiles1,avoidPresenceOfPedofiles2).
-dep(implementVoiceCounselling1,implementVoiceCounselling).
-edge(kidsUseOnlineInformationProvided,improveImageToKids,0.5).
-edge(kidsUseVideoCounselling,correctInterpretationOfCounsel,0.5).
-dep(connectBackToTheCommunity6,connectBackToTheCommunity8).
-dep(kidsUseBulletinBoardWithReplies1,kidsUseBulletinBoardWithReplies).
-edge(decreaseResponseTIme,immediacy7,0.5).
-dep(maintainCSPhoneServices1,maintainCSPhoneServices).
-dep(availableServices3,availableServices2).
-dep(implementFeedbackForm,implementFeedbackForm1).
-dep(connectBackToTheCommunity8,connectBackToTheCommunity9).
-dec(implementInformationSection,maintainPHLWebServices2,or).
-dec(implementPollsAboutKids,kidsReadPollsAboutKids,or).
-dep(implementEmailCounselling1,implementEmailCounselling).
-dec(moderatedECounsellingBeUsed,maintainImplementCSWebServices,or).
-edge(realTimeECounsellingBeUsed,controlWebServices,-0.5).
-edge(parentsUsePhoneCounselling1,connectBackToTheCommunity2,0.5).
-dec(acquireServiceResources,maintainImplementCSServices,or).
-edge(parentsUseBulletinBoardWithReplies,easyAccessToPostReply,-0.5).
-edge(kidsUsePhoneCounselling,anonymityKids5,1).
-dep(reducePrankCalls,reducePrankCalls1).
-dep(maintainImplementCSWebServices2,maintainImplementCSWebServices3).
-edge(serviceLevelsBeMet,efficientServices1,0.5).
-dep(kidsUseGetInformedSectionOfWebSite,kidsReadGetInformedSectionOfWebSite).
-dep(connectBackToTheCommunity1,connectBackToTheCommunity7).
-dep(webServicesSelfServe3,webServicesSelfServe2).
-dep(confidentialityParents1,confidentialityParents).
-edge(nonAnonymousTechnologyBeUsed,anonymityKids3,-1).
-edge(kidsUsePhoneCounselling,connectBackToTheCommunity1,0.5).
-dep(avoidPresenceOfPedofiles1,avoidPresenceOfPedofiles).
-dep(maintainImplementCSWebServices,maintainImplementCSWebServices2).
-edge(kidsUseBulletinBoardWithDelayedModeration,increasedWebServices4,0.5).
-dep(increasedWebServices2,increasedWebServices1).
-dep(moderateDiscussionBoards,implementBulletinBoardWithDelayedModeration).
-dep(confidentialityKids1,confidentialityKids2).
-edge(immediacy6,friendlyWebSite12,0.5).
-dep(confidentialityParents5,confidentialityParents3).
-edge(easierAccessToPostReply,improveImageToKids,0.5).
-dec(kidsUseBulletinBoardWithReplies,moderatedECounsellingBeUsed,or).
-dep(strategicBluePrint,strategicBluePrintForWebsiteBeFollowed).
-dep(parentsUseNToolToAllowParentsToTalkToEachOther1,parentsUseNToolToAllowParentsToTalkToEachOther).
-dep(maintainImplementCSServices2,maintainImplementCSServices1).
-edge(kidsUseTextMessaging,correctInterpretationOfCounsel,-0.5).
-edge(kidsUseVoiceCounselling,increasedWebServices4,0.5).
-dec(kidsUseAskACounsellorSection,nonConfidentialTechnologyBeUsed,or).
-dep(immediacy6,immediacy4).
-dep(voiceCounsellingBePerformed,maintainCSPhoneServices2).
-dep(servicesBeProvidedForKidsBullyingLine,servicesBeProvidedForKidsBullyingLine1).
-edge(kidsUseCyberCafPortalChatRoom,increasedWebServices4,0.5).
-edge(kidsUseVideoCounselling,increasedWebServices4,0.5).
-dep(friendlyWebSite2,friendlyWebSite1).
-edge(technologyThatDoesNotAllowDialoguesBetweenKidsBeUsed,avoidBadAdvice,0.5).
-dep(implementBulletinBoardWithDelayedModeration1,implementBulletinBoardWithDelayedModeration).
-edge(nonRealTimeECounsellingBeUsed,immediacy7,-0.5).
-dep(maintainImplementCSWebServices2,maintainImplementCSWebServices1).
-dep(confidentialityKids2,confidentialityKids3).
-dec(kidsUseCyberCafPortalChatRoom,moderatedECounsellingBeUsed,or).
-edge(kidsReadGetInformedSectionOfWebSite,similarityOfProblems,0.5).
-dec(kidsUseVideoCounselling,technologyThatDoesNotAllowDialoguesBetweenKidsBeUsed,or).
-edge(sufficientCounsellingResources,controlWebServices1,0.5).
-dep(provideWebCounsellingWithVideo,implementVideoCounselling1).
-dep(maintainCSPhoneServices2,maintainPhoneServices1).
-dep(kidsHaveOwnershipOfServices,kidsHaveOwnershipOfServices2).
-edge(decreaseResponseTIme4,efficientServices1,0.5).
-dep(measureSuccessOfServices4,measureSuccessOfServices3).
-edge(kidsUseBulletinBoardWithDelayedModeration,controlWebServices,-0.5).
-dep(maintainCSPhoneServices2,maintainCSPhoneServices1).
-dep(immediacy7,immediacy5).
-edge(nonRealTimeECounsellingBeUsed,controlWebServices,0.5).
-edge(parentsUseNToolToAllowParentsToTalkToEachOther,immediacy6,0.5).
-dec(kidsUseBulletinBoardWithDelayedModeration,technologyThatAllowsDialoguesBetweenKidsBeUsed,or).
-dec(kidsUseVoiceCounselling,technologyThatDoesNotAllowDialoguesBetweenKidsBeUsed,or).
-edge(kidsUseOnlineInformationProvided,empoweringKidsToHelpThemselves,0.5).
-edge(avoidDialoguesBetweenKids,avoidBadAdvice,0.5).
-dec(answer80OfCallsWithin30SecondsOfMessageEnding,maintainCSPhoneServices2,or).
-dec(kidsUseOneOnOneChatRooms,moderatedECounsellingBeUsed,or).
-dep(provideRecordedMessages,phoneLibraryOfRecordedMessages).
-dep(measureSuccessOfServices3,measureSuccessOfServices1).
-dep(controlOfCounsellingWork1,controlOfCounsellingWork).
-dep(encourageKidsUsingWebServicesToUsePhoneServices1,encourageKidsUsingWebServicesToUsePhoneServices).
-edge(parentsUsePhoneCounselling1,confidentialityParents5,0.5).
-dep(anonymityKids6,anonymityParents2).
-dec(maintainImplementCSWebServices3,maintainImplementCSServices2,or).
-edge(acquireFeedback,anonymity,-0.5).
-dep(putContentOntoWebsite1,putContentOntoWebsite).
-dec(kidsUseOneOnOneChatRooms,nonAnonymousTechnologyBeUsed,or).
-dep(maintainPHLPhoneServices1,maintainPHLPhoneServices).
-dep(maintainImplementPHLServices1,maintainImplementPHLServices2).
-edge(anonymousTechnologyBeUsed,anonymityKids3,1).
-dep(relevanceInKidsLives2,relevanceInKidsLives1).
-dec(kidsUseEmailCounselling,nonRealTimeECounsellingBeUsed,or).
-dep(decreaseResponseTIme4,decreaseResponseTIme3).
-edge(parentsUseBulletinBoardWithReplies,immediacy6,-0.5).
-dec(kidsUseBulletinBoardWithDelayedModeration,nonRealTimeECounsellingBeUsed,or).
-dec(kidsUseEmailCounselling,confidentialTechnologyBeUsed,or).
-dep(sufficientCounsellingResources1,sufficientCounsellingResources).
-dep(implementCyberCafPortalChatRoom,implementCyberCafPortalChatRoom1).
-edge(kidsUseBulletinBoardWithReplies,directResponseToKids,-1).
-edge(kidsUseAskACounsellorSection,easierAccessToPostReply,0.5).
-dep(kidsUseVoiceCounselling1,kidsUseVoiceCounselling).
-dec(implementNToolToAllowParentsToTalkToEachOther,parentsUseNToolToAllowParentsToTalkToEachOther,or).
-edge(kidsUseBulletinBoardWithReplies,increasedWebServices4,0.5).
-dep(easyAccessToPostReply,easyAccessToPostReply1).
-edge(nonAnonymousTechnologyBeUsed,controlWebServices,0.5).
-dec(kidsUseVideoCounselling,nonAnonymousTechnologyBeUsed,or).
-dec(kidsGetInformationThroughECounselling,kidsUseOnlineInformationProvided,or).
-edge(technologyThatAllowsDialoguesBetweenKidsBeUsed,controlWebServices,-0.5).
-dec(kidsUseVideoCounselling,realTimeECounsellingBeUsed,or).
-dec(kidsUseTextMessaging,nonAnonymousTechnologyBeUsed,or).
-dec(kidsUseCyberCafPortalChatRoom,realTimeECounsellingBeUsed,or).
-dec(telephonyBeImplementedAndManaged,maintainPhoneServices,or).
-edge(parentsUseBulletinBoardWithReplies,confidentialityParents4,-1).
-dec(maintainCSPhoneServices2,kidsUsePhoneCounselling,or).
-dep(confidentialityParents4,confidentialityParents3).
-dec(kidsUseAskACounsellorSection,anonymousTechnologyBeUsed,or).
-dep(confidentialityParents3,confidentialityParents2).
-dep(improveWebsiteContent,improveWebsiteContent2).
-dep(anonymityKids4,anonymityKids1).
-edge(implementPhoneFeedback,measureSuccessOfServices2,0.5).
-dep(serviceResources,acquireServiceResources).
-dep(improveWebsiteContent1,improveWebsiteContent).
-edge(kidsUseVoiceCounselling,avoidDialoguesBetweenKidsAndCounsellorsOnTheWeb,-0.5).
-dec(kidsUseAskACounsellorSection,technologyThatDoesNotAllowDialoguesBetweenKidsBeUsed,or).
-dep(createCounsellingPosts,implementBulletinBoardWithDelayedModeration).
-edge(maintainAskACounsellorSection,reduceNumberOfStepsWebPostingTechnology1,-0.5).
-dep(reduceContagionEffectOfHarmfulActions,reduceContagionEffectOfHarmfulActions1).
-edge(kidsUsePhoneCounselling,kidsHaveOwnershipOfServices1,1).
-dec(kidsUseTextMessaging,confidentialTechnologyBeUsed,or).
-dep(provideWrittenCounselling,implementOneOnOneChatRooms).
-dep(easierToFindPostsWebPostingTechnology,easierToFindPostsWebPostingTechnology1).
-dep(webSoftware,obtainSoftware).
-dec(obtainSoftware,maintainWebServices,or).
-dep(confidentialityKids3,confidentialityKids4).
-dep(directResponseToKids,directResponseToKids1).
-dep(maintainImplementCSServices1,maintainImplementCSServices).
-edge(increaseWebResources,improveWebsiteContent1,0.5).
-edge(sufficientlyModeratedWebServices,highQualityServices,0.5).
-dep(kidsUseAskACounsellorSection1,kidsUseAskACounsellorSection).
-dec(kidsReadGetInformedSectionOfWebSite,kidsUseOnlineInformationProvided,or).
-dec(maintainWebServices1,implementServices,or).
-edge(kidsUseAskACounsellorSection,avoidDialoguesBetweenKidsAndCounsellorsOnTheWeb,0.5).
-dep(connectBackToTheCommunity5,connectBackToTheCommunity8).
-dep(anonymityKids2,anonymityKids4).
-dec(kidsUseVideoCounselling,moderatedECounsellingBeUsed,or).
-dec(kidsUseEmailCounselling,technologyThatDoesNotAllowDialoguesBetweenKidsBeUsed,or).
-edge(kidsUseOneOnOneChatRooms,avoidDialoguesBetweenKidsAndCounsellorsOnTheWeb,-0.5).
-edge(kidsUseBulletinBoardWithReplies,correctInterpretationOfCounsel,-0.5).
+acquireFeedback <- [feedback1, feedback, implementFeedbackCollection].
+acquireServiceResources <- [serviceResources].
+acquireWebContent <- [webSiteContent].
+anonymityCounsellors1 <- [anonymityCounsellors].
+anonymityKids <- [anonymityKids1].
+anonymityKids1 <- [anonymityKids4].
+anonymityKids2 <- [anonymityKids3, anonymityKids5].
+anonymityKids4 <- [anonymityKids2].
+anonymityKids6 <- [anonymityParents3, anonymityParents4].
+anonymityKids7 <- [anonymityKids].
+anonymityParents <- [anonymityParents1].
+anonymityParents1 <- [anonymityParents2].
+anonymityParents2 <- [anonymityKids6].
+anonymityParents5 <- [anonymityParents].
+anonymousTechnologyBeUsed <- [kidsUseBulletinBoardWithReplies].
+anonymousTechnologyBeUsed <- [kidsUseVoiceCounselling].
+anonymousTechnologyBeUsed <- [kidsUseAskACounsellorSection].
+availabilityServices <- [availableServices1].
+availableServices <- [availableServices1].
+availableServices1 <- [availableServices2].
+availableServices2 <- [availableServices4, availableServices3].
+availableServices5 <- [availableServices1].
+avoidBadAdvice1 <- [avoidBadAdvice2].
+avoidBadAdvice2 <- [avoidBadAdvice3, avoidBadAdvice].
+avoidBadAdvice4 <- [avoidBadAdvice5].
+avoidBadAdvice5 <- [avoidBadAdvice1].
+avoidDialogues <- [avoidDialoguesBetweenKids].
+avoidPresenceOfPedofiles <- [avoidPresenceOfPedofiles1].
+avoidPresenceOfPedofiles2 <- [avoidPresenceOfPedofiles1].
+confidentialTechnologyBeUsed <- [kidsUseVideoCounselling].
+confidentialTechnologyBeUsed <- [kidsUseVoiceCounselling].
+confidentialTechnologyBeUsed <- [kidsUseOneOnOneChatRooms].
+confidentialTechnologyBeUsed <- [kidsUseEmailCounselling].
+confidentialTechnologyBeUsed <- [kidsUseTextMessaging].
+confidentialityKids2 <- [confidentialityKids1].
+confidentialityKids3 <- [confidentialityKids2].
+confidentialityKids4 <- [confidentialityKids3].
+confidentialityKids5 <- [confidentialityKids4].
+confidentialityKids6 <- [confidentialityKids2].
+confidentialityKids7 <- [confidentialityKids5].
+confidentialityParents <- [confidentialityParents1].
+confidentialityParents1 <- [confidentialityParents2].
+confidentialityParents2 <- [confidentialityParents3].
+confidentialityParents3 <-
+  [ confidentialityParents5,
+    confidentialityParents4 ].
+confidentialityServices <- [confidentialityParents].
+connectBackToTheCommunity <- [connectBackToTheCommunity9].
+connectBackToTheCommunity10 <- [connectBackToTheCommunity9].
+connectBackToTheCommunity42 <-
+  [ connectBackToTheCommunity2,
+    connectBackToTheCommunity3 ].
+connectBackToTheCommunity5 <- [connectBackToTheCommunity42].
+connectBackToTheCommunity6 <- [connectBackToTheCommunity7].
+connectBackToTheCommunity7 <-
+  [ connectBackToTheCommunity4,
+    connectBackToTheCommunity1 ].
+connectBackToTheCommunity8 <-
+  [ connectBackToTheCommunity6,
+    connectBackToTheCommunity5 ].
+connectBackToTheCommunity9 <- [connectBackToTheCommunity8].
+connectToOtherKids <-
+  [ technologyThatAllowsDialoguesBetweenKidsBeUsed ].
+controlOfCounsellingWork <- [controlOfCounsellingWork1].
+controlWebServices1 <- [controlWebServices2].
+controlWebServices2 <- [controlWebServices].
+correctInterpretationOfCounsel <- [correctInterpretationOfCounsel1].
+counsellorsBeProfessionallyTrained <-
+  [ counsellorsBeProfessionallyTrained1 ].
+decreasePhoneWaitingTime <- [accommodatePhoneTraffic].
+decreasePhoneWaitingTime1 <- [decreasePhoneWaitingTime2].
+decreaseResponseTIme1 <- [decreaseResponseTIme].
+decreaseResponseTIme2 <-
+  [ decreaseResponseTIme1,
+    decreaseResponseTIme3 ].
+decreaseResponseTIme3 <- [decreaseResponseTIme4].
+directResponseToKids1 <- [directResponseToKids].
+directResponseToKids2 <- [directResponseToKids1].
+easierAccessToPostReply1 <- [easierAccessToPostReply].
+easierNavigationCSWebServices <- [easierNavigationCSWebServices1].
+easierNavigationCSWebServices2 <- [easierNavigationCSWebServices].
+easierToFindPostsWebPostingTechnology1 <-
+  [ easierToFindPostsWebPostingTechnology ].
+easyAccessToPostReply1 <- [easyAccessToPostReply].
+efficientPhoneServices <- [efficientPhoneServices1].
+efficientPhoneServices1 <- [efficientPhoneServices2].
+efficientServices <- [efficientServices1].
+efficientWebServices <- [efficientWebServices1].
+efficientWebServices1 <- [efficientWebServices2].
+empoweringKidsToHelpThemselves1 <- [empoweringKidsToHelpThemselves].
+encourageKidsUsingWebServicesToUsePhoneServices <-
+  [ encourageKidsUsingWebServicesToUsePhoneServices1 ].
+friendlyWebSite <- [friendlyWebSite12].
+friendlyWebSite1 <- [friendlyWebSite2].
+highQualityServices1 <- [highQualityServices].
+highQualityServices2 <- [highQualityServices].
+immediacy <- [immediacy1].
+immediacy1 <- [immediacy2, immediacy3].
+immediacy3 <- [immediacy5, immediacy4].
+immediacy4 <- [immediacy6].
+immediacy5 <- [immediacy7].
+immediacy8 <- [immediacy].
+immediacyServices <- [immediacy].
+implementBoardWithReplies1 <- [implementBoardWithReplies].
+implementBulletinBoardWithDelayedModeration <-
+  [ moderateDiscussionBoards,
+    implementBulletinBoardWithDelayedModeration1,
+    createCounsellingPosts ].
+implementBulletinBoardWithReplies <-
+  [ implementBulletinBoardWithReplies1,
+    createCounsellingPosts,
+    moderateDiscussionBoards ].
+implementCyberCafPortalChatRoom <-
+  [ provideWrittenCounselling,
+    moderateAChat,
+    implementFilters ].
+implementCyberCafPortalChatRoom <-
+  [ provideWrittenCounselling,
+    moderateAChat,
+    blockKidsWhoDisplayInappropriateBehavoir ].
+implementCyberCafPortalChatRoom <-
+  [ provideWrittenCounselling,
+    moderateAChat,
+    scheduleChatAtSpecificTimes ].
+implementCyberCafPortalChatRoom <-
+  [ provideWrittenCounselling,
+    moderateAChat,
+    implementDelay ].
+implementCyberCafPortalChatRoom1 <- [implementCyberCafPortalChatRoom].
+implementEmailCounselling <- [implementEmailCounselling1].
+implementEmailCounselling1 <- [performEmailCounselling].
+implementFeedbackCollection <- [implementFeedbackForm2].
+implementFeedbackCollection <- [implementPhoneFeedback2].
+implementFeedbackForm <- [obtainNeededSoftware].
+implementFeedbackForm1 <- [implementFeedbackForm].
+implementFeedbackForm2 <- [implementFeedbackForm1].
+implementGeneralQuestionsAndAnswers <- [putContentOntoWebsite].
+implementGeneralQuestionsAndAnswers1 <-
+  [ implementGeneralQuestionsAndAnswers ].
+implementGetInformedSectionOfWebSite <- [putContentOntoWebsite].
+implementGetInformedSectionOfWebSite1 <-
+  [ implementGetInformedSectionOfWebSite ].
+implementInformationSection1 <- [implementInformationSection].
+implementNToolToAllowParentsToTalkToEachOther1 <-
+  [ implementNToolToAllowParentsToTalkToEachOther ].
+implementOneOnOneChatRooms <-
+  [ implementOneOnOneChatRooms1,
+    provideWrittenCounselling ].
+implementPhoneFeedback <- [implementPhoneFeedback3].
+implementPhoneFeedback1 <- [implementPhoneFeedback].
+implementPhoneFeedback2 <- [implementPhoneFeedback1].
+implementPollsAboutKids <- [putContentOntoWebsite].
+implementPollsAboutKids1 <- [kidsReadPollsAboutKids].
+implementServices <- [maintainImplementCSServices].
+implementServices <- [maintainImplementPHLServices2].
+implementServices <- [maintainPhoneServices2].
+implementServices <- [maintainWebServices1].
+implementTextMessaging <-
+  [ implementTextMessaging1,
+    provideWrittenCounselling ].
+implementVideoCounselling <- [implementVideoCounselling1].
+implementVideoCounselling1 <- [provideWebCounsellingWithVideo].
+implementVoiceCounselling <-
+  [ provideWebCounsellingWithAudio,
+    implementVoiceCounselling1 ].
+improveImageToKids1 <- [improveImageToKids].
+improveWebsiteContent <- [improveWebsiteContent1].
+improveWebsiteContent2 <- [improveWebsiteContent].
+increaseEmphasisOnOnlineFeedbackForm <-
+  [ increaseEmphasisOnOnlineFeedbackForm1 ].
+increaseNumberOfServices1 <- [increaseNumberOfServices].
+increasePhoneResources1 <- [increasePhoneResources2].
+increasePhoneResources2 <- [increasePhoneResources].
+increaseResourcesServices <- [increaseResourcesServices1].
+increaseWebResources <- [increaseWebResources1].
+increaseWebResources1 <- [increaseWebResources2].
+increasedWebServices <- [increasedWebServices1].
+increasedWebServices1 <- [increasedWebServices2].
+increasedWebServices2 <- [increasedWebServices3].
+increasedWebServices3 <- [increasedWebServices4].
+informKidsAboutAnonymityKidsOfWebServices <-
+  [ informKidsAboutAnonymityKidsOfWebServices1 ].
+kidsGetInformationThroughECounselling <-
+  [ moderatedECounsellingBeUsed ].
+kidsHaveOwnershipOfServices2 <-
+  [ kidsHaveOwnershipOfServices1,
+    kidsHaveOwnershipOfServices ].
+kidsHaveOwnershipOfServices3 <- [kidsHaveOwnershipOfServices2].
+kidsHaveOwnershipOfServices4 <- [kidsHaveOwnershipOfServices3].
+kidsHaveOwnershipOfServices5 <-
+  [ kidsHaveOwnershipOfServices6,
+    kidsHaveOwnershipOfServices4 ].
+kidsReadGeneralQuestionsAndAnswers <-
+  [ kidsReadGeneralQuestionsAndAnswers1,
+    implementGeneralQuestionsAndAnswers ].
+kidsReadGetInformedSectionOfWebSite <-
+  [ kidsUseGetInformedSectionOfWebSite,
+    implementGetInformedSectionOfWebSite ].
+kidsReadPollsAboutKids <-
+  [ kidsReadPollsAboutKids1,
+    implementPollsAboutKids ].
+kidsUseAskACounsellorSection <-
+  [ kidsUseAskACounsellorSection1,
+    maintainAskACounsellorSection ].
+kidsUseBulletinBoardWithDelayedModeration <-
+  [ kidsUseBulletinBoardWithDelayedModeration1,
+    implementBulletinBoardWithDelayedModeration ].
+kidsUseBulletinBoardWithReplies <-
+  [ kidsUseBulletinBoardWithReplies1,
+    implementBulletinBoardWithReplies ].
+kidsUseCyberCafPortalChatRoom <-
+  [ kidsUseCyberCafPortalChatRoom1,
+    implementCyberCafPortalChatRoom ].
+kidsUseEmailCounselling <-
+  [ kidsUseEmailCounselling1,
+    implementEmailCounselling1 ].
+kidsUseOneOnOneChatRooms <- [implementOneOnOneChatRooms].
+kidsUseOneOnOneChatRooms1 <- [kidsUseOneOnOneChatRooms].
+kidsUseOnlineInformationProvided <- [kidsReadPollsAboutKids].
+kidsUseOnlineInformationProvided <-
+  [ kidsReadGeneralQuestionsAndAnswers ].
+kidsUseOnlineInformationProvided <-
+  [ kidsGetInformationThroughECounselling ].
+kidsUseOnlineInformationProvided <-
+  [ kidsReadGetInformedSectionOfWebSite ].
+kidsUsePhoneCounselling <-
+  [ kidsUsePhoneCounselling1,
+    maintainCSPhoneServices2 ].
+kidsUseTextMessaging <- [implementTextMessaging].
+kidsUseTextMessaging1 <- [kidsUseTextMessaging].
+kidsUseVideoCounselling <-
+  [ kidsUseVideoCounselling1,
+    implementVideoCounselling1 ].
+kidsUseVoiceCounselling <-
+  [ kidsUseVoiceCounselling1,
+    implementVoiceCounselling ].
+maintainAskACounsellorSection <-
+  [ moderateDiscussionBoards,
+    maintainAskACounsellorSection1,
+    createCounsellingPosts ].
+maintainCSPhoneServices <- [maintainCSPhoneServices1].
+maintainCSPhoneServices1 <- [maintainCSPhoneServices2].
+maintainCSPhoneServices2 <-
+  [ voiceCounsellingBePerformed,
+    answer80OfCallsWithin30SecondsOfMessageEnding ].
+maintainCSPhoneServices3 <- [maintainCSPhoneServices1].
+maintainImplementCSServices <-
+  [ maintainImplementCSServices1,
+    acquireServiceResources ].
+maintainImplementCSServices1 <- [maintainImplementCSServices2].
+maintainImplementCSServices2 <- [maintainCSPhoneServices3].
+maintainImplementCSServices2 <- [maintainImplementCSWebServices3].
+maintainImplementCSServices3 <- [maintainImplementCSServices].
+maintainImplementCSWebServices <- [kidsUseOnlineInformationProvided].
+maintainImplementCSWebServices <- [moderatedECounsellingBeUsed].
+maintainImplementCSWebServices1 <- [maintainImplementCSWebServices2].
+maintainImplementCSWebServices2 <- [maintainImplementCSWebServices].
+maintainImplementCSWebServices3 <- [maintainImplementCSWebServices2].
+maintainImplementPHLServices <- [maintainPHLPhoneServices3].
+maintainImplementPHLServices <- [maintainPHLWebServices3].
+maintainImplementPHLServices1 <- [maintainImplementPHLServices].
+maintainImplementPHLServices2 <-
+  [ maintainImplementPHLServices1,
+    acquireServiceResources ].
+maintainImplementPHLServices3 <- [maintainImplementPHLServices2].
+maintainPHLPhoneServices <- [maintainPHLPhoneServices1].
+maintainPHLPhoneServices1 <- [maintainPHLPhoneServices2].
+maintainPHLPhoneServices2 <-
+  [ voiceCounsellingBePerformed,
+    maintainPHLPhoneServices4,
+    provideRecordedMessages ].
+maintainPHLPhoneServices3 <- [maintainPHLPhoneServices1].
+maintainPHLWebServices <- [maintainPHLWebServices1].
+maintainPHLWebServices1 <- [maintainPHLWebServices2].
+maintainPHLWebServices2 <-
+  [ implementNToolToAllowParentsToTalkToEachOther ].
+maintainPHLWebServices2 <- [implementBoardWithReplies].
+maintainPHLWebServices2 <- [implementInformationSection].
+maintainPHLWebServices3 <- [maintainPHLWebServices1].
+maintainPhoneServices <- [maintainCSPhoneServices].
+maintainPhoneServices <- [maintainPHLPhoneServices].
+maintainPhoneServices <- [telephonyBeImplementedAndManaged].
+maintainPhoneServices1 <- [maintainCSPhoneServices2].
+maintainPhoneServices2 <-
+  [ maintainPhoneServices3,
+    acquireServiceResources ].
+maintainPhoneServices3 <- [maintainPhoneServices].
+maintainPhoneServices4 <- [maintainPhoneServices2].
+maintainServicesAboveCompetition <-
+  [ maintainServicesAboveCompetition1 ].
+maintainWebServices <- [maintainPHLWebServices].
+maintainWebServices <- [maintainImplementCSWebServices1].
+maintainWebServices <- [obtainSoftware].
+maintainWebServices1 <-
+  [ maintainWebServices2,
+    acquireServiceResources ].
+maintainWebServices2 <- [maintainWebServices].
+maintainWebServices3 <- [maintainWebServices1].
+measureSuccessOfServices <-
+  [ measureSuccessOfServices2,
+    measureSuccessOfServices1 ].
+measureSuccessOfServices1 <- [measureSuccessOfServices3].
+measureSuccessOfServices3 <- [measureSuccessOfServices4].
+moderatedECounsellingBeUsed <- [kidsUseVoiceCounselling].
+moderatedECounsellingBeUsed <-
+  [ kidsUseBulletinBoardWithDelayedModeration ].
+moderatedECounsellingBeUsed <- [kidsUseEmailCounselling].
+moderatedECounsellingBeUsed <- [kidsUseTextMessaging].
+moderatedECounsellingBeUsed <- [kidsUseAskACounsellorSection].
+moderatedECounsellingBeUsed <- [kidsUseBulletinBoardWithReplies].
+moderatedECounsellingBeUsed <- [kidsUseCyberCafPortalChatRoom].
+moderatedECounsellingBeUsed <- [kidsUseOneOnOneChatRooms].
+moderatedECounsellingBeUsed <- [kidsUseVideoCounselling].
+nonAnonymousTechnologyBeUsed <- [kidsUseEmailCounselling].
+nonAnonymousTechnologyBeUsed <- [kidsUseCyberCafPortalChatRoom].
+nonAnonymousTechnologyBeUsed <- [kidsUseOneOnOneChatRooms].
+nonAnonymousTechnologyBeUsed <- [kidsUseVideoCounselling].
+nonAnonymousTechnologyBeUsed <- [kidsUseTextMessaging].
+nonConfidentialTechnologyBeUsed <- [kidsUseCyberCafPortalChatRoom].
+nonConfidentialTechnologyBeUsed <- [kidsUseBulletinBoardWithReplies].
+nonConfidentialTechnologyBeUsed <-
+  [ kidsUseBulletinBoardWithDelayedModeration ].
+nonConfidentialTechnologyBeUsed <- [kidsUseAskACounsellorSection].
+nonRealTimeECounsellingBeUsed <- [kidsUseBulletinBoardWithReplies].
+nonRealTimeECounsellingBeUsed <- [kidsUseAskACounsellorSection].
+nonRealTimeECounsellingBeUsed <- [kidsUseEmailCounselling].
+nonRealTimeECounsellingBeUsed <-
+  [ kidsUseBulletinBoardWithDelayedModeration ].
+obtainNeededSoftware <- [feedbackFormSoftware].
+obtainSoftware <- [webSoftware].
+obtainWebServer <- [webServer].
+parentsUseBulletinBoardWithReplies <-
+  [ parentsUseBulletinBoardWithReplies1,
+    implementBoardWithReplies ].
+parentsUseInformationSection <-
+  [ parentsUseInformationSection1,
+    implementInformationSection ].
+parentsUseNToolToAllowParentsToTalkToEachOther <-
+  [ parentsUseNToolToAllowParentsToTalkToEachOther1,
+    implementNToolToAllowParentsToTalkToEachOther ].
+parentsUsePhoneCounselling <- [parentsUsePhoneCounselling1].
+parentsUsePhoneCounselling1 <- [maintainPHLPhoneServices2].
+phoneLibraryOfRecordedMessages <- [provideRecordedMessages].
+putContentOntoWebsite <- [putContentOntoWebsite1, acquireWebContent].
+qualityServices <- [highQualityServices].
+realTimeECounsellingBeUsed <- [kidsUseOneOnOneChatRooms].
+realTimeECounsellingBeUsed <- [kidsUseTextMessaging].
+realTimeECounsellingBeUsed <- [kidsUseVideoCounselling].
+realTimeECounsellingBeUsed <- [kidsUseCyberCafPortalChatRoom].
+reduceContagionEffectOfHarmfulActions1 <-
+  [ reduceContagionEffectOfHarmfulActions ].
+reduceNumberOfStepsWebPostingTechnology <-
+  [ reduceNumberOfStepsWebPostingTechnology1 ].
+reducePrankCalls1 <- [reducePrankCalls].
+relevanceInKidsLives <- [relevanceInKidsLives1].
+relevanceInKidsLives1 <- [relevanceInKidsLives2].
+servicesBeBilingual <- [servicesBeBilingual1].
+servicesBeProvidedForKidsBullyingLine <-
+  [ maintainImplementCSServices ].
+servicesBeProvidedForKidsBullyingLine1 <-
+  [ servicesBeProvidedForKidsBullyingLine ].
+similarityOfProblems1 <- [similarityOfProblems].
+similarityWithOtherParentsProblems1 <-
+  [ similarityWithOtherParentsProblems ].
+strategicBluePrintForWebsiteBeFollowed <- [strategicBluePrint].
+sufficientCounsellingResources <- [sufficientCounsellingResources1].
+sufficientCounsellingResources2 <- [sufficientCounsellingResources1].
+sufficientlyModeratedWebServices <-
+  [ sufficientlyModeratedWebServices1 ].
+sufficientlyModeratedWebServices1 <-
+  [ sufficientlyModeratedWebServices2 ].
+sufficientlyModeratedWebServices2 <-
+  [ sufficientlyModeratedWebServices3 ].
+sufficientlyModeratedWebServices3 <-
+  [ sufficientlyModeratedWebServices4 ].
+technologyThatAllowsDialoguesBetweenKidsBeUsed <-
+  [ kidsUseCyberCafPortalChatRoom ].
+technologyThatAllowsDialoguesBetweenKidsBeUsed <-
+  [ kidsUseBulletinBoardWithReplies ].
+technologyThatAllowsDialoguesBetweenKidsBeUsed <-
+  [ kidsUseBulletinBoardWithDelayedModeration ].
+technologyThatDoesNotAllowDialoguesBetweenKidsBeUsed <-
+  [ kidsUseOneOnOneChatRooms ].
+technologyThatDoesNotAllowDialoguesBetweenKidsBeUsed <-
+  [ kidsUseTextMessaging ].
+technologyThatDoesNotAllowDialoguesBetweenKidsBeUsed <-
+  [ kidsUseVideoCounselling ].
+technologyThatDoesNotAllowDialoguesBetweenKidsBeUsed <-
+  [ kidsUseVoiceCounselling ].
+technologyThatDoesNotAllowDialoguesBetweenKidsBeUsed <-
+  [ kidsUseAskACounsellorSection ].
+technologyThatDoesNotAllowDialoguesBetweenKidsBeUsed <-
+  [ kidsUseEmailCounselling ].
+telephonyBeImplementedAndManaged <-
+  [ telephonyBeImplementedAndManaged1 ].
+webServicesSelfServe <- [webServicesSelfServe1].
+webServicesSelfServe1 <- [webServicesSelfServe2].
+webServicesSelfServe2 <- [webServicesSelfServe3].
+accommodatePhoneTraffic <~
+  [ help(sufficientCounsellingResources2),
+    help(increasePhoneResources1) ].
+accommodateWebSiteTraffic <~
+  [ help(webServicesSelfServe),
+    make(sufficientCounsellingResources) ].
+anonymity <~
+  [ help(anonymityParents),
+    help(anonymityKids),
+    hurt(acquireFeedback) ].
+anonymityCounsellors <~
+  [ help(kidsUseBulletinBoardWithReplies),
+    hurt(kidsUseVideoCounselling),
+    help(kidsUseOneOnOneChatRooms),
+    hurt(kidsUseEmailCounselling),
+    hurt(directResponseToKids),
+    help(kidsUseBulletinBoardWithDelayedModeration),
+    help(kidsUseTextMessaging),
+    help(kidsUseAskACounsellorSection),
+    help(kidsUseCyberCafPortalChatRoom) ].
+anonymityKids3 <~
+  [ break(nonAnonymousTechnologyBeUsed),
+    make(anonymousTechnologyBeUsed) ].
+anonymityKids5 <~ [make(kidsUsePhoneCounselling)].
+anonymityParents2 <~ [break(traceCalls)].
+anonymityParents3 <~ [help(parentsUseBulletinBoardWithReplies)].
+anonymityParents4 <~ [make(parentsUsePhoneCounselling1)].
+availableServices3 <~ [make(maintainPhoneServices)].
+availableServices4 <~ [hurt(maintainWebServices)].
+avoidBadAdvice <~
+  [ help(avoidPresenceOfPedofiles),
+    help(nonRealTimeECounsellingBeUsed),
+    hurt(realTimeECounsellingBeUsed),
+    hurt(technologyThatAllowsDialoguesBetweenKidsBeUsed),
+    help(technologyThatDoesNotAllowDialoguesBetweenKidsBeUsed),
+    help(avoidDialoguesBetweenKids) ].
+avoidBadAdvice3 <~
+  [ hurt(parentsUseNToolToAllowParentsToTalkToEachOther) ].
+avoidDialoguesBetweenKids <~
+  [ make(technologyThatDoesNotAllowDialoguesBetweenKidsBeUsed),
+    break(technologyThatAllowsDialoguesBetweenKidsBeUsed) ].
+avoidDialoguesBetweenKidsAndCounsellorsOnTheWeb <~
+  [ hurt(kidsUseVideoCounselling),
+    hurt(kidsUseBulletinBoardWithReplies),
+    hurt(kidsUseBulletinBoardWithDelayedModeration),
+    hurt(kidsUseCyberCafPortalChatRoom),
+    hurt(kidsUseTextMessaging),
+    hurt(kidsUseEmailCounselling),
+    hurt(kidsUseVoiceCounselling),
+    help(kidsUseAskACounsellorSection),
+    hurt(kidsUseOneOnOneChatRooms) ].
+avoidPresenceOfPedofiles <~
+  [ help(controlWebServices),
+    break(kidsUseBulletinBoardWithDelayedModeration) ].
+confidentiality <~
+  [ hurt(acquireFeedback),
+    help(confidentialityParents),
+    help(confidentialityKids5) ].
+confidentialityKids1 <~
+  [ make(confidentialTechnologyBeUsed),
+    break(nonConfidentialTechnologyBeUsed) ].
+confidentialityKids6 <~ [help(kidsUsePhoneCounselling)].
+confidentialityParents2 <~ [hurt(traceCalls)].
+confidentialityParents4 <~
+  [ break(parentsUseBulletinBoardWithReplies) ].
+confidentialityParents5 <~ [help(parentsUsePhoneCounselling1)].
+connectBackToTheCommunity1 <~ [help(kidsUsePhoneCounselling)].
+connectBackToTheCommunity2 <~ [help(parentsUsePhoneCounselling1)].
+connectBackToTheCommunity3 <~
+  [ help(parentsUseNToolToAllowParentsToTalkToEachOther),
+    help(parentsUseInformationSection),
+    help(parentsUseBulletinBoardWithReplies) ].
+connectBackToTheCommunity4 <~
+  [ help(kidsUseOnlineInformationProvided) ].
+controlOfCounsellingWork1 <~ [hurt(moderatedECounsellingBeUsed)].
+controlWebServices <~
+  [ hurt(anonymousTechnologyBeUsed),
+    help(technologyThatDoesNotAllowDialoguesBetweenKidsBeUsed),
+    hurt(realTimeECounsellingBeUsed),
+    hurt(kidsUseBulletinBoardWithDelayedModeration),
+    help(nonRealTimeECounsellingBeUsed),
+    help(nonAnonymousTechnologyBeUsed),
+    hurt(technologyThatAllowsDialoguesBetweenKidsBeUsed) ].
+controlWebServices1 <~ [help(sufficientCounsellingResources)].
+correctInterpretationOfCounsel <~
+  [ hurt(kidsUseBulletinBoardWithDelayedModeration),
+    help(kidsUseVoiceCounselling),
+    hurt(kidsUseEmailCounselling),
+    hurt(kidsUseOneOnOneChatRooms),
+    hurt(kidsUseAskACounsellorSection),
+    hurt(kidsUseCyberCafPortalChatRoom),
+    help(kidsUseVideoCounselling),
+    hurt(kidsUseTextMessaging),
+    hurt(kidsUseBulletinBoardWithReplies) ].
+decreasePhoneWaitingTime2 <~
+  [ help(answer80OfCallsWithin30SecondsOfMessageEnding) ].
+decreaseResponseTIme <~
+  [ make(realTimeECounsellingBeUsed),
+    hurt(nonRealTimeECounsellingBeUsed) ].
+decreaseResponseTIme2 <~ [help(sufficientCounsellingResources)].
+directResponseToKids <~
+  [ break(kidsUseBulletinBoardWithDelayedModeration),
+    help(easierAccessToPostReply),
+    make(kidsUseEmailCounselling),
+    make(realTimeECounsellingBeUsed),
+    break(kidsUseAskACounsellorSection),
+    break(kidsUseBulletinBoardWithReplies) ].
+easierAccessToPostReply <~ [help(kidsUseAskACounsellorSection)].
+easierNavigationCSWebServices1 <~ [help(easierAccessToPostReply)].
+easierToFindPostsWebPostingTechnology <~
+  [ help(kidsUseAskACounsellorSection),
+    help(kidsUseBulletinBoardWithReplies),
+    hurt(kidsUseBulletinBoardWithDelayedModeration) ].
+easyAccessToPostReply <~ [hurt(parentsUseBulletinBoardWithReplies)].
+efficientPhoneServices2 <~ [help(accommodatePhoneTraffic)].
+efficientServices1 <~
+  [ help(efficientPhoneServices),
+    help(serviceLevelsBeMet),
+    help(decreaseResponseTIme4) ].
+efficientWebServices2 <~
+  [ help(easierNavigationCSWebServices2),
+    help(accommodateWebSiteTraffic) ].
+empoweringKidsToHelpThemselves <~
+  [ help(kidsUseOnlineInformationProvided) ].
+encourageKidsUsingWebServicesToUsePhoneServices1 <~
+  [ help(avoidDialoguesBetweenKidsAndCounsellorsOnTheWeb) ].
+friendlyWebSite12 <~ [help(immediacy6)].
+friendlyWebSite2 <~
+  [ help(easierNavigationCSWebServices1),
+    help(immediacy7),
+    help(increasedWebServices4),
+    help(directResponseToKids) ].
+highQualityServices <~
+  [ help(serviceLevelsBeMet),
+    help(counsellorsBeProfessionallyTrained),
+    help(relevanceInKidsLives),
+    help(anonymity),
+    help(connectBackToTheCommunity9),
+    help(confidentialityKids5),
+    help(efficientServices1),
+    help(immediacy),
+    help(avoidBadAdvice4),
+    help(kidsHaveOwnershipOfServices5),
+    help(improveWebsiteContent2),
+    help(avoidPresenceOfPedofiles2),
+    help(directResponseToKids2),
+    help(sufficientlyModeratedWebServices) ].
+immediacy2 <~ [help(maintainPhoneServices)].
+immediacy6 <~
+  [ help(parentsUseNToolToAllowParentsToTalkToEachOther),
+    hurt(parentsUseBulletinBoardWithReplies) ].
+immediacy7 <~
+  [ make(realTimeECounsellingBeUsed),
+    help(decreaseResponseTIme),
+    hurt(nonRealTimeECounsellingBeUsed) ].
+improveImageToKids <~
+  [ help(anonymityKids3),
+    help(confidentialityKids1),
+    help(avoidPresenceOfPedofiles),
+    help(decreaseResponseTIme),
+    help(relevanceInKidsLives2),
+    help(maintainServicesAboveCompetition1),
+    help(directResponseToKids),
+    help(moderatedECounsellingBeUsed),
+    help(kidsUseOnlineInformationProvided),
+    help(easierAccessToPostReply) ].
+improveWebsiteContent1 <~
+  [ help(webSiteContentBeUpdatedDaily),
+    help(increaseWebResources) ].
+increaseNumberOfServices <~ [help(increasedWebServices)].
+increaseResourcesServices <~
+  [ help(increaseWebResources2),
+    help(increasePhoneResources) ].
+increaseWebResources <~
+  [ help(onlyOnlineRequestFromCanadiansAccepted) ].
+increasedWebServices4 <~
+  [ help(kidsUseTextMessaging),
+    help(kidsUseEmailCounselling),
+    help(kidsUseOneOnOneChatRooms),
+    help(kidsUseAskACounsellorSection),
+    help(kidsUseBulletinBoardWithDelayedModeration),
+    help(kidsUseVoiceCounselling),
+    help(kidsUseCyberCafPortalChatRoom),
+    help(kidsUseVideoCounselling),
+    help(kidsUseBulletinBoardWithReplies) ].
+kidsHaveOwnershipOfServices <~
+  [ help(informKidsAboutAnonymityKidsOfWebServices1),
+    help(moderatedECounsellingBeUsed) ].
+kidsHaveOwnershipOfServices1 <~ [make(kidsUsePhoneCounselling)].
+maintainServicesAboveCompetition1 <~
+  [ help(moderatedECounsellingBeUsed) ].
+measureSuccessOfServices1 <~ [help(implementFeedbackForm)].
+measureSuccessOfServices2 <~ [help(implementPhoneFeedback)].
+measureSuccessOfServices4 <~
+  [ help(increaseEmphasisOnOnlineFeedbackForm1) ].
+reduceContagionEffectOfHarmfulActions <~
+  [ hurt(kidsUseBulletinBoardWithDelayedModeration),
+    help(implementDelay),
+    help(effectiveChatRoomFilters),
+    help(avoidDialoguesBetweenKids),
+    help(scheduleChatAtSpecificTimes) ].
+reduceNumberOfStepsWebPostingTechnology1 <~
+  [ help(kidsUseBulletinBoardWithDelayedModeration),
+    hurt(kidsUseBulletinBoardWithReplies),
+    hurt(maintainAskACounsellorSection) ].
+reducePrankCalls1 <~
+  [ hurt(confidentialityKids),
+    help(implementAntiPrankingMessage) ].
+relevanceInKidsLives <~ [help(highQualityServices)].
+similarityOfProblems <~
+  [ hurt(technologyThatDoesNotAllowDialoguesBetweenKidsBeUsed),
+    help(kidsReadPollsAboutKids),
+    help(technologyThatAllowsDialoguesBetweenKidsBeUsed),
+    help(kidsReadGeneralQuestionsAndAnswers),
+    help(kidsReadGetInformedSectionOfWebSite) ].
+similarityWithOtherParentsProblems <~
+  [ help(parentsUseBulletinBoardWithReplies),
+    help(parentsUseNToolToAllowParentsToTalkToEachOther) ].
+sufficientlyModeratedWebServices2 <~
+  [ help(sufficientCounsellingResources) ].
+sufficientlyModeratedWebServices4 <~
+  [ hurt(kidsUseBulletinBoardWithDelayedModeration) ].
+webServicesSelfServe2 <~
+  [ help(kidsReadGetInformedSectionOfWebSite),
+    help(kidsReadGeneralQuestionsAndAnswers),
+    help(kidsReadPollsAboutKids) ].

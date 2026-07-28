@@ -1,6 +1,6 @@
-% CSCounsellingManagement  (node/2 edge/3 dep/2 dec/3 leaf/1 topgoal/1)
-:- discontiguous node/2, edge/3, dep/2, dec/3, leaf/1, topgoal/1.
-:- dynamic node/2, edge/3, dep/2, dec/3, leaf/1, topgoal/1.
+% CSCounsellingManagement  (nfr2 dialect: <- rules, <~ contribution lists)
+:- discontiguous (<-)/2, (<~)/2, node/2, leaf/1, topgoal/1.
+:- dynamic (<-)/2, (<~)/2, node/2, leaf/1, topgoal/1.
 node(anITTrainerBePresent,goal).
 topgoal(anITTrainerBePresent).
 node(considerationOfFeedbackManagers,softgoal).
@@ -315,240 +315,322 @@ leaf(useBluePumpkin).
 node(increaseITMethodsToAcquireFeedback1,softgoal).
 node(easierJob,softgoal).
 node(increaseNumberOfCounsellors,softgoal).
-dec(useBluePumpkin,trackCallLengths,or).
-dep(facilitateFasterChangesInCounsellorDuties1,facilitateFasterChangesInCounsellorDuties).
-edge(secondReadingOfWebPosts1,avoidLiabilityProblems,0.5).
-edge(requestShifts,accommodateSchedulesCounsellingManagers2,0.5).
-dec(analyzeServiceLevels,makeSchedules,or).
-edge(reduceTurnoverCounsellors,happinessCounsellors,0.5).
-edge(pressureCounsellorsToProvideOnlineServices,provideOnlineServicesAllCounsellors,0.5).
-edge(considerCounsellorsFeedback,happinessOfCounsellors,0.5).
-edge(increaseITMethodsToAcquireFeedback1,increaseFeedback,0.5).
-dep(secondReadingOfWebPosts,secondReadingOfWebPosts2).
-edge(avoidRelationshipsWithSpecificCounsellor1,avoidRefusalOfServices,0.5).
-dep(positiveInternalOpinion,positiveInternalOpinion1).
-edge(effectiveUseOfTechnologyCounsellors1,highQualityOnlineCounselling,0.5).
-edge(environmentConductiveToConcentration,happinessCounsellingManager,0.5).
-edge(increaseCommunicationBetweenCounsellorsAndSupervisors,happinessOfCounsellors,0.5).
-dep(clearerCallClassificationCatagories,clearerCallClassificationCatagories1).
-edge(makeSchedules,effectiveScheduling,1).
-edge(performanceReviewInformationBeCollectedInDataBase,improveQualityAssuranceTechnology,0.5).
-dep(happinessCounsellingManagement,happinessCounsellingManager1).
-edge(avoidRefusalOfServices,helpAsManyKidsAsPossible,0.5).
-dep(pressureCounsellorsToProvideOnlineServices,pressureCounsellorsToProvideOnlineServices2).
-dec(negotiateWithCounsellorsUnion,manageCounsellors,or).
-dep(accountabilityServices1,accountabilityServices).
-edge(improveQualityAssuranceTechnology,supportDayToDayClinicalNeedsOfCounsellors1,0.5).
-dep(putOnCounsellingWorkshops,counsellingWorkshops).
-dep(improvedQualityAssuranceCounsellingReviewsAndEvaluation1,improvedQualityAssuranceCounsellingReviewsAndEvaluation2).
-edge(callDurationConsistencyCounsellors,happinessOfCounsellors,-0.5).
-edge(anITTrainerBePresent,increaseITTrainingForCounsellors1,0.5).
-edge(increaseEnthusiasmCounsellorsForIT,positiveAttitudeTowardsITCounsellors,0.5).
-edge(increaseFundingForTraining1,increaseTrainingForCounsellors,0.5).
-edge(clearerCallClassificationCatagories1,accurateCallerStatistics,0.5).
-edge(advanceNoticeToCounsellorsAboutITTransitions,reduceResistanceCounsellorsForIT,0.5).
-dep(improvedQualityAssuranceCounsellingReviewsAndEvaluation2,improvedQualityAssuranceCounsellingReviewsAndEvaluation).
-edge(aTrainingProgramBePresent,increaseTrainingForCounsellors,0.5).
-edge(reduceTurnoverCounsellors,happinessCounsellingManager1,0.5).
-dec(secondReadingOfWebPosts,provideFeedbackOnWebPosts,or).
-edge(negotiateWithCounsellorsUnion2,easierJob,-0.5).
-edge(positiveAttitudeTowardsITCounsellors,provideOnlineServicesAllCounsellors,0.5).
-dep(highQualityCounselling,highQualityCounselling1).
-dep(improvedWritingSkillsCounsellors,improvedWritingSkillsCounsellors1).
-dep(helpAsManyKidsAsPossible,helpAsManyKidsAsPossible1).
-edge(increaseNumberOfCounsellors2,reduceCostOfCounsellingHR2,-0.5).
-edge(increaseITTrainingForCounsellors1,increaseTrainingForCounsellors,0.5).
-dep(sufficientCounsellingResources2,sufficientCounsellingResources).
-dec(supervisionBePerformedAtLeastEvery3Months,performSupervisionForExperiencedCounsellors,or).
-edge(facilitateFasterChangesInCounsellorDuties,advanceNoticeToCounsellorsAboutITTransitions,-0.5).
-dec(debriefWebPosts,debriefWithCounsellors,or).
-edge(analyzeCallStatistics2,callDurationConsistencyCounsellors,0.5).
-edge(clearCommunicationAboutThePurposeOfITToCounselors,increasedUnderstandingOfPurposesOfITCounsellors,0.5).
-edge(continualImprovementCounsellingSkills1,highQualityCounselling,0.5).
-edge(improveQualityAssuranceTechnology,improvedQualityAssuranceCounsellingReviewsAndEvaluation1,0.5).
-edge(analyzeCallStatistics,reduceCostOfCounsellingHR,0.5).
-dec(counsellorsBePaid,manageStaffingAndRecruiting,or).
-dep(increasedCounsellingResources,increasedCounsellingResource).
-dec(trackCallLengths,analyzeCallStatistics,or).
-edge(considerCounsellorsFeedback,increaseCommunicationBetweenCounsellorsAndSupervisors,0.5).
-dec(performSupervisionForNewCounsellors,performCounsellingQualityAssurance,or).
-edge(counsellorsBeKeptInformed,increaseCommunicationBetweenCounsellorsAndSupervisors,0.5).
-edge(increasedUnderstandingOfPurposesOfITCounsellors,reduceResistanceCounsellorsForIT,0.5).
-dep(negotiateWithCounsellorsUnion,negotiateWithCounsellorsUnion1).
-edge(effectiveScheduling,reduceStaggeringOfSchedules1,-0.5).
-dep(increaseITTrainingForCounsellors,increaseITTrainingForCounsellors1).
-edge(accommodateSchedulesCounsellingManagers2,happinessCounsellingManager,0.5).
-dec(performSupervisionForNewCounsellors,performSupervision,or).
-dep(performanceReviewInformationBeCollectedInDataBase1,performanceReviewInformationBeCollectedInDataBase).
-edge(easierJob,happinessCounsellingManager,0.5).
-edge(aTrainingComputerBePresent,increaseITTrainingForCounsellors1,0.5).
-edge(improvedQualityAssuranceCounsellingReviewsAndEvaluation,highQualityCounselling,0.5).
-dec(setCounsellingPolicies,manageCounsellors,or).
-dec(counsellingPoliciesBeFollowed1,manageCounsellors,or).
-dec(holesInOperationsManagingBeRemoved,makeSchedules,or).
-dep(supervisionBePerformedAtLeastEvery3Months,supervisionBePerformedAtLeastEvery3Months2).
-dep(negotiateWithCounsellorsUnion1,negotiateWithCounsellorsUnion2).
-edge(feedbackToCounsellorsBeProvided,supportDayToDayClinicalNeedsOfCounsellors1,0.5).
-dep(feedbackToCounsellorsBeProvided2,feedbackToCounsellorsBeProvided1).
-dep(accommodateSchedulesCounsellingManagers,accommodateSchedulesCounsellingManagers1).
-dec(putOnOrientationProcessForCousellors,trainingBeGivenToNewEmployees,or).
-edge(improvedQualityAssuranceCounsellingReviewsAndEvaluation,qualifiedCounsellors,0.5).
-dec(threeMonthsOfReviewBeGivenToNewCounsellors,performSupervisionForNewCounsellors,or).
-edge(increasedUnderstandingOfPurposesOfITCounsellors,increaseEnthusiasmCounsellorsForIT,0.5).
-dec(putOnOrientationProcessForCousellors,trainingBeGivenToCurrentEmployees,or).
-dep(improveHiringProcessOfCounsellors,improveHiringProcessOfCounsellors2).
-edge(improveJobDescriptionsCounsellors,improveHiringProcessOfCounsellors,0.5).
-dep(reduceCostOfCounsellingHR,reduceCostOfCounsellingHR1).
-edge(provideOneOnOneSupportToCounsellors,supportCounsellors,0.5).
-dep(analyzeCallStatistics,analyzeCallStatistics1).
-dec(performSupervision,staffPerformanceBeManaged,or).
-edge(positiveAttitudeTowardsITCounsellors,effectiveUseOfTechnologyCounsellors,0.5).
-edge(increaseTrainingForCounsellors,continualImprovementCounsellingSkills,0.5).
-dep(reduceStaggeringOfSchedules1,reduceStaggeringOfSchedules).
-edge(supportDayToDayOnTheFloorNeedsOfCounsellors,supportCounsellors,0.5).
-edge(happinessCounsellingManager1,reduceTurnoverCounsellingManagement,0.5).
-dep(accommodateSchedulesCounsellors2,accommodateSchedulesCounsellors).
-edge(improveTrainingForCounsellors,continualImprovementCounsellingSkills,0.5).
-edge(reduceTurnoverCounsellingManagement,happinessCounsellors,0.5).
-edge(callDurationConsistencyCounsellors,highQualityCounselling,0.5).
-edge(improveITSkillsOfCounsellors1,provideOnlineServicesAllCounsellors,0.5).
-edge(bilingualCounsellorsBeHired,reduceCostOfCounsellingHR2,-0.5).
-edge(improveITSkillsOfCounsellors1,effectiveUseOfTechnologyCounsellors,0.5).
-dec(listenToLiveCall,callsBeMonitored,or).
-dep(improvedWritingSkillsCounsellors3,improvedWritingSkillsCounsellors2).
-dep(happinessCounsellors1,happinessCounsellors).
-edge(supportCounsellors,highQualityCounselling,0.5).
-dep(happinessCounsellors1,happinessOfCounsellors).
-edge(supportCounsellors,happinessOfCounsellors,0.5).
-edge(reduceSpendingOnEmployeesSalaries,happinessCounsellors,-0.5).
-dep(effectiveUseOfTechnologyCounsellors,effectiveUseOfTechnologyCounsellors2).
-edge(feedbackToCounsellorsBeProvided1,continualImprovementCounsellingSkills,0.5).
-dec(hireCounsellingManagers,manageStaffingAndRecruiting,or).
-edge(increaseFeedback,continualImprovementCounsellingSkills,0.5).
-dec(acquireWebTrainingFromOperations,secondReadingOfWebPosts,or).
-edge(increaseCounsellorsExperienceWithTechnology,improveITSkillsOfCounsellors,0.5).
-edge(supportDayToDayClinicalNeedsOfCounsellors2,supportCounsellors,0.5).
-dep(historicalDataOfCallVolumes,analyzeCallStatistics).
-dep(considerCounsellorsFeedback,considerationOfFeedbackManagers).
-dep(accommodateSchedulesCounsellingManagers1,accommodateSchedulesCounsellingManagers2).
-dec(technologyBeUsedToEnsureCounsellorsAreKeepingCorrectHours,manageCounsellors,or).
-edge(happinessOfCounsellors,highQualityCounselling,0.5).
-edge(reduceSpendingOnEmployeesSalaries,reduceCostOfCounsellingHR2,0.5).
-edge(increasedCounsellingResource,increaseNumberOfCounsellors2,0.5).
-edge(callsBeRecordedIntoADataBase,improveQualityAssuranceTechnology,0.5).
-dep(avoidLiabilityProblems1,avoidLiabilityProblems).
-edge(improveITSkillsOfCounsellors,continualImprovementCounsellingSkills,0.5).
-dec(writeYearlyPeformanceEvaluationsForCounsellors,performSupervisionForExperiencedCounsellors,or).
-edge(supervisionBePerformedAtLeastEvery3Months1,continualImprovementCounsellingSkills,0.5).
-dep(bilingualCounsellorsBeHired,bilingualCounsellorsBeHired1).
-dep(improveITSkillsOfCounsellors,improveITSkillsOfCounsellors2).
-dec(counsellorsBeKeptInformed,manageCounsellors,or).
-edge(increaseNumberOfCounsellors,happinessOfCounsellors,0.5).
-dep(supervisionBePerformedAtLeastEvery3Months2,supervisionBePerformedAtLeastEvery3Months1).
-dep(putOnWebModeratorMeetings,webModeratorMeetings).
-dep(sufficientCounsellingResources1,sufficientCounsellingResources).
-edge(debriefWithCounsellors,increaseCommunicationBetweenCounsellorsAndSupervisors,0.5).
-dep(accommodateSchedulesCounsellors1,accommodateSchedulesCounsellors2).
-edge(professionalCounsellorsBeUsed,continualImprovementCounsellingSkills,0.5).
-edge(increasedCounsellingResource,happinessCounsellors,0.5).
-dep(highQualityCounselling2,highQualityCounselling).
-dec(hireCounsellors,manageStaffingAndRecruiting,or).
-edge(positiveInternalOpinion1,happinessCounsellors,0.5).
-edge(improveHiringProcessOfCounsellors1,qualifiedCounsellors,0.5).
-dec(communicateCSInformationToCounsellors,counsellorsBeKeptInformed,or).
-dec(reviewTape,callsBeMonitored,or).
-dep(professionalWorkEnvironment1,professionalWorkEnvironment).
-dep(continualImprovementCounsellingSkills2,continualImprovementCounsellingSkills1).
-edge(pressureCounsellorsToProvideOnlineServices1,happinessOfCounsellors,-0.5).
-dec(trackCallVolume,analyzeCallStatistics,or).
-edge(qualifiedCounsellors,highQualityCounselling,0.5).
-edge(aTrainingRoomBePresent,improveTrainingForCounsellors,0.5).
-edge(happinessCounsellors,reduceTurnoverCounsellors,0.5).
-edge(attendPartTimeMeetings,increaseCommunicationBetweenCounsellorsAndSupervisors,0.5).
-dep(supportAnalysisCounsellorsTime1,supportAnalysisCounsellorsTime).
-edge(increasedEmphasisOnITInHiringProcessOfCounsellors1,improveITSkillsOfCounsellors,0.5).
-dep(reduceCostOfCounsellingHR2,reduceCostOfCounsellingHR1).
-dep(doubleHeadSet,listenToLiveCall).
-dep(improveITSkillsOfCounsellors2,improveITSkillsOfCounsellors1).
-dep(setCounsellingPolicies,counsellingPolicies).
-dep(feedbackToCounsellorsBeProvided,feedbackToCounsellorsBeProvided2).
-dep(increasedEmphasisOnITInHiringProcessOfCounsellors2,increasedEmphasisOnITInHiringProcessOfCounsellors).
-dep(increaseFundingForTraining,increaseFundingForTraining1).
-dep(professionalCounsellorsBeUsed,professionalCounsellorsBeUsed1).
-dep(avoidRelationshipsWithSpecificCounsellor,avoidRelationshipsWithSpecificCounsellor1).
-dep(improvedWritingSkillsCounsellors1,improvedWritingSkillsCounsellors3).
-dep(secondReadingOfWebPosts2,secondReadingOfWebPosts1).
-edge(accurateCallerStatistics,accountabilityServices1,0.5).
-edge(supportAnalysisCounsellorsTime,reduceResistanceCounsellorsForIT,-0.5).
-dep(counsellingPoliciesBeFollowed,counsellingPoliciesBeFollowed1).
-dec(performCounsellingQualityAssurance,performSupervisionForExperiencedCounsellors,or).
-dep(increaseITMethodsToAcquireFeedback,increaseITMethodsToAcquireFeedback1).
-dep(improveITSkills,improveITSkillsOfCounsellors).
-dep(increasedEmphasisOnITInHiringProcessOfCounsellors,increasedEmphasisOnITInHiringProcessOfCounsellors1).
-dec(analyzeCallStatistics,makeSchedules,or).
-dec(trainingBeGivenToCurrentEmployees,employeeLearningAndTrainingBeManaged,or).
-dec(provideFeedbackOnWebPosts,performSupervisionForExperiencedCounsellors,or).
-dep(effectiveScheduling2,effectiveScheduling1).
-dep(increaseNumberOfCounsellors1,increaseNumberOfCounsellors).
-dep(supportDayToDayClinicalNeedsOfCounsellors1,supportDayToDayClinicalNeedsOfCounsellors).
-edge(increasedEmphasisOnITInHiringProcessOfCounsellors2,improveHiringProcessOfCounsellors,0.5).
-edge(effectiveScheduling,accommodateSchedulesCounsellingManagers,-0.5).
-dec(callsBeMonitored,performSupervisionForExperiencedCounsellors,or).
-dep(continualImprovementCounsellingSkills,continualImprovementCounsellingSkills2).
-dec(useBluePumpkin,trackCallVolume,or).
-dep(callStatistics,analyzeCallStatistics).
-dep(happinessCounsellingManager,happinessCounsellingManagement).
-edge(rigorousEmployeeEvaluations,improvedQualityAssuranceCounsellingReviewsAndEvaluation1,0.5).
-dec(contractsBeReviewed,manageStaffingAndRecruiting,or).
-edge(clearerCallClassificationCatagories1,happinessOfCounsellors,0.5).
-edge(effectiveScheduling,accommodateSchedulesCounsellors1,-0.5).
-edge(improvedWritingSkillsCounsellors2,highQualityOnlineCounselling,0.5).
-dec(trainingBeGivenToNewEmployees,employeeLearningAndTrainingBeManaged,or).
-edge(debriefWithCounsellors,supportCounsellors,0.5).
-dep(effectiveScheduling,effectiveScheduling2).
-edge(avoidLiabilityProblems,happinessCounsellingManager,0.5).
-dec(acquireResourcesForStaffing,manageStaffingAndRecruiting,or).
-edge(accommodateSchedulesCounsellors,happinessOfCounsellors,0.5).
-dep(pressureCounsellorsToProvideOnlineServices2,pressureCounsellorsToProvideOnlineServices1).
-edge(facilitateFasterChangesInCounsellorDuties,provideOnlineServicesAllCounsellors,0.5).
-edge(increaseITTrainingForCounsellors1,improveITSkillsOfCounsellors,0.5).
-dec(fullTimeNightComplementBeAcquired,manageStaffingAndRecruiting,or).
-edge(aTrainingRoomBePresent,increaseTrainingForCounsellors,0.5).
-dep(bilingualCounsellorsBeHired1,bilingualCounsellorsBeHired2).
-edge(professionalWorkEnvironment,environmentConductiveToConcentration,0.5).
-edge(bilingualCounsellorsBeHired2,helpAsManyKidsAsPossible,0.5).
-dec(putOnCounsellingWorkshops,trainingBeGivenToCurrentEmployees,or).
-dec(performSupervisionForExperiencedCounsellors,performSupervision,or).
-edge(supportAnalysisCounsellorsTime,increaseEnthusiasmCounsellorsForIT,-0.5).
-dep(counsellorsBePaid,salary).
-dep(improveCallRecordingEquipment,improveCallRecordingEquipment1).
-dep(increaseNumberOfCounsellors2,increaseNumberOfCounsellors1).
-dep(effectiveUseOfTechnologyCounsellors2,effectiveUseOfTechnologyCounsellors1).
-dec(createCallClassificationCatagories,manageCounsellors,or).
-dep(improveHiringProcessOfCounsellors2,improveHiringProcessOfCounsellors1).
-edge(provideFeedbackOnWebPosts,supportDayToDayClinicalNeedsOfCounsellors1,0.5).
-dep(counsellingResources,acquireResourcesForStaffing).
-dep(aTrainingComputerBePresent1,aTrainingComputerBePresent).
-edge(increaseComfortablenessWithLearningProcess,continualImprovementCounsellingSkills,0.5).
-edge(reduceCostOfCounsellingHR2,increasedCounsellingResource,0.5).
-dep(supportDayToDayClinicalNeedsOfCounsellors,supportDayToDayClinicalNeedsOfCounsellors2).
-dep(callsBeRecordedIntoADataBase1,callsBeRecordedIntoADataBase).
-edge(effectiveScheduling1,helpAsManyKidsAsPossible,0.5).
-dec(policiesBeReviewed,manageStaffingAndRecruiting,or).
-edge(effectiveUseOfTechnologyCounsellors1,highQualityCounselling,0.5).
-edge(effectiveScheduling,sufficientCounsellingResources2,0.5).
-dep(performCounsellingAsInstructedBySupervisorCounsellors,performCounsellingAsInstructedBySupervisorCounsellors1).
-dep(anITTrainerBePresent1,anITTrainerBePresent).
-edge(reduceResistanceCounsellorsForIT,positiveAttitudeTowardsITCounsellors,0.5).
-edge(improveCallRecordingEquipment1,improveQualityAssuranceTechnology,0.5).
-edge(putOnWebModeratorMeetings,improveITSkillsOfCounsellors1,0.5).
-dec(feedbackToCounsellorsBeProvided,performSupervisionForNewCounsellors,or).
-edge(increasedCounsellingResource,sufficientCounsellingResources1,0.5).
-dec(analyzeStaffingLevels,makeSchedules,or).
-dec(debriefCalls,debriefWithCounsellors,or).
-edge(aTrainingProgramBePresent,improveTrainingForCounsellors,0.5).
-edge(reduceTurnoverCounsellingManagement,happinessCounsellingManager1,0.5).
-dep(analyzeCallStatistics1,analyzeCallStatistics2).
-dec(counsellorsPassProbationWithinSixMonths,performSupervisionForNewCounsellors,or).
-edge(performCounsellingAsInstructedBySupervisorCounsellors1,highQualityCounselling,0.5).
-edge(highQualityOnlineCounselling,highQualityCounselling,0.5).
+aTrainingComputerBePresent <- [aTrainingComputerBePresent1].
+accommodateSchedulesCounsellingManagers1 <-
+  [ accommodateSchedulesCounsellingManagers ].
+accommodateSchedulesCounsellingManagers2 <-
+  [ accommodateSchedulesCounsellingManagers1 ].
+accommodateSchedulesCounsellors <- [accommodateSchedulesCounsellors2].
+accommodateSchedulesCounsellors2 <-
+  [ accommodateSchedulesCounsellors1 ].
+accountabilityServices <- [accountabilityServices1].
+acquireResourcesForStaffing <- [counsellingResources].
+anITTrainerBePresent <- [anITTrainerBePresent1].
+analyzeCallStatistics <-
+  [ historicalDataOfCallVolumes,
+    callStatistics,
+    trackCallLengths ].
+analyzeCallStatistics <-
+  [ historicalDataOfCallVolumes,
+    callStatistics,
+    trackCallVolume ].
+analyzeCallStatistics1 <- [analyzeCallStatistics].
+analyzeCallStatistics2 <- [analyzeCallStatistics1].
+avoidLiabilityProblems <- [avoidLiabilityProblems1].
+avoidRelationshipsWithSpecificCounsellor1 <-
+  [ avoidRelationshipsWithSpecificCounsellor ].
+bilingualCounsellorsBeHired1 <- [bilingualCounsellorsBeHired].
+bilingualCounsellorsBeHired2 <- [bilingualCounsellorsBeHired1].
+callsBeMonitored <- [listenToLiveCall].
+callsBeMonitored <- [reviewTape].
+callsBeRecordedIntoADataBase <- [callsBeRecordedIntoADataBase1].
+clearerCallClassificationCatagories1 <-
+  [ clearerCallClassificationCatagories ].
+considerationOfFeedbackManagers <- [considerCounsellorsFeedback].
+continualImprovementCounsellingSkills1 <-
+  [ continualImprovementCounsellingSkills2 ].
+continualImprovementCounsellingSkills2 <-
+  [ continualImprovementCounsellingSkills ].
+counsellingPolicies <- [setCounsellingPolicies].
+counsellingPoliciesBeFollowed1 <- [counsellingPoliciesBeFollowed].
+counsellingWorkshops <- [putOnCounsellingWorkshops].
+counsellorsBeKeptInformed <- [communicateCSInformationToCounsellors].
+debriefWithCounsellors <- [debriefWebPosts].
+debriefWithCounsellors <- [debriefCalls].
+effectiveScheduling1 <- [effectiveScheduling2].
+effectiveScheduling2 <- [effectiveScheduling].
+effectiveUseOfTechnologyCounsellors1 <-
+  [ effectiveUseOfTechnologyCounsellors2 ].
+effectiveUseOfTechnologyCounsellors2 <-
+  [ effectiveUseOfTechnologyCounsellors ].
+employeeLearningAndTrainingBeManaged <-
+  [ trainingBeGivenToCurrentEmployees ].
+employeeLearningAndTrainingBeManaged <-
+  [ trainingBeGivenToNewEmployees ].
+facilitateFasterChangesInCounsellorDuties <-
+  [ facilitateFasterChangesInCounsellorDuties1 ].
+feedbackToCounsellorsBeProvided1 <-
+  [ feedbackToCounsellorsBeProvided2 ].
+feedbackToCounsellorsBeProvided2 <- [feedbackToCounsellorsBeProvided].
+happinessCounsellingManagement <- [happinessCounsellingManager].
+happinessCounsellingManager1 <- [happinessCounsellingManagement].
+happinessCounsellors <- [happinessCounsellors1].
+happinessOfCounsellors <- [happinessCounsellors1].
+helpAsManyKidsAsPossible1 <- [helpAsManyKidsAsPossible].
+highQualityCounselling <- [highQualityCounselling2].
+highQualityCounselling1 <- [highQualityCounselling].
+improveCallRecordingEquipment1 <- [improveCallRecordingEquipment].
+improveHiringProcessOfCounsellors1 <-
+  [ improveHiringProcessOfCounsellors2 ].
+improveHiringProcessOfCounsellors2 <-
+  [ improveHiringProcessOfCounsellors ].
+improveITSkillsOfCounsellors <- [improveITSkills].
+improveITSkillsOfCounsellors1 <- [improveITSkillsOfCounsellors2].
+improveITSkillsOfCounsellors2 <- [improveITSkillsOfCounsellors].
+improvedQualityAssuranceCounsellingReviewsAndEvaluation <-
+  [ improvedQualityAssuranceCounsellingReviewsAndEvaluation2 ].
+improvedQualityAssuranceCounsellingReviewsAndEvaluation2 <-
+  [ improvedQualityAssuranceCounsellingReviewsAndEvaluation1 ].
+improvedWritingSkillsCounsellors1 <-
+  [ improvedWritingSkillsCounsellors ].
+improvedWritingSkillsCounsellors2 <-
+  [ improvedWritingSkillsCounsellors3 ].
+improvedWritingSkillsCounsellors3 <-
+  [ improvedWritingSkillsCounsellors1 ].
+increaseFundingForTraining1 <- [increaseFundingForTraining].
+increaseITMethodsToAcquireFeedback1 <-
+  [ increaseITMethodsToAcquireFeedback ].
+increaseITTrainingForCounsellors1 <-
+  [ increaseITTrainingForCounsellors ].
+increaseNumberOfCounsellors <- [increaseNumberOfCounsellors1].
+increaseNumberOfCounsellors1 <- [increaseNumberOfCounsellors2].
+increasedCounsellingResource <- [increasedCounsellingResources].
+increasedEmphasisOnITInHiringProcessOfCounsellors <-
+  [ increasedEmphasisOnITInHiringProcessOfCounsellors2 ].
+increasedEmphasisOnITInHiringProcessOfCounsellors1 <-
+  [ increasedEmphasisOnITInHiringProcessOfCounsellors ].
+listenToLiveCall <- [doubleHeadSet].
+makeSchedules <- [analyzeServiceLevels].
+makeSchedules <- [holesInOperationsManagingBeRemoved].
+makeSchedules <- [analyzeCallStatistics].
+makeSchedules <- [analyzeStaffingLevels].
+manageCounsellors <- [negotiateWithCounsellorsUnion].
+manageCounsellors <- [setCounsellingPolicies].
+manageCounsellors <- [counsellingPoliciesBeFollowed1].
+manageCounsellors <-
+  [ technologyBeUsedToEnsureCounsellorsAreKeepingCorrectHours ].
+manageCounsellors <- [counsellorsBeKeptInformed].
+manageCounsellors <- [createCallClassificationCatagories].
+manageStaffingAndRecruiting <- [counsellorsBePaid].
+manageStaffingAndRecruiting <- [hireCounsellingManagers].
+manageStaffingAndRecruiting <- [hireCounsellors].
+manageStaffingAndRecruiting <- [contractsBeReviewed].
+manageStaffingAndRecruiting <- [acquireResourcesForStaffing].
+manageStaffingAndRecruiting <- [fullTimeNightComplementBeAcquired].
+manageStaffingAndRecruiting <- [policiesBeReviewed].
+negotiateWithCounsellorsUnion1 <- [negotiateWithCounsellorsUnion].
+negotiateWithCounsellorsUnion2 <- [negotiateWithCounsellorsUnion1].
+performCounsellingAsInstructedBySupervisorCounsellors1 <-
+  [ performCounsellingAsInstructedBySupervisorCounsellors ].
+performCounsellingQualityAssurance <-
+  [ performSupervisionForNewCounsellors ].
+performSupervision <- [performSupervisionForNewCounsellors].
+performSupervision <- [performSupervisionForExperiencedCounsellors].
+performSupervisionForExperiencedCounsellors <-
+  [ supervisionBePerformedAtLeastEvery3Months ].
+performSupervisionForExperiencedCounsellors <-
+  [ writeYearlyPeformanceEvaluationsForCounsellors ].
+performSupervisionForExperiencedCounsellors <-
+  [ performCounsellingQualityAssurance ].
+performSupervisionForExperiencedCounsellors <-
+  [ provideFeedbackOnWebPosts ].
+performSupervisionForExperiencedCounsellors <- [callsBeMonitored].
+performSupervisionForNewCounsellors <-
+  [ threeMonthsOfReviewBeGivenToNewCounsellors ].
+performSupervisionForNewCounsellors <-
+  [ feedbackToCounsellorsBeProvided ].
+performSupervisionForNewCounsellors <-
+  [ counsellorsPassProbationWithinSixMonths ].
+performanceReviewInformationBeCollectedInDataBase <-
+  [ performanceReviewInformationBeCollectedInDataBase1 ].
+positiveInternalOpinion1 <- [positiveInternalOpinion].
+pressureCounsellorsToProvideOnlineServices1 <-
+  [ pressureCounsellorsToProvideOnlineServices2 ].
+pressureCounsellorsToProvideOnlineServices2 <-
+  [ pressureCounsellorsToProvideOnlineServices ].
+professionalCounsellorsBeUsed1 <- [professionalCounsellorsBeUsed].
+professionalWorkEnvironment <- [professionalWorkEnvironment1].
+provideFeedbackOnWebPosts <- [secondReadingOfWebPosts].
+reduceCostOfCounsellingHR1 <-
+  [ reduceCostOfCounsellingHR,
+    reduceCostOfCounsellingHR2 ].
+reduceStaggeringOfSchedules <- [reduceStaggeringOfSchedules1].
+salary <- [counsellorsBePaid].
+secondReadingOfWebPosts <- [acquireWebTrainingFromOperations].
+secondReadingOfWebPosts1 <- [secondReadingOfWebPosts2].
+secondReadingOfWebPosts2 <- [secondReadingOfWebPosts].
+staffPerformanceBeManaged <- [performSupervision].
+sufficientCounsellingResources <-
+  [ sufficientCounsellingResources2,
+    sufficientCounsellingResources1 ].
+supervisionBePerformedAtLeastEvery3Months1 <-
+  [ supervisionBePerformedAtLeastEvery3Months2 ].
+supervisionBePerformedAtLeastEvery3Months2 <-
+  [ supervisionBePerformedAtLeastEvery3Months ].
+supportAnalysisCounsellorsTime <- [supportAnalysisCounsellorsTime1].
+supportDayToDayClinicalNeedsOfCounsellors <-
+  [ supportDayToDayClinicalNeedsOfCounsellors1 ].
+supportDayToDayClinicalNeedsOfCounsellors2 <-
+  [ supportDayToDayClinicalNeedsOfCounsellors ].
+trackCallLengths <- [useBluePumpkin].
+trackCallVolume <- [useBluePumpkin].
+trainingBeGivenToCurrentEmployees <-
+  [ putOnOrientationProcessForCousellors ].
+trainingBeGivenToCurrentEmployees <- [putOnCounsellingWorkshops].
+trainingBeGivenToNewEmployees <-
+  [ putOnOrientationProcessForCousellors ].
+webModeratorMeetings <- [putOnWebModeratorMeetings].
+accommodateSchedulesCounsellingManagers <~
+  [ hurt(effectiveScheduling) ].
+accommodateSchedulesCounsellingManagers2 <~ [help(requestShifts)].
+accommodateSchedulesCounsellors1 <~ [hurt(effectiveScheduling)].
+accountabilityServices1 <~ [help(accurateCallerStatistics)].
+accurateCallerStatistics <~
+  [ help(clearerCallClassificationCatagories1) ].
+advanceNoticeToCounsellorsAboutITTransitions <~
+  [ hurt(facilitateFasterChangesInCounsellorDuties) ].
+avoidLiabilityProblems <~ [help(secondReadingOfWebPosts1)].
+avoidRefusalOfServices <~
+  [ help(avoidRelationshipsWithSpecificCounsellor1) ].
+callDurationConsistencyCounsellors <~ [help(analyzeCallStatistics2)].
+continualImprovementCounsellingSkills <~
+  [ help(increaseTrainingForCounsellors),
+    help(improveTrainingForCounsellors),
+    help(feedbackToCounsellorsBeProvided1),
+    help(increaseFeedback),
+    help(improveITSkillsOfCounsellors),
+    help(supervisionBePerformedAtLeastEvery3Months1),
+    help(professionalCounsellorsBeUsed),
+    help(increaseComfortablenessWithLearningProcess) ].
+easierJob <~ [hurt(negotiateWithCounsellorsUnion2)].
+effectiveScheduling <~ [make(makeSchedules)].
+effectiveUseOfTechnologyCounsellors <~
+  [ help(positiveAttitudeTowardsITCounsellors),
+    help(improveITSkillsOfCounsellors1) ].
+environmentConductiveToConcentration <~
+  [ help(professionalWorkEnvironment) ].
+happinessCounsellingManager <~
+  [ help(environmentConductiveToConcentration),
+    help(accommodateSchedulesCounsellingManagers2),
+    help(easierJob),
+    help(avoidLiabilityProblems) ].
+happinessCounsellingManager1 <~
+  [ help(reduceTurnoverCounsellors),
+    help(reduceTurnoverCounsellingManagement) ].
+happinessCounsellors <~
+  [ help(reduceTurnoverCounsellors),
+    help(reduceTurnoverCounsellingManagement),
+    hurt(reduceSpendingOnEmployeesSalaries),
+    help(increasedCounsellingResource),
+    help(positiveInternalOpinion1) ].
+happinessOfCounsellors <~
+  [ help(considerCounsellorsFeedback),
+    help(increaseCommunicationBetweenCounsellorsAndSupervisors),
+    hurt(callDurationConsistencyCounsellors),
+    help(supportCounsellors),
+    help(increaseNumberOfCounsellors),
+    hurt(pressureCounsellorsToProvideOnlineServices1),
+    help(clearerCallClassificationCatagories1),
+    help(accommodateSchedulesCounsellors) ].
+helpAsManyKidsAsPossible <~
+  [ help(avoidRefusalOfServices),
+    help(bilingualCounsellorsBeHired2),
+    help(effectiveScheduling1) ].
+highQualityCounselling <~
+  [ help(continualImprovementCounsellingSkills1),
+    help(improvedQualityAssuranceCounsellingReviewsAndEvaluation),
+    help(callDurationConsistencyCounsellors),
+    help(supportCounsellors),
+    help(happinessOfCounsellors),
+    help(qualifiedCounsellors),
+    help(effectiveUseOfTechnologyCounsellors1),
+    help(performCounsellingAsInstructedBySupervisorCounsellors1),
+    help(highQualityOnlineCounselling) ].
+highQualityOnlineCounselling <~
+  [ help(effectiveUseOfTechnologyCounsellors1),
+    help(improvedWritingSkillsCounsellors2) ].
+improveHiringProcessOfCounsellors <~
+  [ help(improveJobDescriptionsCounsellors),
+    help(increasedEmphasisOnITInHiringProcessOfCounsellors2) ].
+improveITSkillsOfCounsellors <~
+  [ help(increaseCounsellorsExperienceWithTechnology),
+    help(increasedEmphasisOnITInHiringProcessOfCounsellors1),
+    help(increaseITTrainingForCounsellors1) ].
+improveITSkillsOfCounsellors1 <~ [help(putOnWebModeratorMeetings)].
+improveQualityAssuranceTechnology <~
+  [ help(performanceReviewInformationBeCollectedInDataBase),
+    help(callsBeRecordedIntoADataBase),
+    help(improveCallRecordingEquipment1) ].
+improveTrainingForCounsellors <~
+  [ help(aTrainingRoomBePresent),
+    help(aTrainingProgramBePresent) ].
+improvedQualityAssuranceCounsellingReviewsAndEvaluation1 <~
+  [ help(improveQualityAssuranceTechnology),
+    help(rigorousEmployeeEvaluations) ].
+increaseCommunicationBetweenCounsellorsAndSupervisors <~
+  [ help(considerCounsellorsFeedback),
+    help(counsellorsBeKeptInformed),
+    help(debriefWithCounsellors),
+    help(attendPartTimeMeetings) ].
+increaseEnthusiasmCounsellorsForIT <~
+  [ help(increasedUnderstandingOfPurposesOfITCounsellors),
+    hurt(supportAnalysisCounsellorsTime) ].
+increaseFeedback <~ [help(increaseITMethodsToAcquireFeedback1)].
+increaseITTrainingForCounsellors1 <~
+  [ help(anITTrainerBePresent),
+    help(aTrainingComputerBePresent) ].
+increaseNumberOfCounsellors2 <~ [help(increasedCounsellingResource)].
+increaseTrainingForCounsellors <~
+  [ help(increaseFundingForTraining1),
+    help(aTrainingProgramBePresent),
+    help(increaseITTrainingForCounsellors1),
+    help(aTrainingRoomBePresent) ].
+increasedCounsellingResource <~ [help(reduceCostOfCounsellingHR2)].
+increasedUnderstandingOfPurposesOfITCounsellors <~
+  [ help(clearCommunicationAboutThePurposeOfITToCounselors) ].
+positiveAttitudeTowardsITCounsellors <~
+  [ help(increaseEnthusiasmCounsellorsForIT),
+    help(reduceResistanceCounsellorsForIT) ].
+provideOnlineServicesAllCounsellors <~
+  [ help(pressureCounsellorsToProvideOnlineServices),
+    help(positiveAttitudeTowardsITCounsellors),
+    help(improveITSkillsOfCounsellors1),
+    help(facilitateFasterChangesInCounsellorDuties) ].
+qualifiedCounsellors <~
+  [ help(improvedQualityAssuranceCounsellingReviewsAndEvaluation),
+    help(improveHiringProcessOfCounsellors1) ].
+reduceCostOfCounsellingHR <~ [help(analyzeCallStatistics)].
+reduceCostOfCounsellingHR2 <~
+  [ hurt(increaseNumberOfCounsellors2),
+    hurt(bilingualCounsellorsBeHired),
+    help(reduceSpendingOnEmployeesSalaries) ].
+reduceResistanceCounsellorsForIT <~
+  [ help(advanceNoticeToCounsellorsAboutITTransitions),
+    help(increasedUnderstandingOfPurposesOfITCounsellors),
+    hurt(supportAnalysisCounsellorsTime) ].
+reduceStaggeringOfSchedules1 <~ [hurt(effectiveScheduling)].
+reduceTurnoverCounsellingManagement <~
+  [ help(happinessCounsellingManager1) ].
+reduceTurnoverCounsellors <~ [help(happinessCounsellors)].
+sufficientCounsellingResources1 <~
+  [ help(increasedCounsellingResource) ].
+sufficientCounsellingResources2 <~ [help(effectiveScheduling)].
+supportCounsellors <~
+  [ help(provideOneOnOneSupportToCounsellors),
+    help(supportDayToDayOnTheFloorNeedsOfCounsellors),
+    help(supportDayToDayClinicalNeedsOfCounsellors2),
+    help(debriefWithCounsellors) ].
+supportDayToDayClinicalNeedsOfCounsellors1 <~
+  [ help(improveQualityAssuranceTechnology),
+    help(feedbackToCounsellorsBeProvided),
+    help(provideFeedbackOnWebPosts) ].

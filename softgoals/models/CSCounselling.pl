@@ -1,6 +1,6 @@
-% CSCounselling  (node/2 edge/3 dep/2 dec/3 leaf/1 topgoal/1)
-:- discontiguous node/2, edge/3, dep/2, dec/3, leaf/1, topgoal/1.
-:- dynamic node/2, edge/3, dep/2, dec/3, leaf/1, topgoal/1.
+% CSCounselling  (nfr2 dialect: <- rules, <~ contribution lists)
+:- discontiguous (<-)/2, (<~)/2, node/2, leaf/1, topgoal/1.
+:- dynamic (<-)/2, (<~)/2, node/2, leaf/1, topgoal/1.
 node(considerationOfFeedbackManagers,softgoal).
 node(learnWebTechnologies,task).
 leaf(learnWebTechnologies).
@@ -481,466 +481,557 @@ node(patientCounselor1,softgoal).
 node(webResponsesBeGeneric2,softgoal).
 node(participateInEvents,task).
 node(diffuseConflictWithParent2,task).
-edge(professionalWorkEnvironment1,avoidTensionConfrontationAnimosityAmongstEmployees,0.5).
-edge(decreaseDifficultiesWithTechnology,performDutiesQuickly,0.5).
-dep(increasedPeerSupport1,increasedPeerSupport3).
-dec(trainingBeReceived2,performTheJobOfCounselling,or).
-edge(deepenCounsellingSession,webCounsellingBePerformed,-0.5).
-dec(reportAbuses,provideCounselling,or).
-dep(writeArticlesForMagazines1,writeArticlesForMagazines).
-edge(increaseFeedback,improveCounsellingSkills,0.5).
-edge(undergoClinicalReview1,positiveEmploymentEvaluation,0.5).
-edge(avoidPressureToPerformDutiesQuickly,decreaseFactoryWorkerAtmosphere,0.5).
-edge(comfortableWithPerceivedPurposeOfTechnology,decreaseDifficultiesWithTechnology,0.5).
-dec(assessSituation1,provideWrittenCounselling,or).
-dep(empoweringKidsToHelpThemselves,empoweringKidsToHelpThemselves1).
-dec(learnWebTechnologies,receiveAdditionalTrainingAsAnExperiencedCousnellor,or).
-dec(participateInEvents1,promoteCS1,or).
-dep(voiceCounsellingBePerformed2,voiceCounsellingBePerformed).
-dep(performEmailCounselling,performEmailCounselling1).
-edge(prideInJob,enthusiasticWorkAtmosphere,0.5).
-edge(implementEmailForCounsellors2,happinessCounsellors,0.5).
-dep(informationBindersAtStations,findInformationInBinders).
-edge(counsellorsBeUnionized,performDutiesQuickly,0.5).
-edge(highQualityResources1,highQualityCounselling,0.5).
-dec(recordStories,provideCounselling,or).
-dec(listenToCallsOfExperiencedCounsellors,receiveTrainingFromCounsellors,or).
-edge(performDutiesQuickly,helpAsManyKidsAsPossible,0.5).
-edge(helpAsManyKidsAsPossible,prideInJob,0.5).
-dep(diffuseConflictWithParent,diffuseConflictWithParent1).
-dec(provideCounselling1,voiceCounsellingBePerformed1,or).
-dep(voiceCounsellingBePerformed1,voiceCounsellingBePerformed2).
-dec(kidsBePreparedForFormalAbuseReportingProcess,provideCounselling,or).
-dep(diffuseConflictWithParent1,diffuseConflictWithParent2).
-dep(highDegreeOfSimilarityBetweenServicesProvided1,highDegreeOfSimilarityBetweenServicesProvided).
-edge(performDutiesQuickly,enthusiasticWorkAtmosphere,-0.5).
-dec(voiceCounsellingBePerformed,provideCounselling,or).
-dep(highQualityResources,highQualityResources2).
-edge(performEmailCounselling,increasedCautionContentOfOnlineServices2,-0.5).
-dep(itSystemsBeIntegrated,itSystemsBeIntegrated1).
-dep(webCounsellingBePerformed2,webCounsellingBePerformed).
-edge(easierToFindPostsWebPostingTechnology,improveWebPostingTechnology1,0.5).
-edge(counsellorsEngageEmotionallyInSession,highQualityCounselling,0.5).
-dep(doubleHeadsets,haveClinicalSupervisorsListenToCalls).
-dec(provideWebCounsellingWithAudio,webCounsellingBePerformed1,or).
-dec(provideWebCounsellingWithAudio,webCounsellingBePerformed1,or).
-edge(counsellorsBeUnionized,considerationOfFeedbackManagers,0.5).
-edge(rememberLocationsOfResouces,performDutiesQuickly,0.5).
-dec(attendCounsellingWorkshops,receiveAdditionalTrainingAsAnExperiencedCousnellor,or).
-edge(completeResourceLinks,decreaseWorkDifficulty,0.5).
-edge(increaseNumberOfCounsellors,avoidShortStaffing,0.5).
-dep(webResponsesBeGeneric1,webResponsesBeGeneric2).
-dep(implementEmailForCounsellors1,implementEmailForCounsellors2).
-dep(accessibleResourcesForCounselors3,accessibleResourcesForCounselors4).
-dec(performConferenceCallWithThirdParty,situationBeDealtWith,or).
-edge(commentOnTechnologyUsabilityIssues,avoidBeingLabelledAntiTechnology,-0.5).
-dec(prepareTechnicalPhoneEnvironment,voiceCounsellingBePerformed1,or).
-dec(briefTherapyCounsellingBeUsed,provideCounselling,or).
-dep(improveCounsellingSkills,improveCounsellingSkills3).
-edge(cuttingAndPastingBeAddedToWebPostingSoftware,improveWebPostingTechnology1,0.5).
-dec(receiveCallClassificationTraining,receiveTrainingAsANewCounsellor,or).
-dep(clearerCallClassificationCatagories1,clearerCallClassificationCatagories).
-edge(highQualityCounselling1,enthusiasticWorkAtmosphere,0.5).
-dep(highQualityCounselling1,highQualityCounselling2).
-dep(accessibleResourcesForCounselors3,accessibleResourcesForCounselors2).
-edge(increaseITMethodsToAcquireFeedback,increaseFeedback,0.5).
-edge(accessibleResourcesForCounselors,performDutiesQuickly,0.5).
-edge(reduceNumberOfStepsWebPostingTechnology,increasedCautionContentOfOnlineServices2,-0.5).
-edge(performDutiesQuickly,avoidPressureToPerformDutiesQuickly,0.5).
-dep(considerationOfFeedbackManagers1,considerationOfFeedbackManagers).
-dep(completeResourceLinks4,completeResourceLinks3).
-edge(consistentResourceLinks,highQualityResources,0.5).
-dec(receiveTrainingAsANewCounsellor,trainingBeReceived,or).
-dep(implementCategorizationTool,categorizeCall).
-edge(currentResourceLinks1,highQualityResources,0.5).
-dep(provideCounselling,provideCounselling3).
-edge(engageInDialogWithCounselled,increaseConnectionBetweenCounsellorsAndCounselled,0.5).
-dep(reduceNumberOfStepsWebPostingTechnology1,reduceNumberOfStepsWebPostingTechnology).
-edge(moderateDiscussionBoards,increasedCautionContentOfOnlineServices2,0.5).
-edge(counsellorsPoliceThemselves,avoidTensionConfrontationAnimosityAmongstEmployees,0.5).
-dep(doubleHeadsets,listenToCallsOfNewCounsellors).
-edge(provideResourcesInOneSource,consistentResourceLinks2,0.5).
-edge(reduceNumberOfStepsWebPostingTechnology,improveWebPostingTechnology1,0.5).
-dep(webResponsesBeGeneric,webResponsesBeGeneric1).
-edge(counsellorsBeUnionized,avoidTensionConfrontationAnimosityAmongstEmployees,-0.5).
-dec(signContractWithCounsellingUnion,counsellorsBeUnionized,or).
-dec(provideInformationToOtherCounselloers,provideSupportToCounsellors,or).
-edge(listenForCues,findEffectiveCues,0.5).
-edge(increaseConnectionBetweenCounsellorsAndCounselled,highQualityCounselling,0.5).
-dep(promoteCS2,promoteCS).
-dec(logIntoActivityManager,prepareTechnicalPhoneEnvironment,or).
-dec(haveClinicalSupervisorsListenToCalls,clinicalSupervisorsListenToCalls,or).
-dep(recognition,recognition1).
-edge(avoidBeingLabelledAntiTechnology,positiveEmploymentEvaluation,0.5).
-edge(avoidLiabilityProblems,happinessCounsellors,0.5).
-edge(acquireFeedback,increaseFeedback,0.5).
-edge(happinessCounsellors,moveOnToBetterJob,-0.5).
-dep(decreaseClumsinessTechnology1,decreaseClumsinessTechnology).
-edge(decreaseWorkDifficulty,happinessCounsellors,0.5).
-dec(aResolutionFocusApproachBeUsed,provideCounselling,or).
-dec(informationResourcesBeFound,provideInformation2,or).
-edge(toolsToBurnNegativeEnergyBePresent,professionalWorkEnvironment1,-0.5).
-edge(avoidTensionConfrontationAnimosityAmongstEmployees,happinessCounsellors,0.5).
-edge(reduceStaggeringOfSchedules,increasedPeerSupport1,0.5).
-edge(webResponsesBeGeneric2,helpAsManyKidsAsPossible1,0.5).
-edge(trainingBeReceived,improveCounsellingSkills,0.5).
-edge(decreaseFactoryWorkerAtmosphere,happinessCounsellors,0.5).
-edge(highQualityResources1,consistentCounsellingResponses,0.5).
-dep(allowUserToLogIn1,logIntoActivityManager).
-edge(increasedPeerSupport2,releaseTension,0.5).
-dep(effectiveUseOfTechnologyCounsellors2,effectiveUseOfTechnologyCounsellors1).
-dec(passProbationWithinSixMonths,receiveTrainingAsANewCounsellor,or).
-edge(reduceMonitoringOfActivities,comfortableWithPerceivedPurposeOfTechnology,0.5).
-edge(anonymity,safety,0.5).
-edge(controlOfCounsellingWork,happinessCounsellors,0.5).
-dep(increaseEmphasisOnOnlineFeedbackForm1,increaseEmphasisOnOnlineFeedbackForm).
-dec(provideWrittenCounselling,createCounsellingPosts,or).
-edge(controlOfCounsellingWork,avoidLiabilityProblems,0.5).
-edge(counsellorsBeUnionized,facilitateFasterChangesInCounsellorDuties1,-0.5).
-edge(performCounsellingAsInstructedBySupervisor,positiveEmploymentEvaluation,0.5).
-edge(considerationOfFeedbackITProviders,decreaseFactoryWorkerAtmosphere,0.5).
-dec(feedbackOnCallsBeGiven,provideTrainingToNewCounsellors,or).
-dec(situationBeDealtWith,provideCounselling1,or).
-dep(controlOfCounsellingWork1,controlOfCounsellingWork).
-dep(currentResourceLinks4,currentResourceLinks3).
-edge(releaseTension,professionalWorkEnvironment1,-0.5).
-dep(webCounsellingBePerformed1,webCounsellingBePerformed2).
-dec(updateOutdatedLinks,manageCounsellingResources,or).
-dep(helpKids,helpKids1).
-dec(meetingBeAttended,provideSupportToCounsellors,or).
-edge(counsellorsBeUnionized,considerationOfFeedbackITProviders,0.5).
-dep(improveQualityAssuranceTechnology,improveQualityAssuranceTechnology2).
-edge(editOnlinePostsOfKids,increasedCautionContentOfOnlineServices2,0.5).
-edge(decreaseClumsinessTechnology2,counsellorsEngageEmotionallyInSession,0.5).
-edge(improveCallRecordingEquipment,improveQualityAssuranceTechnology,0.5).
-edge(highQualityCounselling,patientCounselor,1).
-dep(provideInformation2,provideInformation1).
-edge(voiceCounsellingBePerformed,helpAsManyKidsAsPossible1,0.5).
-edge(considerationOfFeedbackManagers,reduceMonitoringOfActivities,0.5).
-edge(avoidBeingDirective,highQualityCounselling,0.5).
-edge(webCounsellingBePerformed,findEffectiveCues,-0.5).
-dep(avoidRelationshipsWithSpecificCounsellor1,avoidRelationshipsWithSpecificCounsellor).
-edge(increaseEmphasisOnOnlineFeedbackForm,increaseFeedback,0.5).
-edge(implementEmailForCounsellors,improveCommunicationBetweenCounsellors,0.5).
-dep(patientCounselor,patientCounselor1).
-edge(decreaseWorkLoad,avoidBurnout,0.5).
-dec(promoteCS,performTheJobOfCounselling,or).
-edge(performCounsellingAsInstructedBySupervisor1,supportIndividualityInCounsellingTechniques,-0.5).
-edge(improveITSkills,positiveEmploymentEvaluation,0.5).
-edge(improveWebPostingTechnology,decreaseDifficultiesWithTechnology,0.5).
-dec(situationBeDealtWith1,provideWrittenCounselling,or).
-edge(updateOutdatedLinks,currentResourceLinks4,0.5).
-dec(performEmailCounselling,webCounsellingBePerformed1,or).
-dec(provideWrittenCounselling,provideWebCounsellingWithVideo,or).
-edge(consistentCounsellingResponses,highQualityCounselling,0.5).
-dec(listenForCues,provideCounselling,or).
-dep(highDegreeOfSimilarityBetweenServicesProvided2,highDegreeOfSimilarityBetweenServicesProvided1).
-edge(accountabilityOfServices,prideInJob,0.5).
-dep(considerationOfFeedbackITProviders1,considerationOfFeedbackITProviders).
-edge(avoidDialoguesWebServices1,decreaseKidsIsolation,0.5).
-edge(avoidBeingDirective,empoweringKidsToHelpThemselves2,0.5).
-dec(undergoMediaTraining,receiveAdditionalTrainingAsAnExperiencedCousnellor,or).
-edge(implementBulletinBoard,improveCommunicationBetweenCounsellors,0.5).
-dep(provideWrittenCounselling,provideWrittenCounselling1).
-edge(increaseITTraining,improveITSkills1,0.5).
-edge(rememberLocationsOfResouces,decreaseWorkDifficulty,0.5).
-dep(reduceStaggeringOfSchedules1,reduceStaggeringOfSchedules).
-dec(provideResourcesInLibrary,provideResourcesAsCurrentlyDone,or).
-dep(increaseCSAwareness1,increaseCSAwareness).
-edge(decreaseClumsinessTechnology,decreaseDifficultiesWithTechnology,0.5).
-edge(increasedPeerSupport,highQualityCounselling,0.5).
-dec(makeTapesForClinicalReview,clinicalSupervisorsListenToCalls,or).
-dec(performFirstReadingOfCounsellingPosts,webCounsellingBePerformed1,or).
-dec(removeIdentifyingMaterial,removeInappropriateMaterial,or).
-edge(professionalWorkEnvironment1,enthusiasticWorkAtmosphere,-0.5).
-dep(accessibleResourcesForCounselors2,accessibleResourcesForCounselors).
-dec(undergoMediaTraining,receiveTrainingAsANewCounsellor,or).
-edge(consistentResourceLinks2,highQualityResources3,0.5).
-edge(considerationOfFeedbackITProviders,decreaseDifficultiesWithTechnology,0.5).
-dec(receiveInformationFromOtherCounsellors,provideInformation2,or).
-edge(releaseTension,highQualityCounselling1,0.5).
-dep(correctInterpretationOfCounsel1,correctInterpretationOfCounsel).
-dec(blockKidsWhoDisplayInappropriateBehavoir,moderateAChat,or).
-dec(undergoClinicalReview1,performTheJobOfCounselling,or).
-edge(encourageKidsToTalkToDifferentCounsellors,avoidRelationshipsWithSpecificCounsellor1,0.5).
-edge(undergoMediaTraining,acquirePublicSpeakingSkills,1).
-dep(completeResourceLinks3,completeResourceLinks2).
-edge(improveCounsellingSkills2,consistentCounsellingResponses,0.5).
-dep(promoteCS1,promoteCS2).
-dep(anonymityCounsellors,anonymity).
-dec(writeArticlesForMagazines1,promoteCS1,or).
-edge(simpleTechnology,decreaseDifficultiesWithTechnology,0.5).
-dec(assessSituation,provideCounselling1,or).
-dec(receiveFeedback,undergoClinicalReview,or).
-dep(provideInformationInBinders,informationBindersAtStations).
-dec(receiveTrainingFromManagment,receiveAdditionalTrainingAsAnExperiencedCousnellor,or).
-dep(provideWebCounsellingWithVideo,provideWebCounsellingWithVideo1).
-edge(getRidOfUnion,considerationOfFeedbackManagers,-0.5).
-dec(writeArticlesForWebsite1,createWebSiteContent,or).
-dep(completeResourceLinks1,completeResourceLinks).
-edge(reducePhysicalObservationHearingByStaffNotInCounsellingTeam,avoidTensionConfrontationAnimosityAmongstEmployees,0.5).
-dec(provideResourcesInOneSource,resourcesBeProvided,or).
-dep(salary,receiveSalary).
-dec(listenToCallsOfNewCounsellors,feedbackOnCallsBeGiven,or).
-dep(increasedCautionContentOfOnlineServices2,increasedCautionContentOfOnlineServices1).
-edge(beConsultedAboutNewPolicies,decreaseFactoryWorkerAtmosphere,0.5).
-dec(removeInappropriateMaterial,editOnlinePostsOfKids,or).
-dep(simpleTechnology1,simpleTechnology).
-dep(improveQualityAssuranceTechnology2,improveQualityAssuranceTechnology1).
-edge(reduceMonitoringOfActivities,happinessCounsellors,0.5).
-dep(increasedCautionContentOfOnlineServices1,increasedCautionContentOfOnlineServices).
-edge(webResponsesBeGeneric,increasedCautionContentOfOnlineServices2,0.5).
-edge(increasedCautionContentOfOnlineServices,avoidLiabilityProblems,0.5).
-dep(undergoClinicalReview,undergoClinicalReview2).
-edge(completeResourceLinks4,highQualityResources3,0.5).
-dep(allowUserToLogIn,logIntoPhoneSystem).
-edge(webCounsellingBePerformed4,varietyInWork,0.5).
-dec(logIntoPhoneSystem,prepareTechnicalPhoneEnvironment,or).
-dep(reportOutdatedLinks1,reportOutdatedLinks).
-dec(exploreOptions1,situationBeDealtWith1,or).
-dep(collectCallerSituationStatistics,callerStatistics).
-dep(provideResourcesInLibrary,resourcesInTheLibrary).
-edge(webCounsellingBePerformed,helpAsManyKidsAsPossible1,0.5).
-dep(decreaseClumsinessTechnology1,decreaseClumsinessTechnology2).
-dep(recordStories,csStories).
-dec(speakPubliclyAboutJob,promoteCS1,or).
-dep(undergoClinicalReview2,undergoClinicalReview1).
-dec(encourageKidsToTalkToOthers,provideCounselling,or).
-dep(trainingBeReceived,trainingBeReceived1).
-dep(recognition1,recognition2).
-edge(recognition,enthusiasticWorkAtmosphere,0.5).
-dep(avoidLiabilityProblems,avoidLiabilityProblems1).
-edge(webCounsellingBePerformed,accountabilityOfServices2,0.5).
-dec(requestShifts,performTheJobOfCounselling,or).
-edge(provideInformation2,empoweringKidsToHelpThemselves,0.5).
-edge(decreaseClumsinessTechnology,performDutiesQuickly,0.5).
-dec(blockKidsWhoDisplayInappropriateBehavoir,moderateDiscussionBoards,or).
-edge(reducePrankCalls1,avoidBurnout,0.5).
-dec(moderateAChat,webCounsellingBePerformed1,or).
-edge(deepenCounsellingSession,increaseConnectionBetweenCounsellorsAndCounselled,0.5).
-dec(findInformationInELibrary,informationResourcesBeFound,or).
-edge(improveCounsellingSkills2,highQualityCounselling,0.5).
-edge(acquirePublicSpeakingSkills1,recognition2,0.5).
-dec(createCounsellingPosts,webCounsellingBePerformed1,or).
-dec(provideResourcesInELibrary,provideResourcesAsCurrentlyDone,or).
-edge(toolsToBurnNegativeEnergyBePresent,releaseTension,0.5).
-dep(accommodateSchedules1,accommodateSchedules).
-edge(diffuseConflictWithParent2,avoidLiabilityProblems,0.5).
-dec(clinicalSupervisorsListenToCalls,receiveFeedback,or).
-dec(resourcesBeProvided,manageCounsellingResources,or).
-dep(resourcesInTheLibrary,findInformationInLibrary).
-edge(editOnlinePostsOfKids,reduceContagionEffectOfHarmfulActions,0.5).
-dec(provideWrittenCounselling,provideWebCounsellingWithAudio,or).
-edge(promoteCounselling,recognition2,0.5).
-dep(counselorSpeakOnKidsIssuesInGeneral1,counselorSpeakOnKidsIssuesInGeneral).
-edge(enthusiasticWorkAtmosphere,happinessCounsellors,0.5).
-dep(improveITSkills3,improveITSkills).
-dep(counsellingPolicies,counsellingPoliciesBeFollowed).
-edge(happinessCounsellors,highQualityCounselling1,0.5).
-edge(increasedPeerSupport2,happinessCounsellors,0.5).
-dep(provideInformation1,provideInformation).
-dec(participateInBoardMeetings,promoteCounselling,or).
-edge(clearerCallClassificationCatagories,performDutiesQuickly,0.5).
-dec(attendWebModeratorMeetings,meetingBeAttended,or).
-dep(accountabilityOfServices1,accountabilityOfServices).
-edge(releaseTension,happinessCounsellors,0.5).
-edge(avoidTensionConfrontationAnimosityAmongstEmployees,decreaseFactoryWorkerAtmosphere,0.5).
-edge(improvedWritingSkills,positiveEmploymentEvaluation,0.5).
-edge(positiveEmploymentEvaluation,acquireRecognizableEmploymentExperience,0.5).
-dep(voiceCounsellingBePerformed1,voiceCounsellingBePerformed3).
-dep(completeResourceLinks2,completeResourceLinks1).
-dec(referParentsToPHL,provideCounselling,or).
-dep(feedback,acquireFeedback).
-edge(provideResourcesAsCurrentlyDone,consistentResourceLinks2,-0.5).
-edge(provideResourcesAsCurrentlyDone,consistentResourceLinks2,-0.5).
-edge(provideWebCounsellingWithVideo,highDegreeOfSimilarityBetweenServicesProvided2,0.5).
-edge(webCounsellingBePerformed,decreaseKidsIsolation,-0.5).
-edge(debriefWithCounsellors,effectiveDebriefing,0.5).
-edge(improveQualityAssuranceTechnology1,decreaseDifficultiesWithTechnology,0.5).
-dec(counselorSpeakOnKidsIssuesInGeneral1,promoteCS1,or).
-dec(webPostsBeReviewedByClinicalSupervisor,receiveFeedback,or).
-dec(speakAtSAConferences,promoteCS1,or).
-dec(includeDrugInformationInCounsellingResources,manageCounsellingResources,or).
-dep(improveCounsellingSkills3,improveCounsellingSkills1).
-dep(improveITSkills1,improveITSkills3).
-dec(provideInformation,performTheJobOfCounselling,or).
-edge(iconsForCounsellingInformationBeOnDesktop,accessibleResourcesForCounselors3,0.5).
-dec(provideWrittenCounselling,performEmailCounselling,or).
-dep(createCounsellingPosts,createCounsellingPosts1).
-edge(accessibleResourcesForCounselors1,highQualityCounselling,0.5).
-dec(clinicalSupervisorsListenToCalls,undergoClinicalReview,or).
-dec(debriefWithCounsellors,provideSupportToCounsellors,or).
-dep(implementBulletinBoard1,implementBulletinBoard).
-dep(increasedPeerSupport3,increasedPeerSupport).
-dec(categorizeCall,collectCallerSituationStatistics,or).
-edge(moderateDiscussionBoards,reduceContagionEffectOfHarmfulActions,0.5).
-dec(mentoringBeReceivedFromExperiencedCounsellors,receiveTrainingFromCounsellors,or).
-dec(moderateDiscussionBoards,webCounsellingBePerformed1,or).
-dep(accessibleResourcesForCounselors5,accessibleResourcesForCounselors3).
-edge(considerationOfFeedbackManagers,decreaseFactoryWorkerAtmosphere,0.5).
-dep(improveCallRecordingEquipment1,improveCallRecordingEquipment).
-edge(decreaseWorkLoad,happinessCounsellors,0.5).
-edge(webCounsellingBePerformed,supportIndividualityInCounsellingTechniques,-0.5).
-edge(increasedCautionContentOfOnlineServices,performDutiesQuickly,-0.5).
-dep(provideInformationToOtherCounselloers,informationResources).
-edge(encourageKidsToTalkToOthers,decreaseKidsIsolation,0.5).
-edge(enthusiasticWorkAtmosphere,avoidBurnout,0.5).
-dep(participateInEvents1,participateInEvents).
-dec(webPostsBeReviewedByClinicalSupervisor,undergoClinicalReview,or).
-edge(positiveEmploymentEvaluation,happinessCounsellors,0.5).
-dep(provideWebCounsellingWithAudio,provideWebCounsellingWithAudio1).
-dep(professionalWorkEnvironment1,professionalWorkEnvironment).
-edge(resourcesBeProvided,completeResourceLinks4,0.5).
-edge(supportIndividualityInCounsellingTechniques,highQualityCounselling,0.5).
-dep(avoidDialoguesWebServices,avoidDialoguesWebServices1).
-edge(improveITSkills,avoidBeingLabelledAntiTechnology,0.5).
-edge(blockKidsWhoDisplayInappropriateBehavoir,increasedCautionContentOfOnlineServices2,0.5).
-edge(highDegreeOfSimilarityBetweenServicesProvided,decreaseWorkDifficulty,0.5).
-dec(encourageKidsToCallCS,createCounsellingPosts,or).
-edge(improveCommunicationBetweenCounsellors,increasedPeerSupport1,0.5).
-edge(highQualityCounselling1,prideInJob,0.5).
-dep(writeArticlesForWebsite1,writeArticlesForWebsite).
-dep(highQualityResources2,highQualityResources1).
-dec(receiveTrainingFromCounsellors,receiveTrainingAsANewCounsellor,or).
-edge(positiveEmploymentEvaluation,retainJob,0.5).
-dep(highQualityCounselling,highQualityCounselling3).
-dep(currentResourceLinks3,currentResourceLinks1).
-edge(provideResourcesInOneSource,accessibleResourcesForCounselors6,0.5).
-edge(acquirePublicSpeakingSkills3,positiveEmploymentEvaluation,0.5).
-dec(receiveAdditionalTrainingAsAnExperiencedCousnellor,trainingBeReceived,or).
-dec(learnWebTechnologies,receiveTrainingAsANewCounsellor,or).
-dep(accessibleResourcesForCounselors4,accessibleResourcesForCounselors1).
-dep(acquirePublicSpeakingSkills2,acquirePublicSpeakingSkills3).
-dep(helpAsManyKidsAsPossible1,helpAsManyKidsAsPossible3).
-dep(performCounsellingAsInstructedBySupervisor,performCounsellingAsInstructedBySupervisor2).
-edge(improveCounsellingSkills1,positiveEmploymentEvaluation,0.5).
-dec(exploreOptions,situationBeDealtWith,or).
-edge(moderateAChat,increasedCautionContentOfOnlineServices2,-0.5).
-dep(implementEmailForCounsellors1,implementEmailForCounsellors).
-edge(getRidOfUnion,avoidTensionConfrontationAnimosityAmongstEmployees,0.5).
-edge(increaseCSAwareness,prideInJob,0.5).
-dep(effectiveUseOfTechnologyCounsellors,effectiveUseOfTechnologyCounsellors2).
-dep(easilyAccessableTechnologyInstructions1,easilyAccessableTechnologyInstructions).
-dep(rememberLocationsOfResouces,rememberLocationsOfResouces1).
-dep(createWebSiteContent,webSiteContent).
-dec(attendPartTimeMeeting,meetingBeAttended,or).
-edge(avoidShortStaffing,decreaseWorkLoad,0.5).
-dep(empoweringKidsToHelpThemselves1,empoweringKidsToHelpThemselves2).
-edge(aResolutionFocusApproachBeUsed,avoidBeingDirective,0.5).
-dep(increaseITMethodsToAcquireFeedback1,increaseITMethodsToAcquireFeedback).
-dec(findInformationInBinders,informationResourcesBeFound,or).
-edge(participateInEvents1,recognition2,0.5).
-dep(trainingBeReceived1,trainingBeReceived2).
-dep(increaseITTrainingForCounsellors,increaseITTraining).
-dep(currentResourceLinks2,currentResourceLinks).
-edge(varietyInWork,happinessCounsellors,0.5).
-dep(facilitateFasterChangesInCounsellorDuties1,facilitateFasterChangesInCounsellorDuties).
-dep(webModeratorMeetings,attendWebModeratorMeetings).
-dep(provideResourcesInELibrary,informationInELibrary).
-edge(correctInterpretationOfCounsel,highQualityCounselling,0.5).
-edge(updateOutdatedLinks,completeResourceLinks4,0.5).
-edge(decreaseDifficultiesWithTechnology,decreaseWorkDifficulty,0.5).
-edge(releaseTension,avoidBurnout,0.5).
-edge(enthusiasticWorkAtmosphere,improveCounsellingSkills1,0.5).
-dep(reducePrankCalls,reducePrankCalls1).
-edge(controlOfFloorOperations,avoidTensionConfrontationAnimosityAmongstEmployees,0.5).
-dec(encourageKidsToTalkToDifferentCounsellors,provideCounselling1,or).
-dep(helpAsManyKidsAsPossible,helpAsManyKidsAsPossible2).
-dep(informationResources,receiveInformationFromOtherCounsellors).
-dep(consistentResourceLinks2,consistentResourceLinks1).
-edge(provideSupportToCounsellors,improveCommunicationBetweenCounsellors,0.5).
-dec(participateInSponsorMeetings,promoteCS1,or).
-edge(findEffectiveCues,highQualityCounselling,0.5).
-dep(signContractWithCounsellingUnion,signContract).
-dec(provideCounselling2,performTheJobOfCounselling,or).
-edge(commentOnTechnologyUsabilityIssues,decreaseDifficultiesWithTechnology,0.5).
-dec(attendCounsellingWorkshops,receiveTrainingAsANewCounsellor,or).
-edge(acquireRecognizableEmploymentExperience,moveOnToBetterJob,0.5).
-edge(effectiveDebriefing,increasedPeerSupport1,0.5).
-dep(performCounsellingAsInstructedBySupervisor2,performCounsellingAsInstructedBySupervisor1).
-dep(webCounsellingBePerformed3,webCounsellingBePerformed4).
-edge(happinessCounsellors,performDutiesQuickly,0.5).
-dep(easierToFindPostsWebPostingTechnology1,easierToFindPostsWebPostingTechnology).
-dec(findInformationInLibrary,informationResourcesBeFound,or).
-dep(reportOutdatedLinks,updateOutdatedLinks).
-dec(provideTrainingToNewCounsellors,provideSupportToCounsellors,or).
-dec(removeInappropriateMaterial,moderateDiscussionBoards,or).
-edge(decreaseWorkDifficulty,avoidBurnout,0.5).
-edge(performFirstReadingOfCounsellingPosts,increasedCautionContentOfOnlineServices2,0.5).
-dep(accessibleResourcesForCounselors6,accessibleResourcesForCounselors5).
-dep(informationInELibrary,findInformationInELibrary).
-dep(highQualityCounselling2,highQualityCounselling).
-dec(performCrisisIntervention,situationBeDealtWith,or).
-edge(beConsultedAboutNewPolicies,considerationOfFeedbackManagers,0.5).
-edge(undergoClinicalReview1,improveCounsellingSkills1,0.5).
-edge(removeInappropriateMaterial,increasedCautionContentOfOnlineServices2,0.5).
-dep(tapes,makeTapesForClinicalReview).
-dec(provideResourcesAsCurrentlyDone,resourcesBeProvided,or).
-dep(acquirePublicSpeakingSkills,acquirePublicSpeakingSkills2).
-dec(receiveTrainingFromManagment,receiveTrainingAsANewCounsellor,or).
-edge(webCounsellingBePerformed,counsellorsEngageEmotionallyInSession,-0.5).
-dep(happinessCounsellors,happinessCounsellors1).
-dec(beAMentorToNewCounsellors,provideTrainingToNewCounsellors,or).
-dep(improvedWritingSkills,improvedWritingSkillsCounsellors).
-edge(empoweringKidsToHelpThemselves2,highQualityCounselling,0.5).
-dep(provideCounselling,counsellorExperience).
-edge(decreaseDifficultiesWithTechnology,happinessCounsellors,0.5).
-dep(trainingCDs,undergoCDBasedTraining).
-edge(avoidBurnout,happinessCounsellors,0.5).
-edge(avoidTensionConfrontationAnimosityAmongstEmployees,enthusiasticWorkAtmosphere,0.5).
-edge(considerationOfFeedbackManagers,avoidTensionConfrontationAnimosityAmongstEmployees,0.5).
-dep(increasedPeerSupport3,increasedPeerSupport2).
-dec(undergoCDBasedTraining,receiveAdditionalTrainingAsAnExperiencedCousnellor,or).
-dec(receiveSalary,performTheJobOfCounselling,or).
-dep(rememberLocationsOfResouces1,rememberLocationsOfResouces2).
-edge(prideInJob,happinessCounsellors,0.5).
-edge(decreaseKidsIsolation,highQualityCounselling,0.5).
-dep(improveWebPostingTechnology1,improveWebPostingTechnology2).
-dep(tapeRecordingTechnology,haveClinicalSupervisorsListenToCalls).
-edge(improveITSkills,decreaseDifficultiesWithTechnology,0.5).
-edge(accommodateSchedules,happinessCounsellors,0.5).
-dep(counsellingWorkshops,attendCounsellingWorkshops).
-edge(counsellorsEngageEmotionallyInSession,supportIndividualityInCounsellingTechniques,0.5).
-edge(reportOutdatedLinks1,currentResourceLinks1,0.5).
-dep(provideCounselling3,provideCounselling2).
-dec(editCounsellingPosts,performFirstReadingOfCounsellingPosts,or).
-edge(counsellorsPoliceThemselves,reduceMonitoringOfActivities,0.5).
-dec(collectCallerSituationStatistics,provideCounselling1,or).
-edge(avoidTensionConfrontationAnimosityAmongstEmployees,toolsToBurnNegativeEnergyBePresent,0.5).
-dec(diffuseConflictWithParent,situationBeDealtWith,or).
-edge(clearerCallClassificationCatagories,decreaseWorkDifficulty,0.5).
-dep(improveITSkills1,improveITSkills2).
-edge(easilyAccessableTechnologyInstructions,decreaseDifficultiesWithTechnology,0.5).
-edge(reduceMonitoringOfActivities,avoidTensionConfrontationAnimosityAmongstEmployees,0.5).
-dep(counsellingPoliciesBeFollowed,counsellingPoliciesBeFollowed1).
-dep(acquirePublicSpeakingSkills2,acquirePublicSpeakingSkills1).
-dep(accountabilityOfServices2,accountabilityOfServices1).
-edge(provideWebCounsellingWithAudio,highDegreeOfSimilarityBetweenServicesProvided2,0.5).
-dep(improveWebPostingTechnology2,improveWebPostingTechnology).
-edge(getRidOfUnion,facilitateFasterChangesInCounsellorDuties1,0.5).
-edge(currentResourceLinks,decreaseWorkDifficulty,0.5).
-dep(consistentResourceLinks1,consistentResourceLinks).
-dep(currentResourceLinks1,currentResourceLinks2).
-edge(reducePrankCalls1,happinessCounsellors,0.5).
-dep(increaseNumberOfCounsellors1,increaseNumberOfCounsellors).
-edge(engageInDialogWithCounselled,webCounsellingBePerformed,-0.5).
-dep(moderateDiscussionBoards,moderateDiscussionBoards1).
-dec(provideInformationInBinders,provideResourcesAsCurrentlyDone,or).
-edge(improveITSkills1,effectiveUseOfTechnologyCounsellors,0.5).
-edge(itSystemsBeIntegrated,decreaseDifficultiesWithTechnology,0.5).
-edge(decreaseKidsIsolation,helpKids,0.5).
-dec(editOnlinePostsOfKids,moderateDiscussionBoards,or).
-dep(moderateAChat,moderateAChat1).
-edge(recognition,happinessCounsellors,0.5).
-dec(includeLegalInformationInCounsellingResources,manageCounsellingResources,or).
-dep(reduceContagionEffectOfHarmfulActions,reduceContagionEffectOfHarmfulActions1).
-dep(helpAsManyKidsAsPossible2,helpAsManyKidsAsPossible1).
-edge(safety,happinessCounsellors,0.5).
-edge(accessibleResourcesForCounselors,decreaseWorkDifficulty,0.5).
-dec(undergoCDBasedTraining,receiveTrainingAsANewCounsellor,or).
-dep(improveCounsellingSkills3,improveCounsellingSkills2).
-edge(effectiveUseOfTechnologyCounsellors1,highQualityCounselling,0.5).
-edge(accessibleResourcesForCounselors6,highQualityResources3,0.5).
-edge(moderateAChat,reduceContagionEffectOfHarmfulActions,0.5).
-edge(speakPubliclyAboutJob,recognition2,0.5).
-dep(webCounsellingBePerformed1,webCounsellingBePerformed3).
+accessibleResourcesForCounselors <-
+  [ accessibleResourcesForCounselors2 ].
+accessibleResourcesForCounselors1 <-
+  [ accessibleResourcesForCounselors4 ].
+accessibleResourcesForCounselors2 <-
+  [ accessibleResourcesForCounselors3 ].
+accessibleResourcesForCounselors3 <-
+  [ accessibleResourcesForCounselors5 ].
+accessibleResourcesForCounselors4 <-
+  [ accessibleResourcesForCounselors3 ].
+accessibleResourcesForCounselors5 <-
+  [ accessibleResourcesForCounselors6 ].
+accommodateSchedules <- [accommodateSchedules1].
+accountabilityOfServices <- [accountabilityOfServices1].
+accountabilityOfServices1 <- [accountabilityOfServices2].
+acquireFeedback <- [feedback].
+acquirePublicSpeakingSkills1 <- [acquirePublicSpeakingSkills2].
+acquirePublicSpeakingSkills2 <- [acquirePublicSpeakingSkills].
+acquirePublicSpeakingSkills3 <- [acquirePublicSpeakingSkills2].
+anonymity <- [anonymityCounsellors].
+attendCounsellingWorkshops <- [counsellingWorkshops].
+attendWebModeratorMeetings <- [webModeratorMeetings].
+avoidDialoguesWebServices1 <- [avoidDialoguesWebServices].
+avoidLiabilityProblems1 <- [avoidLiabilityProblems].
+avoidRelationshipsWithSpecificCounsellor <-
+  [ avoidRelationshipsWithSpecificCounsellor1 ].
+callerStatistics <- [collectCallerSituationStatistics].
+categorizeCall <- [implementCategorizationTool].
+clearerCallClassificationCatagories <-
+  [ clearerCallClassificationCatagories1 ].
+clinicalSupervisorsListenToCalls <-
+  [ haveClinicalSupervisorsListenToCalls ].
+clinicalSupervisorsListenToCalls <- [makeTapesForClinicalReview].
+collectCallerSituationStatistics <- [categorizeCall].
+completeResourceLinks <- [completeResourceLinks1].
+completeResourceLinks1 <- [completeResourceLinks2].
+completeResourceLinks2 <- [completeResourceLinks3].
+completeResourceLinks3 <- [completeResourceLinks4].
+considerationOfFeedbackITProviders <-
+  [ considerationOfFeedbackITProviders1 ].
+considerationOfFeedbackManagers <- [considerationOfFeedbackManagers1].
+consistentResourceLinks <- [consistentResourceLinks1].
+consistentResourceLinks1 <- [consistentResourceLinks2].
+controlOfCounsellingWork <- [controlOfCounsellingWork1].
+correctInterpretationOfCounsel <- [correctInterpretationOfCounsel1].
+counsellingPoliciesBeFollowed <- [counsellingPolicies].
+counsellingPoliciesBeFollowed1 <- [counsellingPoliciesBeFollowed].
+counsellorExperience <- [provideCounselling].
+counsellorsBeUnionized <- [signContractWithCounsellingUnion].
+counselorSpeakOnKidsIssuesInGeneral <-
+  [ counselorSpeakOnKidsIssuesInGeneral1 ].
+createCounsellingPosts <- [provideWrittenCounselling].
+createCounsellingPosts <- [encourageKidsToCallCS].
+createCounsellingPosts1 <- [createCounsellingPosts].
+createWebSiteContent <- [writeArticlesForWebsite1].
+csStories <- [recordStories].
+currentResourceLinks <- [currentResourceLinks2].
+currentResourceLinks1 <- [currentResourceLinks3].
+currentResourceLinks2 <- [currentResourceLinks1].
+currentResourceLinks3 <- [currentResourceLinks4].
+decreaseClumsinessTechnology <- [decreaseClumsinessTechnology1].
+decreaseClumsinessTechnology2 <- [decreaseClumsinessTechnology1].
+diffuseConflictWithParent1 <- [diffuseConflictWithParent].
+diffuseConflictWithParent2 <- [diffuseConflictWithParent1].
+easierToFindPostsWebPostingTechnology <-
+  [ easierToFindPostsWebPostingTechnology1 ].
+easilyAccessableTechnologyInstructions <-
+  [ easilyAccessableTechnologyInstructions1 ].
+editOnlinePostsOfKids <- [removeInappropriateMaterial].
+effectiveUseOfTechnologyCounsellors1 <-
+  [ effectiveUseOfTechnologyCounsellors2 ].
+effectiveUseOfTechnologyCounsellors2 <-
+  [ effectiveUseOfTechnologyCounsellors ].
+empoweringKidsToHelpThemselves1 <- [empoweringKidsToHelpThemselves].
+empoweringKidsToHelpThemselves2 <- [empoweringKidsToHelpThemselves1].
+facilitateFasterChangesInCounsellorDuties <-
+  [ facilitateFasterChangesInCounsellorDuties1 ].
+feedbackOnCallsBeGiven <- [listenToCallsOfNewCounsellors].
+findInformationInBinders <- [informationBindersAtStations].
+findInformationInELibrary <- [informationInELibrary].
+findInformationInLibrary <- [resourcesInTheLibrary].
+happinessCounsellors1 <- [happinessCounsellors].
+haveClinicalSupervisorsListenToCalls <-
+  [ doubleHeadsets,
+    tapeRecordingTechnology ].
+helpAsManyKidsAsPossible1 <- [helpAsManyKidsAsPossible2].
+helpAsManyKidsAsPossible2 <- [helpAsManyKidsAsPossible].
+helpAsManyKidsAsPossible3 <- [helpAsManyKidsAsPossible1].
+helpKids1 <- [helpKids].
+highDegreeOfSimilarityBetweenServicesProvided <-
+  [ highDegreeOfSimilarityBetweenServicesProvided1 ].
+highDegreeOfSimilarityBetweenServicesProvided1 <-
+  [ highDegreeOfSimilarityBetweenServicesProvided2 ].
+highQualityCounselling <- [highQualityCounselling2].
+highQualityCounselling2 <- [highQualityCounselling1].
+highQualityCounselling3 <- [highQualityCounselling].
+highQualityResources1 <- [highQualityResources2].
+highQualityResources2 <- [highQualityResources].
+implementBulletinBoard <- [implementBulletinBoard1].
+implementEmailForCounsellors <- [implementEmailForCounsellors1].
+implementEmailForCounsellors2 <- [implementEmailForCounsellors1].
+improveCallRecordingEquipment <- [improveCallRecordingEquipment1].
+improveCounsellingSkills1 <- [improveCounsellingSkills3].
+improveCounsellingSkills2 <- [improveCounsellingSkills3].
+improveCounsellingSkills3 <- [improveCounsellingSkills].
+improveITSkills <- [improveITSkills3].
+improveITSkills2 <- [improveITSkills1].
+improveITSkills3 <- [improveITSkills1].
+improveQualityAssuranceTechnology1 <-
+  [ improveQualityAssuranceTechnology2 ].
+improveQualityAssuranceTechnology2 <-
+  [ improveQualityAssuranceTechnology ].
+improveWebPostingTechnology <- [improveWebPostingTechnology2].
+improveWebPostingTechnology2 <- [improveWebPostingTechnology1].
+improvedWritingSkillsCounsellors <- [improvedWritingSkills].
+increaseCSAwareness <- [increaseCSAwareness1].
+increaseEmphasisOnOnlineFeedbackForm <-
+  [ increaseEmphasisOnOnlineFeedbackForm1 ].
+increaseITMethodsToAcquireFeedback <-
+  [ increaseITMethodsToAcquireFeedback1 ].
+increaseITTraining <- [increaseITTrainingForCounsellors].
+increaseNumberOfCounsellors <- [increaseNumberOfCounsellors1].
+increasedCautionContentOfOnlineServices <-
+  [ increasedCautionContentOfOnlineServices1 ].
+increasedCautionContentOfOnlineServices1 <-
+  [ increasedCautionContentOfOnlineServices2 ].
+increasedPeerSupport <- [increasedPeerSupport3].
+increasedPeerSupport2 <- [increasedPeerSupport3].
+increasedPeerSupport3 <- [increasedPeerSupport1].
+informationBindersAtStations <- [provideInformationInBinders].
+informationInELibrary <- [provideResourcesInELibrary].
+informationResources <- [provideInformationToOtherCounselloers].
+informationResourcesBeFound <- [findInformationInELibrary].
+informationResourcesBeFound <- [findInformationInBinders].
+informationResourcesBeFound <- [findInformationInLibrary].
+itSystemsBeIntegrated1 <- [itSystemsBeIntegrated].
+listenToCallsOfNewCounsellors <- [doubleHeadsets].
+logIntoActivityManager <- [allowUserToLogIn1].
+logIntoPhoneSystem <- [allowUserToLogIn].
+makeTapesForClinicalReview <- [tapes].
+manageCounsellingResources <- [updateOutdatedLinks].
+manageCounsellingResources <- [resourcesBeProvided].
+manageCounsellingResources <-
+  [ includeDrugInformationInCounsellingResources ].
+manageCounsellingResources <-
+  [ includeLegalInformationInCounsellingResources ].
+meetingBeAttended <- [attendWebModeratorMeetings].
+meetingBeAttended <- [attendPartTimeMeeting].
+moderateAChat <- [blockKidsWhoDisplayInappropriateBehavoir].
+moderateAChat1 <- [moderateAChat].
+moderateDiscussionBoards <-
+  [ blockKidsWhoDisplayInappropriateBehavoir ].
+moderateDiscussionBoards <- [removeInappropriateMaterial].
+moderateDiscussionBoards <- [editOnlinePostsOfKids].
+moderateDiscussionBoards1 <- [moderateDiscussionBoards].
+participateInEvents <- [participateInEvents1].
+patientCounselor1 <- [patientCounselor].
+performCounsellingAsInstructedBySupervisor1 <-
+  [ performCounsellingAsInstructedBySupervisor2 ].
+performCounsellingAsInstructedBySupervisor2 <-
+  [ performCounsellingAsInstructedBySupervisor ].
+performEmailCounselling <- [provideWrittenCounselling].
+performEmailCounselling1 <- [performEmailCounselling].
+performFirstReadingOfCounsellingPosts <- [editCounsellingPosts].
+performTheJobOfCounselling <- [trainingBeReceived2].
+performTheJobOfCounselling <- [promoteCS].
+performTheJobOfCounselling <- [undergoClinicalReview1].
+performTheJobOfCounselling <- [requestShifts].
+performTheJobOfCounselling <- [provideInformation].
+performTheJobOfCounselling <- [provideCounselling2].
+performTheJobOfCounselling <- [receiveSalary].
+prepareTechnicalPhoneEnvironment <- [logIntoActivityManager].
+prepareTechnicalPhoneEnvironment <- [logIntoPhoneSystem].
+professionalWorkEnvironment <- [professionalWorkEnvironment1].
+promoteCS <- [promoteCS2].
+promoteCS1 <- [participateInEvents1].
+promoteCS1 <- [writeArticlesForMagazines1].
+promoteCS1 <- [speakPubliclyAboutJob].
+promoteCS1 <- [counselorSpeakOnKidsIssuesInGeneral1].
+promoteCS1 <- [speakAtSAConferences].
+promoteCS1 <- [participateInSponsorMeetings].
+promoteCS2 <- [promoteCS1].
+promoteCounselling <- [participateInBoardMeetings].
+provideCounselling <- [reportAbuses].
+provideCounselling <- [recordStories].
+provideCounselling <- [kidsBePreparedForFormalAbuseReportingProcess].
+provideCounselling <- [voiceCounsellingBePerformed].
+provideCounselling <- [briefTherapyCounsellingBeUsed].
+provideCounselling <- [aResolutionFocusApproachBeUsed].
+provideCounselling <- [listenForCues].
+provideCounselling <- [encourageKidsToTalkToOthers].
+provideCounselling <- [referParentsToPHL].
+provideCounselling1 <- [situationBeDealtWith].
+provideCounselling1 <- [assessSituation].
+provideCounselling1 <- [encourageKidsToTalkToDifferentCounsellors].
+provideCounselling1 <- [collectCallerSituationStatistics].
+provideCounselling2 <- [provideCounselling3].
+provideCounselling3 <- [provideCounselling].
+provideInformation <- [provideInformation1].
+provideInformation1 <- [provideInformation2].
+provideInformation2 <- [informationResourcesBeFound].
+provideInformation2 <- [receiveInformationFromOtherCounsellors].
+provideResourcesAsCurrentlyDone <- [provideResourcesInLibrary].
+provideResourcesAsCurrentlyDone <- [provideResourcesInELibrary].
+provideResourcesAsCurrentlyDone <- [provideInformationInBinders].
+provideSupportToCounsellors <-
+  [ provideInformationToOtherCounselloers ].
+provideSupportToCounsellors <- [meetingBeAttended].
+provideSupportToCounsellors <- [debriefWithCounsellors].
+provideSupportToCounsellors <- [provideTrainingToNewCounsellors].
+provideTrainingToNewCounsellors <- [feedbackOnCallsBeGiven].
+provideTrainingToNewCounsellors <- [beAMentorToNewCounsellors].
+provideWebCounsellingWithAudio <- [provideWrittenCounselling].
+provideWebCounsellingWithAudio1 <- [provideWebCounsellingWithAudio].
+provideWebCounsellingWithVideo <- [provideWrittenCounselling].
+provideWebCounsellingWithVideo1 <- [provideWebCounsellingWithVideo].
+provideWrittenCounselling <- [assessSituation1].
+provideWrittenCounselling <- [situationBeDealtWith1].
+provideWrittenCounselling1 <- [provideWrittenCounselling].
+receiveAdditionalTrainingAsAnExperiencedCousnellor <-
+  [ learnWebTechnologies ].
+receiveAdditionalTrainingAsAnExperiencedCousnellor <-
+  [ attendCounsellingWorkshops ].
+receiveAdditionalTrainingAsAnExperiencedCousnellor <-
+  [ undergoMediaTraining ].
+receiveAdditionalTrainingAsAnExperiencedCousnellor <-
+  [ receiveTrainingFromManagment ].
+receiveAdditionalTrainingAsAnExperiencedCousnellor <-
+  [ undergoCDBasedTraining ].
+receiveFeedback <- [clinicalSupervisorsListenToCalls].
+receiveFeedback <- [webPostsBeReviewedByClinicalSupervisor].
+receiveInformationFromOtherCounsellors <- [informationResources].
+receiveSalary <- [salary].
+receiveTrainingAsANewCounsellor <-
+  [ receiveCallClassificationTraining ].
+receiveTrainingAsANewCounsellor <- [passProbationWithinSixMonths].
+receiveTrainingAsANewCounsellor <- [undergoMediaTraining].
+receiveTrainingAsANewCounsellor <- [receiveTrainingFromCounsellors].
+receiveTrainingAsANewCounsellor <- [learnWebTechnologies].
+receiveTrainingAsANewCounsellor <- [attendCounsellingWorkshops].
+receiveTrainingAsANewCounsellor <- [receiveTrainingFromManagment].
+receiveTrainingAsANewCounsellor <- [undergoCDBasedTraining].
+receiveTrainingFromCounsellors <-
+  [ listenToCallsOfExperiencedCounsellors ].
+receiveTrainingFromCounsellors <-
+  [ mentoringBeReceivedFromExperiencedCounsellors ].
+recognition1 <- [recognition].
+recognition2 <- [recognition1].
+reduceContagionEffectOfHarmfulActions1 <-
+  [ reduceContagionEffectOfHarmfulActions ].
+reduceNumberOfStepsWebPostingTechnology <-
+  [ reduceNumberOfStepsWebPostingTechnology1 ].
+reducePrankCalls1 <- [reducePrankCalls].
+reduceStaggeringOfSchedules <- [reduceStaggeringOfSchedules1].
+rememberLocationsOfResouces1 <- [rememberLocationsOfResouces].
+rememberLocationsOfResouces2 <- [rememberLocationsOfResouces1].
+removeInappropriateMaterial <- [removeIdentifyingMaterial].
+reportOutdatedLinks <- [reportOutdatedLinks1].
+resourcesBeProvided <- [provideResourcesInOneSource].
+resourcesBeProvided <- [provideResourcesAsCurrentlyDone].
+resourcesInTheLibrary <- [provideResourcesInLibrary].
+signContract <- [signContractWithCounsellingUnion].
+simpleTechnology <- [simpleTechnology1].
+situationBeDealtWith <- [performConferenceCallWithThirdParty].
+situationBeDealtWith <- [exploreOptions].
+situationBeDealtWith <- [performCrisisIntervention].
+situationBeDealtWith <- [diffuseConflictWithParent].
+situationBeDealtWith1 <- [exploreOptions1].
+trainingBeReceived <- [receiveTrainingAsANewCounsellor].
+trainingBeReceived <-
+  [ receiveAdditionalTrainingAsAnExperiencedCousnellor ].
+trainingBeReceived1 <- [trainingBeReceived].
+trainingBeReceived2 <- [trainingBeReceived1].
+undergoCDBasedTraining <- [trainingCDs].
+undergoClinicalReview <- [receiveFeedback].
+undergoClinicalReview <- [clinicalSupervisorsListenToCalls].
+undergoClinicalReview <- [webPostsBeReviewedByClinicalSupervisor].
+undergoClinicalReview1 <- [undergoClinicalReview2].
+undergoClinicalReview2 <- [undergoClinicalReview].
+updateOutdatedLinks <- [reportOutdatedLinks].
+voiceCounsellingBePerformed <- [voiceCounsellingBePerformed2].
+voiceCounsellingBePerformed1 <- [provideCounselling1].
+voiceCounsellingBePerformed1 <- [prepareTechnicalPhoneEnvironment].
+voiceCounsellingBePerformed2 <- [voiceCounsellingBePerformed1].
+voiceCounsellingBePerformed3 <- [voiceCounsellingBePerformed1].
+webCounsellingBePerformed <- [webCounsellingBePerformed2].
+webCounsellingBePerformed1 <- [provideWebCounsellingWithAudio].
+webCounsellingBePerformed1 <- [provideWebCounsellingWithAudio].
+webCounsellingBePerformed1 <- [performEmailCounselling].
+webCounsellingBePerformed1 <- [performFirstReadingOfCounsellingPosts].
+webCounsellingBePerformed1 <- [moderateAChat].
+webCounsellingBePerformed1 <- [createCounsellingPosts].
+webCounsellingBePerformed1 <- [moderateDiscussionBoards].
+webCounsellingBePerformed2 <- [webCounsellingBePerformed1].
+webCounsellingBePerformed3 <- [webCounsellingBePerformed1].
+webCounsellingBePerformed4 <- [webCounsellingBePerformed3].
+webResponsesBeGeneric1 <- [webResponsesBeGeneric].
+webResponsesBeGeneric2 <- [webResponsesBeGeneric1].
+webSiteContent <- [createWebSiteContent].
+writeArticlesForMagazines <- [writeArticlesForMagazines1].
+writeArticlesForWebsite <- [writeArticlesForWebsite1].
+accessibleResourcesForCounselors3 <~
+  [ help(iconsForCounsellingInformationBeOnDesktop) ].
+accessibleResourcesForCounselors6 <~
+  [ help(provideResourcesInOneSource) ].
+accountabilityOfServices2 <~ [help(webCounsellingBePerformed)].
+acquirePublicSpeakingSkills <~ [make(undergoMediaTraining)].
+acquireRecognizableEmploymentExperience <~
+  [ help(positiveEmploymentEvaluation) ].
+avoidBeingDirective <~ [help(aResolutionFocusApproachBeUsed)].
+avoidBeingLabelledAntiTechnology <~
+  [ hurt(commentOnTechnologyUsabilityIssues),
+    help(improveITSkills) ].
+avoidBurnout <~
+  [ help(decreaseWorkLoad),
+    help(reducePrankCalls1),
+    help(enthusiasticWorkAtmosphere),
+    help(releaseTension),
+    help(decreaseWorkDifficulty) ].
+avoidLiabilityProblems <~
+  [ help(controlOfCounsellingWork),
+    help(increasedCautionContentOfOnlineServices),
+    help(diffuseConflictWithParent2) ].
+avoidPressureToPerformDutiesQuickly <~ [help(performDutiesQuickly)].
+avoidRelationshipsWithSpecificCounsellor1 <~
+  [ help(encourageKidsToTalkToDifferentCounsellors) ].
+avoidShortStaffing <~ [help(increaseNumberOfCounsellors)].
+avoidTensionConfrontationAnimosityAmongstEmployees <~
+  [ help(professionalWorkEnvironment1),
+    help(counsellorsPoliceThemselves),
+    hurt(counsellorsBeUnionized),
+    help(reducePhysicalObservationHearingByStaffNotInCounsellingTeam),
+    help(getRidOfUnion),
+    help(controlOfFloorOperations),
+    help(considerationOfFeedbackManagers),
+    help(reduceMonitoringOfActivities) ].
+comfortableWithPerceivedPurposeOfTechnology <~
+  [ help(reduceMonitoringOfActivities) ].
+completeResourceLinks4 <~
+  [ help(resourcesBeProvided),
+    help(updateOutdatedLinks) ].
+considerationOfFeedbackITProviders <~ [help(counsellorsBeUnionized)].
+considerationOfFeedbackManagers <~
+  [ help(counsellorsBeUnionized),
+    hurt(getRidOfUnion),
+    help(beConsultedAboutNewPolicies) ].
+consistentCounsellingResponses <~
+  [ help(highQualityResources1),
+    help(improveCounsellingSkills2) ].
+consistentResourceLinks2 <~
+  [ help(provideResourcesInOneSource),
+    hurt(provideResourcesAsCurrentlyDone),
+    hurt(provideResourcesAsCurrentlyDone) ].
+counsellorsEngageEmotionallyInSession <~
+  [ help(decreaseClumsinessTechnology2),
+    hurt(webCounsellingBePerformed) ].
+currentResourceLinks1 <~ [help(reportOutdatedLinks1)].
+currentResourceLinks4 <~ [help(updateOutdatedLinks)].
+decreaseDifficultiesWithTechnology <~
+  [ help(comfortableWithPerceivedPurposeOfTechnology),
+    help(improveWebPostingTechnology),
+    help(decreaseClumsinessTechnology),
+    help(considerationOfFeedbackITProviders),
+    help(simpleTechnology),
+    help(improveQualityAssuranceTechnology1),
+    help(commentOnTechnologyUsabilityIssues),
+    help(improveITSkills),
+    help(easilyAccessableTechnologyInstructions),
+    help(itSystemsBeIntegrated) ].
+decreaseFactoryWorkerAtmosphere <~
+  [ help(avoidPressureToPerformDutiesQuickly),
+    help(considerationOfFeedbackITProviders),
+    help(beConsultedAboutNewPolicies),
+    help(avoidTensionConfrontationAnimosityAmongstEmployees),
+    help(considerationOfFeedbackManagers) ].
+decreaseKidsIsolation <~
+  [ help(avoidDialoguesWebServices1),
+    hurt(webCounsellingBePerformed),
+    help(encourageKidsToTalkToOthers) ].
+decreaseWorkDifficulty <~
+  [ help(completeResourceLinks),
+    help(rememberLocationsOfResouces),
+    help(highDegreeOfSimilarityBetweenServicesProvided),
+    help(decreaseDifficultiesWithTechnology),
+    help(clearerCallClassificationCatagories),
+    help(currentResourceLinks),
+    help(accessibleResourcesForCounselors) ].
+decreaseWorkLoad <~ [help(avoidShortStaffing)].
+effectiveDebriefing <~ [help(debriefWithCounsellors)].
+effectiveUseOfTechnologyCounsellors <~ [help(improveITSkills1)].
+empoweringKidsToHelpThemselves <~ [help(provideInformation2)].
+empoweringKidsToHelpThemselves2 <~ [help(avoidBeingDirective)].
+enthusiasticWorkAtmosphere <~
+  [ help(prideInJob),
+    hurt(performDutiesQuickly),
+    help(highQualityCounselling1),
+    hurt(professionalWorkEnvironment1),
+    help(recognition),
+    help(avoidTensionConfrontationAnimosityAmongstEmployees) ].
+facilitateFasterChangesInCounsellorDuties1 <~
+  [ hurt(counsellorsBeUnionized),
+    help(getRidOfUnion) ].
+findEffectiveCues <~
+  [ help(listenForCues),
+    hurt(webCounsellingBePerformed) ].
+happinessCounsellors <~
+  [ help(implementEmailForCounsellors2),
+    help(avoidLiabilityProblems),
+    help(decreaseWorkDifficulty),
+    help(avoidTensionConfrontationAnimosityAmongstEmployees),
+    help(decreaseFactoryWorkerAtmosphere),
+    help(controlOfCounsellingWork),
+    help(reduceMonitoringOfActivities),
+    help(enthusiasticWorkAtmosphere),
+    help(increasedPeerSupport2),
+    help(releaseTension),
+    help(decreaseWorkLoad),
+    help(positiveEmploymentEvaluation),
+    help(varietyInWork),
+    help(decreaseDifficultiesWithTechnology),
+    help(avoidBurnout),
+    help(prideInJob),
+    help(accommodateSchedules),
+    help(reducePrankCalls1),
+    help(recognition),
+    help(safety) ].
+helpAsManyKidsAsPossible <~ [help(performDutiesQuickly)].
+helpAsManyKidsAsPossible1 <~
+  [ help(webResponsesBeGeneric2),
+    help(voiceCounsellingBePerformed),
+    help(webCounsellingBePerformed) ].
+helpKids <~ [help(decreaseKidsIsolation)].
+highDegreeOfSimilarityBetweenServicesProvided2 <~
+  [ help(provideWebCounsellingWithVideo),
+    help(provideWebCounsellingWithAudio) ].
+highQualityCounselling <~
+  [ help(highQualityResources1),
+    help(counsellorsEngageEmotionallyInSession),
+    help(increaseConnectionBetweenCounsellorsAndCounselled),
+    help(avoidBeingDirective),
+    help(consistentCounsellingResponses),
+    help(increasedPeerSupport),
+    help(improveCounsellingSkills2),
+    help(accessibleResourcesForCounselors1),
+    help(supportIndividualityInCounsellingTechniques),
+    help(correctInterpretationOfCounsel),
+    help(findEffectiveCues),
+    help(empoweringKidsToHelpThemselves2),
+    help(decreaseKidsIsolation),
+    help(effectiveUseOfTechnologyCounsellors1) ].
+highQualityCounselling1 <~
+  [ help(releaseTension),
+    help(happinessCounsellors) ].
+highQualityResources <~
+  [ help(consistentResourceLinks),
+    help(currentResourceLinks1) ].
+highQualityResources3 <~
+  [ help(consistentResourceLinks2),
+    help(completeResourceLinks4),
+    help(accessibleResourcesForCounselors6) ].
+improveCommunicationBetweenCounsellors <~
+  [ help(implementEmailForCounsellors),
+    help(implementBulletinBoard),
+    help(provideSupportToCounsellors) ].
+improveCounsellingSkills <~
+  [ help(increaseFeedback),
+    help(trainingBeReceived) ].
+improveCounsellingSkills1 <~
+  [ help(enthusiasticWorkAtmosphere),
+    help(undergoClinicalReview1) ].
+improveITSkills1 <~ [help(increaseITTraining)].
+improveQualityAssuranceTechnology <~
+  [ help(improveCallRecordingEquipment) ].
+improveWebPostingTechnology1 <~
+  [ help(easierToFindPostsWebPostingTechnology),
+    help(cuttingAndPastingBeAddedToWebPostingSoftware),
+    help(reduceNumberOfStepsWebPostingTechnology) ].
+increaseConnectionBetweenCounsellorsAndCounselled <~
+  [ help(engageInDialogWithCounselled),
+    help(deepenCounsellingSession) ].
+increaseFeedback <~
+  [ help(increaseITMethodsToAcquireFeedback),
+    help(acquireFeedback),
+    help(increaseEmphasisOnOnlineFeedbackForm) ].
+increasedCautionContentOfOnlineServices2 <~
+  [ hurt(performEmailCounselling),
+    hurt(reduceNumberOfStepsWebPostingTechnology),
+    help(moderateDiscussionBoards),
+    help(editOnlinePostsOfKids),
+    help(webResponsesBeGeneric),
+    help(blockKidsWhoDisplayInappropriateBehavoir),
+    hurt(moderateAChat),
+    help(performFirstReadingOfCounsellingPosts),
+    help(removeInappropriateMaterial) ].
+increasedPeerSupport1 <~
+  [ help(reduceStaggeringOfSchedules),
+    help(improveCommunicationBetweenCounsellors),
+    help(effectiveDebriefing) ].
+moveOnToBetterJob <~
+  [ hurt(happinessCounsellors),
+    help(acquireRecognizableEmploymentExperience) ].
+patientCounselor <~ [make(highQualityCounselling)].
+performDutiesQuickly <~
+  [ help(decreaseDifficultiesWithTechnology),
+    help(counsellorsBeUnionized),
+    help(rememberLocationsOfResouces),
+    help(accessibleResourcesForCounselors),
+    help(decreaseClumsinessTechnology),
+    help(clearerCallClassificationCatagories),
+    hurt(increasedCautionContentOfOnlineServices),
+    help(happinessCounsellors) ].
+positiveEmploymentEvaluation <~
+  [ help(undergoClinicalReview1),
+    help(avoidBeingLabelledAntiTechnology),
+    help(performCounsellingAsInstructedBySupervisor),
+    help(improveITSkills),
+    help(improvedWritingSkills),
+    help(acquirePublicSpeakingSkills3),
+    help(improveCounsellingSkills1) ].
+prideInJob <~
+  [ help(helpAsManyKidsAsPossible),
+    help(accountabilityOfServices),
+    help(highQualityCounselling1),
+    help(increaseCSAwareness) ].
+professionalWorkEnvironment1 <~
+  [ hurt(toolsToBurnNegativeEnergyBePresent),
+    hurt(releaseTension) ].
+recognition2 <~
+  [ help(acquirePublicSpeakingSkills1),
+    help(promoteCounselling),
+    help(participateInEvents1),
+    help(speakPubliclyAboutJob) ].
+reduceContagionEffectOfHarmfulActions <~
+  [ help(editOnlinePostsOfKids),
+    help(moderateDiscussionBoards),
+    help(moderateAChat) ].
+reduceMonitoringOfActivities <~
+  [ help(considerationOfFeedbackManagers),
+    help(counsellorsPoliceThemselves) ].
+releaseTension <~
+  [ help(increasedPeerSupport2),
+    help(toolsToBurnNegativeEnergyBePresent) ].
+retainJob <~ [help(positiveEmploymentEvaluation)].
+safety <~ [help(anonymity)].
+supportIndividualityInCounsellingTechniques <~
+  [ hurt(performCounsellingAsInstructedBySupervisor1),
+    hurt(webCounsellingBePerformed),
+    help(counsellorsEngageEmotionallyInSession) ].
+toolsToBurnNegativeEnergyBePresent <~
+  [ help(avoidTensionConfrontationAnimosityAmongstEmployees) ].
+varietyInWork <~ [help(webCounsellingBePerformed4)].
+webCounsellingBePerformed <~
+  [ hurt(deepenCounsellingSession),
+    hurt(engageInDialogWithCounselled) ].

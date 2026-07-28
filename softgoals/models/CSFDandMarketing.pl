@@ -1,6 +1,6 @@
-% CSFDandMarketing  (node/2 edge/3 dep/2 dec/3 leaf/1 topgoal/1)
-:- discontiguous node/2, edge/3, dep/2, dec/3, leaf/1, topgoal/1.
-:- dynamic node/2, edge/3, dep/2, dec/3, leaf/1, topgoal/1.
+% CSFDandMarketing  (nfr2 dialect: <- rules, <~ contribution lists)
+:- discontiguous (<-)/2, (<~)/2, node/2, leaf/1, topgoal/1.
+:- dynamic (<-)/2, (<~)/2, node/2, leaf/1, topgoal/1.
 node(sponsorshipBeBeneficial,softgoal).
 node(marketFundraisingEvents2,softgoal).
 node(provideOnlineDonorTechnology,task).
@@ -461,425 +461,522 @@ node(increasedCorporateSponsorFunds,softgoal).
 node(avoidOverMarketingServices1,softgoal).
 node(participateInEvents,task).
 leaf(participateInEvents).
-edge(meetCorporateSponsorsNeeds,corporateSponsorsFeelIncluded,1).
-dec(writeArticlesForWebsite,marketingBeMadeUsingDedicatedCounselor,or).
-edge(increasedInteractionCounselorsWithMedia,proactiveMediaRelationship,0.5).
-dec(implementStayInTouchProgram,staffBeSupported,or).
-edge(goodProjectManagement,successfulMarketingCampaign,0.5).
-dec(informSponsorsOfProgress,informationBeSharedWithSponsors,or).
-dep(writeArticlesForMagazines1,writeArticlesForMagazines).
-edge(createThankYouAds,recognizeNSponsorContribution2,0.5).
-edge(saSpeakAtFundraisers,improveImageToKids,0.5).
-dep(recognizeNSponsorContribution2,recognizeNSponsorContribution).
-dec(getCorporatePartnerInformationFromDocumentLibrary1,corporatePartnerMarketingExpectationsBeKnown,or).
-edge(counselorsWhoWantAPublicVoiceBeTrained,increasedInteractionCounselorsWithMedia,0.5).
-dep(demonstrableServices1,demonstrableServices2).
-edge(accountabilityOfServices,trustOfSponsorsTowardsCS,0.5).
-edge(attractEventParticipants,engagementOfSponsorEmployeesInFundDevelopment,0.5).
-dec(putTogetherProposalsForCorporateSponsors,managePAP,or).
-edge(sponsorPartnerNcontacts2,getFreeAdvertisement,0.5).
-edge(sponsorPartnerNcontacts1,increaseFreeServices,0.5).
-edge(trustOfSponsorsTowardsCS2,retainSponsors1,0.5).
-dec(createBrandedProducts,developExternalComunications,or).
-dep(happinessStaff,happinessStaff3).
-dec(useNationalEventCalendar,managePAP,or).
-edge(highResponseIndividualDonors2,increasePhilanthropicDonations,0.5).
-edge(useSponsorLogo,attractSponsors2,0.5).
-edge(goodMediaExposure,attractSponsors2,0.5).
-dep(provideDocumentLibrarySystem,subscribeToDocumentLibraryFolders2).
-dep(singleCharitableRegistrationNumber,singleCharitableRegistrationNumberBeUsed).
-edge(getFreeAdvertisement,marketPHLBrand,0.5).
-edge(periodicalCommunicationWithRegionalStaffBeMaintained,regionalStaffFeelIncluded,0.5).
-edge(agreementStaffOverCorporatePartnerExpectations,reduceInternalCommunicationConfusion,0.5).
-dec(manageProjects,projectDeadlinesBeMet1,or).
-dep(csNServices,demonstrableServices1).
-dec(getDonorAccountingDatabase,putOnFundraisingEventsOnTheWeb,or).
-dec(timelyProvisionOfFreeServices,manageProjects,or).
-dep(developNationalEventCalendar,nationalEventCalendar).
-dep(upToDateCorporatePartnerInformation2,upToDateInformationOnCorporateSponsors).
-dep(highResponseIndividualDonors2,highResponseIndividualDonors1).
-dep(presentProposalConvincinglyToSponsors,sponsorshipProposal).
-dec(collectPledgeDuringEvent,putOnFundraisingEvents,or).
-edge(createLifeLongVolunteerSpirit1,increaseVolunteers,0.5).
-edge(increaseNAwareness,attractEventParticipants,0.5).
-edge(companyRelationshipBeRetainedAfterMergers,retainSponsors1,0.5).
-edge(sponsorsForEventsBeFound,increaseInvolvementSponsorsInPuttingOnEvents,1).
-dec(putOnFundraisingEventsOnTheWeb,fundsBeRaised,or).
-edge(attractSponsors,successfulEvents,0.5).
-edge(upToDateCorporatePartnerInformation,retainSponsors1,0.5).
-edge(marketPHLBrand,increaseAwareness,0.5).
-dec(getPAPInformation,getCorporatePartnerInformationFromDocumentLibrary1,or).
-edge(trustOfSponsorsTowardsCS,contributeToAGoodCause,0.5).
-edge(recognition,reachMoreKidsSponsors,0.5).
-dep(useVolunteerServices,provideFundraisingServices).
-dep(engagementStudentAmbassadorsInPromotingAwareness1,engagementStudentAmbassadorsInPromotingAwareness).
-edge(saGiveCSPresentations,improveImageToKids,0.5).
-edge(demonstrableServices2,trustOfDonor,0.5).
-dec(givePhilanthropicDonation,contributionBeMade,or).
-dep(providePromotionalMaterialToStudentAmbassadors,promotionResources).
-dep(marketThroughOwnChannels,useSponsorMarketingChannels).
-edge(regionalStaffFeelIncluded1,happinessStaff,0.5).
-dec(provideFunds,makeContributionToCharity,or).
-edge(successfulMarketingCampaign,marketPHLBrand,0.5).
-dec(informationBeSharedWithSponsors,manageNPartnerRelationship,or).
-edge(engagementSponsorEmployeesInPromotingAwareness,marketCSBrand,0.5).
-dep(retainSponsors2,retainSponsors).
-dep(giveCSPresentations,saGiveCSPresentations).
-dep(increaseAwareness,increaseAwareness1).
-dep(workWithTheRegionsToImplementEvents,eventCoordination).
-dep(pledgeNonline,pledgeOnline).
-edge(eventsBeMarketed,attractEventParticipants,0.5).
-edge(reachMoreKidsSponsors,sponsorshipBeBeneficial,0.5).
-dep(freeServices,useFreeServices).
-dep(timelyServices,timelyProvisionOfFreeServices).
-edge(followHighestEthicalGuidelines,trustOfSponsorsTowardsCS,0.5).
-edge(sponsorPartnerNcontacts2,attractSponsors2,0.5).
-edge(sponsorPartnerNcontacts2,attractSponsors2,0.5).
-dep(runFundraiserInSchools,saRunFundraiserInSchools).
-edge(increaseInvolvementSponsorsInPuttingOnEvents,minimizeCostOfEvents,0.5).
-edge(informationBeSharedWithSponsors,upToDateCorporatePartnerInformation,1).
-edge(credibilityCSBrand2,trustOfDonor,0.5).
-edge(experiencedMarketingPartners,marketPHLBrand,0.5).
-dec(manageNprojects,projectDeadlinesBeMet,or).
-edge(receiptBeProvided,trustOfDonor,0.5).
-dep(provideDocumentLibrarySystem,subscribeToDocumentLibraryFolders1).
-edge(uniteVolunteersAndSponsors,increaseVolunteers,0.5).
-edge(credibilityCSBrand,trustOfSponsorsTowardsCS,0.5).
-dec(pledgeNDuringEvent,attendFundraisingEvent,or).
-dep(acquireNCSStories,publishedCSStories).
-dep(regionalStaffFeelIncluded2,regionalStaffFeelIncluded1).
-edge(increasedInvolvementCounselorsInEvents1,inspiredStaff,0.5).
-edge(sponsorRelationshipsBeManaged,retainSponsors,0.5).
-dep(marketFundraisingEvents,eventsBeMarketed).
-dep(experiencedMarketingPartners2,experiencedMarketingPartners).
-dep(createLifeLongVolunteerSpirit,createLifeLongVolunteerSpirit1).
-dec(getPAPInformation1,getCorporatePartnerInformationFromDocumentLibrary,or).
-dec(beInformedOfFundraisingEvents,contributeOnline,or).
-dec(subscribeToDocumentLibraryFolders,providePAPToStaffNUsingTheDocumentLibrary,or).
-dep(marketFundraisingEvents2,beInformedOfFundraisingEvents).
-dep(increasedAvailabilityToSponsors,increasedAvailabilityCounselorsToPublicSponsors).
-edge(attractEventParticipants,uniteVolunteersAndSponsors,0.5).
-dep(exclusiveRelationshipsOfficialPartners1,exclusiveRelationshipsOfficialPartners).
-dec(reachAgreement1,becomeAPatron,or).
-edge(trustOfDonor,contributeToAGoodCause1,0.5).
-dep(matchFundraisingTargets,matchFundraisingTargets2).
-dep(upToDateInformationOnPrograms1,upToDateInformationOnPrograms).
-dep(marketFundraisingEvents1,marketFundraisingEvents2).
-dep(getPhilanthropicDonations,philanthropicDonations).
-edge(increasedInvolvementCounselorsInEvents,increaseConnectionCounselorsAndCommunity,0.5).
-edge(timelyProvisionOfFreeServices1,successfulEvents,0.5).
-edge(qualityServices2,trustOfSponsorsTowardsCS,0.5).
-edge(cobranding,reachMoreKidsSponsors,0.5).
-edge(saSpeakAtFundraisers,marketFundraisingEvents1,0.5).
-dec(maintain20CostsAgainstRevenuesRatio,putOnFundraisingEvents,or).
-dep(recognizeNSponsorContribution,recognizeNSponsorContribution1).
-edge(saSpeakAtFundraisers,increaseAwareness,0.5).
-dep(engagementOfSponsorEmployeesInFundDevelopment,engageEmployeesInEvents).
-edge(communicateThroughInternetAndPhone,upToDateInformationOnCorporateSponsors,0.5).
-edge(frontEndForIncomeRecordingBeSupported,availabilityForAdministrationAndAccountingPurposesAcrossCS,0.5).
-dep(periodicalCommunicationWithRegionalStaffBeMaintained,communicateWithHeadOffice).
-dec(managePAP,manageNPartnerRelationship,or).
-edge(corporateSponsorsFeelIncluded,retainSponsors1,0.5).
-edge(recognition,appearAsGoodCorporateCitizens,0.5).
-edge(recognition,appearAsGoodCorporateCitizens,0.5).
-dep(provideFreeServices1,freeServices).
-edge(getCorporateSponsorFunds,increasedCorporateSponsorFunds,0.5).
-dep(involvementNotForProfitPartnersInEvents1,involvementNotForProfitPartnersInEvents).
-edge(retainSponsors,matchFundraisingTargets,0.5).
-dec(marketThroughOwnChannels,makeContributionToCharity,or).
-edge(increasePhilanthropicDonations,matchFundraisingTargets,0.5).
-edge(increaseConnectionCounselorsAndCommunity,highResponseIndividualDonors,0.5).
-edge(elaborateFundraisingTargets,inspiredStaff,0.5).
-edge(happinessStaff1,successfulMarketingCampaign,0.5).
-dec(biWeeklyConferenceCalls,periodicalCommunicationWithRegionalStaffBeMaintained,or).
-edge(marketOnlyForSeriousIssues,avoidOverMarketingServices,1).
-dep(engageEmployeesInEvents,engageEmployeesInFundraisingEvents).
-edge(sponsorRelationshipsBeManaged,increaseInvolvementSponsorsInPuttingOnEvents,0.5).
-dec(counselorSpeakOnKidsIssuesInGeneral,marketingBeMadeUsingDedicatedCounselor,or).
-dep(quickResponseToSponsors,quickResponseToSponsors1).
-edge(useSponsorLogo,positiveReputationOfCS2,0.5).
-edge(cobranding,positiveAssociationNByConsumers,0.5).
-dec(getSponsorshipProposal,becomeAMajorPatron,or).
-dep(responsibleUsageSponsorFunds1,responsibleUsageSponsorFunds).
-dep(positiveReputationOfCS,positiveReputationOfCS2).
-dep(manageReceivables,manageReceivables1).
-dec(collectPledgeOnline,pledgesBeCollected,or).
-dep(provideOnlineDonorTechnology,getDonorTechnology).
-dec(collectPledgeDuringEvent,pledgesBeCollected,or).
-edge(accountabilityOfServices2,trustOfDonor,0.5).
-edge(positiveReputation,retainSponsors,0.5).
-edge(donorInformationBeRecorded,availabilityForAdministrationAndAccountingPurposesAcrossCS,0.5).
-edge(acquireFreeServices,minimizeExpenses,0.5).
-edge(conflictsBeManaged,happinessStaff,0.5).
-dec(getWebEventTechnology,putOnFundraisingEventsOnTheWeb,or).
-dec(reallocateResources,manageNprojects,or).
-dep(givePhilanthropicDonation,philanthropicDonations).
-edge(manageNprojects,goodProjectManagement2,0.5).
-edge(provideLogoToCS,cobranding,0.5).
-edge(attractSponsors2,minimizeExpenses,0.5).
-edge(singleCharitableRegistrationNumber1,positiveReputation,0.5).
-dep(improveImageToKids,improveImageToKids1).
-edge(pledgesBeCollected,matchFundraisingTargets,0.5).
-edge(meetCorporateSponsorsNeeds,engagementSponsorsInTheCauseOfCS,0.5).
-dec(createPostersFlyersAndInformationalMaterial,developExternalComunications,or).
-edge(contributeToAGoodCause,recognition,0.5).
-edge(exclusiveRelationshipsOfficialPartners2,meetCorporateSponsorsNeeds,0.5).
-dec(sponsorsForEventsBeFound,putOnFundraisingEvents,or).
-dec(makeContributionToCharity,becomeAPatron,or).
-dec(beInformedOfFundraisingEvents,attendFundraisingEvent,or).
-dep(engagementOfSponsorEmployeesInFundDevelopment,engagementOfSponsorEmployeesInFundDevelopment1).
-dec(communicateThroughInternetAndPhone,periodicalCommunicationWithRegionalStaffBeMaintained,or).
-dec(developNationalEventCalendar,putOnFundraisingEvents,or).
-dep(engagementSponsorEmployeesInPromotingAwareness1,engagementSponsorEmployeesInPromotingAwareness).
-dep(credibilityCSBrand1,credibilityCSBrand2).
-dep(freeAdvertisement,getFreeAdvertisement).
-edge(increaseInvolvementSponsorsInPuttingOnEvents,matchFundraisingTargets,0.5).
-dep(followHighestEthicalGuidelines1,followHighestEthicalGuidelines2).
-edge(successfulMarketingCampaign,positiveReputationOfCS2,0.5).
-edge(presentationSkills,presentProposalConvincinglyToSponsors,0.5).
-edge(increaseInvolvementSponsorsInPuttingOnEvents,uniteVolunteersAndSponsors,0.5).
-dec(useFreeServices,maintain20CostsAgainstRevenuesRatio,or).
-edge(involvementNotForProfitPartnersInEvents,positiveReputationOfCS2,0.5).
-edge(demonstrableServices,trustOfSponsorsTowardsCS,0.5).
-edge(proactiveMediaRelationship,marketFundraisingEvents1,0.5).
-edge(getCorporateSponsorFunds,matchFundraisingTargets,0.5).
-dec(timelyProvisionOfFreeServices1,manageNprojects,or).
-dep(collectPledgeOnline3,collectPledgeOnline).
-dep(reachAgreement,agreement).
-dec(recordDonorInformation,donorInformationBeRecorded,or).
-dep(qualityServices,qualityServices2).
-edge(commitmentToCSCauseFromSponsorsEmployees,retainSponsors1,0.5).
-dep(collectPledgeOnline2,collectPledgeOnline3).
-edge(attractSponsors2,acquireFreeServices,0.5).
-dep(speakAtFundraisers,saSpeakAtFundraisers).
-edge(marketingFromGovernmentBeAcquired,minimizeExpenses,0.5).
-edge(projectDeadlinesBeMet,successfulEvents,0.5).
-dep(reachAgreement,getSponsorsForEvents).
-edge(successfulMarketingCampaign,marketCSBrand,0.5).
-edge(increaseInvolvementSponsorsInPuttingOnEvents,engagementOfSponsorEmployeesInFundDevelopment,0.5).
-dec(storeDonorTransactionsIntoDatabase,recordDonorInformation,or).
-dep(donorAccountingDatabase,getDonorAccountingDatabase).
-dep(marketFundraisingEvents1,marketFundraisingEvents).
-dec(putOnFundraisingEvents,fundsBeRaised,or).
-dep(provideFreeServices1,acquireFreeServices).
-dec(saRunFundraiserInSchools,fundsBeRaised,or).
-dec(getDonorTechnology,putOnFundraisingEventsOnTheWeb,or).
-dep(provideLogoToCS,sponsorLogo).
-dec(collectDonationsOnline,putOnFundraisingWebEvents,or).
-edge(increasedCorporateSponsorFunds,matchFundraisingTargets,0.5).
-dep(provideDocumentLibrarySystem,subscribeToDocumentLibraryFolders).
-edge(increaseVolunteers,successfulEvents,0.5).
-edge(developExternalComunications,improveImageToKids,0.5).
-edge(engageEmployeesInEvents2,positiveImageToEmployees,0.5).
-edge(positiveImageToEmployees,sponsorshipBeBeneficial,0.5).
-edge(cobranding,appearAsGoodCorporateCitizens,0.5).
-dep(manageNPartnerRelationship1,sponsorRelationshipsBeManaged).
-edge(getPhilanthropicDonations,matchFundraisingTargets,0.5).
-dep(longTermFunding,longTermFunding1).
-dep(participateInEvents,counselorsAttendFundraisingEvents).
-dec(pitchToNationalCorporateSponsorsTheSponsorshipOfRegionalEvents,managePAP,or).
-dep(attractSponsors1,attractSponsors).
-dep(provincialGovernment,marketCSService).
-dep(counselorSpeakOnKidsIssuesInGeneral1,counselorSpeakOnKidsIssuesInGeneral).
-edge(getPhilanthropicDonations,increasePhilanthropicDonations,0.5).
-dec(providePhilanthropicDonation,makeContributionToCharity,or).
-dep(getSponsorsForEvents,sponsorsForEventsBeFound).
-edge(increasedAvailabilityCounselorsToPublicSponsors,retainSponsors,0.5).
-edge(increaseNAwareness,retainSponsors,0.5).
-edge(sponsorsMarketingChannelsBeUsed,marketPHLBrand,0.5).
-dec(reachAgreement,managePAP,or).
-edge(developExternalComunications,marketFundraisingEvents1,0.5).
-dep(regionalStaffFeelIncluded,regionalStaffFeelIncluded2).
-edge(payFundDevelopmentAndMarketingStaff,happinessStaff,0.5).
-dep(responsibleUsageSponsorFunds1,responsibleUsageSponsorFunds2).
-dep(manageAccounts,manageAccounts1).
-edge(recognition,positiveAssociationNByConsumers,0.5).
-dep(projectManagementSkills,goodProjectManagement).
-edge(happinessStaff3,inspiredStaff,0.5).
-dep(followHighestEthicalGuidelines1,followHighestEthicalGuidelines).
-dep(accountabilityOfServices1,accountabilityOfServices).
-dec(providePromotionalMaterialToStudentAmbassadors,developExternalComunications,or).
-dec(collectDonorInformation,recordDonorInformation,or).
-edge(increasedAvailabilityCounselorsToPublicSponsors,attractSponsors,0.5).
-edge(increaseInvolvementSponsorsInPuttingOnEvents,successfulEvents,0.5).
-edge(periodicalCommunicationWithRegionalStaffBeMaintained,agreementStaffOverCorporatePartnerExpectations,0.5).
-dec(writeDownCorporateSponsorsObjectives,managePAP,or).
-edge(contributeToACause,recognition,0.5).
-edge(experiencedMarketingPartners,marketCSBrand,0.5).
-edge(uniteVolunteersAndSponsors,successfulEvents,0.5).
-edge(credibilityCSBrand,positiveAssociationNByConsumers,0.5).
-dec(subscribeToDocumentLibraryFolders2,getCorporatePartnerInformationFromDocumentLibrary,or).
-edge(retainSponsors,longTermFunding,0.5).
-dec(contributeOnline,contributionBeMade,or).
-edge(attractEventParticipants,successfulEvents,0.5).
-edge(engagementOfSponsorEmployeesInFundDevelopment,successfulEvents,0.5).
-edge(upToDateInformationOnPrograms,corporateSponsorFeelIncluded,0.5).
-edge(involveNotForProfitPartnersInEvents,successfulEvents,0.5).
-dec(trackBudgets,manageNprojects,or).
-dec(providePAPToStaffNUsingTheDocumentLibrary,corporatePartnerExpectationsBeSharedWithStaff,or).
-edge(increasedInvolvementCounselorsInEvents1,highResponseIndividualDonors2,0.5).
-edge(acquireGovernmentFunding,matchFundraisingTargets,0.5).
-dec(collectPledgeOnline,putOnFundraisingEventsOnTheWeb,or).
-edge(answersBeProvidedToMediaQueries,goodMediaExposure,0.5).
-dec(storeDonorTransactionsIntoDatabase,frontEndForIncomeRecordingBeSupported,or).
-dec(useVolunteerServices,maintain20CostsAgainstRevenuesRatio,or).
-dep(provideFunds1,getCorporateSponsorFunds).
-edge(marketingBeMadeUsingDedicatedCounselor,proactiveMediaRelationship,0.5).
-edge(corporatePartnerExpectationsBeSharedWithStaff,meetCorporateSponsorsNeeds,0.5).
-edge(attractSponsors,increasedCorporateSponsorFunds,0.5).
-dep(servicesBeProvidedForKidsBullyingLine,provincialGovernment).
-dep(recognizeNSponsorContribution,recognition).
-edge(increasedInvolvementCounselorsInEvents1,increasedAvailabilityCounselorsToPublicSponsors,0.5).
-edge(sponsorsMarketingChannelsBeUsed,minimizeExpenses,0.5).
-edge(experiencedMarketingPartners,successfulMarketingCampaign,0.5).
-dec(maintain20CostsAgainstRevenuesRatio,putOnFundraisingEventsOnTheWeb,or).
-dec(nationalMarketingStrategy,manageProjects,or).
-dep(credibilityCSBrand1,credibilityCSBrand).
-dec(reachAgreement1,becomeAOfficialPartner,or).
-dep(getCorporatePartnerInformationFromDL1,getCorporatePartnerInformationFromDL).
-dep(sponsorLogo,useSponsorLogo).
-dep(sponsorPartnerNcontacts,providePartnerContactsToCS).
-dep(writeArticlesForWebsite1,writeArticlesForWebsite).
-dec(pledgeNonline,contributeOnline,or).
-dec(becomeAMajorPatron,contributeToACause,or).
-dep(getDonorDatabase,getDonorAccountingDatabase).
-dec(eventsBeMarketed,putOnFundraisingEvents,or).
-dec(bringRegionalFundraisingStaffTogetherOnceAYear,periodicalCommunicationWithRegionalStaffBeMaintained,or).
-edge(becomeAOfficialPartner,exclusiveRelationshipsOfficialPartners,1).
-edge(increaseInvolvementSponsorsInPuttingOnEvents,increasedCorporateSponsorFunds,0.5).
-dec(makeContributionToCharity,becomeAOfficialPartner,or).
-dec(reallocateResources1,manageProjects,or).
-dec(trainCounselorsOnPublicSpeaking,counselorsWhoWantAPublicVoiceBeTrained,or).
-dep(demonstrableServices1,demonstrableServices).
-edge(positiveInternalOpinion,happinessStaff,0.5).
-dep(engagementSponsorEmployeesInPromotingAwareness2,engageEmployeesInPromotingAwareness).
-edge(contributeToAGoodCause,positiveAssociationNByConsumers,0.5).
-edge(workWithTheRegionsToImplementEvents,regionalStaffFeelIncluded,0.5).
-dep(exclusiveBrandAndLogoUse,grantExclusiveUseOfBrandAndLogo).
-edge(proactiveMediaRelationship,goodMediaExposure,0.5).
-edge(counselorSpeakOnKidsIssuesInGeneral,increasedInvolvementCounselorsInEvents,0.5).
-edge(manageProjects,goodProjectManagement,0.5).
-edge(sponsorsMarketingChannelsBeUsed,marketCSBrand,0.5).
-edge(contributeToAGoodCause,positiveImageToEmployees,0.5).
-dec(reachAgreement1,becomeAMajorPatron,or).
-edge(fundsBeRaised,successfulEvents,0.5).
-dep(provideRealTimeTaxReceipts,provideReceipts).
-dep(provideMoneyForServices,acquireGovernmentFunding).
-dep(positiveInternalOpinion1,positiveInternalOpinion).
-dec(putOnOrientationProcessForFundDevelopmentAndMarketingStaff,staffBeSupported,or).
-edge(positiveReputationOfCS2,marketPHLBrand,0.5).
-edge(projectDeadlinesBeMet1,successfulMarketingCampaign,0.5).
-edge(successfulMarketingCampaign,attractSponsors2,0.5).
-dep(createGeneralLedgers,createGeneralLedgers1).
-edge(counselorSpeakOnKidsIssuesInGeneral,increasedInteractionCounselorsWithMedia,0.5).
-edge(corporatePartnerFundraisingExpectationsBeKnown,retainSponsors,0.5).
-edge(successfulEvents,retainSponsors,0.5).
-dep(attractSponsors2,attractSponsors1).
-dec(storeDonorInformationIntoDatabase,recordDonorInformation,or).
-edge(fundsBeRaised,matchFundraisingTargets,0.5).
-dec(sponsorsIncludeCSLogosAndDescriptionsOnTheirProducts,sponsorsMarketingChannelsBeUsed,or).
-dec(attendFundraisingEvent,contributionBeMade,or).
-dec(manageReceivables,frontEndForIncomeRecordingBeSupported,or).
-dep(qualityServices,qualityServices1).
-edge(quickResponseToSponsors,meetCorporateSponsorsNeeds,0.5).
-dep(sharePAPInDocumentLibrary1,getPAPInformation).
-dec(presentProposalConvincinglyToSponsors,managePAP,or).
-edge(hearCSStories,trustOfDonor,0.5).
-edge(recognizeNSponsorContribution1,meetCorporateSponsorsNeeds,0.5).
-dec(receiptBeProvided,contributeOnline,or).
-dep(trainCounselorsOnPublicSpeaking,acquirePublicSpeakingSkills).
-dep(increaseVolunteers1,increaseVolunteers).
-dec(provideRealTimeTaxReceipts,collectDonationsOnline,or).
-dep(pledgeNDuringEvent1,collectPledgeDuringEvent).
-dec(getDonorDatabase,recordDonorInformation,or).
-dec(becomeAOfficialPartner,contributeToACause,or).
-edge(positiveReputation,attractEventParticipants,0.5).
-edge(goodMediaExposure,increaseAwareness,0.5).
-edge(engageEmployeesInFundraisingEvents,commitmentToCSCauseFromSponsorsEmployees,0.5).
-dec(manageAccounts,frontEndForIncomeRecordingBeSupported,or).
-dec(manageNPartnerRelationship,companyRelationshipBeRetainedAfterMergers,or).
-dep(provideFreeServices,freeServices).
-edge(engageEmployeesInPromotingAwareness,commitmentToCSCauseFromSponsorsEmployees,0.5).
-dec(writeArticlesForMagazines,marketingBeMadeUsingDedicatedCounselor,or).
-edge(responsibleUsageSponsorFunds,trustOfSponsorsTowardsCS,0.5).
-dep(csStories,acquireNCSStories).
-dep(engagementSponsorEmployeesInPromotingAwareness,engagementSponsorEmployeesInPromotingAwareness2).
-dec(emailCorporatePartnersInterestingAndRelevantNewsPieces,informationBeSharedWithSponsors,or).
-dep(marketCSService,marketingFromGovernmentBeAcquired).
-dep(increaseAwareness2,increaseNAwareness).
-dec(provideFreeServices,makeContributionToCharity,or).
-dep(trustOfSponsorsTowardsCS1,trustOfSponsorsTowardsCS2).
-dep(projectManagementSkills,goodProjectManagement2).
-edge(maintain20CostsAgainstRevenuesRatio,minimizeCostOfEvents,0.5).
-edge(positiveReputationOfCS2,marketCSBrand,0.5).
-dec(createGeneralLedgers,frontEndForIncomeRecordingBeSupported,or).
-dep(notForProfitPartnersBeInvolvedInEvents,involveNotForProfitPartnersInEvents).
-edge(quickResponseToQuestionsAndConcerns,corporateSponsorFeelIncluded,0.5).
-dec(collectPledgeOnline2,collectDonationsOnline,or).
-dep(agreement,reachAgreement1).
-edge(appearAsGoodCorporateCitizens,sponsorshipBeBeneficial,0.5).
-dec(getCorporatePartnerInformationFromDocumentLibrary,corporatePartnerFundraisingExpectationsBeKnown,or).
-edge(grantExclusiveUseOfBrandAndLogo,recognizeNSponsorContribution2,0.5).
-dep(provideReceipts,receiptBeProvided).
-dep(getWebEventTechnology1,getWebEventTechnology).
-dec(getWebTechnology,putOnFundraisingWebEvents,or).
-edge(increaseFreeServices,minimizeCostOfEvents,0.5).
-dep(sponsorPartnerNcontacts1,sponsorPartnerNcontacts).
-dec(eventsBeMarketed,putOnFundraisingEventsOnTheWeb,or).
-dep(sponsorshipProposal,getSponsorshipProposal).
-edge(developExternalComunications,successfulMarketingCampaign,0.5).
-dec(putOnOrientationForVolunteers,staffBeSupported,or).
-dec(subscribeToDocumentLibraryFolders1,getCorporatePartnerInformationFromDocumentLibrary1,or).
-dep(positiveReputationOfCS,positiveReputation).
-dec(getSponsorshipProposal,becomeAPatron,or).
-dep(exclusiveBrandAndLogoUse,cobranding).
-edge(biWeeklyConferenceCalls,upToDateInformationOnCorporateSponsors,0.5).
-edge(sponsorPartnerNcontacts1,attractSponsors,0.5).
-edge(saGiveCSPresentations,increaseAwareness,0.5).
-dec(organizeDiscussionsWithSponsors,managePAP,or).
-dep(singleCharitableRegistrationNumber1,singleCharitableRegistrationNumber).
-edge(getCorporatePartnerInformationFromDL,agreementStaffOverCorporatePartnerExpectations,0.5).
-edge(responsibleUsageSponsorFunds2,trustOfDonor,0.5).
-dec(getSponsorshipProposal,becomeAOfficialPartner,or).
-edge(getFreeAdvertisement,minimizeExpenses,0.5).
-dep(fundsBeRaised,funds).
-edge(projectDeadlinesBeMet1,marketFundraisingEvents1,0.5).
-edge(happinessStaff3,successfulEvents,0.5).
-dep(nationalEventCalendar,useNationalEventCalendar).
-dep(happinessStaff,happinessStaff2).
-dep(happinessStaff2,happinessStaff1).
-dep(upToDateCorporatePartnerInformation,upToDateInformationOnPrograms1).
-edge(successfulMarketingCampaign,improveImageToKids,0.5).
-dep(accountabilityOfServices1,accountabilityOfServices2).
-edge(sendRecognitionLetters,recognizeNSponsorContribution2,0.5).
-dep(highResponseIndividualDonors,highResponseIndividualDonors1).
-dep(provideCompiledCallData,provideCompiledCallDataToMedia).
-dec(becomeAPatron,contributeToACause,or).
-dep(sharePAPInDocumentLibrary1,getPAPInformation1).
-dep(elaborateFundraisingTargets1,elaborateFundraisingTargets).
-dep(pledgeOnline,collectPledgeOnline2).
-dec(makeContributionToCharity,becomeAMajorPatron,or).
-edge(developExternalComunications,minimizeExpenses,-0.5).
-edge(followHighestEthicalGuidelines2,trustOfDonor,0.5).
-dep(providePhilanthropicDonation,philanthropicDonations).
-dep(getWebEventTechnology,getWebTechnology).
-edge(becomeAOfficialPartner,cobranding,1).
-dep(presentationSkills1,presentationSkills).
-edge(informationBeSharedWithSponsors,corporateSponsorsFeelIncluded,0.5).
-dep(trustOfSponsorsTowardsCS,trustOfSponsorsTowardsCS1).
-dep(publishedCSStories,hearCSStories).
-dep(provideFunds,provideFunds1).
-dep(engagementOfSponsorEmployeesInFundDevelopment,engageEmployeesInEvents1).
-dep(pledgeNDuringEvent,pledgeNDuringEvent1).
-dep(exclusiveRelationshipsOfficialPartners2,exclusiveRelationshipsOfficialPartners1).
-edge(staffBeSupported,happinessStaff,0.5).
-dep(avoidOverMarketingServices,avoidOverMarketingServices1).
-dec(sharePAPInDocumentLibrary,providePAPToStaffNUsingTheDocumentLibrary,or).
-edge(counselorsAttendFundraisingEvents,increasedInvolvementCounselorsInEvents1,0.5).
-dep(manageNPartnerRelationship,manageNPartnerRelationship1).
-edge(sponsorPartnerNcontacts2,acquireFreeServices,0.5).
-dep(engageEmployeesInEvents2,engageEmployeesInEvents1).
-edge(corporatePartnerMarketingExpectationsBeKnown,successfulMarketingCampaign,0.5).
-dep(quickResponseToSponsors1,quickResponseToQuestionsAndConcerns).
-edge(goodProjectManagement2,successfulEvents,0.5).
-edge(commitmentToCSCauseFromSponsorsEmployees,engagementSponsorsInTheCauseOfCS,0.5).
+accountabilityOfServices <- [accountabilityOfServices1].
+accountabilityOfServices2 <- [accountabilityOfServices1].
+acquireFreeServices <- [provideFreeServices1].
+acquireGovernmentFunding <- [provideMoneyForServices].
+acquireNCSStories <- [csStories].
+acquirePublicSpeakingSkills <- [trainCounselorsOnPublicSpeaking].
+agreement <- [reachAgreement].
+attendFundraisingEvent <- [pledgeNDuringEvent].
+attendFundraisingEvent <- [beInformedOfFundraisingEvents].
+attractSponsors <- [attractSponsors1].
+attractSponsors1 <- [attractSponsors2].
+avoidOverMarketingServices1 <- [avoidOverMarketingServices].
+beInformedOfFundraisingEvents <- [marketFundraisingEvents2].
+becomeAMajorPatron <- [getSponsorshipProposal].
+becomeAMajorPatron <- [reachAgreement1].
+becomeAMajorPatron <- [makeContributionToCharity].
+becomeAOfficialPartner <- [reachAgreement1].
+becomeAOfficialPartner <- [makeContributionToCharity].
+becomeAOfficialPartner <- [getSponsorshipProposal].
+becomeAPatron <- [reachAgreement1].
+becomeAPatron <- [makeContributionToCharity].
+becomeAPatron <- [getSponsorshipProposal].
+cobranding <- [exclusiveBrandAndLogoUse].
+collectDonationsOnline <- [provideRealTimeTaxReceipts].
+collectDonationsOnline <- [collectPledgeOnline2].
+collectPledgeDuringEvent <- [pledgeNDuringEvent1].
+collectPledgeOnline <- [collectPledgeOnline3].
+collectPledgeOnline2 <- [pledgeOnline].
+collectPledgeOnline3 <- [collectPledgeOnline2].
+communicateWithHeadOffice <-
+  [ periodicalCommunicationWithRegionalStaffBeMaintained ].
+companyRelationshipBeRetainedAfterMergers <-
+  [ manageNPartnerRelationship ].
+contributeOnline <- [beInformedOfFundraisingEvents].
+contributeOnline <- [pledgeNonline].
+contributeOnline <- [receiptBeProvided].
+contributeToACause <- [becomeAMajorPatron].
+contributeToACause <- [becomeAOfficialPartner].
+contributeToACause <- [becomeAPatron].
+contributionBeMade <- [givePhilanthropicDonation].
+contributionBeMade <- [contributeOnline].
+contributionBeMade <- [attendFundraisingEvent].
+corporatePartnerExpectationsBeSharedWithStaff <-
+  [ providePAPToStaffNUsingTheDocumentLibrary ].
+corporatePartnerFundraisingExpectationsBeKnown <-
+  [ getCorporatePartnerInformationFromDocumentLibrary ].
+corporatePartnerMarketingExpectationsBeKnown <-
+  [ getCorporatePartnerInformationFromDocumentLibrary1 ].
+counselorSpeakOnKidsIssuesInGeneral <-
+  [ counselorSpeakOnKidsIssuesInGeneral1 ].
+counselorsAttendFundraisingEvents <- [participateInEvents].
+counselorsWhoWantAPublicVoiceBeTrained <-
+  [ trainCounselorsOnPublicSpeaking ].
+createGeneralLedgers1 <- [createGeneralLedgers].
+createLifeLongVolunteerSpirit1 <- [createLifeLongVolunteerSpirit].
+credibilityCSBrand <- [credibilityCSBrand1].
+credibilityCSBrand2 <- [credibilityCSBrand1].
+demonstrableServices <- [demonstrableServices1].
+demonstrableServices1 <- [csNServices].
+demonstrableServices2 <- [demonstrableServices1].
+developExternalComunications <- [createBrandedProducts].
+developExternalComunications <-
+  [ createPostersFlyersAndInformationalMaterial ].
+developExternalComunications <-
+  [ providePromotionalMaterialToStudentAmbassadors ].
+donorInformationBeRecorded <- [recordDonorInformation].
+elaborateFundraisingTargets <- [elaborateFundraisingTargets1].
+engageEmployeesInEvents <-
+  [ engagementOfSponsorEmployeesInFundDevelopment ].
+engageEmployeesInEvents1 <-
+  [ engagementOfSponsorEmployeesInFundDevelopment,
+    engageEmployeesInEvents2 ].
+engageEmployeesInFundraisingEvents <- [engageEmployeesInEvents].
+engageEmployeesInPromotingAwareness <-
+  [ engagementSponsorEmployeesInPromotingAwareness2 ].
+engagementOfSponsorEmployeesInFundDevelopment1 <-
+  [ engagementOfSponsorEmployeesInFundDevelopment ].
+engagementSponsorEmployeesInPromotingAwareness <-
+  [ engagementSponsorEmployeesInPromotingAwareness1 ].
+engagementSponsorEmployeesInPromotingAwareness2 <-
+  [ engagementSponsorEmployeesInPromotingAwareness ].
+engagementStudentAmbassadorsInPromotingAwareness <-
+  [ engagementStudentAmbassadorsInPromotingAwareness1 ].
+eventCoordination <- [workWithTheRegionsToImplementEvents].
+eventsBeMarketed <- [marketFundraisingEvents].
+exclusiveRelationshipsOfficialPartners <-
+  [ exclusiveRelationshipsOfficialPartners1 ].
+exclusiveRelationshipsOfficialPartners1 <-
+  [ exclusiveRelationshipsOfficialPartners2 ].
+experiencedMarketingPartners <- [experiencedMarketingPartners2].
+followHighestEthicalGuidelines <- [followHighestEthicalGuidelines1].
+followHighestEthicalGuidelines2 <- [followHighestEthicalGuidelines1].
+freeServices <- [provideFreeServices1, provideFreeServices].
+frontEndForIncomeRecordingBeSupported <-
+  [ storeDonorTransactionsIntoDatabase ].
+frontEndForIncomeRecordingBeSupported <- [manageReceivables].
+frontEndForIncomeRecordingBeSupported <- [manageAccounts].
+frontEndForIncomeRecordingBeSupported <- [createGeneralLedgers].
+funds <- [fundsBeRaised].
+fundsBeRaised <- [putOnFundraisingEventsOnTheWeb].
+fundsBeRaised <- [putOnFundraisingEvents].
+fundsBeRaised <- [saRunFundraiserInSchools].
+getCorporatePartnerInformationFromDL <-
+  [ getCorporatePartnerInformationFromDL1 ].
+getCorporatePartnerInformationFromDocumentLibrary <-
+  [ getPAPInformation1 ].
+getCorporatePartnerInformationFromDocumentLibrary <-
+  [ subscribeToDocumentLibraryFolders2 ].
+getCorporatePartnerInformationFromDocumentLibrary1 <-
+  [ getPAPInformation ].
+getCorporatePartnerInformationFromDocumentLibrary1 <-
+  [ subscribeToDocumentLibraryFolders1 ].
+getCorporateSponsorFunds <- [provideFunds1].
+getDonorAccountingDatabase <-
+  [ donorAccountingDatabase,
+    getDonorDatabase ].
+getDonorTechnology <- [provideOnlineDonorTechnology].
+getFreeAdvertisement <- [freeAdvertisement].
+getPAPInformation <- [sharePAPInDocumentLibrary1].
+getPAPInformation1 <- [sharePAPInDocumentLibrary1].
+getSponsorsForEvents <- [reachAgreement].
+getSponsorshipProposal <- [sponsorshipProposal].
+getWebEventTechnology <- [getWebEventTechnology1].
+getWebTechnology <- [getWebEventTechnology].
+goodProjectManagement <- [projectManagementSkills].
+goodProjectManagement2 <- [projectManagementSkills].
+grantExclusiveUseOfBrandAndLogo <- [exclusiveBrandAndLogoUse].
+happinessStaff1 <- [happinessStaff2].
+happinessStaff2 <- [happinessStaff].
+happinessStaff3 <- [happinessStaff].
+hearCSStories <- [publishedCSStories].
+highResponseIndividualDonors1 <-
+  [ highResponseIndividualDonors2,
+    highResponseIndividualDonors ].
+improveImageToKids1 <- [improveImageToKids].
+increaseAwareness1 <- [increaseAwareness].
+increaseNAwareness <- [increaseAwareness2].
+increaseVolunteers <- [increaseVolunteers1].
+increasedAvailabilityCounselorsToPublicSponsors <-
+  [ increasedAvailabilityToSponsors ].
+informationBeSharedWithSponsors <- [informSponsorsOfProgress].
+informationBeSharedWithSponsors <-
+  [ emailCorporatePartnersInterestingAndRelevantNewsPieces ].
+involveNotForProfitPartnersInEvents <-
+  [ notForProfitPartnersBeInvolvedInEvents ].
+involvementNotForProfitPartnersInEvents <-
+  [ involvementNotForProfitPartnersInEvents1 ].
+longTermFunding1 <- [longTermFunding].
+maintain20CostsAgainstRevenuesRatio <- [useFreeServices].
+maintain20CostsAgainstRevenuesRatio <- [useVolunteerServices].
+makeContributionToCharity <- [provideFunds].
+makeContributionToCharity <- [marketThroughOwnChannels].
+makeContributionToCharity <- [providePhilanthropicDonation].
+makeContributionToCharity <- [provideFreeServices].
+manageAccounts1 <- [manageAccounts].
+manageNPartnerRelationship <- [informationBeSharedWithSponsors].
+manageNPartnerRelationship <- [managePAP].
+manageNPartnerRelationship1 <- [manageNPartnerRelationship].
+manageNprojects <- [reallocateResources].
+manageNprojects <- [timelyProvisionOfFreeServices1].
+manageNprojects <- [trackBudgets].
+managePAP <- [putTogetherProposalsForCorporateSponsors].
+managePAP <- [useNationalEventCalendar].
+managePAP <-
+  [ pitchToNationalCorporateSponsorsTheSponsorshipOfRegionalEvents ].
+managePAP <- [reachAgreement].
+managePAP <- [writeDownCorporateSponsorsObjectives].
+managePAP <- [presentProposalConvincinglyToSponsors].
+managePAP <- [organizeDiscussionsWithSponsors].
+manageProjects <- [timelyProvisionOfFreeServices].
+manageProjects <- [nationalMarketingStrategy].
+manageProjects <- [reallocateResources1].
+manageReceivables1 <- [manageReceivables].
+marketCSService <- [provincialGovernment].
+marketFundraisingEvents <- [marketFundraisingEvents1].
+marketFundraisingEvents2 <- [marketFundraisingEvents1].
+marketingBeMadeUsingDedicatedCounselor <- [writeArticlesForWebsite].
+marketingBeMadeUsingDedicatedCounselor <-
+  [ counselorSpeakOnKidsIssuesInGeneral ].
+marketingBeMadeUsingDedicatedCounselor <- [writeArticlesForMagazines].
+marketingFromGovernmentBeAcquired <- [marketCSService].
+matchFundraisingTargets2 <- [matchFundraisingTargets].
+nationalEventCalendar <- [developNationalEventCalendar].
+periodicalCommunicationWithRegionalStaffBeMaintained <-
+  [ biWeeklyConferenceCalls ].
+periodicalCommunicationWithRegionalStaffBeMaintained <-
+  [ communicateThroughInternetAndPhone ].
+periodicalCommunicationWithRegionalStaffBeMaintained <-
+  [ bringRegionalFundraisingStaffTogetherOnceAYear ].
+philanthropicDonations <-
+  [ getPhilanthropicDonations,
+    givePhilanthropicDonation,
+    providePhilanthropicDonation ].
+pledgeNDuringEvent1 <- [pledgeNDuringEvent].
+pledgeOnline <- [pledgeNonline].
+pledgesBeCollected <- [collectPledgeOnline].
+pledgesBeCollected <- [collectPledgeDuringEvent].
+positiveInternalOpinion <- [positiveInternalOpinion1].
+positiveReputation <- [positiveReputationOfCS].
+positiveReputationOfCS2 <- [positiveReputationOfCS].
+presentationSkills <- [presentationSkills1].
+projectDeadlinesBeMet <- [manageNprojects].
+projectDeadlinesBeMet1 <- [manageProjects].
+promotionResources <-
+  [ providePromotionalMaterialToStudentAmbassadors ].
+provideCompiledCallDataToMedia <- [provideCompiledCallData].
+provideFundraisingServices <- [useVolunteerServices].
+provideFunds1 <- [provideFunds].
+providePAPToStaffNUsingTheDocumentLibrary <-
+  [ subscribeToDocumentLibraryFolders ].
+providePAPToStaffNUsingTheDocumentLibrary <-
+  [ sharePAPInDocumentLibrary ].
+providePartnerContactsToCS <- [sponsorPartnerNcontacts].
+provideReceipts <- [provideRealTimeTaxReceipts].
+provincialGovernment <- [servicesBeProvidedForKidsBullyingLine].
+publishedCSStories <- [acquireNCSStories].
+putOnFundraisingEvents <- [collectPledgeDuringEvent].
+putOnFundraisingEvents <- [maintain20CostsAgainstRevenuesRatio].
+putOnFundraisingEvents <- [sponsorsForEventsBeFound].
+putOnFundraisingEvents <- [developNationalEventCalendar].
+putOnFundraisingEvents <- [eventsBeMarketed].
+putOnFundraisingEventsOnTheWeb <- [getDonorAccountingDatabase].
+putOnFundraisingEventsOnTheWeb <- [getWebEventTechnology].
+putOnFundraisingEventsOnTheWeb <- [getDonorTechnology].
+putOnFundraisingEventsOnTheWeb <- [collectPledgeOnline].
+putOnFundraisingEventsOnTheWeb <-
+  [ maintain20CostsAgainstRevenuesRatio ].
+putOnFundraisingEventsOnTheWeb <- [eventsBeMarketed].
+putOnFundraisingWebEvents <- [collectDonationsOnline].
+putOnFundraisingWebEvents <- [getWebTechnology].
+qualityServices1 <- [qualityServices].
+qualityServices2 <- [qualityServices].
+quickResponseToQuestionsAndConcerns <- [quickResponseToSponsors1].
+quickResponseToSponsors1 <- [quickResponseToSponsors].
+reachAgreement1 <- [agreement].
+receiptBeProvided <- [provideReceipts].
+recognition <- [recognizeNSponsorContribution].
+recognizeNSponsorContribution <- [recognizeNSponsorContribution2].
+recognizeNSponsorContribution1 <- [recognizeNSponsorContribution].
+recordDonorInformation <- [storeDonorTransactionsIntoDatabase].
+recordDonorInformation <- [collectDonorInformation].
+recordDonorInformation <- [storeDonorInformationIntoDatabase].
+recordDonorInformation <- [getDonorDatabase].
+regionalStaffFeelIncluded1 <- [regionalStaffFeelIncluded2].
+regionalStaffFeelIncluded2 <- [regionalStaffFeelIncluded].
+responsibleUsageSponsorFunds <- [responsibleUsageSponsorFunds1].
+responsibleUsageSponsorFunds2 <- [responsibleUsageSponsorFunds1].
+retainSponsors <- [retainSponsors2].
+saGiveCSPresentations <- [giveCSPresentations].
+saRunFundraiserInSchools <- [runFundraiserInSchools].
+saSpeakAtFundraisers <- [speakAtFundraisers].
+singleCharitableRegistrationNumber <-
+  [ singleCharitableRegistrationNumber1 ].
+singleCharitableRegistrationNumberBeUsed <-
+  [ singleCharitableRegistrationNumber ].
+sponsorLogo <- [provideLogoToCS].
+sponsorPartnerNcontacts <- [sponsorPartnerNcontacts1].
+sponsorRelationshipsBeManaged <- [manageNPartnerRelationship1].
+sponsorsForEventsBeFound <- [getSponsorsForEvents].
+sponsorsMarketingChannelsBeUsed <-
+  [ sponsorsIncludeCSLogosAndDescriptionsOnTheirProducts ].
+sponsorshipProposal <- [presentProposalConvincinglyToSponsors].
+staffBeSupported <- [implementStayInTouchProgram].
+staffBeSupported <-
+  [ putOnOrientationProcessForFundDevelopmentAndMarketingStaff ].
+staffBeSupported <- [putOnOrientationForVolunteers].
+subscribeToDocumentLibraryFolders <- [provideDocumentLibrarySystem].
+subscribeToDocumentLibraryFolders1 <- [provideDocumentLibrarySystem].
+subscribeToDocumentLibraryFolders2 <- [provideDocumentLibrarySystem].
+timelyProvisionOfFreeServices <- [timelyServices].
+trustOfSponsorsTowardsCS1 <- [trustOfSponsorsTowardsCS].
+trustOfSponsorsTowardsCS2 <- [trustOfSponsorsTowardsCS1].
+upToDateInformationOnCorporateSponsors <-
+  [ upToDateCorporatePartnerInformation2 ].
+upToDateInformationOnPrograms <- [upToDateInformationOnPrograms1].
+upToDateInformationOnPrograms1 <-
+  [ upToDateCorporatePartnerInformation ].
+useFreeServices <- [freeServices].
+useNationalEventCalendar <- [nationalEventCalendar].
+useSponsorLogo <- [sponsorLogo].
+useSponsorMarketingChannels <- [marketThroughOwnChannels].
+writeArticlesForMagazines <- [writeArticlesForMagazines1].
+writeArticlesForWebsite <- [writeArticlesForWebsite1].
+acquireFreeServices <~
+  [ help(attractSponsors2),
+    help(sponsorPartnerNcontacts2) ].
+agreementStaffOverCorporatePartnerExpectations <~
+  [ help(periodicalCommunicationWithRegionalStaffBeMaintained),
+    help(getCorporatePartnerInformationFromDL) ].
+appearAsGoodCorporateCitizens <~
+  [ help(recognition),
+    help(recognition),
+    help(cobranding) ].
+attractEventParticipants <~
+  [ help(increaseNAwareness),
+    help(eventsBeMarketed),
+    help(positiveReputation) ].
+attractSponsors <~
+  [ help(increasedAvailabilityCounselorsToPublicSponsors),
+    help(sponsorPartnerNcontacts1) ].
+attractSponsors2 <~
+  [ help(useSponsorLogo),
+    help(goodMediaExposure),
+    help(sponsorPartnerNcontacts2),
+    help(sponsorPartnerNcontacts2),
+    help(successfulMarketingCampaign) ].
+availabilityForAdministrationAndAccountingPurposesAcrossCS <~
+  [ help(frontEndForIncomeRecordingBeSupported),
+    help(donorInformationBeRecorded) ].
+avoidOverMarketingServices <~ [make(marketOnlyForSeriousIssues)].
+cobranding <~ [help(provideLogoToCS), make(becomeAOfficialPartner)].
+commitmentToCSCauseFromSponsorsEmployees <~
+  [ help(engageEmployeesInFundraisingEvents),
+    help(engageEmployeesInPromotingAwareness) ].
+contributeToAGoodCause <~ [help(trustOfSponsorsTowardsCS)].
+contributeToAGoodCause1 <~ [help(trustOfDonor)].
+corporateSponsorFeelIncluded <~
+  [ help(upToDateInformationOnPrograms),
+    help(quickResponseToQuestionsAndConcerns) ].
+corporateSponsorsFeelIncluded <~
+  [ make(meetCorporateSponsorsNeeds),
+    help(informationBeSharedWithSponsors) ].
+engagementOfSponsorEmployeesInFundDevelopment <~
+  [ help(attractEventParticipants),
+    help(increaseInvolvementSponsorsInPuttingOnEvents) ].
+engagementSponsorsInTheCauseOfCS <~
+  [ help(meetCorporateSponsorsNeeds),
+    help(commitmentToCSCauseFromSponsorsEmployees) ].
+exclusiveRelationshipsOfficialPartners <~
+  [ make(becomeAOfficialPartner) ].
+getFreeAdvertisement <~ [help(sponsorPartnerNcontacts2)].
+goodMediaExposure <~
+  [ help(answersBeProvidedToMediaQueries),
+    help(proactiveMediaRelationship) ].
+goodProjectManagement <~ [help(manageProjects)].
+goodProjectManagement2 <~ [help(manageNprojects)].
+happinessStaff <~
+  [ help(regionalStaffFeelIncluded1),
+    help(conflictsBeManaged),
+    help(payFundDevelopmentAndMarketingStaff),
+    help(positiveInternalOpinion),
+    help(staffBeSupported) ].
+highResponseIndividualDonors <~
+  [ help(increaseConnectionCounselorsAndCommunity) ].
+highResponseIndividualDonors2 <~
+  [ help(increasedInvolvementCounselorsInEvents1) ].
+improveImageToKids <~
+  [ help(saSpeakAtFundraisers),
+    help(saGiveCSPresentations),
+    help(developExternalComunications),
+    help(successfulMarketingCampaign) ].
+increaseAwareness <~
+  [ help(marketPHLBrand),
+    help(saSpeakAtFundraisers),
+    help(goodMediaExposure),
+    help(saGiveCSPresentations) ].
+increaseConnectionCounselorsAndCommunity <~
+  [ help(increasedInvolvementCounselorsInEvents) ].
+increaseFreeServices <~ [help(sponsorPartnerNcontacts1)].
+increaseInvolvementSponsorsInPuttingOnEvents <~
+  [ make(sponsorsForEventsBeFound),
+    help(sponsorRelationshipsBeManaged) ].
+increasePhilanthropicDonations <~
+  [ help(highResponseIndividualDonors2),
+    help(getPhilanthropicDonations) ].
+increaseVolunteers <~
+  [ help(createLifeLongVolunteerSpirit1),
+    help(uniteVolunteersAndSponsors) ].
+increasedAvailabilityCounselorsToPublicSponsors <~
+  [ help(increasedInvolvementCounselorsInEvents1) ].
+increasedCorporateSponsorFunds <~
+  [ help(getCorporateSponsorFunds),
+    help(attractSponsors),
+    help(increaseInvolvementSponsorsInPuttingOnEvents) ].
+increasedInteractionCounselorsWithMedia <~
+  [ help(counselorsWhoWantAPublicVoiceBeTrained),
+    help(counselorSpeakOnKidsIssuesInGeneral) ].
+increasedInvolvementCounselorsInEvents <~
+  [ help(counselorSpeakOnKidsIssuesInGeneral) ].
+increasedInvolvementCounselorsInEvents1 <~
+  [ help(counselorsAttendFundraisingEvents) ].
+inspiredStaff <~
+  [ help(increasedInvolvementCounselorsInEvents1),
+    help(elaborateFundraisingTargets),
+    help(happinessStaff3) ].
+longTermFunding <~ [help(retainSponsors)].
+marketCSBrand <~
+  [ help(engagementSponsorEmployeesInPromotingAwareness),
+    help(successfulMarketingCampaign),
+    help(experiencedMarketingPartners),
+    help(sponsorsMarketingChannelsBeUsed),
+    help(positiveReputationOfCS2) ].
+marketFundraisingEvents1 <~
+  [ help(saSpeakAtFundraisers),
+    help(proactiveMediaRelationship),
+    help(developExternalComunications),
+    help(projectDeadlinesBeMet1) ].
+marketPHLBrand <~
+  [ help(getFreeAdvertisement),
+    help(successfulMarketingCampaign),
+    help(experiencedMarketingPartners),
+    help(sponsorsMarketingChannelsBeUsed),
+    help(positiveReputationOfCS2) ].
+matchFundraisingTargets <~
+  [ help(retainSponsors),
+    help(increasePhilanthropicDonations),
+    help(pledgesBeCollected),
+    help(increaseInvolvementSponsorsInPuttingOnEvents),
+    help(getCorporateSponsorFunds),
+    help(increasedCorporateSponsorFunds),
+    help(getPhilanthropicDonations),
+    help(acquireGovernmentFunding),
+    help(fundsBeRaised) ].
+meetCorporateSponsorsNeeds <~
+  [ help(exclusiveRelationshipsOfficialPartners2),
+    help(corporatePartnerExpectationsBeSharedWithStaff),
+    help(quickResponseToSponsors),
+    help(recognizeNSponsorContribution1) ].
+minimizeCostOfEvents <~
+  [ help(increaseInvolvementSponsorsInPuttingOnEvents),
+    help(maintain20CostsAgainstRevenuesRatio),
+    help(increaseFreeServices) ].
+minimizeExpenses <~
+  [ help(acquireFreeServices),
+    help(attractSponsors2),
+    help(marketingFromGovernmentBeAcquired),
+    help(sponsorsMarketingChannelsBeUsed),
+    help(getFreeAdvertisement),
+    hurt(developExternalComunications) ].
+positiveAssociationNByConsumers <~
+  [ help(cobranding),
+    help(recognition),
+    help(credibilityCSBrand),
+    help(contributeToAGoodCause) ].
+positiveImageToEmployees <~
+  [ help(engageEmployeesInEvents2),
+    help(contributeToAGoodCause) ].
+positiveReputation <~ [help(singleCharitableRegistrationNumber1)].
+positiveReputationOfCS2 <~
+  [ help(useSponsorLogo),
+    help(successfulMarketingCampaign),
+    help(involvementNotForProfitPartnersInEvents) ].
+presentProposalConvincinglyToSponsors <~ [help(presentationSkills)].
+proactiveMediaRelationship <~
+  [ help(increasedInteractionCounselorsWithMedia),
+    help(marketingBeMadeUsingDedicatedCounselor) ].
+reachMoreKidsSponsors <~ [help(recognition), help(cobranding)].
+recognition <~
+  [ help(contributeToAGoodCause),
+    help(contributeToACause) ].
+recognizeNSponsorContribution2 <~
+  [ help(createThankYouAds),
+    help(grantExclusiveUseOfBrandAndLogo),
+    help(sendRecognitionLetters) ].
+reduceInternalCommunicationConfusion <~
+  [ help(agreementStaffOverCorporatePartnerExpectations) ].
+regionalStaffFeelIncluded <~
+  [ help(periodicalCommunicationWithRegionalStaffBeMaintained),
+    help(workWithTheRegionsToImplementEvents) ].
+retainSponsors <~
+  [ help(sponsorRelationshipsBeManaged),
+    help(positiveReputation),
+    help(increasedAvailabilityCounselorsToPublicSponsors),
+    help(increaseNAwareness),
+    help(corporatePartnerFundraisingExpectationsBeKnown),
+    help(successfulEvents) ].
+retainSponsors1 <~
+  [ help(trustOfSponsorsTowardsCS2),
+    help(companyRelationshipBeRetainedAfterMergers),
+    help(upToDateCorporatePartnerInformation),
+    help(corporateSponsorsFeelIncluded),
+    help(commitmentToCSCauseFromSponsorsEmployees) ].
+sponsorshipBeBeneficial <~
+  [ help(reachMoreKidsSponsors),
+    help(positiveImageToEmployees),
+    help(appearAsGoodCorporateCitizens) ].
+successfulEvents <~
+  [ help(attractSponsors),
+    help(timelyProvisionOfFreeServices1),
+    help(projectDeadlinesBeMet),
+    help(increaseVolunteers),
+    help(increaseInvolvementSponsorsInPuttingOnEvents),
+    help(uniteVolunteersAndSponsors),
+    help(attractEventParticipants),
+    help(engagementOfSponsorEmployeesInFundDevelopment),
+    help(involveNotForProfitPartnersInEvents),
+    help(fundsBeRaised),
+    help(happinessStaff3),
+    help(goodProjectManagement2) ].
+successfulMarketingCampaign <~
+  [ help(goodProjectManagement),
+    help(happinessStaff1),
+    help(experiencedMarketingPartners),
+    help(projectDeadlinesBeMet1),
+    help(developExternalComunications),
+    help(corporatePartnerMarketingExpectationsBeKnown) ].
+trustOfDonor <~
+  [ help(demonstrableServices2),
+    help(credibilityCSBrand2),
+    help(receiptBeProvided),
+    help(accountabilityOfServices2),
+    help(hearCSStories),
+    help(responsibleUsageSponsorFunds2),
+    help(followHighestEthicalGuidelines2) ].
+trustOfSponsorsTowardsCS <~
+  [ help(accountabilityOfServices),
+    help(followHighestEthicalGuidelines),
+    help(credibilityCSBrand),
+    help(qualityServices2),
+    help(demonstrableServices),
+    help(responsibleUsageSponsorFunds) ].
+uniteVolunteersAndSponsors <~
+  [ help(attractEventParticipants),
+    help(increaseInvolvementSponsorsInPuttingOnEvents) ].
+upToDateCorporatePartnerInformation <~
+  [ make(informationBeSharedWithSponsors) ].
+upToDateInformationOnCorporateSponsors <~
+  [ help(communicateThroughInternetAndPhone),
+    help(biWeeklyConferenceCalls) ].
