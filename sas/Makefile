@@ -8,6 +8,12 @@ help:                   ## list targets
 	@grep -E '^[a-z]+:.*##' Makefile | \
 	  sed 's/:.*##/	/'
 
+story:                  ## render story.md to tmp/story.html, open it
+	@mkdir -p tmp
+	@pandoc story.md -s --syntax-highlighting=tango \
+	  -H etc/story-head.html -o tmp/story.html
+	@open -a "Google Chrome" tmp/story.html
+
 check:                  ## run every demo; any assert kills it
 	python3 src/lib_eg.py all
 

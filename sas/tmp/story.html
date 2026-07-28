@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>story</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <style>
+  pre { background: #eeeeee; padding: 0.8em 1em;
+        border-radius: 4px; overflow-x: auto; }
+  body { max-width: 46em; margin: auto; padding: 0 1em;
+         font-family: Georgia, serif; line-height: 1.45; }
+  code { background: #eeeeee; }
+  pre code { background: none; }
+  </style>
+</head>
+<body>
+<h1 id="sophisticated-ai-simple-aint-stupid">Sophisticated AI: Simple
+Ain’t Stupid</h1>
+<p>Tim Menzies<br />
+timm@ieee.org</p>
+<p>“Simplicity is the ultimate sophistication”<br />
+- William Gaddis, The Recognitions (1955) p. 457;</p>
+<h2 id="introduction">1. Introduction</h2>
+<p>Ask anyone: AI is very complicated. It needs models with a trillion
+parameters. Those models cost tens of millions of dollars to train, and
+hundreds of dollars each day to run. No one can say how the models work.
+Thus, we must always be nervous about what they tell us. In this view,
+sophistication means size.</p>
+<p>Sophistication of that size has problems. Big AI is a rented
+telescope: powerful, but pointed by someone else. Only a few large
+companies can pay for such training, so science now depends on tools
+that science cannot inspect. The models change without notice, so
+yesterday’s results may not run tomorrow. Their answers can be wrong in
+confident ways, so every output needs a human check. Also, each new
+model asks for exponentially more, so we keep running out of the
+environmental, power, and financial resources this kind of AI needs.</p>
+<p>For these reasons, we are moved to look for a simpler approach. We
+argue (in the next chapter) that a very simple kind of AI is possible.
+This AI can explain itself. It can train useful models in milliseconds,
+from very little data. If our argument is correct, then many tasks that
+seem to need massive AI have a much simpler solution.</p>
+<p>We make this concrete with an example. Suppose we want to buy a car.
+Someone tells us that a good car accelerates quickly, uses less fuel,
+and weighs less (since a lighter car is cheaper to build, and cheaper to
+buy). Now someone offers us this car:</p>
+<pre><code>Clndrs, Volume, HpX, Model, origin, Lbs-, Acc+, Mpg+
+     4,    140,  92,    76,      1, 2572, 14.9,   30</code></pre>
+<p>What would an AI know about this car? It could tell us if this car is
+unusual, or worthwhiile to buy. Maybe it could find us a better car. And
+if we must buy this car, our AI could say what changes to the car would
+help it, the most.</p>
+<p>This table lists many other ways our AI could support us:</p>
+<table>
+<colgroup>
+<col style="width: 64%" />
+<col style="width: 35%" />
+</colgroup>
+<thead>
+<tr>
+<th>task</th>
+<th>AI tool</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Guess the fuel use before we see the sticker</td>
+<td>prediction</td>
+</tr>
+<tr>
+<td>Spot a strange car: a typo, or a scam</td>
+<td>anomaly detection</td>
+</tr>
+<tr>
+<td>Notice when the lot quietly changes under us</td>
+<td>drift</td>
+</tr>
+<tr>
+<td>Say why a car is slow, or thirsty</td>
+<td>diagnosis</td>
+</tr>
+<tr>
+<td>400 cars, one afternoon, what to inspect first?</td>
+<td>triage</td>
+</tr>
+<tr>
+<td>Justify any of the above to a skeptical buyer</td>
+<td>explanation</td>
+</tr>
+<tr>
+<td>Find the best car, test-driving very few</td>
+<td>optimization</td>
+</tr>
+<tr>
+<td>Chart a path from this car to a better one</td>
+<td>planning</td>
+</tr>
+<tr>
+<td>Find the cheapest change that fixes this car</td>
+<td>repair</td>
+</tr>
+<tr>
+<td>Sketch a better car from halves of two others</td>
+<td>synthesis</td>
+</tr>
+<tr>
+<td>Shrink 400 cars to the dozen that summarize</td>
+<td>compression</td>
+</tr>
+<tr>
+<td>Trade fast against light against cheap</td>
+<td>multi-objective trade-off</td>
+</tr>
+<tr>
+<td>Decide on the spot as cars arrive one at a time</td>
+<td>streaming</td>
+</tr>
+<tr>
+<td>Keep learning for years as the market moves</td>
+<td>lifelong active learning</td>
+</tr>
+<tr>
+<td>Say how much to trust all these answers</td>
+<td>statistical certification</td>
+</tr>
+<tr>
+<td>Teach the next intern to run the lot</td>
+<td>agent onboarding</td>
+</tr>
+</tbody>
+</table>
+<p>This book makes two claims. First, behind the curtain, these sixteen
+tools are almost the same. That is, the same few hundred lines of Python
+sit under all of them, and most chapters of this book add only a few
+dozen lines more.</p>
+<p>Second, each task in the table is simpler than its reputation
+because, fundamentally, <em>AI is simple</em>. The next chapter shows
+that, mathematically, finding good solutions for any of these tasks is
+surprisingly easy. Thus, “simple” and “does much” do not conflict.
+William Gaddis (quote above) would call this approach highly
+sophisticated. The sophistication of this AI is not in its size. It is
+in how little the AI needs:</p>
+<ul>
+<li>No trillion parameters</li>
+<li>Usually, less than a hundred rows of data.</li>
+</ul>
+<p>So we end this introduction with an invitation. Reflect on these
+examples. Then check, for yourself, if the simpler approach to AI is
+also the more sophisticated one.</p>
+<p>A note on audience: this is a book for programmers who already know
+some Python. If that is not you, then before starting here, maybe you
+should first read:</p>
+<ul>
+<li>Allen Downey’s “Think Python” (3rd ed., 2024),</li>
+<li>Eric Matthes’ “Python Crash Course” (3rd ed., 2023),</li>
+<li>or Joel Grus’s “Data Science from Scratch” (2nd ed., 2019).</li>
+</ul>
+<p>The last one also previews this book’s habit: build the tools
+yourself.</p>
+<h2 id="some-ai-is-simple">2. Some AI is Simple?</h2>
+<p>(If maths is not your thing, feel free to skip this chapter.)</p>
+<p>Some AI problems are very, very hard. Suppose we want an agent that
+is ready for anything. Then we must collect enough experience, in
+advance, to cover all future situations. This is reward-free
+exploration: learn a model of everything, before anyone says what “good”
+means. The theory prices that appetite. For S states, A actions, plans
+of length H, accuracy e, and confidence C, the samples needed are<a
+href="#fn1" class="footnote-ref" id="fnref1"
+role="doc-noteref"><sup>1</sup></a>:</p>
+<pre><code>n(reward free)  &gt;=  S^2 * A * H^3 * log(1/(1-C)) / e^2   (1)</code></pre>
+<p>For even small problems, reward-free exploration is very expensicea
+For example, consider a . one-step plan (H=1) over half a dozen
+variables, each with half dozen stats (A=6^6). At an error of e=0.05, if
+we accept 95% of the optimum (C=0.95), Equation (1) then asks us for at
+least 4.6 x 10^15 samples. So clearly, reward-free reasoning is Big AI:
+the kind of problem that really does need vast data, vast computers, and
+vast money.</p>
+<p>Some AI problems are simpler than that. If someone does tell us what
+“good” means, optimization becomes best-arm identification (a.k.a. the
+bandit problem). Here, we want to pull the most promising levers and
+drop the duds early. Hoeffding’s inequality prices tells that with A
+alternatives:</p>
+<pre><code>n(best arm)  &gt;=  (2 / e^2) * log(2A / (1-C))              (2)</code></pre>
+<p>For the same problem mentions above (c=0.05; C=0.95), Equation (2)
+tells us we only need 6,992 samples. While this cost is far below
+equation (1), acquiring seven thousand labels is still months of work,
+especially if each label needs a human to check the label, or some CPU
+intensive process to generate the data.</p>
+<p>Happily, some problems are even simpler. Let us admit that our work
+is not an exact science, and that all our data is a small sample of some
+larger phenomenon. In this statistical view, we do not want the best
+solution. We just want one that is indistinguishable from best. Call
+this near-enough optimization, or NEO. One random guess lands in the top
+p fraction with probability p, so n guesses succeed at least once with
+probability 1-(1-p)^n. This equation rearranges to:</p>
+<pre><code>n(neo)  &gt;  log(1-C) / log(1-p)                            (3)</code></pre>
+<p>This gets even simpler is we make the (not unsreasnabobale) assumpton
+that someone might have modeled this kind of problem before. If so, then
+(a) we could use their model to guess if one solution is better than
+another; so (b) we could explore new data with a binary chop. Tnew new
+method, called fastneo, needs this many samples:</p>
+<pre><code>n(fastneo)  &gt;  log2(log(1-C) / log(1-p))                     (4)</code></pre>
+<p>But how big is p? Cohen tells us that two numbers are
+indistinguishable when their difference is under 20% of their standard
+deviation.<a href="#fn2" class="footnote-ref" id="fnref2"
+role="doc-noteref"><sup>2</sup></a> If our scores are Gaussian (the bell
+curve, which effectively runs from -3sd to +3sd, a spread of 6sd), then
+that 20% covers p = (.2sd)/(6sd), which is about 3% of the whole
+range.</p>
+<p>So at p=0.033 and C=0.95, Equation (4) says we can find good
+solutions using at least log2(98)=7 samples. Relax to the top 5% and the
+bill drops to 59. Call NEO small AI. Ninety labels is an afternoon, not
+a data center. Fifteen orders of magnitude separate equation (1) from
+equation (3). Hence the plan of this book: hunt for the tasks where near
+enough is good enough. And this is not only theory: on more than 100 SE
+optimization tasks, a few dozen labels reached over 90% of the best
+known results<a href="#fn3" class="footnote-ref" id="fnref3"
+role="doc-noteref"><sup>3</sup></a>.</p>
+<p>Nor is that one paper’s quirk. Decades of results say that software
+problems often shrink to a few “keys”: a few variables, or a few rows,
+that control the rest<a href="#fn4" class="footnote-ref" id="fnref4"
+role="doc-noteref"><sup>4</sup></a>. For example:</p>
+<ul>
+<li>Defect predictors work with less than half a dozen static code
+attributes (Menzies, Greenwald &amp; Frank, TSE 2007).</li>
+<li>Effort estimation needs only small, well-chosen data (Chen, Menzies,
+Port &amp; Boehm, IEEE Software 2005).</li>
+<li>Security review of 28,750 Mozilla functions needed only 271 labeled
+exemplars (Yu, Theisen, Williams &amp; Menzies, TSE 2019).</li>
+<li>Labeling 6,000 GitHub commits needed only 300 exemplars (Tu, Yu
+&amp; Menzies, TSE 2020).</li>
+<li>Configuring complex systems needs only tiny decision trees (Nair et
+al., FLASH, TSE 2020).</li>
+<li>Sampling plus simple learners predicts the performance of
+configurable systems (Kaltenecker et al., IEEE Software 2020).</li>
+<li>Cloud data applications can be tested with a few dozen inputs (Zhang
+et al., BigFuzz, ASE 2020).</li>
+<li>Test suites shrink by orders of magnitude when tests only cover the
+keys (Chen, Shen &amp; Menzies, SNAP, 2019).</li>
+<li>Issue lifetimes are predicted by very simple models (Rees- Jones,
+Martin &amp; Menzies, 2017).</li>
+<li>Simple parameter tuning beats complex deep analytics for many SE
+tasks (Agrawal et al., DODGE, TSE 2019).</li>
+<li>NASA requirements models collapse to a few control variables (Mathew
+et al., RE 2017; Feather &amp; Menzies, RE 2002).</li>
+<li>Avionics control systems reduce to a few automatically found
+variables (Gay, Menzies, Davies &amp; Gundy-Burlet, ASE journal
+2010).</li>
+<li>Real code is repetitive, so its statistics are simple and
+exploitable (Hindle, Barr, Su, Gabel &amp; Devanbu, ICSE 2012).</li>
+<li>20% of the code holds 80% of the errors (Ostrand, Weyuker &amp;
+Bell, 2004; Hamill &amp; Goseva-Popstojanova, TSE 2009).</li>
+<li>Power laws in fine-grained changes explain why: developers work in
+small corners (Lin &amp; Whitehead, MSR 2015).</li>
+<li>Most rows can be discarded without losing the signal (Olvera- Lopez
+et al., instance selection review, 2010).</li>
+<li>Most columns can be discarded, too (Kohavi &amp; John, wrapper
+feature selection, 1997).</li>
+<li>SAT solvers race when a few “backdoor” variables are set first
+(Williams, Gomes &amp; Selman, IJCAI 2003).</li>
+<li>A few principal components usually carry the signal (Pearson, 1901;
+the oldest key-finder of all).</li>
+<li>Even outside computing: hospital nutrition audits reduce to a few
+items (Partington et al., 2015).</li>
+</ul>
+<p>Twenty sightings, one moral: the above maths is not necessarily
+crazy. Systems that look huge are often governed by a few keys, and a
+few keys need only a few samples.</p>
+<p>Halfway through, one more gift. Suppose this is not the first time
+this kind of problem has been seen. Someone, in the past, did the work
+to build a model that can glance at two new rows and guess which one is
+better. If those guesses are even roughly reliable, the labels we must
+buy drop from dozens toward log2(N) <a href="#fn5" class="footnote-ref"
+id="fnref5" role="doc-noteref"><sup>5</sup></a>.</p>
+<p>Two caveats:</p>
+<ul>
+<li><p>For mission-critical and safety-critical systems, we would rather
+be exactly at the best, not near it. But you cannot always get what you
+want. Only small systems can be exhaustively enumerated. Beyond a
+(surprisingly small) size, partial sampling is all that anyone can do.
+Hence even the critical systems need this maths.</p></li>
+<li><p>The above maths is optimistic. It assumes well-spread solutions,
+gentle distributions, and a host of other conditions that need not hold.
+And yet, as we shall see, it is remarkable how well this optimism holds
+up in practice.</p></li>
+</ul>
+<p>The rest of this book checks this maths. That check waits a few
+chapters. First, we need some basic tools, definitions of core concepts,
+and a large corpus of data to explore. But by about Chapter 7, we will
+show that the optimism of the above maths is not misplaced. That result
+enables a whole new kind of sophisticated, simple AI.</p>
+<h2 id="the-basic">The Basic</h2>
+<p>We can answer these questions with two basic AI operators: “cluster”
+and “predict”. Clustering groups related things together. Prediction
+reports the expected value within the relevant group.</p>
+<pre><code>Clndrs, Volume, HpX, Model, origin, Lbs-, Acc+, Mpg+, | disty
+
+     4,     90,  48,    78,      2, 1985, 21.5,   40, |  0.07
+     4,     98,  68,    78,      1, 2155, 16.5,   30, |  0.26
+    ...
+     4,    140,  92,    76,      1, 2572, 14.9,   30, |  0.41
+     4,     97,  54,    72,      2, 2254, 23.5,   20, |  0.41
+    ...
+     6,    131, 103,    78,      2, 2830, 15.9,   20, |  0.54
+     6,    232, 100,    71,      1, 3288, 15.5,   20, |  0.62
+     8,    305, 145,    77,      1, 3880, 12.5,   20, |  0.81
+     8,    454, 220,    70,      1, 4354,    9,   10, |  0.96</code></pre>
+<p>The first thing we need to do is</p>
+<h3 id="lessons">Lessons:</h3>
+<ul>
+<li>Don’t think, remember.</li>
+</ul>
+<h1 id="references">References</h1>
+<section id="footnotes" class="footnotes footnotes-end-of-document"
+role="doc-endnotes">
+<hr />
+<ol>
+<li id="fn1"><p>Kishan Kumar Ganguly and Tim Menzies, “How Low Can You
+Go? The Data-Light SE Challenge”, arXiv:2512.13524.<a href="#fnref1"
+class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>J. Cohen, “Statistical Power Analysis for the Behavioral
+Sciences”, 2nd ed., Lawrence Erlbaum, 1988. There, d = 0.2 standard
+deviations marks a “small” effect.<a href="#fnref2"
+class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn3"><p>Kishan Kumar Ganguly and Tim Menzies, “How Low Can You
+Go? The Data-Light SE Challenge”, arXiv:2512.13524.<a href="#fnref3"
+class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn4"><p>T. Menzies, “Shockingly Simple: ‘Keys’ for Better AI for
+SE”, IEEE Software 38(2), 2021, doi:10.1109/MS.2020.3043014; the
+references above are collected there.<a href="#fnref4"
+class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn5"><p>Kishan Kumar Ganguly and Tim Menzies, “How Low Can You
+Go? The Data-Light SE Challenge”, arXiv:2512.13524.<a href="#fnref5"
+class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section>
+</body>
+</html>
