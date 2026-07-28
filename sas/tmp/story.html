@@ -174,7 +174,7 @@
   pre { background: #eeeeee; padding: 0.8em 1em;
         border-radius: 4px; overflow-x: auto; }
   body { max-width: 46em; margin: auto; padding: 0 1em;
-         font-family: Georgia, serif; line-height: 1.45; }
+         font-family: Optima, Candara, 'Gill Sans', 'Segoe UI', sans-serif; line-height: 1.45; }
   code { background: #eeeeee; }
   pre code { background: none; }
   </style>
@@ -387,46 +387,65 @@ that control the rest<a href="#fn4" class="footnote-ref" id="fnref4"
 role="doc-noteref"><sup>4</sup></a>. For example:</p>
 <ul>
 <li>Defect predictors work with less than half a dozen static code
-attributes (Menzies, Greenwald &amp; Frank, TSE 2007).</li>
-<li>Effort estimation needs only small, well-chosen data (Chen, Menzies,
-Port &amp; Boehm, IEEE Software 2005).</li>
+attributes.<a href="#fn5" class="footnote-ref" id="fnref5"
+role="doc-noteref"><sup>5</sup></a></li>
+<li>Effort estimation needs only small, well-chosen data.<a href="#fn6"
+class="footnote-ref" id="fnref6"
+role="doc-noteref"><sup>6</sup></a></li>
 <li>Security review of 28,750 Mozilla functions needed only 271 labeled
-exemplars (Yu, Theisen, Williams &amp; Menzies, TSE 2019).</li>
-<li>Labeling 6,000 GitHub commits needed only 300 exemplars (Tu, Yu
-&amp; Menzies, TSE 2020).</li>
-<li>Configuring complex systems needs only tiny decision trees (Nair et
-al., FLASH, TSE 2020).</li>
+exemplars.<a href="#fn7" class="footnote-ref" id="fnref7"
+role="doc-noteref"><sup>7</sup></a></li>
+<li>Labeling 6,000 GitHub commits needed only 300 exemplars.<a
+href="#fn8" class="footnote-ref" id="fnref8"
+role="doc-noteref"><sup>8</sup></a></li>
+<li>Configuring complex systems needs only tiny decision trees.<a
+href="#fn9" class="footnote-ref" id="fnref9"
+role="doc-noteref"><sup>9</sup></a></li>
 <li>Sampling plus simple learners predicts the performance of
-configurable systems (Kaltenecker et al., IEEE Software 2020).</li>
-<li>Cloud data applications can be tested with a few dozen inputs (Zhang
-et al., BigFuzz, ASE 2020).</li>
+configurable systems.<a href="#fn10" class="footnote-ref" id="fnref10"
+role="doc-noteref"><sup>10</sup></a></li>
+<li>Cloud data applications can be tested with a few dozen inputs.<a
+href="#fn11" class="footnote-ref" id="fnref11"
+role="doc-noteref"><sup>11</sup></a></li>
 <li>Test suites shrink by orders of magnitude when tests only cover the
-keys (Chen, Shen &amp; Menzies, SNAP, 2019).</li>
-<li>Issue lifetimes are predicted by very simple models (Rees- Jones,
-Martin &amp; Menzies, 2017).</li>
+keys.<a href="#fn12" class="footnote-ref" id="fnref12"
+role="doc-noteref"><sup>12</sup></a></li>
+<li>Issue lifetimes are predicted by very simple models.<a href="#fn13"
+class="footnote-ref" id="fnref13"
+role="doc-noteref"><sup>13</sup></a></li>
 <li>Simple parameter tuning beats complex deep analytics for many SE
-tasks (Agrawal et al., DODGE, TSE 2019).</li>
-<li>NASA requirements models collapse to a few control variables (Mathew
-et al., RE 2017; Feather &amp; Menzies, RE 2002).</li>
+tasks.<a href="#fn14" class="footnote-ref" id="fnref14"
+role="doc-noteref"><sup>14</sup></a></li>
+<li>NASA requirements models collapse to a few control variables.<a
+href="#fn15" class="footnote-ref" id="fnref15"
+role="doc-noteref"><sup>15</sup></a></li>
 <li>Avionics control systems reduce to a few automatically found
-variables (Gay, Menzies, Davies &amp; Gundy-Burlet, ASE journal
-2010).</li>
+variables.<a href="#fn16" class="footnote-ref" id="fnref16"
+role="doc-noteref"><sup>16</sup></a></li>
 <li>Real code is repetitive, so its statistics are simple and
-exploitable (Hindle, Barr, Su, Gabel &amp; Devanbu, ICSE 2012).</li>
-<li>20% of the code holds 80% of the errors (Ostrand, Weyuker &amp;
-Bell, 2004; Hamill &amp; Goseva-Popstojanova, TSE 2009).</li>
+exploitable.<a href="#fn17" class="footnote-ref" id="fnref17"
+role="doc-noteref"><sup>17</sup></a></li>
+<li>20% of the code holds 80% of the errors.<a href="#fn18"
+class="footnote-ref" id="fnref18"
+role="doc-noteref"><sup>18</sup></a></li>
 <li>Power laws in fine-grained changes explain why: developers work in
-small corners (Lin &amp; Whitehead, MSR 2015).</li>
-<li>Most rows can be discarded without losing the signal (Olvera- Lopez
-et al., instance selection review, 2010).</li>
-<li>Most columns can be discarded, too (Kohavi &amp; John, wrapper
-feature selection, 1997).</li>
-<li>SAT solvers race when a few “backdoor” variables are set first
-(Williams, Gomes &amp; Selman, IJCAI 2003).</li>
-<li>A few principal components usually carry the signal (Pearson, 1901;
-the oldest key-finder of all).</li>
+small corners.<a href="#fn19" class="footnote-ref" id="fnref19"
+role="doc-noteref"><sup>19</sup></a></li>
+<li>Most rows can be discarded without losing the signal.<a href="#fn20"
+class="footnote-ref" id="fnref20"
+role="doc-noteref"><sup>20</sup></a></li>
+<li>Most columns can be discarded, too.<a href="#fn21"
+class="footnote-ref" id="fnref21"
+role="doc-noteref"><sup>21</sup></a></li>
+<li>SAT solvers race when a few “backdoor” variables are set first.<a
+href="#fn22" class="footnote-ref" id="fnref22"
+role="doc-noteref"><sup>22</sup></a></li>
+<li>A few principal components usually carry the signal; the oldest
+key-finder of all.<a href="#fn23" class="footnote-ref" id="fnref23"
+role="doc-noteref"><sup>23</sup></a></li>
 <li>Even outside computing: hospital nutrition audits reduce to a few
-items (Partington et al., 2015).</li>
+items.<a href="#fn24" class="footnote-ref" id="fnref24"
+role="doc-noteref"><sup>24</sup></a></li>
 </ul>
 <p>Twenty sightings, one moral: the above maths is not necessarily
 crazy. Systems that look huge are often governed by a few keys, and a
@@ -435,8 +454,8 @@ few keys need only a few samples.</p>
 this kind of problem has been seen. Someone, in the past, did the work
 to build a model that can glance at two new rows and guess which one is
 better. If those guesses are even roughly reliable, the labels we must
-buy drop from dozens toward log2(N) <a href="#fn5" class="footnote-ref"
-id="fnref5" role="doc-noteref"><sup>5</sup></a>.</p>
+buy drop from dozens toward log2(N) <a href="#fn25" class="footnote-ref"
+id="fnref25" role="doc-noteref"><sup>25</sup></a>.</p>
 <p>Two caveats:</p>
 <ul>
 <li><p>For mission-critical and safety-critical systems, we would rather
@@ -491,11 +510,95 @@ class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 Go? The Data-Light SE Challenge”, arXiv:2512.13524.<a href="#fnref3"
 class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 <li id="fn4"><p>T. Menzies, “Shockingly Simple: ‘Keys’ for Better AI for
-SE”, IEEE Software 38(2), 2021, doi:10.1109/MS.2020.3043014; the
-references above are collected there.<a href="#fnref4"
+SE”, IEEE Software 38(2), 2021, doi:10.1109/MS.2020.3043014. That column
+collects the sightings above.<a href="#fnref4" class="footnote-back"
+role="doc-backlink">↩︎</a></p></li>
+<li id="fn5"><p>T. Menzies, J. Greenwald, and A. Frank, “Data mining
+static code attributes to learn defect predictors”, IEEE Trans. Software
+Eng. 33(1):2-13, 2007. doi:10.1109/TSE.2007.256941<a href="#fnref5"
 class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn5"><p>Kishan Kumar Ganguly and Tim Menzies, “How Low Can You
-Go? The Data-Light SE Challenge”, arXiv:2512.13524.<a href="#fnref5"
+<li id="fn6"><p>Z. Chen, T. Menzies, D. Port, and B. Boehm, “Finding the
+right data for software cost modeling”, IEEE Software 22(6):38-46, 2005.
+doi:10.1109/MS.2005.151<a href="#fnref6" class="footnote-back"
+role="doc-backlink">↩︎</a></p></li>
+<li id="fn7"><p>Z. Yu, C. Theisen, L. Williams, and T. Menzies,
+“Improving vulnerability inspection efficiency using active learning”,
+IEEE Trans. Software Eng., 2019. doi:10.1109/TSE.2019.2949275<a
+href="#fnref7" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn8"><p>H. Tu, Z. Yu, and T. Menzies, “Better data labelling
+with EMBLEM (and how that impacts defect prediction)”, IEEE Trans.
+Software Eng., 2020. doi:10.1109/TSE.2020.2986415<a href="#fnref8"
+class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn9"><p>V. Nair, Z. Yu, T. Menzies, N. Siegmund, and S. Apel,
+“Finding faster configurations using FLASH”, IEEE Trans. Software Eng.
+46(7):794-811, 2020. doi:10.1109/TSE.2018.2870895<a href="#fnref9"
+class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn10"><p>C. Kaltenecker, A. Grebhahn, N. Siegmund, and S. Apel,
+“The interplay of sampling and machine learning for software performance
+prediction”, IEEE Software 37(4):58-66, 2020.
+doi:10.1109/MS.2020.2987024<a href="#fnref10" class="footnote-back"
+role="doc-backlink">↩︎</a></p></li>
+<li id="fn11"><p>Q. Zhang, J. Wang, M.A. Gulzar, R. Padhye, and M. Kim,
+“BigFuzz: efficient fuzz testing for data analytics using framework
+abstraction”, ASE 2020.<a href="#fnref11" class="footnote-back"
+role="doc-backlink">↩︎</a></p></li>
+<li id="fn12"><p>J. Chen, X. Shen, and T. Menzies, “Building very small
+test suites (with SNAP)”, arXiv:1905.05358, 2019.<a href="#fnref12"
+class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn13"><p>M. Rees-Jones, M. Martin, and T. Menzies, “Better
+predictors for issue lifetime”, arXiv:1702.07735, 2017.<a
+href="#fnref13" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn14"><p>A. Agrawal, W. Fu, D. Chen, X. Shen, and T. Menzies,
+“How to ‘DODGE’ complex software analytics”, IEEE Trans. Software Eng.,
+2019. doi:10.1109/TSE.2019.2945020<a href="#fnref14"
+class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn15"><p>G. Mathew, T. Menzies, N. Ernst, and J. Klein,
+“’SHORT’er reasoning about larger requirements models”, RE 2017,
+pp.154-163, doi:10.1109/RE.2017.31; M.S. Feather and T. Menzies,
+“Converging on the optimal attainment of requirements”, RE 2002,
+pp.263-270, doi:10.1109/ICRE.2002.1048537<a href="#fnref15"
+class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn16"><p>G. Gay, T. Menzies, M. Davies, and K. Gundy-Burlet,
+“Automatically finding the control variables for complex system
+behavior”, Automated Software Eng. 17(4):439-468, 2010.
+doi:10.1007/s10515-010-0072-x<a href="#fnref16" class="footnote-back"
+role="doc-backlink">↩︎</a></p></li>
+<li id="fn17"><p>A. Hindle, E.T. Barr, Z. Su, M. Gabel, and P. Devanbu,
+“On the naturalness of software”, ICSE 2012, pp.837-847.<a
+href="#fnref17" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn18"><p>T.J. Ostrand, E.J. Weyuker, and R.M. Bell, “Where the
+bugs are”, ACM SIGSOFT Software Eng. Notes 29(4):86-96, 2004,
+doi:10.1145/1013886.1007524; M. Hamill and K. Goseva- Popstojanova,
+“Common trends in software fault and failure data”, IEEE Trans. Software
+Eng. 35(4):484-496, 2009. doi:10.1109/TSE.2009.3<a href="#fnref18"
+class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn19"><p>Z. Lin and J. Whitehead, “Why power laws? An
+explanation from fine-grained code changes”, MSR 2015, pp.68-75.
+doi:10.1109/MSR.2015.14<a href="#fnref19" class="footnote-back"
+role="doc-backlink">↩︎</a></p></li>
+<li id="fn20"><p>J.A. Olvera-Lopez, J.A. Carrasco-Ochoa, J.F. Martinez-
+Trinidad, and J. Kittler, “A review of instance selection methods”,
+Artificial Intelligence Review 34(2):133-143, 2010.
+doi:10.1007/s10462-010-9165-y<a href="#fnref20" class="footnote-back"
+role="doc-backlink">↩︎</a></p></li>
+<li id="fn21"><p>R. Kohavi and G.H. John, “Wrappers for feature subset
+selection”, Artificial Intelligence 97(1-2):273-324, 1997.
+doi:10.1016/S0004-3702(97)00043-X<a href="#fnref21"
+class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn22"><p>R. Williams, C.P. Gomes, and B. Selman, “Backdoors to
+typical case complexity”, IJCAI 2003, pp.1173-1178.<a href="#fnref22"
+class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn23"><p>K. Pearson, “On lines and planes of closest fit to
+systems of points in space”, Philosophical Magazine 2(11):559-572, 1901.
+doi:10.1080/14786440109462720<a href="#fnref23" class="footnote-back"
+role="doc-backlink">↩︎</a></p></li>
+<li id="fn24"><p>S.N. Partington, T.J. Menzies, T.A. Colburn, B.E.
+Saelens, and K. Glanz, “Reduced-item food audits based on the nutrition
+environment measures surveys”, American J. Preventive Medicine
+49(4):e23-e33, 2015. doi:10.1016/j.amepre.2015.04.036<a href="#fnref24"
+class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn25"><p>Kishan Kumar Ganguly and Tim Menzies, “How Low Can You
+Go? The Data-Light SE Challenge”, arXiv:2512.13524.<a href="#fnref25"
 class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 </ol>
 </section>

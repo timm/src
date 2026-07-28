@@ -180,51 +180,110 @@ software problems often shrink to a few "keys": a few variables,
 or a few rows, that control the rest[^keys]. For example:
 
 - Defect predictors work with less than half a dozen static code
-  attributes (Menzies, Greenwald & Frank, TSE 2007).
-- Effort estimation needs only small, well-chosen data (Chen,
-  Menzies, Port & Boehm, IEEE Software 2005).
+  attributes.[^k1]
+- Effort estimation needs only small, well-chosen data.[^k2]
 - Security review of 28,750 Mozilla functions needed only 271
-  labeled exemplars (Yu, Theisen, Williams & Menzies, TSE 2019).
-- Labeling 6,000 GitHub commits needed only 300 exemplars (Tu, Yu
-  & Menzies, TSE 2020).
-- Configuring complex systems needs only tiny decision trees
-  (Nair et al., FLASH, TSE 2020).
+  labeled exemplars.[^k3]
+- Labeling 6,000 GitHub commits needed only 300 exemplars.[^k4]
+- Configuring complex systems needs only tiny decision
+  trees.[^k5]
 - Sampling plus simple learners predicts the performance of
-  configurable systems (Kaltenecker et al., IEEE Software 2020).
-- Cloud data applications can be tested with a few dozen inputs
-  (Zhang et al., BigFuzz, ASE 2020).
+  configurable systems.[^k6]
+- Cloud data applications can be tested with a few dozen
+  inputs.[^k7]
 - Test suites shrink by orders of magnitude when tests only cover
-  the keys (Chen, Shen & Menzies, SNAP, 2019).
-- Issue lifetimes are predicted by very simple models (Rees-
-  Jones, Martin & Menzies, 2017).
+  the keys.[^k8]
+- Issue lifetimes are predicted by very simple models.[^k9]
 - Simple parameter tuning beats complex deep analytics for many
-  SE tasks (Agrawal et al., DODGE, TSE 2019).
-- NASA requirements models collapse to a few control variables
-  (Mathew et al., RE 2017; Feather & Menzies, RE 2002).
+  SE tasks.[^k10]
+- NASA requirements models collapse to a few control
+  variables.[^k11]
 - Avionics control systems reduce to a few automatically found
-  variables (Gay, Menzies, Davies & Gundy-Burlet, ASE journal
-  2010).
+  variables.[^k12]
 - Real code is repetitive, so its statistics are simple and
-  exploitable (Hindle, Barr, Su, Gabel & Devanbu, ICSE 2012).
-- 20% of the code holds 80% of the errors (Ostrand, Weyuker &
-  Bell, 2004; Hamill & Goseva-Popstojanova, TSE 2009).
+  exploitable.[^k13]
+- 20% of the code holds 80% of the errors.[^k14]
 - Power laws in fine-grained changes explain why: developers work
-  in small corners (Lin & Whitehead, MSR 2015).
-- Most rows can be discarded without losing the signal (Olvera-
-  Lopez et al., instance selection review, 2010).
-- Most columns can be discarded, too (Kohavi & John, wrapper
-  feature selection, 1997).
-- SAT solvers race when a few "backdoor" variables are set first
-  (Williams, Gomes & Selman, IJCAI 2003).
-- A few principal components usually carry the signal (Pearson,
-  1901; the oldest key-finder of all).
+  in small corners.[^k15]
+- Most rows can be discarded without losing the signal.[^k16]
+- Most columns can be discarded, too.[^k17]
+- SAT solvers race when a few "backdoor" variables are set
+  first.[^k18]
+- A few principal components usually carry the signal; the oldest
+  key-finder of all.[^k19]
 - Even outside computing: hospital nutrition audits reduce to a
-  few items (Partington et al., 2015).
+  few items.[^k20]
 
-[^keys]: T. Menzies, "Shockingly Simple: 'Keys' for Better AI
-  for SE", IEEE Software 38(2), 2021,
-  doi:10.1109/MS.2020.3043014; the references above are
-  collected there.
+[^keys]: T. Menzies, "Shockingly Simple: 'Keys' for Better AI for
+  SE", IEEE Software 38(2), 2021, doi:10.1109/MS.2020.3043014.
+  That column collects the sightings above.
+
+[^k1]: T. Menzies, J. Greenwald, and A. Frank, "Data mining
+  static code attributes to learn defect predictors", IEEE Trans.
+  Software Eng. 33(1):2-13, 2007. doi:10.1109/TSE.2007.256941
+[^k2]: Z. Chen, T. Menzies, D. Port, and B. Boehm, "Finding the
+  right data for software cost modeling", IEEE Software
+  22(6):38-46, 2005. doi:10.1109/MS.2005.151
+[^k3]: Z. Yu, C. Theisen, L. Williams, and T. Menzies, "Improving
+  vulnerability inspection efficiency using active learning",
+  IEEE Trans. Software Eng., 2019. doi:10.1109/TSE.2019.2949275
+[^k4]: H. Tu, Z. Yu, and T. Menzies, "Better data labelling with
+  EMBLEM (and how that impacts defect prediction)", IEEE Trans.
+  Software Eng., 2020. doi:10.1109/TSE.2020.2986415
+[^k5]: V. Nair, Z. Yu, T. Menzies, N. Siegmund, and S. Apel,
+  "Finding faster configurations using FLASH", IEEE Trans.
+  Software Eng. 46(7):794-811, 2020. doi:10.1109/TSE.2018.2870895
+[^k6]: C. Kaltenecker, A. Grebhahn, N. Siegmund, and S. Apel,
+  "The interplay of sampling and machine learning for software
+  performance prediction", IEEE Software 37(4):58-66, 2020.
+  doi:10.1109/MS.2020.2987024
+[^k7]: Q. Zhang, J. Wang, M.A. Gulzar, R. Padhye, and M. Kim,
+  "BigFuzz: efficient fuzz testing for data analytics using
+  framework abstraction", ASE 2020.
+[^k8]: J. Chen, X. Shen, and T. Menzies, "Building very small
+  test suites (with SNAP)", arXiv:1905.05358, 2019.
+[^k9]: M. Rees-Jones, M. Martin, and T. Menzies, "Better
+  predictors for issue lifetime", arXiv:1702.07735, 2017.
+[^k10]: A. Agrawal, W. Fu, D. Chen, X. Shen, and T. Menzies, "How
+  to 'DODGE' complex software analytics", IEEE Trans. Software
+  Eng., 2019. doi:10.1109/TSE.2019.2945020
+[^k11]: G. Mathew, T. Menzies, N. Ernst, and J. Klein, "'SHORT'er
+  reasoning about larger requirements models", RE 2017,
+  pp.154-163, doi:10.1109/RE.2017.31; M.S. Feather and T.
+  Menzies, "Converging on the optimal attainment of
+  requirements", RE 2002, pp.263-270,
+  doi:10.1109/ICRE.2002.1048537
+[^k12]: G. Gay, T. Menzies, M. Davies, and K. Gundy-Burlet,
+  "Automatically finding the control variables for complex system
+  behavior", Automated Software Eng. 17(4):439-468, 2010.
+  doi:10.1007/s10515-010-0072-x
+[^k13]: A. Hindle, E.T. Barr, Z. Su, M. Gabel, and P. Devanbu,
+  "On the naturalness of software", ICSE 2012, pp.837-847.
+[^k14]: T.J. Ostrand, E.J. Weyuker, and R.M. Bell, "Where the
+  bugs are", ACM SIGSOFT Software Eng. Notes 29(4):86-96, 2004,
+  doi:10.1145/1013886.1007524; M. Hamill and K. Goseva-
+  Popstojanova, "Common trends in software fault and failure
+  data", IEEE Trans. Software Eng. 35(4):484-496, 2009.
+  doi:10.1109/TSE.2009.3
+[^k15]: Z. Lin and J. Whitehead, "Why power laws? An explanation
+  from fine-grained code changes", MSR 2015, pp.68-75.
+  doi:10.1109/MSR.2015.14
+[^k16]: J.A. Olvera-Lopez, J.A. Carrasco-Ochoa, J.F. Martinez-
+  Trinidad, and J. Kittler, "A review of instance selection
+  methods", Artificial Intelligence Review 34(2):133-143, 2010.
+  doi:10.1007/s10462-010-9165-y
+[^k17]: R. Kohavi and G.H. John, "Wrappers for feature subset
+  selection", Artificial Intelligence 97(1-2):273-324, 1997.
+  doi:10.1016/S0004-3702(97)00043-X
+[^k18]: R. Williams, C.P. Gomes, and B. Selman, "Backdoors to
+  typical case complexity", IJCAI 2003, pp.1173-1178.
+[^k19]: K. Pearson, "On lines and planes of closest fit to
+  systems of points in space", Philosophical Magazine
+  2(11):559-572, 1901. doi:10.1080/14786440109462720
+[^k20]: S.N. Partington, T.J. Menzies, T.A. Colburn, B.E.
+  Saelens, and K. Glanz, "Reduced-item food audits based on the
+  nutrition environment measures surveys", American J. Preventive
+  Medicine 49(4):e23-e33, 2015. doi:10.1016/j.amepre.2015.04.036
 
 Twenty sightings, one moral: the above maths is not necessarily
 crazy. Systems that look huge are often governed by a few keys,
