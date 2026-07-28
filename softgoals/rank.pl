@@ -68,7 +68,8 @@ main :- set_random(seed(1)), statistics(cputime,T0),
                ( KP is 100*K/NL, SP is 100*MS/NS, CP is 100*MD/NL,
                  format("k=~w (~1f% dec) worlds ~w | mean d ~3f | soft ~1f% | cost ~1f%~n",
                         [K,KP,N,MB,SP,CP]) )),
-        msort(Rows,_), findall(MB-K,member(row(K,_,MB,_,_),Rows),BK),
-        msort(BK,[Bst-Kst|_]), KPb is 100*Kst/NL,
-        format("PLATEAU: k*=~w (~1f% of decisions) mean d ~3f | ~1fs~n",
-               [Kst,KPb,Bst,T]).
+        findall(MB-row(K,N,MB,MS,MD),member(row(K,N,MB,MS,MD),Rows),BK),
+        msort(BK,[Bst-row(Kst,_,_,MSb,MDb)|_]), KPb is 100*Kst/NL,
+        SPb is 100*MSb/NS, CPb is 100*MDb/NL,
+        format("PLATEAU: k*=~w (~1f% of decisions) mean d ~3f | soft ~1f% | cost ~1f% | ~1fs~n",
+               [Kst,KPb,Bst,SPb,CPb,T]).
