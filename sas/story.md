@@ -109,67 +109,61 @@ confidence C, the samples needed are[^howlow]:
 
     n(reward free)  >=  S^2 * A * H^3 * log(1/(1-C)) / e^2   (1)
 
-For even small problems, reward-free exploration
-is very expensicea For example, consider a . 
-one-step plan (H=1) over half a dozen variables, each with half
-dozen stats (A=6^6). At an error of
-e=0.05,  if  we accept 95% of the optimum  (C=0.95),
-Equation
-(1) then asks us for at least 4.6 x 10^15 samples. So clearly,
-reward-free reasoning is Big AI: the kind of problem that really
-does need vast data, vast computers, and vast money.
+Even small problems make reward-free exploration expensive.
+Consider one-step plans (H=1) over six variables with six states
+each (A=6^6). Set e=0.05 and C=0.95; that is, we want 95% of the
+optimum, with 95% confidence. Equation (1) then asks for at least
+4.6 x 10^15 samples. So reward-free reasoning is Big AI: the kind
+of problem that really does need vast data, vast computers, and
+vast money.
 
 Some AI problems are simpler than that. If someone does tell us
-what "good" means, optimization  becomes best-arm identification (a.k.a. the
-bandit problem). Here, we want to pull the most promising levers
-and drop the duds
-early. Hoeffding's inequality prices tells that with A alternatives:
+what "good" means, optimization becomes best-arm identification,
+also called the bandit problem. Pull the most promising levers.
+Drop the duds early. Hoeffding's inequality prices the search
+across A alternatives:
 
     n(best arm)  >=  (2 / e^2) * log(2A / (1-C))              (2)
 
-For the same problem mentions above (c=0.05; C=0.95),
-Equation (2) tells us we only need 6,992 samples. 
-While this cost is far below equation (1),
-acquiring seven thousand labels is still months of work, especially
-if
-each label
-needs a human to check the label, or some CPU intensive process to generate the data.
+For the same problem as above, equation (2) needs only 6,992
+samples. That cost is far below equation (1). But seven thousand
+labels is still months of work, when each label needs a human
+check or a long computer run.
 
 Happily, some problems are even simpler. Let us admit that our
-work is not an exact science, and that all our data is a small
-sample of some larger phenomenon. In this statistical view, we do
-not want the best solution. We just want one that is
-indistinguishable from best. Call this near-enough optimization,
-or NEO. One random guess lands in the top p fraction with
-probability p, so n guesses succeed at least once with
-probability 1-(1-p)^n. This equation rearranges to:
+work is not an exact science. All our data is a small sample of
+some larger phenomenon. In this statistical view, we do not want
+the best solution. We just want one that is indistinguishable
+from best. Call this near-enough optimization, or NEO. One random
+guess lands in the top p fraction with probability p. Thus, n
+guesses succeed at least once with probability 1-(1-p)^n. That
+equation rearranges to:
 
     n(neo)  >  log(1-C) / log(1-p)                            (3)
 
-This gets even simpler is we make the (not unsreasnabobale) assumpton
-that someone might have modeled this kind of problem before.
-If so, then (a) we could use their model to guess if one solution is better than
-another; so (b) we could explore new data with a binary chop.
-Tnew new method, called fastneo, needs this many samples:
-
-    n(fastneo)  >  log2(log(1-C) / log(1-p))                     (4)
-
-But how big is p? Cohen tells us that two numbers are
+How big is p? Cohen tells us that two numbers are
 indistinguishable when their difference is under 20% of their
-standard deviation.[^cohen] If our scores are Gaussian (the bell
-curve, which effectively runs from -3sd to +3sd, a spread of
-6sd), then that 20% covers p = (.2sd)/(6sd), which is about 3% of the
-whole range.
+standard deviation.[^cohen] Suppose our scores are Gaussian; that
+is, the bell curve, which effectively runs from -3sd to +3sd, a
+spread of 6sd. Then that 20% covers p = 0.2/6, which is about 3%
+of the whole range. Set p=0.03 and C=0.95. Equation (3) then asks
+for about 98 samples. Call NEO small AI. A hundred labels is an
+afternoon, not a data center.
 
-So at p=0.033 and C=0.95, Equation (4) says we can find
-good solutions using at least  log2(98)=7 samples. 
-Relax to the top 5% and the bill drops to 59. Call NEO small AI.
-Ninety labels is an afternoon, not a data center. Fifteen orders
-of magnitude separate equation (1) from equation (3). Hence the
-plan of this book: hunt for the tasks where near enough is good
-enough. And this is not only theory: on more than 100 SE
-optimization tasks, a few dozen labels reached over 90% of the
-best known results[^howlow].
+One more assumption makes this simpler again. It is not
+unreasonable to think that someone has modeled this kind of
+problem before. If so, their old model can guess which of two new
+solutions is better. Such guesses let us explore new data with a
+binary chop. This method, called FASTNEO, needs only:
+
+    n(fastneo)  >  log2( log(1-C) / log(1-p) )                (4)
+
+Equation (4) says log2(98) samples, which rounds up to seven.
+Seven. Fifteen orders of magnitude separate equation (1) from
+equation (4). Hence the plan of this book: hunt for the tasks
+where near enough is good enough. And this is not only theory. On
+more than 100 SE optimization tasks, a few dozen labels reached
+over 90% of the best known results[^howlow].
 
 [^cohen]: J. Cohen, "Statistical Power Analysis for the
   Behavioral Sciences", 2nd ed., Lawrence Erlbaum, 1988.
@@ -288,13 +282,6 @@ or a few rows, that control the rest[^keys]. For example:
 Twenty sightings, one moral: the above maths is not necessarily
 crazy. Systems that look huge are often governed by a few keys,
 and a few keys need only a few samples.
-
-Halfway through, one more gift. Suppose this is not the first
-time this kind of problem has been seen. Someone, in the past,
-did the work to build a model that can glance at two new rows and
-guess which one is better. If those guesses are even roughly
-reliable, the labels we must buy drop from dozens toward log2(N)
-[^howlow].
 
 [^howlow]: Kishan Kumar Ganguly and Tim Menzies, "How Low
   Can You Go? The Data-Light SE Challenge",
