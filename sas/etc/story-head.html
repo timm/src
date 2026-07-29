@@ -1,6 +1,11 @@
 <style>
-pre { background: light-dark(#eeeeee, #2c2c2c); padding: 0.8em 1em;
-      border-radius: 4px; overflow-x: auto; }
+pre { background: light-dark(#f5f6f8, #26292d); padding: 0.8em 1em;
+      border: 1px dashed light-dark(#5b8ec755, #7aa7d144);
+      border-left: 6px solid light-dark(#9aa0a6, #5f6368);
+      border-radius: 0 4px 4px 0; overflow-x: auto;
+      position: relative; }
+pre::before { content: "📜"; position: absolute;
+      top: -0.6em; left: -0.85em; font-size: 0.85em; }
 body { max-width: 46em; margin: auto; padding: 0 1em;
        font-family: Optima, Candara, 'Gill Sans', 'Segoe UI', sans-serif; line-height: 1.45; }
 code { background: light-dark(#eeeeee, #2c2c2c); }
@@ -17,9 +22,32 @@ blockquote { border-left: 3px solid #8884; padding-left: 1em;
         background: none; cursor: pointer; }
 table { border-collapse: collapse; margin: 0 auto; }
 td, th { border-bottom: 1px solid #8886; padding: .25em .6em; }
+#TOC { border: 1px solid #8884; border-radius: 4px;
+       padding: .5em 1.2em; margin: 1.5em 0;
+       font-size: .95em; }
+#TOC ul { list-style: none; margin: .2em 0; padding-left: 1em; }
+#TOC > ul { padding-left: 0; }
+#TOC a { text-decoration: none; }
+#TOC a:hover { text-decoration: underline; }
+.sourceCode .kw, .sourceCode .cf, .sourceCode .im {
+  color: light-dark(#a626a4, #c678dd); font-weight: normal; }
+.sourceCode .st { color: light-dark(#50a14f, #98c379); }
+.sourceCode .dv, .sourceCode .bn, .sourceCode .fl {
+  color: light-dark(#986801, #d19a66); }
+.sourceCode .co { color: light-dark(#a0a1a7, #8a919f);
+  font-style: italic; }
+.sourceCode .fu { color: light-dark(#4078f2, #61afef); }
+.sourceCode .bu { color: light-dark(#0184bc, #56b6c2); }
+.sourceCode .op, .sourceCode .ot { color: inherit; }
+.sourceCode .va, .sourceCode .at { color: inherit; }
 </style>
 <script>
 addEventListener('DOMContentLoaded', () => {
+  const toc = document.getElementById('TOC');
+  const sub = toc && toc.querySelector(':scope > ul > li > ul');
+  if (sub) toc.querySelector(':scope > ul').replaceWith(sub);
+  const h2  = document.querySelector('h2');
+  if (toc && h2) h2.parentNode.insertBefore(toc, h2);
   const b = document.createElement('button');
   b.id = 'mode'; b.textContent = '◐'; b.title = 'light/dark';
   let dark = matchMedia('(prefers-color-scheme: dark)').matches;

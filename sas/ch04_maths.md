@@ -113,26 +113,30 @@ printed draws then certify a port before any learner runs.
 
 ## The trust test
 
-Later chapters keep saying "X beats Y". Such talk is cheap, so we tax it. Two lists
-of results are called the same unless three tests all agree they differ, and one
-sort powers all three: differ() sorts both lists once, then Cohen's rule reads three
-indexes per list (middles at least 0.35 spreads apart, where the spread is the 10th-
-to-90th percentile stretch over 2.56, since that stretch is 2.56 sds on a gaussian)
-[@cohen88], Cliff's delta binary-searches (rank shift beyond the 0.197 threshold)
-[@cliff93; @hess04], and Kolmogorov-Smirnov merges (cdf gap over the 5% critical
-value 1.36 sqrt((n + m) / nm)) [@massey51]. The last two are the standard
-prescription for empirical work (one effect-size test, one significance test); the
-first is a cheap tie-breaker that keeps variance-only wobbles from passing as
-victories. Watch the conjunction work on a gaussian nudged by ever-larger shifts.
-Shifts of 0.1, 0.3, even 0.5 standard deviations pass as same (at 0.5, Cohen and
-Cliff see a difference but Kolmogorov-Smirnov holds out). Only from a full standard
-deviation do all three agree, and only then is the pair called different:
+Later chapters keep saying "X beats Y". Such talk is cheap, so we tax it. We ask
+the question backward, "are these the same?", since sameness is the common case
+and the common case should be cheap. Three tests judge, and one sort powers all
+three: same() sorts both lists once, then asks each judge in turn, cheapest first.
+Cohen's rule reads three indexes per list (middles within 0.35 spreads, where the
+spread is the 10th-to-90th percentile stretch over 2.56, since that stretch is
+2.56 sds on a gaussian) [@cohen88]. Kolmogorov-Smirnov merges (cdf gap under the
+5% critical value 1.36 sqrt((n + m) / nm)) [@massey51]. Cliff's delta
+binary-searches (rank shift within the 0.197 threshold) [@cliff93; @hess04]. The
+last two are the standard prescription for empirical work (one significance test,
+one effect-size test); the first is a cheap tie-breaker that keeps variance-only
+wobbles from passing as victories. Note the or-chain inside same(): the first
+judge to say "same" ends the trial, so the dear tests run only on the close
+calls, and only a pair that gets past all three may be called different. Watch it
+work on a gaussian nudged by ever-larger shifts. Shifts of 0.1, 0.3, even 0.5
+standard deviations pass as same (at 0.5, Cohen sees a difference but
+Kolmogorov-Smirnov holds out). Only from a full standard deviation do all three
+agree, and only then is the pair called different:
 
 %%run python3 src/lib_eg.py stats
 
 Note the humility this buys. Any single test can be gamed, and p-values alone say
-nothing about effect size. Demanding agreement from an effect-size test and a
-distribution test before crying "difference" makes our later victory claims
+nothing about effect size. Demanding that a pair get past an effect-size test and
+a distribution test before crying "difference" makes our later victory claims
 conservative. When this book says "beats", it has cleared all three bars.
 
 ## Lessons sighted
@@ -142,6 +146,7 @@ update;
 entropy as counted surprise; cdf normalization and
 epsilon hygiene; the Minkowski family; seeds as lab
 equipment
-(with **PRNG** portability via 7^5); and the conjunctive
-trust test. That last one is this book's referee. It sits
-in the substrate, before any learner, on purpose.
+(with **PRNG** portability via 7^5); and the lazy
+three-judge trust test. That last one is this book's
+referee. It sits in the substrate, before any learner, on
+purpose.

@@ -70,31 +70,46 @@ is unusual, or worthwhiile to buy. Maybe it could find us a better
 car.  And if we must buy this car, our AI  could say what changes
 to the car would help it, the most.
 
-This table lists many other ways our AI could support us:
+This table lists many other ways our AI could support us. It is
+also the map of this book: one row per chapter, in this order.
+Read it now as a menu; return to it later as a table of
+contents.
 
-| task                                             | AI tool                   |
-|--------------------------------------------------|:-------------------------:|
-| Guess the fuel use before we see the sticker     | prediction                |
-| Spot a strange car: a typo, or a scam            | anomaly detection         |
-| Notice when the lot quietly changes under us     | drift                     |
-| Say why a car is slow, or thirsty                | diagnosis                 |
-| 400 cars, one afternoon, what to inspect first?  | triage                    |
-| Justify any of the above to a skeptical buyer    | explanation               |
-| Find the best car, test-driving very few         | optimization              |
-| Chart a path from this car to a better one       | planning                  |
-| Find the cheapest change that fixes this car     | repair                    |
-| Sketch a better car from halves of two others    | synthesis                 |
-| Shrink 400 cars to the dozen that summarize      | compression               |
-| Trade fast against light against cheap           | multi-objective trade-off |
-| Decide on the spot as cars arrive one at a time  | streaming                 |
-| Keep learning for years as the market moves      | lifelong active learning  |
-| Say how much to trust all these answers          | statistical certification |
-| Teach the next intern to run the lot             | agent onboarding          |
+| task                                             | AI tool                   | ch |
+|--------------------------------------------------|:-------------------------:|---:|
+| Put 400 cars in one table; measure any gap       | tables + distance         |  3 |
+| Guess the fuel use before we see the sticker     | prediction                |  4 |
+| Spot a strange car: a typo, or a scam            | anomaly detection         |  5 |
+| Notice when the lot quietly changes under us     | drift                     |  6 |
+| Say why the bad cars are slow, or thirsty        | diagnosis                 |  7 |
+| 400 cars, one afternoon, what to inspect first?  | triage                    |  8 |
+| Justify any of the above to a skeptical buyer    | explanation               |  9 |
+| Find the best car, test-driving very few         | optimization              | 10 |
+| Check our tricks on a hundred other lots         | benchmarking              | 11 |
+| Say when "better" is real, and when it is noise  | statistical certification | 12 |
+| Chart a path from this car to a better one       | planning                  | 13 |
+| Find the cheapest change that fixes this car     | repair                    | 14 |
+| Sketch a better car from halves of two others    | synthesis                 | 15 |
+| Shrink 400 cars to the dozen that summarize      | compression               | 16 |
+| Trade fast against light against cheap           | multi-objective trade-off | 17 |
+| Decide on the spot as cars arrive one at a time  | streaming                 | 18 |
+| Keep learning for years as the market moves      | lifelong active learning  | 19 |
+| Rehearse every tool on one knowable project      | capstone simulation       | 20 |
+| Race our tools against the field's best          | baselines                 | 21 |
+| Teach the next intern to run the lot             | agent onboarding          | 22 |
+
+(Four rows are not single tools: Chapter 3 builds the one data
+structure everything shares, Chapter 11 collects the terrain
+the other chapters are tested on, Chapter 20 replays every
+tool on one simulated project, and Chapter 21 races them
+against standard rivals. The certification chapter sits
+mid-book, not last, because the chapters after it run
+experiments and experiments need a referee.)
 
 This book makes two claims. First, behind the curtain, these
-sixteen tools are almost the same. That is, the same few hundred
-lines of Python sit under all of them, and most chapters of this
-book add only a few dozen lines more.
+sixteen tasks are almost the same tool. That is, the same few
+hundred lines of Python sit under all of them, and most chapters
+of this book add only a few dozen lines more.
 
 Second, each task in the table is simpler than its reputation
 because, often, _AI is simple_.
@@ -117,7 +132,7 @@ is also the more sophisticated one.
 ### Audience
 
 This book is for anyone worried that coding with LLMs means
-flying over the details, missing what really happens under the
+flying over the details and missing what really happens under the
 hood. It is for people who, like Donald Knuth, want their role
 to be "on the bottom of things"[^knuth]. Down at the bottom of
 AI's machinery there is good news: much of it can be
@@ -153,10 +168,18 @@ O'Reilly, 2019.
 
 ### About the author
 
-Tim Menzies ([timm.fyi](https://timm.fyi)) has worked on AI
-since the 1980s: a Ph.D. from UNSW; years of research with NASA
-on software quality; now a professor of computer science at NC
-State, Fellow of three learned societies, author of 500+
+Tim Menzies ([timm.fyi](https://timm.fyi), Ph.D. UNSW 1995; ASE Fellow, IEEE Fellow) 
+has worked on AI
+since the 1980s. He has been hookd on practical applications of AI
+since 
+his 1992 "expert system for raising" (written in an MS-DOS Prologin 440K of RAM)
+out-performed humans 
+(measired in increase profit per day).  Since then he
+worked for years with NASA another other industiral partners on
+on software quality. Currently, he works as a  professor of computer science at NC
+State. With career resarch funding of $19M, hs
+is the author to 500+ resaerch papers, the editor in cheif othe AUtoamted Softwaer Engienering journal,
+and has supervised 24 Ph.D. students to completion, 
 refereed papers, and editor-in-chief of a journal whose
 submission rate has tripled on his watch. Four decades of this
 keep teaching him the same lesson: most of a search space is
@@ -384,7 +407,7 @@ Chapter 7, we will show that the optimism of the above maths is
 not misplaced. That result enables a whole new kind of
 sophisticated, simple AI.
 
-## The Basic
+## The Basic {.unlisted}
 
 We can answer these questions with two basic AI operators:
 "cluster" and "predict". Clustering groups related things
@@ -411,5 +434,5 @@ The first thing we need to do is
 - Don't think, remember.
 
 
-# References
+## References {.unlisted}
 

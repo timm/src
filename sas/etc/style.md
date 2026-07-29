@@ -73,6 +73,7 @@ No thesis-announcement filler: "This is timely and feasible", "This approach is 
 No consultant nouns: "defensible basis", "growing industrial risk", "actionable insights", "robust framework", "landscape" as metaphor (landscape as a technical term for loss/data topology is fine).
 No adjective-stacked noun phrases doing verb work ("lightweight learner-agnostic region-level monitors"). Use a verb.
 No "delve", "crucial", "pivotal", "seamless", "holistic", "leverage" (as a verb), "harness", "underscore", "foster".
+No sincerity words as self-praise: "honest", "honestly", "genuinely", "truly". (Honesty as a technical property -- honest reporting of a negative result -- is fine.) Full chat-register list: FAM2 in rite/etc/style.py; police by density, not find-and-replace.
 No perfectly uniform paragraph shapes. Vary: some paragraphs are two sentences.
 Do not end every paragraph with a summary sentence.
 Quick self-test before shipping

@@ -152,31 +152,31 @@ def leaf(node, row): # walk row down to its leaf group
   return node
 
 #-- statistics --------------------------------------------------
-def cohen(xs, ys, d=0.35): # sorted in; mids d spreads apart?
+def cohen(xs, ys, d=0.35): # sorted in; mids under d spreads?
   mid = lambda a: a[len(a) // 2]
   spd = lambda a: (a[len(a)*9//10] - a[len(a)//10]) / 2.56
-  return abs(mid(xs) - mid(ys)) >= \
+  return abs(mid(xs) - mid(ys)) < \
          d * ((spd(xs) + spd(ys)) / 2 + TINY)
 
-def cliffs(xs, ys): # sorted in; rank effect size; 0..1
+def cliffs(xs, ys): # sorted in; rank effect small?
   gt = lt = 0
   for x in xs:
     gt += bisect.bisect_left(ys, x)
     lt += len(ys) - bisect.bisect_right(ys, x)
-  return abs(gt - lt) / (len(xs) * len(ys))
+  return abs(gt - lt) / (len(xs) * len(ys)) <= 0.197
 
-def ks(xs, ys, crit=1.36): # sorted in; cdf gap > critical?
+def ks(xs, ys, crit=1.36): # sorted in; cdf gap under critical?
   nx, ny = len(xs), len(ys)
   d = i = j = 0
   while i < nx and j < ny:
     if xs[i] <= ys[j]: i += 1
     else:              j += 1
     d = max(d, abs(i / nx - j / ny))
-  return d >= crit * ((nx + ny) / (nx * ny)) ** 0.5
+  return d < crit * ((nx + ny) / (nx * ny)) ** 0.5
 
-def differ(xs, ys): # sort once; differ if every test agrees
+def same(xs, ys): # sort once; lazy or, cheapest test first
   xs, ys = sorted(xs), sorted(ys)
-  return cohen(xs,ys) and cliffs(xs,ys) > 0.197 and ks(xs,ys)
+  return cohen(xs,ys) or ks(xs,ys) or cliffs(xs,ys)
 
 #-- start-up ----------------------------------------------------
 def cli(d): # --key=val flags update settings

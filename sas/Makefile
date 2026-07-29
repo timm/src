@@ -10,9 +10,18 @@ help:                   ## list targets
 
 story:                  ## render story.md to tmp/story.html, open it
 	@mkdir -p tmp
-	@pandoc story.md --template=etc/story.template \
+	@pandoc story.md --indented-code-classes=python \
+	  --template=etc/story.template \
 	  -H etc/story-head.html -o tmp/story.html
 	@open -a "Google Chrome" tmp/story.html
+
+story1:                 ## story.md + story1.md, TOC on top, open
+	@mkdir -p tmp
+	@pandoc story.md story1.md --toc --toc-depth=2 \
+	  --indented-code-classes=python \
+	  --template=etc/story.template \
+	  -H etc/story-head.html -o tmp/story1.html
+	@open -a "Google Chrome" tmp/story1.html
 
 check:                  ## run every demo; any assert kills it
 	python3 src/lib_eg.py all

@@ -112,7 +112,14 @@ THEN (Part IV, Trusting the World):
   ch21 The Apprentice (agent onboarding; this file is its
        primary exhibit)
 
-New engine code goes in new src files (e.g. src/knn.py
-with src/knn_eg.py), importing from lib. Keep lib.py under
-250 lines; if a function serves only one chapter, it lives
-in that chapter's engine file, not in lib.
+Source layout is fixed at six files: about.py (knobs),
+lib.py (substrate), lib_eg.py (its tests), tools.py (all
+chapter code, imports lib), tools_eg.py (its tests),
+coc.py (the COCOMO world for the ch20 capstone). Do not
+add src files beyond these; dragrace_eg.py (ch21
+baselines) is a guest with its own venv, never imported.
+Keep lib.py under 250 lines; promote a tools.py function
+to lib only when 2+ chapters use it and it carries no
+policy. story.md + story1.md are the working draft of the
+whole book (render: make story1); ch*.md are the woven
+chapters.
