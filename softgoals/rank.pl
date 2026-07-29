@@ -3,7 +3,8 @@
 % fix the top-k as priors, sample 20 worlds per k, report means.
 % The k where the curve plateaus = decisions that need deliberation.
 % usage: swipl rank.pl models/CSServices.pl
-:- ['nfr2.pl'].
+:- [nfr2].
+:- [expand].                          % derives leaf/1, topgoal/1 from node/2
 :- assertz(greedy).
 :- initialization(main, main).
 

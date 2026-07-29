@@ -3,7 +3,8 @@
 % cost = leaves assumed satisfied / leaves (want 0);
 % d = sqrt((1-soft)^2 + cost^2)/sqrt(2), 0..1, lower better.
 % usage: swipl sweep.pl models/CSServices.pl   (20 repeats of best-of-100)
-:- ['nfr2.pl'].
+:- [nfr2].
+:- [expand].                          % derives leaf/1, topgoal/1 from node/2
 :- assertz(greedy).
 :- initialization(main, main).
 

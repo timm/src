@@ -1,142 +1,64 @@
 % CSSAProgram  (nfr2 dialect: <- rules, <~ contribution lists)
-:- discontiguous (<-)/2, (<~)/2, node/2, leaf/1, topgoal/1.
-:- dynamic (<-)/2, (<~)/2, node/2, leaf/1, topgoal/1.
-node(acquireVolunteerOutreachSkills1,softgoal).
-node(experienceForResume,softgoal).
-node(speaches,resource).
-node(improveImageToKids1,softgoal).
-node(speakAtFundraisers,task).
-node(acquirePublicSpeakingSkills1,softgoal).
-node(attendSAMeetings,task).
-leaf(attendSAMeetings).
-node(increasedSAResources,softgoal).
-node(acquireFundraisingSkills,softgoal).
-node(increaseInvolvementOfSAS,softgoal).
-node(makeNewFriends1,softgoal).
-node(communityServiceHoursCompleted,goal).
-topgoal(communityServiceHoursCompleted).
-node(increaseSkills,softgoal).
-node(trustOfKids,softgoal).
-node(sendOutEmails1,task).
-node(helpPutOnSATrainingConferences,task).
-node(writeArticlesForNewspaper2,task).
-node(providePromotionResources,task).
-node(acquireFundraisingSkills2,softgoal).
-node(createLifeLongVolunteerSpirit,softgoal).
-node(saSAreOrganized1,softgoal).
-node(expansionOfSAServices,softgoal).
-node(runFundraiserInSchools,task).
-node(schoolInitiatesPresenation1,task).
-leaf(schoolInitiatesPresenation1).
-node(createLifeLongVolunteerSpirit1,softgoal).
-node(giveCSPresentations1,task).
-node(planSocialEvents,task).
-leaf(planSocialEvents).
-node(getSpeaches,task).
-node(runFundraiserInSchools2,task).
-node(beConfident,softgoal).
-node(getPromotionResources,task).
-node(giveCSPresentations,task).
-node(increasedSAResources1,softgoal).
-leaf(increasedSAResources1).
-node(saSAreOutgoing1,softgoal).
-node(saSAreOrganized,softgoal).
-node(happinessStudentAmbassadors,softgoal).
-node(keepInTouchWithVolunteers,softgoal).
-node(planAndPutOnReconnectionConferences1,task).
-node(retrainSAS,task).
-leaf(retrainSAS).
-node(findHelpWithPresentations,task).
-node(beEnthusiastic,softgoal).
-node(haveTimeForSchool2,softgoal).
-node(putOnSATrainingConferences,task).
-node(improveImageToKids,softgoal).
-node(positiveReputationCS,softgoal).
-node(haveTimeForSchool1,softgoal).
-node(putOnSATrainingConferences1,task).
-node(writeArticlesForNewspaper1,task).
-node(helpWithPresentations1,task).
-node(askForHelpWithPresentations,task).
-node(spreadAwareness1,softgoal).
-node(sendOutEmails2,task).
-node(trustOfKids1,softgoal).
-node(acquireVolunteerOutreachSkills,softgoal).
-node(planAndPutOnReconnectionConferences2,task).
-node(saSAreOutgoing,softgoal).
-node(happinessStudentAmbassadors2,softgoal).
-node(promotionResources,resource).
-node(beOutgoing,softgoal).
-node(acquirePublicSpeakingSkills,softgoal).
-node(communityServiceHoursCompleted2,goal).
-topgoal(communityServiceHoursCompleted2).
-node(saSAreConfident1,softgoal).
-node(speakAtFundraisers3,task).
-node(trainSAS,task).
-leaf(trainSAS).
-node(permissionForPresentationsBeGiven,goal).
-leaf(permissionForPresentationsBeGiven).
-topgoal(permissionForPresentationsBeGiven).
-node(morePromotionResourcesAvailable,softgoal).
-node(saSAreConfident,softgoal).
-node(provideSpeaches,task).
-leaf(provideSpeaches).
-node(haveTimeForSchool,softgoal).
-node(giveBackToCommunity2,softgoal).
-node(runFundraiserInSchools1,task).
-leaf(runFundraiserInSchools1).
-node(increaseWritingSkills,softgoal).
-node(kidsBeUsedToCommunicateWithOtherKids,goal).
-leaf(kidsBeUsedToCommunicateWithOtherKids).
-topgoal(kidsBeUsedToCommunicateWithOtherKids).
-node(planAndPutOnReconnectionConferences,task).
-node(helpPlanAndPutOnReconnectionConferences1,task).
-node(increaseWritingSkills1,softgoal).
-node(speakAtFundraisers2,task).
-node(giveBackToCommunity1,softgoal).
-node(increaseWritingSkills2,softgoal).
-node(spreadAwareness,softgoal).
-node(sendOutEmails,task).
-leaf(sendOutEmails).
-node(reduceMisconceptions,softgoal).
-node(helpPutOnSATrainingConferences1,task).
-node(helpWithPresentations,task).
-leaf(helpWithPresentations).
-node(attendCSMeetings,task).
-leaf(attendCSMeetings).
-node(beOrganized,softgoal).
-node(makeNewFriends,softgoal).
-node(qualitySAServices1,softgoal).
-node(engagementStudentAmbassadorsInPromotingAwareness,softgoal).
-node(acquireFundraisingSkills1,softgoal).
-node(saSAreEnthusiastic1,softgoal).
-node(promotionResources1,resource).
-leaf(promotionResources1).
-node(putOnSATrainingConferences2,task).
-node(presenationBeInitiated,goal).
-topgoal(presenationBeInitiated).
-node(initiatePresentationWithSchools,task).
-node(qualitySAServices,softgoal).
-node(schoolInitiatesPresenation,task).
-node(writeArticlesForNewspaper,task).
-leaf(writeArticlesForNewspaper).
-node(happinessStudentAmbassadors1,softgoal).
-node(engageVolunteers,softgoal).
-node(giveBackToCommunity,softgoal).
-node(acquireVolunteerOutreachSkills2,softgoal).
-node(giveCSPresentations2,task).
-node(highPresentationAttendance,softgoal).
-node(helpPlanAndPutOnReconnectionConferences,task).
-node(communityServiceHoursCompleted1,goal).
-topgoal(communityServiceHoursCompleted1).
-node(acquirePublicSpeakingSkills2,softgoal).
-node(positiveReputationCS1,softgoal).
-leaf(positiveReputationCS1).
-node(findHelpWithPresentations1,task).
-node(makeNewFriends2,softgoal).
-node(reduceMisconceptions1,softgoal).
-node(saSAreEnthusiastic,softgoal).
-node(speakAtFundraisers1,task).
-node(giveCSPresentations3,task).
+:- discontiguous (<-)/2, (<~)/2.
+:- dynamic (<-)/2, (<~)/2.
+types(goal,
+  [communityServiceHoursCompleted, communityServiceHoursCompleted2,
+   permissionForPresentationsBeGiven,
+   kidsBeUsedToCommunicateWithOtherKids, presenationBeInitiated,
+   communityServiceHoursCompleted1
+  ]).
+types(softgoal,
+  [acquireVolunteerOutreachSkills1, experienceForResume,
+   improveImageToKids1, acquirePublicSpeakingSkills1,
+   increasedSAResources, acquireFundraisingSkills,
+   increaseInvolvementOfSAS, makeNewFriends1, increaseSkills,
+   trustOfKids, acquireFundraisingSkills2,
+   createLifeLongVolunteerSpirit, saSAreOrganized1,
+   expansionOfSAServices, createLifeLongVolunteerSpirit1,
+   beConfident, increasedSAResources1, saSAreOutgoing1,
+   saSAreOrganized, happinessStudentAmbassadors,
+   keepInTouchWithVolunteers, beEnthusiastic, haveTimeForSchool2,
+   improveImageToKids, positiveReputationCS, haveTimeForSchool1,
+   spreadAwareness1, trustOfKids1, acquireVolunteerOutreachSkills,
+   saSAreOutgoing, happinessStudentAmbassadors2, beOutgoing,
+   acquirePublicSpeakingSkills, saSAreConfident1,
+   morePromotionResourcesAvailable, saSAreConfident,
+   haveTimeForSchool, giveBackToCommunity2, increaseWritingSkills,
+   increaseWritingSkills1, giveBackToCommunity1,
+   increaseWritingSkills2, spreadAwareness, reduceMisconceptions,
+   beOrganized, makeNewFriends, qualitySAServices1,
+   engagementStudentAmbassadorsInPromotingAwareness,
+   acquireFundraisingSkills1, saSAreEnthusiastic1, qualitySAServices,
+   happinessStudentAmbassadors1, engageVolunteers,
+   giveBackToCommunity, acquireVolunteerOutreachSkills2,
+   highPresentationAttendance, acquirePublicSpeakingSkills2,
+   positiveReputationCS1, makeNewFriends2, reduceMisconceptions1,
+   saSAreEnthusiastic
+  ]).
+types(task,
+  [speaches, speakAtFundraisers, attendSAMeetings, sendOutEmails1,
+   helpPutOnSATrainingConferences, writeArticlesForNewspaper2,
+   providePromotionResources, runFundraiserInSchools,
+   schoolInitiatesPresenation1, giveCSPresentations1,
+   planSocialEvents, getSpeaches, runFundraiserInSchools2,
+   getPromotionResources, giveCSPresentations,
+   planAndPutOnReconnectionConferences1, retrainSAS,
+   findHelpWithPresentations, putOnSATrainingConferences,
+   putOnSATrainingConferences1, writeArticlesForNewspaper1,
+   helpWithPresentations1, askForHelpWithPresentations,
+   sendOutEmails2, planAndPutOnReconnectionConferences2,
+   promotionResources, speakAtFundraisers3, trainSAS,
+   provideSpeaches, runFundraiserInSchools1,
+   planAndPutOnReconnectionConferences,
+   helpPlanAndPutOnReconnectionConferences1, speakAtFundraisers2,
+   sendOutEmails, helpPutOnSATrainingConferences1,
+   helpWithPresentations, attendCSMeetings, promotionResources1,
+   putOnSATrainingConferences2, initiatePresentationWithSchools,
+   schoolInitiatesPresenation, writeArticlesForNewspaper,
+   giveCSPresentations2, helpPlanAndPutOnReconnectionConferences,
+   findHelpWithPresentations1, speakAtFundraisers1,
+   giveCSPresentations3
+  ]).
 acquireFundraisingSkills <- [acquireFundraisingSkills1].
 acquireFundraisingSkills1 <- [acquireFundraisingSkills2].
 acquirePublicSpeakingSkills <- [acquirePublicSpeakingSkills1].

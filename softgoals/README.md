@@ -1,16 +1,20 @@
 # re : staggered abductive reasoning over i* goal models
 
-SHORT (Mathew, Menzies, Ernst, Klein; arXiv:1702.05568) redone as ~60
-lines of Prolog. A meta-interpreter tries clauses in random order
-(setof + random + clause/2), so SLD resolution itself does ISAMP-style
-random worlds generation. Keys found via best/rest ranking (Fig 8) and
-KEYS2-style doubling eras with early stop (Fig 9).
+SHORT (Mathew, Menzies, Ernst, Klein; arXiv:1702.05568) redone in
+~90 lines of Prolog (nfr2.pl). One eval//2 does both Horn abduction
+(H <- Body: choice-or, commit, minimal assumptions) and softgoal
+label propagation (G <~ Edges: label all, 5-valued combine), with
+the belief set threaded as DCG state. Worlds are ISAMP-style: goals
+walked in random order; greedy mode commits each or-choice and
+restarts on contradiction instead of backtracking.
 
-    swipl -g gay2   models/KidsandYouth.pl short.pl   # find the keys
-    swipl -g report models/CSServices.pl   short.pl   # f1/f2 + keys%
+    swipl runner2.pl models/CSServices.pl # coverage, 1000 random worlds
+    swipl sweep.pl   models/CSServices.pl # baseline: best-of-100, x20
+    swipl rank.pl    models/CSServices.pl # key decisions + plateau k*
 
 Models: the paper's 7 i* case studies (Horkoff), compiled from
-ai-se/softgoals JSON to facts by j2pl.py. edge(Src,Dst,W) with
-W in {1, 0.5, -0.5, -1} = make/help/hurt/break (Fig 3).
-Runs in ~1 sec/model on one 2.8GHz core. Caveat: and-decompositions
-treated as weight-1 edges; see chat notes.
+ai-se/softgoals JSON by j2pl.py: one types(T,[Name,...]) fact per
+node type (resource folded into task) plus <- rules and <~
+contribution lists. expand.pl unfolds types/2 into node/2 at load
+time and derives leaf/1 (no definition) and topgoal/1 (type goal).
+About 10ms per random world on the largest (351 node) model.

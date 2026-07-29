@@ -10,12 +10,14 @@
 :- dynamic (<-)/2, (<~)/2, greedy/0.   % greedy: commit or-choices
 :- discontiguous (<-)/2, (<~)/2.
 
+% ==== engine: stochastic abduction over a belief list ====================
+% needs from domain: kv/3, agenda/4, contrib//2, combine/2.
+% contract: or-agendas arrive with V bound (the kv target); and-agendas
+% leave V unbound so loops close on the shared pending variable.
+
 permute(Xs,Ys) :- random_permutation(Xs,Ys).
 
 % ---- belief set: Node-Value list threaded as DCG state -------------------
-kv(not X, X, -2) :- !.
-kv(X,     X,  2).
-
 peek(A,A,A).
 push(X,A,[X|A]).
 
@@ -28,14 +30,8 @@ eval(K,V) --> { agenda(K,V,How,Xs) }, !,       % the stuff to prove...
               believe(K,V),                    % (head first: rules close true,
               { permute(Xs,Rs) },   %  edge loops share pending V)
               walk(How,Rs,V).                  % ...walked in random order
-eval(K,V) --> ({var(V)} -> {permute([2,-2],Ps), member(V,Ps)} ; [] ), 
-              believe(K,V).                    
-
-% agenda head carries the value contract: rules only ever prove 2,
-% so a -2 target fails here by unification (falsity is assumed,
-% never derived); edges leave V pending for combine.
-agenda(K,2,or,Bs)  :- findall(B, (K <- B), Bs), Bs \= [].
-agenda(K,V,and,Es) :- var(V), findall(E, ((K <~ Es0), member(E,Es0)), Es), Es \= [].
+eval(K,V) --> ({var(V)} -> {permute([2,-2],Ps), member(V,Ps)} ; [] ),
+              believe(K,V).
 
 walk(or,Bs,_)  --> { greedy, !, random_member(B,Bs), permute(B,Ls) },
                    lits(Ls).                   % ISAMP mode: no or-retry
@@ -44,6 +40,17 @@ walk(and,Es,V) --> foldl(contrib,Es,Vs), { combine(Vs,V) }.
 
 lits([])     --> [].
 lits([L|Ls]) --> { kv(L,K,T) }, eval(K,T), lits(Ls).
+
+% ==== domain: NFR 5-valued algebra + the <-/<~ policy ====================
+
+kv(not X, X, -2) :- !.
+kv(X,     X,  2).
+
+% agenda head carries the value contract: rules only ever prove 2,
+% so a -2 target fails here by unification (falsity is assumed,
+% never derived); edges leave V pending for combine.
+agenda(K,2,or,Bs)  :- findall(B, (K <- B), Bs), Bs \= [].
+agenda(K,V,and,Es) :- var(V), findall(E, ((K <~ Es0), member(E,Es0)), Es), Es \= [].
 
 % ---- contributions -------------------------------------------------------
 contrib(make(X), V) --> eval(X,V).                                % full, same
@@ -75,7 +82,7 @@ grounds(Us) :- length(Us,N), N > 3, !,       % big cyclic cluster: punt to
                maplist(=(0),Us).             % undecided, else 5^k guesses
 grounds([U|Us]) :- member(U, [2,1,0,-1,-2]), grounds(Us).
 
-% ---- top ----------------------------------------------------------------
+% ==== top ================================================================
 abduce(G,As)   :- kv(G,K,T), eval(K,T,[],A), picks(A,As).
 soften(G,V,As) :- eval(G,V,[],A), picks(A,As).
 

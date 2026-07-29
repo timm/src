@@ -1,8 +1,12 @@
-import json,sys,re,collections
+import json,sys,re,collections,textwrap
 # Emit the nfr2 dialect: structure as Horn rules (list body = and,
 # multiple clauses = or; dependencies are conjuncts repeated in
 # every alternative), contributions as one G <~ [..] edge list.
-# node/2, leaf/1, topgoal/1 kept as facts for the runner.
+# Types are not derivable from the clauses, so each model keeps one
+# compact types(T,[Name,...]) fact per type (resource folded into
+# task); expand.pl unfolds these to node/2 at load time and derives
+# leaf/1 (node with no <- and no <~) and topgoal/1 (node of type
+# goal).
 C = dict(make="make", help="help", someplus="help",
          hurt="hurt", someminus="hurt", breaks="break")
 C["break"] = "break"
@@ -17,8 +21,8 @@ for n in d["nodes"]:                       # unique unquoted atoms per node
     while a in seen: a = "%s%d" % (a0,k); k += 1
     seen[a] = 1; atom[n["id"]] = a
 print("% "+d["name"]+"  (nfr2 dialect: <- rules, <~ contribution lists)")
-print(":- discontiguous (<-)/2, (<~)/2, node/2, leaf/1, topgoal/1.")
-print(":- dynamic (<-)/2, (<~)/2, node/2, leaf/1, topgoal/1.")
+print(":- discontiguous (<-)/2, (<~)/2.")
+print(":- dynamic (<-)/2, (<~)/2.")
 deps = collections.defaultdict(list)       # parent -> mandatory kids
 ors  = collections.defaultdict(list)       # parent -> alternative kids
 ands = collections.defaultdict(list)       # parent -> and-decomp kids
@@ -32,10 +36,16 @@ for e in d["edges"]:
         elif v == "or":         ors[p].append(c)
         elif v == "and":        ands[p].append(c)
         else:                   con[p].append("%s(%s)" % (C[v],c))
-for n in d["nodes"]:
-    print("node(%s,%s)." % (atom[n["id"]], n["type"]))
-    if incoming[n["id"]]==0: print("leaf(%s)."    % atom[n["id"]])
-    if n["type"]=="goal":    print("topgoal(%s)." % atom[n["id"]])
+bytype = collections.defaultdict(list)     # resource folded into task:
+for n in d["nodes"]:                       # neither type is consumed apart
+    t = n["type"]                          # from the other
+    bytype["task" if t == "resource" else t].append(atom[n["id"]])
+for t in ["goal", "softgoal", "task"]:
+    if not bytype[t]: continue
+    ws = textwrap.wrap(", ".join(bytype[t]), width=66)
+    print("types(%s,\n  [%s" % (t, ws[0]))
+    for w in ws[1:]: print("   %s" % w)
+    print("  ]).")
 def pp(head, op, items):
     one = "%s %s [%s]." % (head, op, ", ".join(items))
     if len(one) <= 70: print(one); return

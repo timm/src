@@ -1,5 +1,5 @@
-% nfr-eg.pl : example models for nfr.pl.
-:- ['nfr2.pl'].
+% nfr2-eg.pl : example models for nfr2.pl.
+:- [nfr2].
 :- initialization(main, main).
 
 % ---- horn: loops and choice ---------------------------------------------

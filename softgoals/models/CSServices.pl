@@ -1,451 +1,189 @@
 % CSServices  (nfr2 dialect: <- rules, <~ contribution lists)
-:- discontiguous (<-)/2, (<~)/2, node/2, leaf/1, topgoal/1.
-:- dynamic (<-)/2, (<~)/2, node/2, leaf/1, topgoal/1.
-node(answer80OfCallsWithin30SecondsOfMessageEnding,goal).
-leaf(answer80OfCallsWithin30SecondsOfMessageEnding).
-topgoal(answer80OfCallsWithin30SecondsOfMessageEnding).
-node(implementFeedbackForm,task).
-node(decreaseResponseTIme1,softgoal).
-node(increasedWebServices3,softgoal).
-node(increaseWebResources2,softgoal).
-leaf(increaseWebResources2).
-node(implementNToolToAllowParentsToTalkToEachOther1,task).
-node(informKidsAboutAnonymityKidsOfWebServices,task).
-node(implementOneOnOneChatRooms1,task).
-leaf(implementOneOnOneChatRooms1).
-node(kidsReadGeneralQuestionsAndAnswers,task).
-node(friendlyWebSite1,softgoal).
-node(kidsUseVoiceCounselling,task).
-node(kidsUseAskACounsellorSection,task).
-node(maintainWebServices1,task).
-node(confidentialityKids6,softgoal).
-node(implementBoardWithReplies1,task).
-node(kidsUseOneOnOneChatRooms,task).
-node(connectBackToTheCommunity5,softgoal).
-node(kidsUseCyberCafPortalChatRoom1,task).
-leaf(kidsUseCyberCafPortalChatRoom1).
-node(strategicBluePrint,resource).
-leaf(strategicBluePrint).
-node(implementPhoneFeedback,task).
-node(similarityOfProblems1,softgoal).
-node(immediacy2,softgoal).
-node(maintainImplementCSServices,task).
-node(accommodatePhoneTraffic,softgoal).
-node(similarityWithOtherParentsProblems,softgoal).
-node(implementTextMessaging,task).
-node(anonymousTechnologyBeUsed,goal).
-topgoal(anonymousTechnologyBeUsed).
-node(maintainAskACounsellorSection1,task).
-leaf(maintainAskACounsellorSection1).
-node(accommodateWebSiteTraffic,softgoal).
-node(maintainPHLPhoneServices4,task).
-leaf(maintainPHLPhoneServices4).
-node(kidsHaveOwnershipOfServices1,softgoal).
-node(servicesBeBilingual1,goal).
-leaf(servicesBeBilingual1).
-topgoal(servicesBeBilingual1).
-node(moderateDiscussionBoards,task).
-leaf(moderateDiscussionBoards).
-node(easierNavigationCSWebServices1,softgoal).
-node(sufficientCounsellingResources1,softgoal).
-leaf(sufficientCounsellingResources1).
-node(measureSuccessOfServices4,softgoal).
-node(anonymityKids3,softgoal).
-node(highQualityServices2,softgoal).
-node(maintainPhoneServices1,task).
-node(implementEmailCounselling,task).
-node(easierToFindPostsWebPostingTechnology1,softgoal).
-node(kidsUseCyberCafPortalChatRoom,task).
-node(implementPhoneFeedback3,task).
-leaf(implementPhoneFeedback3).
-node(qualityServices,softgoal).
-node(kidsUsePhoneCounselling1,task).
-leaf(kidsUsePhoneCounselling1).
-node(webServicesSelfServe1,softgoal).
-node(efficientPhoneServices,softgoal).
-node(counsellorsBeProfessionallyTrained,goal).
-topgoal(counsellorsBeProfessionallyTrained).
-node(webSiteContent,resource).
-leaf(webSiteContent).
-node(maintainImplementCSServices3,task).
-node(connectBackToTheCommunity8,softgoal).
-node(provideWebCounsellingWithVideo,task).
-leaf(provideWebCounsellingWithVideo).
-node(nonRealTimeECounsellingBeUsed,goal).
-topgoal(nonRealTimeECounsellingBeUsed).
-node(controlOfCounsellingWork1,softgoal).
-node(increasedWebServices4,softgoal).
-node(decreaseResponseTIme2,softgoal).
-node(implementGetInformedSectionOfWebSite,task).
-node(increaseWebResources1,softgoal).
-node(implementFeedbackCollection,task).
-node(connectBackToTheCommunity1,softgoal).
-node(encourageKidsUsingWebServicesToUsePhoneServices1,softgoal).
-node(decreaseResponseTIme,softgoal).
-node(parentsUseNToolToAllowParentsToTalkToEachOther,task).
-node(implementBulletinBoardWithReplies,task).
-node(provideWebCounsellingWithAudio,task).
-leaf(provideWebCounsellingWithAudio).
-node(anonymityParents4,softgoal).
-node(servicesBeBilingual,goal).
-topgoal(servicesBeBilingual).
-node(confidentialityKids1,softgoal).
-node(implementCyberCafPortalChatRoom,task).
-node(connectBackToTheCommunity6,softgoal).
-node(avoidBadAdvice2,softgoal).
-node(obtainNeededSoftware,task).
-node(effectiveChatRoomFilters,softgoal).
-leaf(effectiveChatRoomFilters).
-node(maintainImplementCSWebServices2,task).
-node(webServicesSelfServe,softgoal).
-node(availableServices2,softgoal).
-node(nonAnonymousTechnologyBeUsed,goal).
-topgoal(nonAnonymousTechnologyBeUsed).
-node(kidsHaveOwnershipOfServices5,softgoal).
-node(maintainPHLWebServices2,task).
-node(anonymityKids6,softgoal).
-node(improveWebsiteContent1,softgoal).
-node(implementGeneralQuestionsAndAnswers,task).
-node(servicesBeProvidedForKidsBullyingLine,goal).
-topgoal(servicesBeProvidedForKidsBullyingLine).
-node(confidentialTechnologyBeUsed,goal).
-topgoal(confidentialTechnologyBeUsed).
-node(efficientPhoneServices1,softgoal).
-node(acquireFeedback,task).
-node(maintainImplementPHLServices2,task).
-node(kidsUseVideoCounselling,task).
-node(immediacy7,softgoal).
-node(reducePrankCalls1,softgoal).
-node(anonymityKids5,softgoal).
-node(sufficientCounsellingResources2,softgoal).
-node(controlWebServices2,softgoal).
-node(kidsUseEmailCounselling1,task).
-leaf(kidsUseEmailCounselling1).
-node(maintainAskACounsellorSection,task).
-node(maintainPhoneServices,task).
-node(technologyThatDoesNotAllowDialoguesBetweenKidsBeUsed,goal).
-topgoal(technologyThatDoesNotAllowDialoguesBetweenKidsBeUsed).
-node(confidentialityServices,softgoal).
-node(implementEmailCounselling1,task).
-node(servicesBeProvidedForKidsBullyingLine1,goal).
-topgoal(servicesBeProvidedForKidsBullyingLine1).
-node(implementVoiceCounselling,task).
-node(implementDelay,task).
-leaf(implementDelay).
-node(kidsReadGetInformedSectionOfWebSite,task).
-node(implementAntiPrankingMessage,task).
-leaf(implementAntiPrankingMessage).
-node(encourageKidsUsingWebServicesToUsePhoneServices,softgoal).
-node(feedbackFormSoftware,resource).
-leaf(feedbackFormSoftware).
-node(scheduleChatAtSpecificTimes,task).
-leaf(scheduleChatAtSpecificTimes).
-node(increasePhoneResources2,softgoal).
-node(implementOneOnOneChatRooms,task).
-node(efficientServices1,softgoal).
-node(kidsUseBulletinBoardWithDelayedModeration,task).
-node(friendlyWebSite,softgoal).
-node(confidentialityParents5,softgoal).
-node(implementFeedbackForm1,task).
-node(confidentialityKids5,softgoal).
-node(availableServices1,softgoal).
-node(kidsReadGeneralQuestionsAndAnswers1,task).
-leaf(kidsReadGeneralQuestionsAndAnswers1).
-node(implementInformationSection1,task).
-node(relevanceInKidsLives,softgoal).
-node(maintainServicesAboveCompetition,softgoal).
-node(acquireServiceResources,task).
-node(onlyOnlineRequestFromCanadiansAccepted,goal).
-leaf(onlyOnlineRequestFromCanadiansAccepted).
-topgoal(onlyOnlineRequestFromCanadiansAccepted).
-node(anonymityCounsellors,softgoal).
-node(connectBackToTheCommunity2,softgoal).
-node(implementVideoCounselling1,task).
-node(implementServices,task).
-node(connectToOtherKids,softgoal).
-node(immediacy3,softgoal).
-node(directResponseToKids1,softgoal).
-node(maintainCSPhoneServices1,task).
-node(availableServices,softgoal).
-node(putContentOntoWebsite,task).
-node(maintainPHLPhoneServices3,task).
-node(controlWebServices,softgoal).
-node(implementBulletinBoardWithReplies1,task).
-leaf(implementBulletinBoardWithReplies1).
-node(improveWebsiteContent,softgoal).
-node(nonConfidentialTechnologyBeUsed,goal).
-topgoal(nonConfidentialTechnologyBeUsed).
-node(efficientPhoneServices2,softgoal).
-node(maintainPHLWebServices1,task).
-node(decreasePhoneWaitingTime,softgoal).
-node(improveWebsiteContent2,softgoal).
-node(highQualityServices1,softgoal).
-node(implementGetInformedSectionOfWebSite1,task).
-node(informKidsAboutAnonymityKidsOfWebServices1,task).
-leaf(informKidsAboutAnonymityKidsOfWebServices1).
-node(anonymityKids2,softgoal).
-node(maintainCSPhoneServices2,task).
-node(directResponseToKids,softgoal).
-node(immediacy4,softgoal).
-node(sufficientlyModeratedWebServices1,softgoal).
-node(obtainSoftware,task).
-node(sufficientCounsellingResources,softgoal).
-node(kidsHaveOwnershipOfServices6,softgoal).
-leaf(kidsHaveOwnershipOfServices6).
-node(implementPhoneFeedback2,task).
-node(implementNToolToAllowParentsToTalkToEachOther,task).
-leaf(implementNToolToAllowParentsToTalkToEachOther).
-node(kidsGetInformationThroughECounselling,task).
-node(connectBackToTheCommunity,softgoal).
-node(confidentialityParents1,softgoal).
-node(anonymityParents2,softgoal).
-node(efficientWebServices,softgoal).
-node(maintainImplementCSServices2,task).
-node(kidsReadPollsAboutKids,task).
-node(kidsUsePhoneCounselling,task).
-node(kidsUseOneOnOneChatRooms1,task).
-node(voiceCounsellingBePerformed,task).
-leaf(voiceCounsellingBePerformed).
-node(confidentiality,softgoal).
-node(maintainCSPhoneServices3,task).
-node(maintainWebServices,task).
-node(decreaseResponseTIme3,softgoal).
-node(kidsUseGetInformedSectionOfWebSite,task).
-leaf(kidsUseGetInformedSectionOfWebSite).
-node(decreaseResponseTIme4,softgoal).
-leaf(decreaseResponseTIme4).
-node(avoidDialoguesBetweenKids,softgoal).
-node(maintainPHLPhoneServices,task).
-node(parentsUseBulletinBoardWithReplies,task).
-node(anonymityParents5,softgoal).
-node(kidsUseOnlineInformationProvided,goal).
-topgoal(kidsUseOnlineInformationProvided).
-node(maintainWebServices3,task).
-node(performEmailCounselling,task).
-leaf(performEmailCounselling).
-node(connectBackToTheCommunity7,softgoal).
-node(avoidBadAdvice3,softgoal).
-node(similarityOfProblems,softgoal).
-node(maintainImplementCSWebServices1,task).
-node(implementBulletinBoardWithDelayedModeration1,task).
-leaf(implementBulletinBoardWithDelayedModeration1).
-node(availableServices5,softgoal).
-node(increaseEmphasisOnOnlineFeedbackForm1,softgoal).
-leaf(increaseEmphasisOnOnlineFeedbackForm1).
-node(controlOfCounsellingWork,softgoal).
-node(avoidBadAdvice,softgoal).
-node(kidsHaveOwnershipOfServices4,softgoal).
-node(measureSuccessOfServices1,softgoal).
-node(reduceContagionEffectOfHarmfulActions1,softgoal).
-node(anonymityKids1,softgoal).
-node(improveImageToKids1,softgoal).
-node(avoidPresenceOfPedofiles,softgoal).
-node(confidentialityParents,softgoal).
-node(maintainPhoneServices4,task).
-node(measureSuccessOfServices,softgoal).
-node(similarityWithOtherParentsProblems1,softgoal).
-node(avoidBadAdvice4,softgoal).
-node(maintainImplementPHLServices1,task).
-node(increaseResourcesServices1,softgoal).
-leaf(increaseResourcesServices1).
-node(controlWebServices1,softgoal).
-node(implementVideoCounselling,task).
-node(webServer,resource).
-leaf(webServer).
-node(anonymityCounsellors1,softgoal).
-node(blockKidsWhoDisplayInappropriateBehavoir,task).
-leaf(blockKidsWhoDisplayInappropriateBehavoir).
-node(maintainPhoneServices3,task).
-node(reduceNumberOfStepsWebPostingTechnology1,softgoal).
-node(friendlyWebSite2,softgoal).
-node(increaseWebResources,softgoal).
-node(increasePhoneResources1,softgoal).
-node(feedback,resource).
-leaf(feedback).
-node(highQualityServices,softgoal).
-node(implementPollsAboutKids1,task).
-node(increasedWebServices1,softgoal).
-node(implementInformationSection,task).
-leaf(implementInformationSection).
-node(implementPhoneFeedback1,task).
-node(sufficientlyModeratedWebServices,softgoal).
-node(technologyThatAllowsDialoguesBetweenKidsBeUsed,goal).
-topgoal(technologyThatAllowsDialoguesBetweenKidsBeUsed).
-node(strategicBluePrintForWebsiteBeFollowed,goal).
-topgoal(strategicBluePrintForWebsiteBeFollowed).
-node(avoidDialoguesBetweenKidsAndCounsellorsOnTheWeb,softgoal).
-node(friendlyWebSite12,softgoal).
-node(confidentialityParents4,softgoal).
-node(obtainWebServer,task).
-node(improveImageToKids,softgoal).
-node(implementFeedbackForm2,task).
-node(increaseNumberOfServices1,softgoal).
-node(confidentialityKids4,softgoal).
-node(reduceContagionEffectOfHarmfulActions,softgoal).
-node(confidentialityParents2,softgoal).
-node(kidsHaveOwnershipOfServices,softgoal).
-node(webSiteContentBeUpdatedDaily,goal).
-leaf(webSiteContentBeUpdatedDaily).
-topgoal(webSiteContentBeUpdatedDaily).
-node(implementVoiceCounselling1,task).
-leaf(implementVoiceCounselling1).
-node(connectBackToTheCommunity3,softgoal).
-node(kidsReadPollsAboutKids1,task).
-leaf(kidsReadPollsAboutKids1).
-node(empoweringKidsToHelpThemselves,softgoal).
-node(feedback1,resource).
-leaf(feedback1).
-node(directResponseToKids2,softgoal).
-node(confidentialityKids3,softgoal).
-node(anonymityKids,softgoal).
-node(increaseResourcesServices,softgoal).
-node(reducePrankCalls,softgoal).
-leaf(reducePrankCalls).
-node(maintainPHLWebServices,task).
-node(correctInterpretationOfCounsel,softgoal).
-node(maintainPHLPhoneServices2,task).
-node(kidsHaveOwnershipOfServices3,softgoal).
-node(anonymityKids4,softgoal).
-node(measureSuccessOfServices2,softgoal).
-node(easierAccessToPostReply,softgoal).
-node(connectBackToTheCommunity9,softgoal).
-node(realTimeECounsellingBeUsed,goal).
-topgoal(realTimeECounsellingBeUsed).
-node(easierNavigationCSWebServices2,softgoal).
-node(easierNavigationCSWebServices,softgoal).
-node(immediacy5,softgoal).
-node(acquireWebContent,task).
-node(webSoftware,resource).
-leaf(webSoftware).
-node(sufficientlyModeratedWebServices2,softgoal).
-node(easierAccessToPostReply1,softgoal).
-node(anonymityParents1,softgoal).
-node(parentsUseInformationSection1,task).
-leaf(parentsUseInformationSection1).
-node(relevanceInKidsLives1,softgoal).
-node(avoidPresenceOfPedofiles1,softgoal).
-leaf(avoidPresenceOfPedofiles1).
-node(webServicesSelfServe3,softgoal).
-leaf(webServicesSelfServe3).
-node(increasePhoneResources,softgoal).
-leaf(increasePhoneResources).
-node(maintainImplementCSServices1,task).
-node(counsellorsBeProfessionallyTrained1,goal).
-leaf(counsellorsBeProfessionallyTrained1).
-topgoal(counsellorsBeProfessionallyTrained1).
-node(implementCyberCafPortalChatRoom1,task).
-node(traceCalls,task).
-leaf(traceCalls).
-node(increasedWebServices2,softgoal).
-node(efficientWebServices2,softgoal).
-node(increaseEmphasisOnOnlineFeedbackForm,softgoal).
-node(provideWrittenCounselling,task).
-leaf(provideWrittenCounselling).
-node(connectBackToTheCommunity4,softgoal).
-node(provideRecordedMessages,task).
-leaf(provideRecordedMessages).
-node(phoneLibraryOfRecordedMessages,resource).
-node(putContentOntoWebsite1,task).
-leaf(putContentOntoWebsite1).
-node(confidentialityKids7,softgoal).
-node(kidsUseVideoCounselling1,task).
-leaf(kidsUseVideoCounselling1).
-node(maintainWebServices2,task).
-node(immediacy8,softgoal).
-node(increaseNumberOfServices,softgoal).
-node(connectBackToTheCommunity42,softgoal).
-node(confidentialityKids,softgoal).
-leaf(confidentialityKids).
-node(availableServices4,softgoal).
-node(implementPollsAboutKids,task).
-node(increasedWebServices,softgoal).
-node(maintainServicesAboveCompetition1,softgoal).
-node(kidsUseTextMessaging,task).
-node(parentsUsePhoneCounselling1,task).
-node(kidsUseBulletinBoardWithReplies,task).
-node(immediacy1,softgoal).
-node(avoidBadAdvice5,softgoal).
-node(implementBoardWithReplies,task).
-leaf(implementBoardWithReplies).
-node(implementTextMessaging1,task).
-leaf(implementTextMessaging1).
-node(kidsUseVoiceCounselling1,task).
-leaf(kidsUseVoiceCounselling1).
-node(kidsUseTextMessaging1,task).
-node(maintainImplementPHLServices,task).
-node(implementGeneralQuestionsAndAnswers1,task).
-node(reduceNumberOfStepsWebPostingTechnology,softgoal).
-node(anonymityParents,softgoal).
-node(maintainPhoneServices2,task).
-node(parentsUseInformationSection,task).
-node(empoweringKidsToHelpThemselves1,softgoal).
-node(serviceResources,resource).
-leaf(serviceResources).
-node(telephonyBeImplementedAndManaged1,goal).
-leaf(telephonyBeImplementedAndManaged1).
-topgoal(telephonyBeImplementedAndManaged1).
-node(implementFilters,task).
-leaf(implementFilters).
-node(moderatedECounsellingBeUsed,goal).
-topgoal(moderatedECounsellingBeUsed).
-node(kidsUseEmailCounselling,task).
-node(relevanceInKidsLives2,softgoal).
-leaf(relevanceInKidsLives2).
-node(immediacyServices,softgoal).
-node(anonymityParents3,softgoal).
-node(moderateAChat,task).
-leaf(moderateAChat).
-node(parentsUsePhoneCounselling,task).
-node(anonymity,softgoal).
-node(availableServices3,softgoal).
-node(maintainCSPhoneServices,task).
-node(connectBackToTheCommunity10,softgoal).
-node(easyAccessToPostReply,softgoal).
-node(avoidDialogues,softgoal).
-node(createCounsellingPosts,task).
-leaf(createCounsellingPosts).
-node(efficientWebServices1,softgoal).
-node(parentsUseNToolToAllowParentsToTalkToEachOther1,task).
-leaf(parentsUseNToolToAllowParentsToTalkToEachOther1).
-node(decreasePhoneWaitingTime2,softgoal).
-node(telephonyBeImplementedAndManaged,goal).
-topgoal(telephonyBeImplementedAndManaged).
-node(availabilityServices,softgoal).
-node(easierToFindPostsWebPostingTechnology,softgoal).
-node(confidentialityKids2,softgoal).
-node(maintainImplementCSWebServices,task).
-node(maintainPHLPhoneServices1,task).
-node(maintainImplementCSWebServices3,task).
-node(avoidBadAdvice1,softgoal).
-node(kidsHaveOwnershipOfServices2,softgoal).
-node(anonymityKids7,softgoal).
-node(maintainPHLWebServices3,task).
-node(correctInterpretationOfCounsel1,softgoal).
-leaf(correctInterpretationOfCounsel1).
-node(decreasePhoneWaitingTime1,softgoal).
-node(serviceLevelsBeMet,goal).
-leaf(serviceLevelsBeMet).
-topgoal(serviceLevelsBeMet).
-node(measureSuccessOfServices3,softgoal).
-node(kidsUseAskACounsellorSection1,task).
-leaf(kidsUseAskACounsellorSection1).
-node(implementBulletinBoardWithDelayedModeration,task).
-node(immediacy,softgoal).
-node(maintainImplementPHLServices3,task).
-node(immediacy6,softgoal).
-node(sufficientlyModeratedWebServices3,softgoal).
-node(parentsUseBulletinBoardWithReplies1,task).
-leaf(parentsUseBulletinBoardWithReplies1).
-node(kidsUseBulletinBoardWithDelayedModeration1,task).
-leaf(kidsUseBulletinBoardWithDelayedModeration1).
-node(webServicesSelfServe2,softgoal).
-node(confidentialityParents3,softgoal).
-node(avoidPresenceOfPedofiles2,softgoal).
-node(easyAccessToPostReply1,softgoal).
-node(kidsUseBulletinBoardWithReplies1,task).
-leaf(kidsUseBulletinBoardWithReplies1).
-node(sufficientlyModeratedWebServices4,softgoal).
-node(efficientServices,softgoal).
+:- discontiguous (<-)/2, (<~)/2.
+:- dynamic (<-)/2, (<~)/2.
+types(goal,
+  [answer80OfCallsWithin30SecondsOfMessageEnding,
+   anonymousTechnologyBeUsed, servicesBeBilingual1,
+   counsellorsBeProfessionallyTrained, nonRealTimeECounsellingBeUsed,
+   servicesBeBilingual, nonAnonymousTechnologyBeUsed,
+   servicesBeProvidedForKidsBullyingLine,
+   confidentialTechnologyBeUsed,
+   technologyThatDoesNotAllowDialoguesBetweenKidsBeUsed,
+   servicesBeProvidedForKidsBullyingLine1,
+   onlyOnlineRequestFromCanadiansAccepted,
+   nonConfidentialTechnologyBeUsed, kidsUseOnlineInformationProvided,
+   technologyThatAllowsDialoguesBetweenKidsBeUsed,
+   strategicBluePrintForWebsiteBeFollowed,
+   webSiteContentBeUpdatedDaily, realTimeECounsellingBeUsed,
+   counsellorsBeProfessionallyTrained1,
+   telephonyBeImplementedAndManaged1, moderatedECounsellingBeUsed,
+   telephonyBeImplementedAndManaged, serviceLevelsBeMet
+  ]).
+types(softgoal,
+  [decreaseResponseTIme1, increasedWebServices3,
+   increaseWebResources2, friendlyWebSite1, confidentialityKids6,
+   connectBackToTheCommunity5, similarityOfProblems1, immediacy2,
+   accommodatePhoneTraffic, similarityWithOtherParentsProblems,
+   accommodateWebSiteTraffic, kidsHaveOwnershipOfServices1,
+   easierNavigationCSWebServices1, sufficientCounsellingResources1,
+   measureSuccessOfServices4, anonymityKids3, highQualityServices2,
+   easierToFindPostsWebPostingTechnology1, qualityServices,
+   webServicesSelfServe1, efficientPhoneServices,
+   connectBackToTheCommunity8, controlOfCounsellingWork1,
+   increasedWebServices4, decreaseResponseTIme2,
+   increaseWebResources1, connectBackToTheCommunity1,
+   encourageKidsUsingWebServicesToUsePhoneServices1,
+   decreaseResponseTIme, anonymityParents4, confidentialityKids1,
+   connectBackToTheCommunity6, avoidBadAdvice2,
+   effectiveChatRoomFilters, webServicesSelfServe,
+   availableServices2, kidsHaveOwnershipOfServices5, anonymityKids6,
+   improveWebsiteContent1, efficientPhoneServices1, immediacy7,
+   reducePrankCalls1, anonymityKids5,
+   sufficientCounsellingResources2, controlWebServices2,
+   confidentialityServices,
+   encourageKidsUsingWebServicesToUsePhoneServices,
+   increasePhoneResources2, efficientServices1, friendlyWebSite,
+   confidentialityParents5, confidentialityKids5, availableServices1,
+   relevanceInKidsLives, maintainServicesAboveCompetition,
+   anonymityCounsellors, connectBackToTheCommunity2,
+   connectToOtherKids, immediacy3, directResponseToKids1,
+   availableServices, controlWebServices, improveWebsiteContent,
+   efficientPhoneServices2, decreasePhoneWaitingTime,
+   improveWebsiteContent2, highQualityServices1, anonymityKids2,
+   directResponseToKids, immediacy4,
+   sufficientlyModeratedWebServices1, sufficientCounsellingResources,
+   kidsHaveOwnershipOfServices6, connectBackToTheCommunity,
+   confidentialityParents1, anonymityParents2, efficientWebServices,
+   confidentiality, decreaseResponseTIme3, decreaseResponseTIme4,
+   avoidDialoguesBetweenKids, anonymityParents5,
+   connectBackToTheCommunity7, avoidBadAdvice3, similarityOfProblems,
+   availableServices5, increaseEmphasisOnOnlineFeedbackForm1,
+   controlOfCounsellingWork, avoidBadAdvice,
+   kidsHaveOwnershipOfServices4, measureSuccessOfServices1,
+   reduceContagionEffectOfHarmfulActions1, anonymityKids1,
+   improveImageToKids1, avoidPresenceOfPedofiles,
+   confidentialityParents, measureSuccessOfServices,
+   similarityWithOtherParentsProblems1, avoidBadAdvice4,
+   increaseResourcesServices1, controlWebServices1,
+   anonymityCounsellors1, reduceNumberOfStepsWebPostingTechnology1,
+   friendlyWebSite2, increaseWebResources, increasePhoneResources1,
+   highQualityServices, increasedWebServices1,
+   sufficientlyModeratedWebServices,
+   avoidDialoguesBetweenKidsAndCounsellorsOnTheWeb,
+   friendlyWebSite12, confidentialityParents4, improveImageToKids,
+   increaseNumberOfServices1, confidentialityKids4,
+   reduceContagionEffectOfHarmfulActions, confidentialityParents2,
+   kidsHaveOwnershipOfServices, connectBackToTheCommunity3,
+   empoweringKidsToHelpThemselves, directResponseToKids2,
+   confidentialityKids3, anonymityKids, increaseResourcesServices,
+   reducePrankCalls, correctInterpretationOfCounsel,
+   kidsHaveOwnershipOfServices3, anonymityKids4,
+   measureSuccessOfServices2, easierAccessToPostReply,
+   connectBackToTheCommunity9, easierNavigationCSWebServices2,
+   easierNavigationCSWebServices, immediacy5,
+   sufficientlyModeratedWebServices2, easierAccessToPostReply1,
+   anonymityParents1, relevanceInKidsLives1,
+   avoidPresenceOfPedofiles1, webServicesSelfServe3,
+   increasePhoneResources, increasedWebServices2,
+   efficientWebServices2, increaseEmphasisOnOnlineFeedbackForm,
+   connectBackToTheCommunity4, confidentialityKids7, immediacy8,
+   increaseNumberOfServices, connectBackToTheCommunity42,
+   confidentialityKids, availableServices4, increasedWebServices,
+   maintainServicesAboveCompetition1, immediacy1, avoidBadAdvice5,
+   reduceNumberOfStepsWebPostingTechnology, anonymityParents,
+   empoweringKidsToHelpThemselves1, relevanceInKidsLives2,
+   immediacyServices, anonymityParents3, anonymity,
+   availableServices3, connectBackToTheCommunity10,
+   easyAccessToPostReply, avoidDialogues, efficientWebServices1,
+   decreasePhoneWaitingTime2, availabilityServices,
+   easierToFindPostsWebPostingTechnology, confidentialityKids2,
+   avoidBadAdvice1, kidsHaveOwnershipOfServices2, anonymityKids7,
+   correctInterpretationOfCounsel1, decreasePhoneWaitingTime1,
+   measureSuccessOfServices3, immediacy, immediacy6,
+   sufficientlyModeratedWebServices3, webServicesSelfServe2,
+   confidentialityParents3, avoidPresenceOfPedofiles2,
+   easyAccessToPostReply1, sufficientlyModeratedWebServices4,
+   efficientServices
+  ]).
+types(task,
+  [implementFeedbackForm,
+   implementNToolToAllowParentsToTalkToEachOther1,
+   informKidsAboutAnonymityKidsOfWebServices,
+   implementOneOnOneChatRooms1, kidsReadGeneralQuestionsAndAnswers,
+   kidsUseVoiceCounselling, kidsUseAskACounsellorSection,
+   maintainWebServices1, implementBoardWithReplies1,
+   kidsUseOneOnOneChatRooms, kidsUseCyberCafPortalChatRoom1,
+   strategicBluePrint, implementPhoneFeedback,
+   maintainImplementCSServices, implementTextMessaging,
+   maintainAskACounsellorSection1, maintainPHLPhoneServices4,
+   moderateDiscussionBoards, maintainPhoneServices1,
+   implementEmailCounselling, kidsUseCyberCafPortalChatRoom,
+   implementPhoneFeedback3, kidsUsePhoneCounselling1, webSiteContent,
+   maintainImplementCSServices3, provideWebCounsellingWithVideo,
+   implementGetInformedSectionOfWebSite, implementFeedbackCollection,
+   parentsUseNToolToAllowParentsToTalkToEachOther,
+   implementBulletinBoardWithReplies, provideWebCounsellingWithAudio,
+   implementCyberCafPortalChatRoom, obtainNeededSoftware,
+   maintainImplementCSWebServices2, maintainPHLWebServices2,
+   implementGeneralQuestionsAndAnswers, acquireFeedback,
+   maintainImplementPHLServices2, kidsUseVideoCounselling,
+   kidsUseEmailCounselling1, maintainAskACounsellorSection,
+   maintainPhoneServices, implementEmailCounselling1,
+   implementVoiceCounselling, implementDelay,
+   kidsReadGetInformedSectionOfWebSite, implementAntiPrankingMessage,
+   feedbackFormSoftware, scheduleChatAtSpecificTimes,
+   implementOneOnOneChatRooms,
+   kidsUseBulletinBoardWithDelayedModeration, implementFeedbackForm1,
+   kidsReadGeneralQuestionsAndAnswers1, implementInformationSection1,
+   acquireServiceResources, implementVideoCounselling1,
+   implementServices, maintainCSPhoneServices1,
+   putContentOntoWebsite, maintainPHLPhoneServices3,
+   implementBulletinBoardWithReplies1, maintainPHLWebServices1,
+   implementGetInformedSectionOfWebSite1,
+   informKidsAboutAnonymityKidsOfWebServices1,
+   maintainCSPhoneServices2, obtainSoftware, implementPhoneFeedback2,
+   implementNToolToAllowParentsToTalkToEachOther,
+   kidsGetInformationThroughECounselling,
+   maintainImplementCSServices2, kidsReadPollsAboutKids,
+   kidsUsePhoneCounselling, kidsUseOneOnOneChatRooms1,
+   voiceCounsellingBePerformed, maintainCSPhoneServices3,
+   maintainWebServices, kidsUseGetInformedSectionOfWebSite,
+   maintainPHLPhoneServices, parentsUseBulletinBoardWithReplies,
+   maintainWebServices3, performEmailCounselling,
+   maintainImplementCSWebServices1,
+   implementBulletinBoardWithDelayedModeration1,
+   maintainPhoneServices4, maintainImplementPHLServices1,
+   implementVideoCounselling, webServer,
+   blockKidsWhoDisplayInappropriateBehavoir, maintainPhoneServices3,
+   feedback, implementPollsAboutKids1, implementInformationSection,
+   implementPhoneFeedback1, obtainWebServer, implementFeedbackForm2,
+   implementVoiceCounselling1, kidsReadPollsAboutKids1, feedback1,
+   maintainPHLWebServices, maintainPHLPhoneServices2,
+   acquireWebContent, webSoftware, parentsUseInformationSection1,
+   maintainImplementCSServices1, implementCyberCafPortalChatRoom1,
+   traceCalls, provideWrittenCounselling, provideRecordedMessages,
+   phoneLibraryOfRecordedMessages, putContentOntoWebsite1,
+   kidsUseVideoCounselling1, maintainWebServices2,
+   implementPollsAboutKids, kidsUseTextMessaging,
+   parentsUsePhoneCounselling1, kidsUseBulletinBoardWithReplies,
+   implementBoardWithReplies, implementTextMessaging1,
+   kidsUseVoiceCounselling1, kidsUseTextMessaging1,
+   maintainImplementPHLServices,
+   implementGeneralQuestionsAndAnswers1, maintainPhoneServices2,
+   parentsUseInformationSection, serviceResources, implementFilters,
+   kidsUseEmailCounselling, moderateAChat,
+   parentsUsePhoneCounselling, maintainCSPhoneServices,
+   createCounsellingPosts,
+   parentsUseNToolToAllowParentsToTalkToEachOther1,
+   maintainImplementCSWebServices, maintainPHLPhoneServices1,
+   maintainImplementCSWebServices3, maintainPHLWebServices3,
+   kidsUseAskACounsellorSection1,
+   implementBulletinBoardWithDelayedModeration,
+   maintainImplementPHLServices3,
+   parentsUseBulletinBoardWithReplies1,
+   kidsUseBulletinBoardWithDelayedModeration1,
+   kidsUseBulletinBoardWithReplies1
+  ]).
 acquireFeedback <- [feedback1, feedback, implementFeedbackCollection].
 acquireServiceResources <- [serviceResources].
 acquireWebContent <- [webSiteContent].

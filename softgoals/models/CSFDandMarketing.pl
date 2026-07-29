@@ -1,466 +1,188 @@
 % CSFDandMarketing  (nfr2 dialect: <- rules, <~ contribution lists)
-:- discontiguous (<-)/2, (<~)/2, node/2, leaf/1, topgoal/1.
-:- dynamic (<-)/2, (<~)/2, node/2, leaf/1, topgoal/1.
-node(sponsorshipBeBeneficial,softgoal).
-node(marketFundraisingEvents2,softgoal).
-node(provideOnlineDonorTechnology,task).
-leaf(provideOnlineDonorTechnology).
-node(counselorsAttendFundraisingEvents,goal).
-topgoal(counselorsAttendFundraisingEvents).
-node(manageNprojects,task).
-node(acquireNCSStories,softgoal).
-node(upToDateCorporatePartnerInformation,softgoal).
-node(regionalStaffFeelIncluded,softgoal).
-node(bringRegionalFundraisingStaffTogetherOnceAYear,task).
-leaf(bringRegionalFundraisingStaffTogetherOnceAYear).
-node(proactiveMediaRelationship,softgoal).
-node(csNServices,softgoal).
-leaf(csNServices).
-node(highResponseIndividualDonors,softgoal).
-node(recordDonorInformation,task).
-node(accountabilityOfServices1,softgoal).
-leaf(accountabilityOfServices1).
-node(providePromotionalMaterialToStudentAmbassadors,task).
-leaf(providePromotionalMaterialToStudentAmbassadors).
-node(contributeOnline,task).
-node(happinessStaff,softgoal).
-node(csStories,softgoal).
-leaf(csStories).
-node(contributeToACause,goal).
-topgoal(contributeToACause).
-node(exclusiveRelationshipsOfficialPartners,softgoal).
-node(conflictsBeManaged,task).
-leaf(conflictsBeManaged).
-node(receiptBeProvided,goal).
-topgoal(receiptBeProvided).
-node(reachMoreKidsSponsors,softgoal).
-node(manageProjects,task).
-node(attendFundraisingEvent,task).
-node(useVolunteerServices,task).
-leaf(useVolunteerServices).
-node(pledgesBeCollected,goal).
-topgoal(pledgesBeCollected).
-node(sponsorshipProposal,task).
-node(followHighestEthicalGuidelines,softgoal).
-node(reduceInternalCommunicationConfusion,softgoal).
-node(projectDeadlinesBeMet1,goal).
-topgoal(projectDeadlinesBeMet1).
-node(provideCompiledCallData,task).
-leaf(provideCompiledCallData).
-node(payFundDevelopmentAndMarketingStaff,task).
-leaf(payFundDevelopmentAndMarketingStaff).
-node(useSponsorMarketingChannels,task).
-node(getCorporatePartnerInformationFromDL,task).
-node(manageReceivables,task).
-leaf(manageReceivables).
-node(becomeAMajorPatron,task).
-node(createThankYouAds,task).
-leaf(createThankYouAds).
-node(reachAgreement,task).
-leaf(reachAgreement).
-node(getWebEventTechnology1,task).
-leaf(getWebEventTechnology1).
-node(provideMoneyForServices,task).
-leaf(provideMoneyForServices).
-node(commitmentToCSCauseFromSponsorsEmployees,softgoal).
-node(presentProposalConvincinglyToSponsors,softgoal).
-node(successfulEvents,softgoal).
-node(collectDonationsOnline,task).
-node(createPostersFlyersAndInformationalMaterial,task).
-leaf(createPostersFlyersAndInformationalMaterial).
-node(goodMediaExposure,softgoal).
-node(quickResponseToQuestionsAndConcerns,softgoal).
-node(positiveInternalOpinion,softgoal).
-node(provideDocumentLibrarySystem,task).
-leaf(provideDocumentLibrarySystem).
-node(credibilityCSBrand,softgoal).
-node(elaborateFundraisingTargets,task).
-node(engageEmployeesInEvents1,softgoal).
-node(sponsorsForEventsBeFound,goal).
-topgoal(sponsorsForEventsBeFound).
-node(sponsorPartnerNcontacts2,softgoal).
-leaf(sponsorPartnerNcontacts2).
-node(marketingFromGovernmentBeAcquired,goal).
-topgoal(marketingFromGovernmentBeAcquired).
-node(becomeAPatron,task).
-node(becomeAOfficialPartner,task).
-node(presentationSkills1,softgoal).
-leaf(presentationSkills1).
-node(providePartnerContactsToCS,task).
-node(createBrandedProducts,task).
-leaf(createBrandedProducts).
-node(runFundraiserInSchools,task).
-leaf(runFundraiserInSchools).
-node(recognition,softgoal).
-node(sponsorsMarketingChannelsBeUsed,goal).
-topgoal(sponsorsMarketingChannelsBeUsed).
-node(credibilityCSBrand2,softgoal).
-node(sponsorPartnerNcontacts,softgoal).
-node(reallocateResources,task).
-leaf(reallocateResources).
-node(createLifeLongVolunteerSpirit1,softgoal).
-node(acquirePublicSpeakingSkills,softgoal).
-node(companyRelationshipBeRetainedAfterMergers,goal).
-topgoal(companyRelationshipBeRetainedAfterMergers).
-node(increaseAwareness,softgoal).
-node(notForProfitPartnersBeInvolvedInEvents,goal).
-leaf(notForProfitPartnersBeInvolvedInEvents).
-topgoal(notForProfitPartnersBeInvolvedInEvents).
-node(engagementStudentAmbassadorsInPromotingAwareness,softgoal).
-node(responsibleUsageSponsorFunds,softgoal).
-node(happinessStaff3,softgoal).
-node(saGiveCSPresentations,task).
-node(putOnFundraisingWebEvents,task).
-node(highResponseIndividualDonors1,softgoal).
-node(elaborateFundraisingTargets1,task).
-leaf(elaborateFundraisingTargets1).
-node(staffBeSupported,goal).
-topgoal(staffBeSupported).
-node(giveCSPresentations,task).
-leaf(giveCSPresentations).
-node(speakAtFundraisers,task).
-leaf(speakAtFundraisers).
-node(avoidOverMarketingServices,softgoal).
-node(getCorporatePartnerInformationFromDocumentLibrary1,task).
-node(engagementSponsorsInTheCauseOfCS,softgoal).
-node(positiveReputation,softgoal).
-node(agreement,resource).
-node(singleCharitableRegistrationNumber,resource).
-node(nationalEventCalendar,softgoal).
-node(informSponsorsOfProgress,task).
-leaf(informSponsorsOfProgress).
-node(getDonorDatabase,task).
-leaf(getDonorDatabase).
-node(singleCharitableRegistrationNumberBeUsed,goal).
-topgoal(singleCharitableRegistrationNumberBeUsed).
-node(freeAdvertisement,resource).
-leaf(freeAdvertisement).
-node(useSponsorLogo,task).
-node(implementStayInTouchProgram,task).
-leaf(implementStayInTouchProgram).
-node(involvementNotForProfitPartnersInEvents,softgoal).
-node(engagementOfSponsorEmployeesInFundDevelopment,softgoal).
-node(credibilityCSBrand1,softgoal).
-leaf(credibilityCSBrand1).
-node(reallocateResources1,task).
-leaf(reallocateResources1).
-node(exclusiveRelationshipsOfficialPartners1,softgoal).
-node(contributionBeMade,goal).
-topgoal(contributionBeMade).
-node(quickResponseToSponsors1,softgoal).
-node(appearAsGoodCorporateCitizens,softgoal).
-node(engageEmployeesInEvents,softgoal).
-node(goodProjectManagement,softgoal).
-node(putOnOrientationProcessForFundDevelopmentAndMarketingStaff,task).
-leaf(putOnOrientationProcessForFundDevelopmentAndMarketingStaff).
-node(cobranding,softgoal).
-node(organizeDiscussionsWithSponsors,task).
-leaf(organizeDiscussionsWithSponsors).
-node(providePAPToStaffNUsingTheDocumentLibrary,task).
-node(matchFundraisingTargets,softgoal).
-node(fundsBeRaised,goal).
-topgoal(fundsBeRaised).
-node(provideCompiledCallDataToMedia,task).
-node(nationalMarketingStrategy,resource).
-leaf(nationalMarketingStrategy).
-node(marketCSBrand,softgoal).
-node(longTermFunding,softgoal).
-node(freeServices,resource).
-node(improveImageToKids,softgoal).
-node(acquireGovernmentFunding,softgoal).
-node(marketFundraisingEvents1,softgoal).
-node(engageEmployeesInFundraisingEvents,softgoal).
-node(getPAPInformation1,task).
-node(meetCorporateSponsorsNeeds,softgoal).
-node(provideFundraisingServices,task).
-node(trustOfSponsorsTowardsCS2,softgoal).
-node(getDonorAccountingDatabase,task).
-node(collectPledgeOnline,task).
-node(makeContributionToCharity,goal).
-topgoal(makeContributionToCharity).
-node(contributeToAGoodCause,softgoal).
-node(increaseVolunteers1,softgoal).
-leaf(increaseVolunteers1).
-node(collectDonorInformation,task).
-leaf(collectDonorInformation).
-node(getSponsorshipProposal,task).
-node(writeArticlesForWebsite1,task).
-leaf(writeArticlesForWebsite1).
-node(agreementStaffOverCorporatePartnerExpectations,softgoal).
-node(projectDeadlinesBeMet,goal).
-topgoal(projectDeadlinesBeMet).
-node(provideFreeServices,task).
-leaf(provideFreeServices).
-node(manageAccounts1,task).
-node(matchFundraisingTargets2,softgoal).
-node(engagementSponsorEmployeesInPromotingAwareness1,softgoal).
-leaf(engagementSponsorEmployeesInPromotingAwareness1).
-node(workWithTheRegionsToImplementEvents,task).
-leaf(workWithTheRegionsToImplementEvents).
-node(projectManagementSkills,softgoal).
-leaf(projectManagementSkills).
-node(createGeneralLedgers1,task).
-node(positiveInternalOpinion1,softgoal).
-leaf(positiveInternalOpinion1).
-node(retainSponsors1,softgoal).
-node(upToDateInformationOnPrograms1,softgoal).
-node(getSponsorsForEvents,task).
-node(increasedInvolvementCounselorsInEvents,softgoal).
-node(uniteVolunteersAndSponsors,softgoal).
-node(goodProjectManagement2,softgoal).
-node(putOnFundraisingEvents,task).
-node(donorAccountingDatabase,resource).
-leaf(donorAccountingDatabase).
-node(presentationSkills,softgoal).
-node(getWebTechnology,task).
-node(marketCSService,task).
-node(qualityServices1,softgoal).
-node(involveNotForProfitPartnersInEvents,goal).
-topgoal(involveNotForProfitPartnersInEvents).
-node(reachAgreement1,task).
-node(increasedInvolvementCounselorsInEvents1,softgoal).
-node(corporateSponsorsFeelIncluded,softgoal).
-node(recognizeNSponsorContribution1,softgoal).
-node(happinessStaff1,softgoal).
-node(quickResponseToSponsors,softgoal).
-leaf(quickResponseToSponsors).
-node(provideLogoToCS,task).
-leaf(provideLogoToCS).
-node(increaseConnectionCounselorsAndCommunity,softgoal).
-node(timelyServices,softgoal).
-leaf(timelyServices).
-node(sharePAPInDocumentLibrary,task).
-leaf(sharePAPInDocumentLibrary).
-node(longTermFunding1,softgoal).
-node(getCorporatePartnerInformationFromDL1,task).
-leaf(getCorporatePartnerInformationFromDL1).
-node(retainSponsors2,softgoal).
-leaf(retainSponsors2).
-node(experiencedMarketingPartners,softgoal).
-node(sponsorsIncludeCSLogosAndDescriptionsOnTheirProducts,task).
-leaf(sponsorsIncludeCSLogosAndDescriptionsOnTheirProducts).
-node(regionalStaffFeelIncluded1,softgoal).
-node(biWeeklyConferenceCalls,task).
-leaf(biWeeklyConferenceCalls).
-node(recognizeNSponsorContribution,softgoal).
-node(marketingBeMadeUsingDedicatedCounselor,goal).
-topgoal(marketingBeMadeUsingDedicatedCounselor).
-node(givePhilanthropicDonation,task).
-leaf(givePhilanthropicDonation).
-node(writeArticlesForMagazines,task).
-node(exclusiveBrandAndLogoUse,resource).
-leaf(exclusiveBrandAndLogoUse).
-node(qualityServices,softgoal).
-leaf(qualityServices).
-node(putOnFundraisingEventsOnTheWeb,task).
-node(saRunFundraiserInSchools,task).
-node(responsibleUsageSponsorFunds2,softgoal).
-node(collectPledgeDuringEvent,task).
-node(getCorporateSponsorFunds,task).
-node(managePAP,task).
-node(involvementNotForProfitPartnersInEvents1,softgoal).
-leaf(involvementNotForProfitPartnersInEvents1).
-node(eventsBeMarketed,goal).
-topgoal(eventsBeMarketed).
-node(createGeneralLedgers,task).
-leaf(createGeneralLedgers).
-node(increaseAccessSpeedRegionalOfficesToDocumentLibrary,softgoal).
-leaf(increaseAccessSpeedRegionalOfficesToDocumentLibrary).
-node(developExternalComunications,task).
-node(increasedAvailabilityToSponsors,softgoal).
-leaf(increasedAvailabilityToSponsors).
-node(accountabilityOfServices,softgoal).
-node(highResponseIndividualDonors2,softgoal).
-node(beInformedOfFundraisingEvents,goal).
-topgoal(beInformedOfFundraisingEvents).
-node(saSpeakAtFundraisers,task).
-node(happinessStaff2,softgoal).
-node(eventCoordination,task).
-node(getCorporatePartnerInformationFromDocumentLibrary,task).
-node(increaseFreeServices,softgoal).
-node(trustOfDonor,softgoal).
-node(positiveImageToEmployees,softgoal).
-node(recognizeNSponsorContribution2,softgoal).
-node(engagementSponsorEmployeesInPromotingAwareness2,softgoal).
-node(collectPledgeOnline2,task).
-node(promotionResources,resource).
-node(includeCorporatePartnersInTheDevelopmentOfPressReleases,softgoal).
-leaf(includeCorporatePartnersInTheDevelopmentOfPressReleases).
-node(manageReceivables1,task).
-node(provideFreeServices1,task).
-leaf(provideFreeServices1).
-node(placeSponsorLogosInEvents,task).
-leaf(placeSponsorLogosInEvents).
-node(followHighestEthicalGuidelines1,softgoal).
-leaf(followHighestEthicalGuidelines1).
-node(getPAPInformation,task).
-node(answersBeProvidedToMediaQueries,goal).
-leaf(answersBeProvidedToMediaQueries).
-topgoal(answersBeProvidedToMediaQueries).
-node(contributeToAGoodCause1,softgoal).
-node(trustOfSponsorsTowardsCS1,softgoal).
-node(pledgeNonline,task).
-leaf(pledgeNonline).
-node(increasePhilanthropicDonations,softgoal).
-node(increasedInteractionCounselorsWithMedia,softgoal).
-node(sharePAPInDocumentLibrary1,task).
-leaf(sharePAPInDocumentLibrary1).
-node(storeDonorTransactionsIntoDatabase,task).
-leaf(storeDonorTransactionsIntoDatabase).
-node(sponsorPartnerNcontacts1,softgoal).
-leaf(sponsorPartnerNcontacts1).
-node(provincialGovernment,softgoal).
-node(responsibleUsageSponsorFunds1,softgoal).
-leaf(responsibleUsageSponsorFunds1).
-node(minimizeExpenses,softgoal).
-node(trackBudgets,task).
-leaf(trackBudgets).
-node(accountabilityOfServices2,softgoal).
-node(marketPHLBrand,softgoal).
-node(improveImageToKids1,softgoal).
-node(pledgeOnline,task).
-node(counselorsWhoWantAPublicVoiceBeTrained,goal).
-topgoal(counselorsWhoWantAPublicVoiceBeTrained).
-node(increaseAwareness1,softgoal).
-node(emailCorporatePartnersInterestingAndRelevantNewsPieces,task).
-leaf(emailCorporatePartnersInterestingAndRelevantNewsPieces).
-node(sendRecognitionLetters,task).
-leaf(sendRecognitionLetters).
-node(philanthropicDonations,task).
-node(manageNPartnerRelationship,task).
-node(writeArticlesForWebsite,task).
-node(upToDateInformationOnPrograms,softgoal).
-node(increaseNAwareness,softgoal).
-node(increaseAwareness2,softgoal).
-leaf(increaseAwareness2).
-node(informationBeSharedWithSponsors,goal).
-topgoal(informationBeSharedWithSponsors).
-node(regionalStaffFeelIncluded2,softgoal).
-node(increaseInvolvementSponsorsInPuttingOnEvents,softgoal).
-node(exclusiveRelationshipsOfficialPartners2,softgoal).
-leaf(exclusiveRelationshipsOfficialPartners2).
-node(singleCharitableRegistrationNumber1,resource).
-leaf(singleCharitableRegistrationNumber1).
-node(maintain20CostsAgainstRevenuesRatio,goal).
-topgoal(maintain20CostsAgainstRevenuesRatio).
-node(acquireFreeServices,softgoal).
-node(marketFundraisingEvents,softgoal).
-node(timelyProvisionOfFreeServices1,softgoal).
-leaf(timelyProvisionOfFreeServices1).
-node(pitchToNationalCorporateSponsorsTheSponsorshipOfRegionalEvents,task).
-leaf(pitchToNationalCorporateSponsorsTheSponsorshipOfRegionalEvents).
-node(providePhilanthropicDonation,task).
-leaf(providePhilanthropicDonation).
-node(successfulMarketingCampaign,softgoal).
-node(engagementOfSponsorEmployeesInFundDevelopment1,softgoal).
-node(pledgeNDuringEvent,task).
-leaf(pledgeNDuringEvent).
-node(corporateSponsorFeelIncluded,softgoal).
-node(grantExclusiveUseOfBrandAndLogo,task).
-node(corporatePartnerFundraisingExpectationsBeKnown,goal).
-topgoal(corporatePartnerFundraisingExpectationsBeKnown).
-node(putTogetherProposalsForCorporateSponsors,task).
-leaf(putTogetherProposalsForCorporateSponsors).
-node(manageNPartnerRelationship1,task).
-node(communicateWithHeadOffice,task).
-node(subscribeToDocumentLibraryFolders2,task).
-node(followHighestEthicalGuidelines2,softgoal).
-node(engageEmployeesInEvents2,softgoal).
-leaf(engageEmployeesInEvents2).
-node(counselorSpeakOnKidsIssuesInGeneral1,task).
-leaf(counselorSpeakOnKidsIssuesInGeneral1).
-node(provideRealTimeTaxReceipts,task).
-leaf(provideRealTimeTaxReceipts).
-node(provideReceipts,task).
-node(useNationalEventCalendar,task).
-node(demonstrableServices1,softgoal).
-node(collectPledgeOnline3,task).
-node(increasedAvailabilityCounselorsToPublicSponsors,softgoal).
-node(availabilityForAdministrationAndAccountingPurposesAcrossCS,softgoal).
-node(publishedCSStories,softgoal).
-node(attractSponsors1,softgoal).
-node(attractSponsors,softgoal).
-node(funds,resource).
-node(increaseVolunteers,softgoal).
-node(upToDateCorporatePartnerInformation2,softgoal).
-leaf(upToDateCorporatePartnerInformation2).
-node(subscribeToDocumentLibraryFolders,task).
-node(getWebEventTechnology,task).
-node(engagementSponsorEmployeesInPromotingAwareness,softgoal).
-node(putOnOrientationForVolunteers,task).
-leaf(putOnOrientationForVolunteers).
-node(writeDownCorporateSponsorsObjectives,task).
-leaf(writeDownCorporateSponsorsObjectives).
-node(timelyProvisionOfFreeServices,softgoal).
-node(getDonorTechnology,task).
-node(engageEmployeesInPromotingAwareness,softgoal).
-node(corporatePartnerMarketingExpectationsBeKnown,goal).
-topgoal(corporatePartnerMarketingExpectationsBeKnown).
-node(sponsorLogo,resource).
-node(developNationalEventCalendar,task).
-leaf(developNationalEventCalendar).
-node(demonstrableServices,softgoal).
-node(periodicalCommunicationWithRegionalStaffBeMaintained,goal).
-topgoal(periodicalCommunicationWithRegionalStaffBeMaintained).
-node(provideFunds1,task).
-node(attractEventParticipants,softgoal).
-node(hearCSStories,softgoal).
-node(manageAccounts,task).
-leaf(manageAccounts).
-node(counselorSpeakOnKidsIssuesInGeneral,task).
-node(createLifeLongVolunteerSpirit,softgoal).
-leaf(createLifeLongVolunteerSpirit).
-node(communicateThroughInternetAndPhone,task).
-leaf(communicateThroughInternetAndPhone).
-node(sponsorRelationshipsBeManaged,goal).
-topgoal(sponsorRelationshipsBeManaged).
-node(provideFunds,task).
-leaf(provideFunds).
-node(frontEndForIncomeRecordingBeSupported,goal).
-topgoal(frontEndForIncomeRecordingBeSupported).
-node(minimizeCostOfEvents,softgoal).
-node(pledgeNDuringEvent1,task).
-node(corporatePartnerExpectationsBeSharedWithStaff,goal).
-topgoal(corporatePartnerExpectationsBeSharedWithStaff).
-node(subscribeToDocumentLibraryFolders1,task).
-node(trustOfSponsorsTowardsCS,softgoal).
-node(servicesBeProvidedForKidsBullyingLine,goal).
-leaf(servicesBeProvidedForKidsBullyingLine).
-topgoal(servicesBeProvidedForKidsBullyingLine).
-node(marketOnlyForSeriousIssues,task).
-leaf(marketOnlyForSeriousIssues).
-node(retainSponsors,softgoal).
-node(experiencedMarketingPartners2,softgoal).
-leaf(experiencedMarketingPartners2).
-node(trainCounselorsOnPublicSpeaking,task).
-leaf(trainCounselorsOnPublicSpeaking).
-node(demonstrableServices2,softgoal).
-node(writeArticlesForMagazines1,task).
-leaf(writeArticlesForMagazines1).
-node(storeDonorInformationIntoDatabase,task).
-leaf(storeDonorInformationIntoDatabase).
-node(engagementStudentAmbassadorsInPromotingAwareness1,softgoal).
-leaf(engagementStudentAmbassadorsInPromotingAwareness1).
-node(qualityServices2,softgoal).
-node(getFreeAdvertisement,task).
-node(positiveReputationOfCS,softgoal).
-leaf(positiveReputationOfCS).
-node(marketThroughOwnChannels,task).
-leaf(marketThroughOwnChannels).
-node(upToDateInformationOnCorporateSponsors,softgoal).
-node(positiveAssociationNByConsumers,softgoal).
-node(attractSponsors2,softgoal).
-node(getPhilanthropicDonations,task).
-leaf(getPhilanthropicDonations).
-node(useFreeServices,task).
-node(positiveReputationOfCS2,softgoal).
-node(inspiredStaff,softgoal).
-node(donorInformationBeRecorded,goal).
-topgoal(donorInformationBeRecorded).
-node(increasedCorporateSponsorFunds,softgoal).
-node(avoidOverMarketingServices1,softgoal).
-node(participateInEvents,task).
-leaf(participateInEvents).
+:- discontiguous (<-)/2, (<~)/2.
+:- dynamic (<-)/2, (<~)/2.
+types(goal,
+  [counselorsAttendFundraisingEvents, contributeToACause,
+   receiptBeProvided, pledgesBeCollected, projectDeadlinesBeMet1,
+   sponsorsForEventsBeFound, marketingFromGovernmentBeAcquired,
+   sponsorsMarketingChannelsBeUsed,
+   companyRelationshipBeRetainedAfterMergers,
+   notForProfitPartnersBeInvolvedInEvents, staffBeSupported,
+   singleCharitableRegistrationNumberBeUsed, contributionBeMade,
+   fundsBeRaised, makeContributionToCharity, projectDeadlinesBeMet,
+   involveNotForProfitPartnersInEvents,
+   marketingBeMadeUsingDedicatedCounselor, eventsBeMarketed,
+   beInformedOfFundraisingEvents, answersBeProvidedToMediaQueries,
+   counselorsWhoWantAPublicVoiceBeTrained,
+   informationBeSharedWithSponsors,
+   maintain20CostsAgainstRevenuesRatio,
+   corporatePartnerFundraisingExpectationsBeKnown,
+   corporatePartnerMarketingExpectationsBeKnown,
+   periodicalCommunicationWithRegionalStaffBeMaintained,
+   sponsorRelationshipsBeManaged,
+   frontEndForIncomeRecordingBeSupported,
+   corporatePartnerExpectationsBeSharedWithStaff,
+   servicesBeProvidedForKidsBullyingLine, donorInformationBeRecorded
+  ]).
+types(softgoal,
+  [sponsorshipBeBeneficial, marketFundraisingEvents2,
+   acquireNCSStories, upToDateCorporatePartnerInformation,
+   regionalStaffFeelIncluded, proactiveMediaRelationship,
+   csNServices, highResponseIndividualDonors,
+   accountabilityOfServices1, happinessStaff, csStories,
+   exclusiveRelationshipsOfficialPartners, reachMoreKidsSponsors,
+   followHighestEthicalGuidelines,
+   reduceInternalCommunicationConfusion,
+   commitmentToCSCauseFromSponsorsEmployees,
+   presentProposalConvincinglyToSponsors, successfulEvents,
+   goodMediaExposure, quickResponseToQuestionsAndConcerns,
+   positiveInternalOpinion, credibilityCSBrand,
+   engageEmployeesInEvents1, sponsorPartnerNcontacts2,
+   presentationSkills1, recognition, credibilityCSBrand2,
+   sponsorPartnerNcontacts, createLifeLongVolunteerSpirit1,
+   acquirePublicSpeakingSkills, increaseAwareness,
+   engagementStudentAmbassadorsInPromotingAwareness,
+   responsibleUsageSponsorFunds, happinessStaff3,
+   highResponseIndividualDonors1, avoidOverMarketingServices,
+   engagementSponsorsInTheCauseOfCS, positiveReputation,
+   nationalEventCalendar, involvementNotForProfitPartnersInEvents,
+   engagementOfSponsorEmployeesInFundDevelopment,
+   credibilityCSBrand1, exclusiveRelationshipsOfficialPartners1,
+   quickResponseToSponsors1, appearAsGoodCorporateCitizens,
+   engageEmployeesInEvents, goodProjectManagement, cobranding,
+   matchFundraisingTargets, marketCSBrand, longTermFunding,
+   improveImageToKids, acquireGovernmentFunding,
+   marketFundraisingEvents1, engageEmployeesInFundraisingEvents,
+   meetCorporateSponsorsNeeds, trustOfSponsorsTowardsCS2,
+   contributeToAGoodCause, increaseVolunteers1,
+   agreementStaffOverCorporatePartnerExpectations,
+   matchFundraisingTargets2,
+   engagementSponsorEmployeesInPromotingAwareness1,
+   projectManagementSkills, positiveInternalOpinion1,
+   retainSponsors1, upToDateInformationOnPrograms1,
+   increasedInvolvementCounselorsInEvents,
+   uniteVolunteersAndSponsors, goodProjectManagement2,
+   presentationSkills, qualityServices1,
+   increasedInvolvementCounselorsInEvents1,
+   corporateSponsorsFeelIncluded, recognizeNSponsorContribution1,
+   happinessStaff1, quickResponseToSponsors,
+   increaseConnectionCounselorsAndCommunity, timelyServices,
+   longTermFunding1, retainSponsors2, experiencedMarketingPartners,
+   regionalStaffFeelIncluded1, recognizeNSponsorContribution,
+   qualityServices, responsibleUsageSponsorFunds2,
+   involvementNotForProfitPartnersInEvents1,
+   increaseAccessSpeedRegionalOfficesToDocumentLibrary,
+   increasedAvailabilityToSponsors, accountabilityOfServices,
+   highResponseIndividualDonors2, happinessStaff2,
+   increaseFreeServices, trustOfDonor, positiveImageToEmployees,
+   recognizeNSponsorContribution2,
+   engagementSponsorEmployeesInPromotingAwareness2,
+   includeCorporatePartnersInTheDevelopmentOfPressReleases,
+   followHighestEthicalGuidelines1, contributeToAGoodCause1,
+   trustOfSponsorsTowardsCS1, increasePhilanthropicDonations,
+   increasedInteractionCounselorsWithMedia, sponsorPartnerNcontacts1,
+   provincialGovernment, responsibleUsageSponsorFunds1,
+   minimizeExpenses, accountabilityOfServices2, marketPHLBrand,
+   improveImageToKids1, increaseAwareness1,
+   upToDateInformationOnPrograms, increaseNAwareness,
+   increaseAwareness2, regionalStaffFeelIncluded2,
+   increaseInvolvementSponsorsInPuttingOnEvents,
+   exclusiveRelationshipsOfficialPartners2, acquireFreeServices,
+   marketFundraisingEvents, timelyProvisionOfFreeServices1,
+   successfulMarketingCampaign,
+   engagementOfSponsorEmployeesInFundDevelopment1,
+   corporateSponsorFeelIncluded, followHighestEthicalGuidelines2,
+   engageEmployeesInEvents2, demonstrableServices1,
+   increasedAvailabilityCounselorsToPublicSponsors,
+   availabilityForAdministrationAndAccountingPurposesAcrossCS,
+   publishedCSStories, attractSponsors1, attractSponsors,
+   increaseVolunteers, upToDateCorporatePartnerInformation2,
+   engagementSponsorEmployeesInPromotingAwareness,
+   timelyProvisionOfFreeServices,
+   engageEmployeesInPromotingAwareness, demonstrableServices,
+   attractEventParticipants, hearCSStories,
+   createLifeLongVolunteerSpirit, minimizeCostOfEvents,
+   trustOfSponsorsTowardsCS, retainSponsors,
+   experiencedMarketingPartners2, demonstrableServices2,
+   engagementStudentAmbassadorsInPromotingAwareness1,
+   qualityServices2, positiveReputationOfCS,
+   upToDateInformationOnCorporateSponsors,
+   positiveAssociationNByConsumers, attractSponsors2,
+   positiveReputationOfCS2, inspiredStaff,
+   increasedCorporateSponsorFunds, avoidOverMarketingServices1
+  ]).
+types(task,
+  [provideOnlineDonorTechnology, manageNprojects,
+   bringRegionalFundraisingStaffTogetherOnceAYear,
+   recordDonorInformation,
+   providePromotionalMaterialToStudentAmbassadors, contributeOnline,
+   conflictsBeManaged, manageProjects, attendFundraisingEvent,
+   useVolunteerServices, sponsorshipProposal,
+   provideCompiledCallData, payFundDevelopmentAndMarketingStaff,
+   useSponsorMarketingChannels, getCorporatePartnerInformationFromDL,
+   manageReceivables, becomeAMajorPatron, createThankYouAds,
+   reachAgreement, getWebEventTechnology1, provideMoneyForServices,
+   collectDonationsOnline,
+   createPostersFlyersAndInformationalMaterial,
+   provideDocumentLibrarySystem, elaborateFundraisingTargets,
+   becomeAPatron, becomeAOfficialPartner, providePartnerContactsToCS,
+   createBrandedProducts, runFundraiserInSchools,
+   reallocateResources, saGiveCSPresentations,
+   putOnFundraisingWebEvents, elaborateFundraisingTargets1,
+   giveCSPresentations, speakAtFundraisers,
+   getCorporatePartnerInformationFromDocumentLibrary1, agreement,
+   singleCharitableRegistrationNumber, informSponsorsOfProgress,
+   getDonorDatabase, freeAdvertisement, useSponsorLogo,
+   implementStayInTouchProgram, reallocateResources1,
+   putOnOrientationProcessForFundDevelopmentAndMarketingStaff,
+   organizeDiscussionsWithSponsors,
+   providePAPToStaffNUsingTheDocumentLibrary,
+   provideCompiledCallDataToMedia, nationalMarketingStrategy,
+   freeServices, getPAPInformation1, provideFundraisingServices,
+   getDonorAccountingDatabase, collectPledgeOnline,
+   collectDonorInformation, getSponsorshipProposal,
+   writeArticlesForWebsite1, provideFreeServices, manageAccounts1,
+   workWithTheRegionsToImplementEvents, createGeneralLedgers1,
+   getSponsorsForEvents, putOnFundraisingEvents,
+   donorAccountingDatabase, getWebTechnology, marketCSService,
+   reachAgreement1, provideLogoToCS, sharePAPInDocumentLibrary,
+   getCorporatePartnerInformationFromDL1,
+   sponsorsIncludeCSLogosAndDescriptionsOnTheirProducts,
+   biWeeklyConferenceCalls, givePhilanthropicDonation,
+   writeArticlesForMagazines, exclusiveBrandAndLogoUse,
+   putOnFundraisingEventsOnTheWeb, saRunFundraiserInSchools,
+   collectPledgeDuringEvent, getCorporateSponsorFunds, managePAP,
+   createGeneralLedgers, developExternalComunications,
+   saSpeakAtFundraisers, eventCoordination,
+   getCorporatePartnerInformationFromDocumentLibrary,
+   collectPledgeOnline2, promotionResources, manageReceivables1,
+   provideFreeServices1, placeSponsorLogosInEvents,
+   getPAPInformation, pledgeNonline, sharePAPInDocumentLibrary1,
+   storeDonorTransactionsIntoDatabase, trackBudgets, pledgeOnline,
+   emailCorporatePartnersInterestingAndRelevantNewsPieces,
+   sendRecognitionLetters, philanthropicDonations,
+   manageNPartnerRelationship, writeArticlesForWebsite,
+   singleCharitableRegistrationNumber1,
+   pitchToNationalCorporateSponsorsTheSponsorshipOfRegionalEvents,
+   providePhilanthropicDonation, pledgeNDuringEvent,
+   grantExclusiveUseOfBrandAndLogo,
+   putTogetherProposalsForCorporateSponsors,
+   manageNPartnerRelationship1, communicateWithHeadOffice,
+   subscribeToDocumentLibraryFolders2,
+   counselorSpeakOnKidsIssuesInGeneral1, provideRealTimeTaxReceipts,
+   provideReceipts, useNationalEventCalendar, collectPledgeOnline3,
+   funds, subscribeToDocumentLibraryFolders, getWebEventTechnology,
+   putOnOrientationForVolunteers,
+   writeDownCorporateSponsorsObjectives, getDonorTechnology,
+   sponsorLogo, developNationalEventCalendar, provideFunds1,
+   manageAccounts, counselorSpeakOnKidsIssuesInGeneral,
+   communicateThroughInternetAndPhone, provideFunds,
+   pledgeNDuringEvent1, subscribeToDocumentLibraryFolders1,
+   marketOnlyForSeriousIssues, trainCounselorsOnPublicSpeaking,
+   writeArticlesForMagazines1, storeDonorInformationIntoDatabase,
+   getFreeAdvertisement, marketThroughOwnChannels,
+   getPhilanthropicDonations, useFreeServices, participateInEvents
+  ]).
 accountabilityOfServices <- [accountabilityOfServices1].
 accountabilityOfServices2 <- [accountabilityOfServices1].
 acquireFreeServices <- [provideFreeServices1].

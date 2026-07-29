@@ -1,320 +1,144 @@
 % CSCounsellingManagement  (nfr2 dialect: <- rules, <~ contribution lists)
-:- discontiguous (<-)/2, (<~)/2, node/2, leaf/1, topgoal/1.
-:- dynamic (<-)/2, (<~)/2, node/2, leaf/1, topgoal/1.
-node(anITTrainerBePresent,goal).
-topgoal(anITTrainerBePresent).
-node(considerationOfFeedbackManagers,softgoal).
-node(highQualityCounselling1,softgoal).
-node(professionalCounsellorsBeUsed1,goal).
-topgoal(professionalCounsellorsBeUsed1).
-node(accommodateSchedulesCounsellingManagers1,softgoal).
-node(reduceTurnoverCounsellors,softgoal).
-node(performCounsellingAsInstructedBySupervisorCounsellors1,softgoal).
-node(trainingBeGivenToNewEmployees,task).
-node(increaseComfortablenessWithLearningProcess,softgoal).
-leaf(increaseComfortablenessWithLearningProcess).
-node(improveQualityAssuranceTechnology,softgoal).
-node(secondReadingOfWebPosts,task).
-node(accommodateSchedulesCounsellors,softgoal).
-node(analyzeCallStatistics1,task).
-node(reduceCostOfCounsellingHR1,softgoal).
-node(callsBeRecordedIntoADataBase1,goal).
-leaf(callsBeRecordedIntoADataBase1).
-topgoal(callsBeRecordedIntoADataBase1).
-node(communicateCSInformationToCounsellors,task).
-leaf(communicateCSInformationToCounsellors).
-node(professionalCounsellorsBeUsed,goal).
-leaf(professionalCounsellorsBeUsed).
-topgoal(professionalCounsellorsBeUsed).
-node(improveITSkillsOfCounsellors2,softgoal).
-node(effectiveUseOfTechnologyCounsellors2,softgoal).
-node(improvedQualityAssuranceCounsellingReviewsAndEvaluation,softgoal).
-node(improveHiringProcessOfCounsellors,softgoal).
-node(increaseITTrainingForCounsellors1,softgoal).
-node(manageCounsellors,task).
-node(listenToLiveCall,task).
-node(debriefWithCounsellors,task).
-node(clearCommunicationAboutThePurposeOfITToCounselors,softgoal).
-leaf(clearCommunicationAboutThePurposeOfITToCounselors).
-node(contractsBeReviewed,goal).
-leaf(contractsBeReviewed).
-topgoal(contractsBeReviewed).
-node(pressureCounsellorsToProvideOnlineServices2,softgoal).
-node(accommodateSchedulesCounsellingManagers2,softgoal).
-node(improveCallRecordingEquipment1,softgoal).
-node(improveTrainingForCounsellors,softgoal).
-node(acquireWebTrainingFromOperations,task).
-leaf(acquireWebTrainingFromOperations).
-node(improveJobDescriptionsCounsellors,softgoal).
-leaf(improveJobDescriptionsCounsellors).
-node(performanceReviewInformationBeCollectedInDataBase,goal).
-topgoal(performanceReviewInformationBeCollectedInDataBase).
-node(positiveInternalOpinion,softgoal).
-leaf(positiveInternalOpinion).
-node(improveHiringProcessOfCounsellors2,softgoal).
-node(rigorousEmployeeEvaluations,softgoal).
-leaf(rigorousEmployeeEvaluations).
-node(debriefWebPosts,task).
-leaf(debriefWebPosts).
-node(doubleHeadSet,resource).
-leaf(doubleHeadSet).
-node(provideOneOnOneSupportToCounsellors,task).
-leaf(provideOneOnOneSupportToCounsellors).
-node(happinessCounsellors1,softgoal).
-leaf(happinessCounsellors1).
-node(improvedWritingSkillsCounsellors,softgoal).
-leaf(improvedWritingSkillsCounsellors).
-node(performCounsellingAsInstructedBySupervisorCounsellors,softgoal).
-leaf(performCounsellingAsInstructedBySupervisorCounsellors).
-node(anITTrainerBePresent1,goal).
-leaf(anITTrainerBePresent1).
-topgoal(anITTrainerBePresent1).
-node(improveITSkillsOfCounsellors1,softgoal).
-node(accountabilityServices,softgoal).
-node(increasedCounsellingResources,softgoal).
-leaf(increasedCounsellingResources).
-node(helpAsManyKidsAsPossible,softgoal).
-node(analyzeCallStatistics,task).
-node(bilingualCounsellorsBeHired1,goal).
-topgoal(bilingualCounsellorsBeHired1).
-node(facilitateFasterChangesInCounsellorDuties,softgoal).
-node(reduceCostOfCounsellingHR2,softgoal).
-node(reduceTurnoverCounsellingManagement,softgoal).
-node(putOnWebModeratorMeetings,task).
-leaf(putOnWebModeratorMeetings).
-node(considerCounsellorsFeedback,softgoal).
-leaf(considerCounsellorsFeedback).
-node(counsellorsPassProbationWithinSixMonths,goal).
-leaf(counsellorsPassProbationWithinSixMonths).
-topgoal(counsellorsPassProbationWithinSixMonths).
-node(accurateCallerStatistics,softgoal).
-node(improvedWritingSkillsCounsellors3,softgoal).
-node(avoidLiabilityProblems1,softgoal).
-leaf(avoidLiabilityProblems1).
-node(staffPerformanceBeManaged,goal).
-topgoal(staffPerformanceBeManaged).
-node(increasedUnderstandingOfPurposesOfITCounsellors,softgoal).
-node(environmentConductiveToConcentration,softgoal).
-node(improveHiringProcessOfCounsellors1,softgoal).
-node(supportDayToDayOnTheFloorNeedsOfCounsellors,softgoal).
-leaf(supportDayToDayOnTheFloorNeedsOfCounsellors).
-node(happinessCounsellingManager,softgoal).
-node(putOnCounsellingWorkshops,task).
-leaf(putOnCounsellingWorkshops).
-node(improveITSkills,softgoal).
-leaf(improveITSkills).
-node(professionalWorkEnvironment,softgoal).
-node(increaseFundingForTraining,softgoal).
-leaf(increaseFundingForTraining).
-node(accommodateSchedulesCounsellingManagers,softgoal).
-node(supportAnalysisCounsellorsTime1,softgoal).
-leaf(supportAnalysisCounsellorsTime1).
-node(negotiateWithCounsellorsUnion,task).
-leaf(negotiateWithCounsellorsUnion).
-node(callsBeMonitored,goal).
-topgoal(callsBeMonitored).
-node(highQualityOnlineCounselling,softgoal).
-node(performanceReviewInformationBeCollectedInDataBase1,goal).
-leaf(performanceReviewInformationBeCollectedInDataBase1).
-topgoal(performanceReviewInformationBeCollectedInDataBase1).
-node(counsellingResources,resource).
-leaf(counsellingResources).
-node(attendPartTimeMeetings,task).
-leaf(attendPartTimeMeetings).
-node(continualImprovementCounsellingSkills2,softgoal).
-node(supervisionBePerformedAtLeastEvery3Months1,goal).
-topgoal(supervisionBePerformedAtLeastEvery3Months1).
-node(trackCallVolume,task).
-node(increaseITMethodsToAcquireFeedback,softgoal).
-leaf(increaseITMethodsToAcquireFeedback).
-node(highQualityCounselling2,softgoal).
-leaf(highQualityCounselling2).
-node(createCallClassificationCatagories,task).
-leaf(createCallClassificationCatagories).
-node(analyzeCallStatistics2,task).
-node(improvedWritingSkillsCounsellors2,softgoal).
-node(sufficientCounsellingResources1,softgoal).
-node(avoidLiabilityProblems,softgoal).
-node(callDurationConsistencyCounsellors,softgoal).
-node(aTrainingRoomBePresent,goal).
-leaf(aTrainingRoomBePresent).
-topgoal(aTrainingRoomBePresent).
-node(increaseFundingForTraining1,softgoal).
-node(counsellingWorkshops,resource).
-node(counsellingTrainingManagement,softgoal).
-leaf(counsellingTrainingManagement).
-node(clearerCallClassificationCatagories1,softgoal).
-node(effectiveUseOfTechnologyCounsellors1,softgoal).
-node(policiesBeReviewed,goal).
-leaf(policiesBeReviewed).
-topgoal(policiesBeReviewed).
-node(increasedEmphasisOnITInHiringProcessOfCounsellors,softgoal).
-node(avoidRefusalOfServices,softgoal).
-node(secondReadingOfWebPosts1,task).
-node(provideFeedbackOnWebPosts,task).
-node(increaseEnthusiasmCounsellorsForIT,softgoal).
-node(pressureCounsellorsToProvideOnlineServices,softgoal).
-leaf(pressureCounsellorsToProvideOnlineServices).
-node(improvedQualityAssuranceCounsellingReviewsAndEvaluation2,softgoal).
-node(happinessCounsellingManager1,softgoal).
-node(performCounsellingQualityAssurance,task).
-node(trainingBeGivenToCurrentEmployees,task).
-node(reduceStaggeringOfSchedules1,softgoal).
-node(acquireResourcesForStaffing,task).
-node(effectiveScheduling2,softgoal).
-node(increaseNumberOfCounsellors1,softgoal).
-node(salary,softgoal).
-node(negotiateWithCounsellorsUnion1,task).
-node(bilingualCounsellorsBeHired,goal).
-leaf(bilingualCounsellorsBeHired).
-topgoal(bilingualCounsellorsBeHired).
-node(aTrainingComputerBePresent1,goal).
-leaf(aTrainingComputerBePresent1).
-topgoal(aTrainingComputerBePresent1).
-node(trackCallLengths,task).
-node(increasedCounsellingResource,softgoal).
-node(counsellingPoliciesBeFollowed,goal).
-leaf(counsellingPoliciesBeFollowed).
-topgoal(counsellingPoliciesBeFollowed).
-node(feedbackToCounsellorsBeProvided,goal).
-leaf(feedbackToCounsellorsBeProvided).
-topgoal(feedbackToCounsellorsBeProvided).
-node(avoidRelationshipsWithSpecificCounsellor,softgoal).
-leaf(avoidRelationshipsWithSpecificCounsellor).
-node(webModeratorMeetings,resource).
-node(hireCounsellingManagers,task).
-leaf(hireCounsellingManagers).
-node(hireCounsellors,task).
-leaf(hireCounsellors).
-node(counsellorsBeKeptInformed,goal).
-topgoal(counsellorsBeKeptInformed).
-node(performSupervision,task).
-node(helpAsManyKidsAsPossible1,softgoal).
-node(sufficientCounsellingResources,softgoal).
-node(supportDayToDayClinicalNeedsOfCounsellors2,softgoal).
-node(increasedEmphasisOnITInHiringProcessOfCounsellors1,softgoal).
-node(increaseCounsellorsExperienceWithTechnology,softgoal).
-leaf(increaseCounsellorsExperienceWithTechnology).
-node(reduceResistanceCounsellorsForIT,softgoal).
-node(bilingualCounsellorsBeHired2,goal).
-topgoal(bilingualCounsellorsBeHired2).
-node(advanceNoticeToCounsellorsAboutITTransitions,softgoal).
-node(highQualityCounselling,softgoal).
-node(effectiveScheduling,softgoal).
-node(analyzeStaffingLevels,goal).
-leaf(analyzeStaffingLevels).
-topgoal(analyzeStaffingLevels).
-node(counsellingPolicies,resource).
-node(negotiateWithCounsellorsUnion2,task).
-node(effectiveUseOfTechnologyCounsellors,softgoal).
-node(debriefCalls,task).
-leaf(debriefCalls).
-node(increasedEmphasisOnITInHiringProcessOfCounsellors2,softgoal).
-leaf(increasedEmphasisOnITInHiringProcessOfCounsellors2).
-node(analyzeServiceLevels,goal).
-leaf(analyzeServiceLevels).
-topgoal(analyzeServiceLevels).
-node(increaseCommunicationBetweenCounsellorsAndSupervisors,softgoal).
-node(secondReadingOfWebPosts2,task).
-node(reviewTape,task).
-leaf(reviewTape).
-node(reduceCostOfCounsellingHR,softgoal).
-node(reduceSpendingOnEmployeesSalaries,softgoal).
-leaf(reduceSpendingOnEmployeesSalaries).
-node(positiveInternalOpinion1,softgoal).
-node(continualImprovementCounsellingSkills1,softgoal).
-node(feedbackToCounsellorsBeProvided2,goal).
-topgoal(feedbackToCounsellorsBeProvided2).
-node(setCounsellingPolicies,task).
-leaf(setCounsellingPolicies).
-node(supportCounsellors,softgoal).
-node(professionalWorkEnvironment1,softgoal).
-leaf(professionalWorkEnvironment1).
-node(happinessCounsellingManagement,softgoal).
-node(requestShifts,task).
-leaf(requestShifts).
-node(counsellingManager,softgoal).
-leaf(counsellingManager).
-node(holesInOperationsManagingBeRemoved,goal).
-leaf(holesInOperationsManagingBeRemoved).
-topgoal(holesInOperationsManagingBeRemoved).
-node(avoidRelationshipsWithSpecificCounsellor1,softgoal).
-node(facilitateFasterChangesInCounsellorDuties1,softgoal).
-leaf(facilitateFasterChangesInCounsellorDuties1).
-node(accountabilityServices1,softgoal).
-node(supportDayToDayClinicalNeedsOfCounsellors,softgoal).
-node(writeYearlyPeformanceEvaluationsForCounsellors,task).
-leaf(writeYearlyPeformanceEvaluationsForCounsellors).
-node(historicalDataOfCallVolumes,resource).
-leaf(historicalDataOfCallVolumes).
-node(improveCallRecordingEquipment,softgoal).
-leaf(improveCallRecordingEquipment).
-node(fullTimeNightComplementBeAcquired,goal).
-leaf(fullTimeNightComplementBeAcquired).
-topgoal(fullTimeNightComplementBeAcquired).
-node(manageStaffingAndRecruiting,task).
-node(reduceStaggeringOfSchedules,softgoal).
-node(accommodateSchedulesCounsellors1,softgoal).
-node(continualImprovementCounsellingSkills,softgoal).
-node(positiveAttitudeTowardsITCounsellors,softgoal).
-node(callsBeRecordedIntoADataBase,goal).
-topgoal(callsBeRecordedIntoADataBase).
-node(feedbackToCounsellorsBeProvided1,goal).
-topgoal(feedbackToCounsellorsBeProvided1).
-node(putOnOrientationProcessForCousellors,task).
-leaf(putOnOrientationProcessForCousellors).
-node(supervisionBePerformedAtLeastEvery3Months2,goal).
-topgoal(supervisionBePerformedAtLeastEvery3Months2).
-node(effectiveScheduling1,softgoal).
-node(callStatistics,resource).
-leaf(callStatistics).
-node(performSupervisionForExperiencedCounsellors,task).
-node(happinessOfCounsellors,softgoal).
-node(accommodateSchedulesCounsellors2,softgoal).
-node(improvedQualityAssuranceCounsellingReviewsAndEvaluation1,softgoal).
-node(counsellorsBePaid,task).
-leaf(counsellorsBePaid).
-node(increaseITTrainingForCounsellors,softgoal).
-leaf(increaseITTrainingForCounsellors).
-node(improveITSkillsOfCounsellors,softgoal).
-node(increaseTrainingForCounsellors,softgoal).
-node(supportAnalysisCounsellorsTime,softgoal).
-node(happinessCounsellors,softgoal).
-node(aTrainingProgramBePresent,goal).
-leaf(aTrainingProgramBePresent).
-topgoal(aTrainingProgramBePresent).
-node(performSupervisionForNewCounsellors,task).
-node(makeSchedules,task).
-node(clearerCallClassificationCatagories,softgoal).
-leaf(clearerCallClassificationCatagories).
-node(provideOnlineServicesAllCounsellors,softgoal).
-node(supportDayToDayClinicalNeedsOfCounsellors1,softgoal).
-node(sufficientCounsellingResources2,softgoal).
-node(supervisionBePerformedAtLeastEvery3Months,goal).
-leaf(supervisionBePerformedAtLeastEvery3Months).
-topgoal(supervisionBePerformedAtLeastEvery3Months).
-node(technologyBeUsedToEnsureCounsellorsAreKeepingCorrectHours,goal).
-leaf(technologyBeUsedToEnsureCounsellorsAreKeepingCorrectHours).
-topgoal(technologyBeUsedToEnsureCounsellorsAreKeepingCorrectHours).
-node(qualifiedCounsellors,softgoal).
-node(aTrainingComputerBePresent,goal).
-topgoal(aTrainingComputerBePresent).
-node(threeMonthsOfReviewBeGivenToNewCounsellors,goal).
-leaf(threeMonthsOfReviewBeGivenToNewCounsellors).
-topgoal(threeMonthsOfReviewBeGivenToNewCounsellors).
-node(employeeLearningAndTrainingBeManaged,goal).
-topgoal(employeeLearningAndTrainingBeManaged).
-node(pressureCounsellorsToProvideOnlineServices1,softgoal).
-node(increaseFeedback,softgoal).
-node(increaseNumberOfCounsellors2,softgoal).
-node(improvedWritingSkillsCounsellors1,softgoal).
-node(counsellingPoliciesBeFollowed1,goal).
-topgoal(counsellingPoliciesBeFollowed1).
-node(useBluePumpkin,task).
-leaf(useBluePumpkin).
-node(increaseITMethodsToAcquireFeedback1,softgoal).
-node(easierJob,softgoal).
-node(increaseNumberOfCounsellors,softgoal).
+:- discontiguous (<-)/2, (<~)/2.
+:- dynamic (<-)/2, (<~)/2.
+types(goal,
+  [anITTrainerBePresent, professionalCounsellorsBeUsed1,
+   callsBeRecordedIntoADataBase1, professionalCounsellorsBeUsed,
+   contractsBeReviewed,
+   performanceReviewInformationBeCollectedInDataBase,
+   anITTrainerBePresent1, bilingualCounsellorsBeHired1,
+   counsellorsPassProbationWithinSixMonths,
+   staffPerformanceBeManaged, callsBeMonitored,
+   performanceReviewInformationBeCollectedInDataBase1,
+   supervisionBePerformedAtLeastEvery3Months1,
+   aTrainingRoomBePresent, policiesBeReviewed,
+   bilingualCounsellorsBeHired, aTrainingComputerBePresent1,
+   counsellingPoliciesBeFollowed, feedbackToCounsellorsBeProvided,
+   counsellorsBeKeptInformed, bilingualCounsellorsBeHired2,
+   analyzeStaffingLevels, analyzeServiceLevels,
+   feedbackToCounsellorsBeProvided2,
+   holesInOperationsManagingBeRemoved,
+   fullTimeNightComplementBeAcquired, callsBeRecordedIntoADataBase,
+   feedbackToCounsellorsBeProvided1,
+   supervisionBePerformedAtLeastEvery3Months2,
+   aTrainingProgramBePresent,
+   supervisionBePerformedAtLeastEvery3Months,
+   technologyBeUsedToEnsureCounsellorsAreKeepingCorrectHours,
+   aTrainingComputerBePresent,
+   threeMonthsOfReviewBeGivenToNewCounsellors,
+   employeeLearningAndTrainingBeManaged,
+   counsellingPoliciesBeFollowed1
+  ]).
+types(softgoal,
+  [considerationOfFeedbackManagers, highQualityCounselling1,
+   accommodateSchedulesCounsellingManagers1,
+   reduceTurnoverCounsellors,
+   performCounsellingAsInstructedBySupervisorCounsellors1,
+   increaseComfortablenessWithLearningProcess,
+   improveQualityAssuranceTechnology,
+   accommodateSchedulesCounsellors, reduceCostOfCounsellingHR1,
+   improveITSkillsOfCounsellors2,
+   effectiveUseOfTechnologyCounsellors2,
+   improvedQualityAssuranceCounsellingReviewsAndEvaluation,
+   improveHiringProcessOfCounsellors,
+   increaseITTrainingForCounsellors1,
+   clearCommunicationAboutThePurposeOfITToCounselors,
+   pressureCounsellorsToProvideOnlineServices2,
+   accommodateSchedulesCounsellingManagers2,
+   improveCallRecordingEquipment1, improveTrainingForCounsellors,
+   improveJobDescriptionsCounsellors, positiveInternalOpinion,
+   improveHiringProcessOfCounsellors2, rigorousEmployeeEvaluations,
+   happinessCounsellors1, improvedWritingSkillsCounsellors,
+   performCounsellingAsInstructedBySupervisorCounsellors,
+   improveITSkillsOfCounsellors1, accountabilityServices,
+   increasedCounsellingResources, helpAsManyKidsAsPossible,
+   facilitateFasterChangesInCounsellorDuties,
+   reduceCostOfCounsellingHR2, reduceTurnoverCounsellingManagement,
+   considerCounsellorsFeedback, accurateCallerStatistics,
+   improvedWritingSkillsCounsellors3, avoidLiabilityProblems1,
+   increasedUnderstandingOfPurposesOfITCounsellors,
+   environmentConductiveToConcentration,
+   improveHiringProcessOfCounsellors1,
+   supportDayToDayOnTheFloorNeedsOfCounsellors,
+   happinessCounsellingManager, improveITSkills,
+   professionalWorkEnvironment, increaseFundingForTraining,
+   accommodateSchedulesCounsellingManagers,
+   supportAnalysisCounsellorsTime1, highQualityOnlineCounselling,
+   continualImprovementCounsellingSkills2,
+   increaseITMethodsToAcquireFeedback, highQualityCounselling2,
+   improvedWritingSkillsCounsellors2,
+   sufficientCounsellingResources1, avoidLiabilityProblems,
+   callDurationConsistencyCounsellors, increaseFundingForTraining1,
+   counsellingTrainingManagement,
+   clearerCallClassificationCatagories1,
+   effectiveUseOfTechnologyCounsellors1,
+   increasedEmphasisOnITInHiringProcessOfCounsellors,
+   avoidRefusalOfServices, increaseEnthusiasmCounsellorsForIT,
+   pressureCounsellorsToProvideOnlineServices,
+   improvedQualityAssuranceCounsellingReviewsAndEvaluation2,
+   happinessCounsellingManager1, reduceStaggeringOfSchedules1,
+   effectiveScheduling2, increaseNumberOfCounsellors1, salary,
+   increasedCounsellingResource,
+   avoidRelationshipsWithSpecificCounsellor,
+   helpAsManyKidsAsPossible1, sufficientCounsellingResources,
+   supportDayToDayClinicalNeedsOfCounsellors2,
+   increasedEmphasisOnITInHiringProcessOfCounsellors1,
+   increaseCounsellorsExperienceWithTechnology,
+   reduceResistanceCounsellorsForIT,
+   advanceNoticeToCounsellorsAboutITTransitions,
+   highQualityCounselling, effectiveScheduling,
+   effectiveUseOfTechnologyCounsellors,
+   increasedEmphasisOnITInHiringProcessOfCounsellors2,
+   increaseCommunicationBetweenCounsellorsAndSupervisors,
+   reduceCostOfCounsellingHR, reduceSpendingOnEmployeesSalaries,
+   positiveInternalOpinion1, continualImprovementCounsellingSkills1,
+   supportCounsellors, professionalWorkEnvironment1,
+   happinessCounsellingManagement, counsellingManager,
+   avoidRelationshipsWithSpecificCounsellor1,
+   facilitateFasterChangesInCounsellorDuties1,
+   accountabilityServices1,
+   supportDayToDayClinicalNeedsOfCounsellors,
+   improveCallRecordingEquipment, reduceStaggeringOfSchedules,
+   accommodateSchedulesCounsellors1,
+   continualImprovementCounsellingSkills,
+   positiveAttitudeTowardsITCounsellors, effectiveScheduling1,
+   happinessOfCounsellors, accommodateSchedulesCounsellors2,
+   improvedQualityAssuranceCounsellingReviewsAndEvaluation1,
+   increaseITTrainingForCounsellors, improveITSkillsOfCounsellors,
+   increaseTrainingForCounsellors, supportAnalysisCounsellorsTime,
+   happinessCounsellors, clearerCallClassificationCatagories,
+   provideOnlineServicesAllCounsellors,
+   supportDayToDayClinicalNeedsOfCounsellors1,
+   sufficientCounsellingResources2, qualifiedCounsellors,
+   pressureCounsellorsToProvideOnlineServices1, increaseFeedback,
+   increaseNumberOfCounsellors2, improvedWritingSkillsCounsellors1,
+   increaseITMethodsToAcquireFeedback1, easierJob,
+   increaseNumberOfCounsellors
+  ]).
+types(task,
+  [trainingBeGivenToNewEmployees, secondReadingOfWebPosts,
+   analyzeCallStatistics1, communicateCSInformationToCounsellors,
+   manageCounsellors, listenToLiveCall, debriefWithCounsellors,
+   acquireWebTrainingFromOperations, debriefWebPosts, doubleHeadSet,
+   provideOneOnOneSupportToCounsellors, analyzeCallStatistics,
+   putOnWebModeratorMeetings, putOnCounsellingWorkshops,
+   negotiateWithCounsellorsUnion, counsellingResources,
+   attendPartTimeMeetings, trackCallVolume,
+   createCallClassificationCatagories, analyzeCallStatistics2,
+   counsellingWorkshops, secondReadingOfWebPosts1,
+   provideFeedbackOnWebPosts, performCounsellingQualityAssurance,
+   trainingBeGivenToCurrentEmployees, acquireResourcesForStaffing,
+   negotiateWithCounsellorsUnion1, trackCallLengths,
+   webModeratorMeetings, hireCounsellingManagers, hireCounsellors,
+   performSupervision, counsellingPolicies,
+   negotiateWithCounsellorsUnion2, debriefCalls,
+   secondReadingOfWebPosts2, reviewTape, setCounsellingPolicies,
+   requestShifts, writeYearlyPeformanceEvaluationsForCounsellors,
+   historicalDataOfCallVolumes, manageStaffingAndRecruiting,
+   putOnOrientationProcessForCousellors, callStatistics,
+   performSupervisionForExperiencedCounsellors, counsellorsBePaid,
+   performSupervisionForNewCounsellors, makeSchedules, useBluePumpkin
+  ]).
 aTrainingComputerBePresent <- [aTrainingComputerBePresent1].
 accommodateSchedulesCounsellingManagers1 <-
   [ accommodateSchedulesCounsellingManagers ].

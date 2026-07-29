@@ -4,8 +4,9 @@
 % choice-or; leaves abduced +-2 at random = the stagger), then
 % evaluate each softgoal bottom-up (contributions fold through
 % combine). strict = fully satisficed only (V >= 2); lenient V > 0.
-:- ['nfr2.pl'].
-:- assertz(greedy).                    % ISAMP: restart beats backtrack
+:- [nfr2].
+:- [expand].                          % derives leaf/1, topgoal/1 from node/2
+:- assertz(greedy).
 :- initialization(main, main).
 
 hards([])     --> [].

@@ -1,122 +1,50 @@
 % Kids and Youth  (nfr2 dialect: <- rules, <~ contribution lists)
-:- discontiguous (<-)/2, (<~)/2, node/2, leaf/1, topgoal/1.
-:- dynamic (<-)/2, (<~)/2, node/2, leaf/1, topgoal/1.
-node(kidsUseAskACounsellorSection,task).
-node(getEffectiveHelp,softgoal).
-node(kidsUsePhoneCounselling,task).
-node(helpBeAcquired,goal).
-topgoal(helpBeAcquired).
-node(usePhoneCounselling,task).
-node(servicesBeFree,goal).
-topgoal(servicesBeFree).
-node(implementVoiceCounselling,task).
-leaf(implementVoiceCounselling).
-node(maintainPhoneCounselling,task).
-leaf(maintainPhoneCounselling).
-node(safetyOfServiceUsage,softgoal).
-node(implementVideoCounselling,task).
-leaf(implementVideoCounselling).
-node(implementEmailCounselling,task).
-leaf(implementEmailCounselling).
-node(highQualityService,softgoal).
-node(useVideoCounselling,task).
-node(maintainAskACounsellorSection,task).
-leaf(maintainAskACounsellorSection).
-node(ownershipOfServiceKids,softgoal).
-node(easyAccessToPostReply,softgoal).
-node(ventEmotions,softgoal).
-node(implementCyberCafPortalChatRoom,task).
-leaf(implementCyberCafPortalChatRoom).
-node(privacy,softgoal).
-node(patientCounselor,softgoal).
-leaf(patientCounselor).
-node(contactCSAboutNonCrisisSituation,task).
-leaf(contactCSAboutNonCrisisSituation).
-node(confidentialityServices,softgoal).
-leaf(confidentialityServices).
-node(readPollsAboutKids,task).
-node(decreasePhoneWaitingTime,softgoal).
-node(confidentialityService,softgoal).
-node(kidsUseGetInformedSectionOfWebSite,task).
-node(implementTextMessaging,task).
-leaf(implementTextMessaging).
-node(useTextMessaging,task).
-node(useEmailCounselling,task).
-node(kidsUseCyberCafPortalChatRoom,task).
-node(childrenDecideWhenToHangUpAndCall,softgoal).
-node(maintainGetInformedSectionOfWebSite,task).
-leaf(maintainGetInformedSectionOfWebSite).
-node(useVoiceCounselling,task).
-node(friendlyWebSite1,softgoal).
-leaf(friendlyWebSite1).
-node(highQualityServices,softgoal).
-leaf(highQualityServices).
-node(availabilityService,softgoal).
-node(kidsUseVoiceCounselling,task).
-node(connectBackToTheCommunity1,softgoal).
-leaf(connectBackToTheCommunity1).
-node(anonymityService,softgoal).
-node(immediacyService,softgoal).
-node(implementPollsAboutKids,task).
-leaf(implementPollsAboutKids).
-node(similarityWithOtherKidsProblems,softgoal).
-leaf(similarityWithOtherKidsProblems).
-node(implementBulletinBoardWithReplies,task).
-leaf(implementBulletinBoardWithReplies).
-node(kidsReadPollsAboutKids,task).
-node(supportAndBeSupportedByOtherKids,softgoal).
-node(readGeneralQuestionsAndAnswers,task).
-node(similarityWithOtherKidsProblems1,softgoal).
-node(ownershipOfServicesKids,softgoal).
-leaf(ownershipOfServicesKids).
-node(availabilityServices,softgoal).
-leaf(availabilityServices).
-node(decreasePhoneWaitingTime1,softgoal).
-leaf(decreasePhoneWaitingTime1).
-node(kidsReadGeneralQuestionsAndAnswers,task).
-node(useCyberCafPortalChatRoom,task).
-node(implementGeneralQuestionsAndAnswers,task).
-leaf(implementGeneralQuestionsAndAnswers).
-node(informationBeAcquiredOnWebsite,goal).
-topgoal(informationBeAcquiredOnWebsite).
-node(kidsUseTextMessaging,task).
-node(implementOneOnOneChatRooms,task).
-leaf(implementOneOnOneChatRooms).
-node(provideFeedback,task).
-leaf(provideFeedback).
-node(useAskACounsellorSection,task).
-node(anonymityServices,softgoal).
-leaf(anonymityServices).
-node(servicesBeFree1,goal).
-leaf(servicesBeFree1).
-topgoal(servicesBeFree1).
-node(contactCSInCrisis,task).
-leaf(contactCSInCrisis).
-node(effectiveHelpInCrisis,softgoal).
-node(effectiveHelpInNonCrisisSituation,softgoal).
-node(connectBackToTheCommunity,softgoal).
-node(kidsUseBulletinBoardWithReplies,task).
-node(useOneOnOneChatRooms,task).
-node(connectWithOtherKids1,softgoal).
-leaf(connectWithOtherKids1).
-node(friendlyWebSite,softgoal).
-node(kidsUseOneOnOneChatRooms,task).
-node(informKidsAboutAnonymityOfService,task).
-node(immediacyServices,softgoal).
-leaf(immediacyServices).
-node(patientCounselor1,softgoal).
-node(feedback,resource).
-node(easyAccessToPostReply1,softgoal).
-leaf(easyAccessToPostReply1).
-node(beInformedOfServiceAnonymity,goal).
-leaf(beInformedOfServiceAnonymity).
-topgoal(beInformedOfServiceAnonymity).
-node(kidsUseVideoCounselling,task).
-node(kidsUseEmailCounselling,task).
-node(comfortablenessWithService,softgoal).
-node(useBulletinBoardWithReplies,task).
-node(connectWithOtherKids,softgoal).
-node(readGetInformedSectionOfWebSite,task).
+:- discontiguous (<-)/2, (<~)/2.
+:- dynamic (<-)/2, (<~)/2.
+types(goal,
+  [helpBeAcquired, servicesBeFree, informationBeAcquiredOnWebsite,
+   servicesBeFree1, beInformedOfServiceAnonymity
+  ]).
+types(softgoal,
+  [getEffectiveHelp, safetyOfServiceUsage, highQualityService,
+   ownershipOfServiceKids, easyAccessToPostReply, ventEmotions,
+   privacy, patientCounselor, confidentialityServices,
+   decreasePhoneWaitingTime, confidentialityService,
+   childrenDecideWhenToHangUpAndCall, friendlyWebSite1,
+   highQualityServices, availabilityService,
+   connectBackToTheCommunity1, anonymityService, immediacyService,
+   similarityWithOtherKidsProblems, supportAndBeSupportedByOtherKids,
+   similarityWithOtherKidsProblems1, ownershipOfServicesKids,
+   availabilityServices, decreasePhoneWaitingTime1,
+   anonymityServices, effectiveHelpInCrisis,
+   effectiveHelpInNonCrisisSituation, connectBackToTheCommunity,
+   connectWithOtherKids1, friendlyWebSite, immediacyServices,
+   patientCounselor1, easyAccessToPostReply1,
+   comfortablenessWithService, connectWithOtherKids
+  ]).
+types(task,
+  [kidsUseAskACounsellorSection, kidsUsePhoneCounselling,
+   usePhoneCounselling, implementVoiceCounselling,
+   maintainPhoneCounselling, implementVideoCounselling,
+   implementEmailCounselling, useVideoCounselling,
+   maintainAskACounsellorSection, implementCyberCafPortalChatRoom,
+   contactCSAboutNonCrisisSituation, readPollsAboutKids,
+   kidsUseGetInformedSectionOfWebSite, implementTextMessaging,
+   useTextMessaging, useEmailCounselling,
+   kidsUseCyberCafPortalChatRoom,
+   maintainGetInformedSectionOfWebSite, useVoiceCounselling,
+   kidsUseVoiceCounselling, implementPollsAboutKids,
+   implementBulletinBoardWithReplies, kidsReadPollsAboutKids,
+   readGeneralQuestionsAndAnswers,
+   kidsReadGeneralQuestionsAndAnswers, useCyberCafPortalChatRoom,
+   implementGeneralQuestionsAndAnswers, kidsUseTextMessaging,
+   implementOneOnOneChatRooms, provideFeedback,
+   useAskACounsellorSection, contactCSInCrisis,
+   kidsUseBulletinBoardWithReplies, useOneOnOneChatRooms,
+   kidsUseOneOnOneChatRooms, informKidsAboutAnonymityOfService,
+   feedback, kidsUseVideoCounselling, kidsUseEmailCounselling,
+   useBulletinBoardWithReplies, readGetInformedSectionOfWebSite
+  ]).
 anonymityService <- [anonymityServices].
 availabilityService <- [availabilityServices].
 confidentialityService <- [confidentialityServices].
