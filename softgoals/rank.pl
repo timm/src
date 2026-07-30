@@ -3,37 +3,43 @@
 % fix the top-k as priors, sample 20 worlds per k, report means.
 % The k where the curve plateaus = decisions that need deliberation.
 % usage: swipl rank.pl models/CSServices.pl
-:- [nfr2].
-:- [expand].                          % derives leaf/1, topgoal/1 from node/2
+:- [nfr3].
 :- assertz(greedy).
 :- initialization(main, main).
 
+hardgoals(Hs) :- (goals(hard) <-- Hs), !.
+hardgoals([]).
+softgoals(Ss) :- (goals(soft) <-- [or(Ss)]), !.
+softgoals([]).
+
 hards([])     --> [].
-hards([H|Hs]) --> eval(H,2), !, hards(Hs).
+hards([H|Hs]) --> lit(H), !, hards(Hs).
 
 softs([],K,K)      --> [].
-softs([S|Ss],K0,K) --> ( eval(S,V) -> { number(V), V >= 2 -> K1 is K0+1
+softs([S|Ss],K0,K) --> ( call(S,V) -> { number(V), V >= 2 -> K1 is K0+1
                                       ; K1 = K0 }
                        ; { K1 = K0 } ),
                        softs(Ss,K1,K).
 
 world(Pr,w(B,K,D,A)) :-
-    findall(H,topgoal(H),Hs), findall(S,node(S,softgoal),Ss),
+    hardgoals(Hs), softgoals(Ss),
     between(1,100,_),
     permute(Hs,Rs), hards(Rs,Pr,A1), !,
     permute(Ss,Ps), softs(Ps,0,K,A1,A),
-    aggregate_all(count,(leaf(L),memberchk(L-2,A)),D),
+    leaves(Ls),
+    aggregate_all(count,(member(L,Ls),memberchk(L-2,A)),D),
     dist(K,D,B).
 
-dist(K,D,B) :- aggregate_all(count,node(_,softgoal),NS),
-               aggregate_all(count,leaf(_),NL),
+dist(K,D,B) :- softgoals(Ss), length(Ss,NS0), NS is max(1,NS0),
+               leaves(Ls),    length(Ls,NL0), NL is max(1,NL0),
                S is K/NS, C is D/NL,
                B is sqrt((1-S)^2 + C^2)/sqrt(2).
 
 % mean d of the worlds where setting L-V holds; support >= 10
 rank(Ws,Os) :-
+    leaves(Ls),
     findall(M-(L-V),
-            ( leaf(L), member(V,[2,-2]),
+            ( member(L,Ls), member(V,[2,-2]),
               findall(B,(member(w(B,_,_,A),Ws),memberchk(L-V,A)),Bs),
               length(Bs,N), N >= 10,
               sum_list(Bs,S), M is S/N ),
@@ -57,11 +63,12 @@ pfx([],_,Acc,Pr) :- reverse(Acc,Pr).
 
 avg(L,M) :- sum_list(L,S), length(L,N), M is S/N.
 
-main :- set_random(seed(1)), statistics(cputime,T0),
+main :- preprocess,
+        set_random(seed(1)), statistics(cputime,T0),
         findall(W,(between(1,200,_),world([],W)),Ws),
         rank(Ws,Os),
-        aggregate_all(count,leaf(_),NL),
-        aggregate_all(count,node(_,softgoal),NS),
+        leaves(Ls), length(Ls,NL0), NL is max(1,NL0),
+        softgoals(Sg), length(Sg,NS0), NS is max(1,NS0),
         findall(R, (member(K,[0,1,2,3,4,6,8,12,16,24,32,48,64]),
                     K =< NL, test(Os,K,R)), Rows),
         statistics(cputime,T1), T is T1-T0,
