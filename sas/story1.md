@@ -1053,15 +1053,24 @@ mapping each treatment's name to its observed scores; back
 comes the winner set:
 
     def tied(d):                                     # ①
-      mid  = lambda a: sorted(a)[len(a) // 2]
-      best = min(d.values(), key=mid)                # ②
-      return [k for k, v in d.items()
-              if same(best, v)]                      # ③
+      mid = lambda a: sorted(a)[len(a) // 2]
+      out = []
+      for k in sorted(d, key=lambda k: mid(d[k])):   # ②
+        if out and not same(d[out[0]], d[k]): break  # ③
+        out += [k]
+      return out
 
-Line ② crowns the treatment with the least median (least,
+Line ② orders the treatments best median first (least,
 because this book's scores are distances to heaven). Line
-③ then keeps the champion plus every treatment the judges
-cannot tell from it. That list is the only ranking this
+③ walks down that order, comparing each treatment to the
+champion, and the first one the judges CAN tell apart ends
+the walk: nobody below a loser is ever compared. So the
+laziness runs two levels deep: `same` stops at its first
+small-enough judge, and `tied` stops at its first loser.
+The break does place a bet: that once the medians drift
+too far apart they do not drift back. That is the same bet
+Scott-Knott style rankings make, and on distance-to-heaven
+scores it is a safe one. That list is the only ranking this
 book ever reports: not first, second, third, but "these
 won and the rest lost". When a later chapter's table shows
 a verdict column, it is `tied`, spoken.
@@ -2054,14 +2063,18 @@ cliffs. All knobs, one place, all overridable from the
 command line. See also: o, SSOT.
 
 **tied** (function). The referee at scale: given
-{treatment: scores}, return the best treatment and every
-treatment `same` as it. The winner set that this book's
+{treatment: scores}, walk the treatments best median
+first and return everything until the first one that is
+not `same` as the champion. The winner set that this book's
 report tables print (Chapter 12). See also: same, baseline.
 
     def tied(d):
-      mid  = lambda a: sorted(a)[len(a) // 2]
-      best = min(d.values(), key=mid)
-      return [k for k, v in d.items() if same(best, v)]
+      mid = lambda a: sorted(a)[len(a) // 2]
+      out = []
+      for k in sorted(d, key=lambda k: mid(d[k])):
+        if out and not same(d[out[0]], d[k]): break
+        out += [k]
+      return out
 
 **TIM** (rule). timm's rule: no code line past 65
 characters (the circled markers ride outside the count).

@@ -180,10 +180,13 @@ def same(xs, ys): # any judge under its threshold? lazy or
           or ks(xsort, ysort) < the.ks
           or cliffs(xsort, ysort) <= the.cliffs)
 
-def tied(d): # treatment names same as the best (least) one
-  mid  = lambda a: sorted(a)[len(a) // 2]
-  best = min(d.values(), key=mid)
-  return [k for k, v in d.items() if same(best, v)]
+def tied(d): # best median first; break at the first loser
+  mid = lambda a: sorted(a)[len(a) // 2]
+  out = []
+  for k in sorted(d, key=lambda k: mid(d[k])):
+    if out and not same(d[out[0]], d[k]): break
+    out += [k]
+  return out
 
 #-- start-up ----------------------------------------------------
 def cli(d): # --key=val flags update settings
