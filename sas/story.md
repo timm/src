@@ -118,6 +118,19 @@ rows cost nothing at all: by then, everything is wiring.
 (These counts are estimates while this draft is a draft;
 the build pins them at weave time.)
 
+Note that the column is nearly sorted, and could not be
+sorted exactly, and both facts argue the same point. A
+chapter is cheap because its parts were paid for earlier,
+so the cheapest chapters depend on the most chapters;
+ordering the book by cost alone would ask Chapter 20's
+eight-line rehearsal to run before the skills it
+rehearses. The bumps that break the sort are shared
+machinery bought once: the referee of Chapter 12, which
+every later experiment leans on, and the streaming
+plumbing of Chapter 18. Cheap-because-derived, dear-
+because-shared: that is what a substrate looks like,
+written as a column of integers.
+
 Call the middle column what it is: these are skills.
 Each is a small, named, auditable capability, a few lines
 each, and the table is how one gets selected. Read the left
