@@ -23,3 +23,11 @@ structure ships as two goal clauses per model: goals(hard) lists
 the type-goal nodes, goals(soft) wraps the type-softgoal nodes in
 or([...]). Leaves are derived (referenced, no clauses). About 10ms
 per random world on the largest (351 node) model.
+
+A 110-model corpus in the same dialect lives in $MOOT/re (see its
+README for sizes, domains, provenance): p2pl.py compiles piStar
+(iStar 2.0) JSON, i2pl.py compiles istarml XML, j2pl.py the
+ai-se/softgoals JSON. nfr3.py is the engine said in python (Nodes
+are logic Vars with clauses attached; unify with an abductive
+guess; ISAMP restarts instead of backtracking); pl2py.py reads the
+nfr3 dialect into it, so the corpus runs on either engine.

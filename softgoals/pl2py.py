@@ -21,7 +21,7 @@ def clauses(text):              # comment-free token lists,
     c = c.strip()
     if c and not c.startswith(":-"): yield TOK.findall(c)
 
-def node(m, k): return m.nodes.setdefault(k, Node(m, k))
+def node(m, k): return m.nodes.setdefault(k, Node(k))
 
 def pterm(m, ts, i):            # one literal, recursively
   t, i = ts[i], i + 1
@@ -55,13 +55,13 @@ def load(path):
     head, i = pterm(m, ts, 0)
     assert ts[i] == '<--', (path, ts[:i+1])
     body, i = plist(m, ts, i + 1)
-    head.bodies.append(body)
+    head.clauses.append(body)
   return m
 
 def run(path):                  # one model: its goals nodes
   m = load(path)
   for k in ('goals(hard)', 'goals(soft)'):
-    if k in m.nodes and m.nodes[k].bodies:
+    if k in m.nodes and m.nodes[k].clauses:
       g = m.nodes[k]
       if k == 'goals(hard)':
         ws = worlds(100, lambda: abduce(m, g))
@@ -79,7 +79,7 @@ def smoke(top):                 # whole corpus: load + one
     try:
       m = load(f)
       for n in m.nodes.values():
-        if n.bodies: soften(m, n); break
+        if n.clauses: soften(m, n); break
       ok += 1
     except Exception as e:
       bad += 1
