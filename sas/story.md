@@ -75,28 +75,28 @@ also the map of this book: one row per chapter, in this order.
 Read it now as a menu; return to it later as a table of
 contents.
 
-| task                                             | skill                     | ch |
-|--------------------------------------------------|:-------------------------:|---:|
-| Put 400 cars in one table; measure any gap       | tables + distance         |  3 |
-| Guess the fuel use before we see the sticker     | prediction                |  4 |
-| Spot a strange car: a typo, or a scam            | anomaly detection         |  5 |
-| Notice when the lot quietly changes under us     | drift                     |  6 |
-| Say why the bad cars are slow, or thirsty        | diagnosis                 |  7 |
-| 400 cars, one afternoon, what to inspect first?  | triage                    |  8 |
-| Justify any of the above to a skeptical buyer    | explanation               |  9 |
-| Find the best car, test-driving very few         | optimization              | 10 |
-| Check our tricks on a hundred other lots         | benchmarking              | 11 |
-| Say when "better" is real, and when it is noise  | statistical certification | 12 |
-| Chart a path from this car to a better one       | planning                  | 13 |
-| Find the cheapest change that fixes this car     | repair                    | 14 |
-| Sketch a better car from halves of two others    | synthesis                 | 15 |
-| Shrink 400 cars to the dozen that summarize      | compression               | 16 |
-| Trade fast against light against cheap           | multi-objective trade-off | 17 |
-| Decide on the spot as cars arrive one at a time  | streaming                 | 18 |
-| Keep learning for years as the market moves      | lifelong active learning  | 19 |
-| Rehearse every skill on one knowable project     | capstone simulation       | 20 |
-| Race our skills against the field's best         | baselines                 | 21 |
-| Teach the next intern to run the lot             | agent onboarding          | 22 |
+| task                                             | skill                      | ch |
+|--------------------------------------------------|:---------------------------|---:|
+| Put 400 cars in one table; measure any gap       | remember (representation)  |  3 |
+| Guess the fuel use before we see the sticker     | guess (prediction)         |  4 |
+| Spot a strange car: a typo, or a scam            | spot (anomaly detection)   |  5 |
+| Notice when the lot quietly changes under us     | watch (drift detection)    |  6 |
+| Say why the bad cars are slow, or thirsty        | blame (diagnosis)          |  7 |
+| 400 cars, one afternoon, what to inspect first?  | ration (triage)            |  8 |
+| Justify any of the above to a skeptical buyer    | justify (explanation)      |  9 |
+| Find the best car, test-driving very few         | choose (optimization)      | 10 |
+| Check our tricks on a hundred other lots         | check (benchmarking)       | 11 |
+| Say when "better" is real, and when it is noise  | certify (certification)    | 12 |
+| Chart a path from this car to a better one       | route (planning)           | 13 |
+| Find the cheapest change that fixes this car     | fix (repair)               | 14 |
+| Sketch a better car from halves of two others    | blend (synthesis)          | 15 |
+| Shrink 400 cars to the dozen that summarize      | shrink (compression)       | 16 |
+| Trade fast against light against cheap           | haggle (trade-off)         | 17 |
+| Decide on the spot as cars arrive one at a time  | flow (streaming)           | 18 |
+| Keep learning for years as the market moves      | persist (lifelong learning)| 19 |
+| Rehearse every skill on one knowable project     | rehearse (simulation)      | 20 |
+| Race our skills against the field's best         | race (baselining)          | 21 |
+| Teach the next intern to run the lot             | teach (onboarding)         | 22 |
 
 (Four rows are not single skills: Chapter 3 builds the one data
 structure everything shares, Chapter 11 collects the terrain
@@ -111,7 +111,42 @@ Each is a small, named, auditable capability, a few lines
 each, and the table is how one gets selected. Read the left
 column as a dispatch rule: find the row that names your
 situation, and the middle column names the skill to reach
-for. The chapter builds it.
+for, twice over: a short verb for talking (guess, blame,
+haggle), and in parentheses the formal name the index and
+the chapter titles use. The chapter builds it.
+
+The same skills also hang together, by kind. Shown as a
+tree (in the notation of this book's own tree-printer,
+which Chapter 9 builds):
+
+    all skills
+    |.. reading the world
+    |.. |.. remember (representation, 3)
+    |.. |.. guess (prediction, 4)
+    |.. |.. guard: spot (anomaly, 5), watch (drift, 6)
+    |.. |.. explain: blame (diagnosis, 7),
+    |.. |.. . . . . justify (explanation, 9)
+    |.. |.. ration (triage, 8)
+    |.. changing the world
+    |.. |.. decide: choose (optimization, 10),
+    |.. |.. . . . . haggle (trade-off, 17)
+    |.. |.. alter: route (planning, 13), fix (repair, 14),
+    |.. |.. . . . . blend (synthesis, 15)
+    |.. |.. shrink (compression, 16)
+    |.. enduring the world
+    |.. |.. flow (streaming, 18)
+    |.. |.. persist (lifelong learning, 19)
+    |.. trusting the world
+    |.. |.. prove: check (benchmarking, 11),
+    |.. |.. . . . . certify (certification, 12),
+    |.. |.. . . . . race (baselining, 21)
+    |.. |.. rehearse (simulation, 20)
+    |.. |.. teach (onboarding, 22)
+
+Two indexes, one book. The table dispatches by situation
+(what just happened on the lot?); the tree dispatches by
+kind (what sort of move do we need?). Both point at the
+same twenty chapters, one skill each.
 
 And where is the AI in all this? In two places. Each skill
 is a small AI in its own right: it learns from data, and
