@@ -1,7 +1,9 @@
 ## Story 1: the tutorial chapters (working draft) {.unlisted}
 
-(Note to us: story.md holds the front matter. Built together
-with it via `make story1`. Its sections 1 and 2
+(Note to us: story.md holds the front matter; the book is
+"Sophisticated AI: Simple Ain't Stupid -- twenty reusable
+AI skills from three hundred lines of Python". Built
+together with it via `make story1`. Its sections 1 and 2
 give the sales pitch and the maths. This file drafts everything
 after that: one warm-up chapter on the data model, then one short
 chapter per row of the task table from the introduction. Each

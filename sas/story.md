@@ -1,6 +1,8 @@
 
 # Sophisticated AI: Simple Ain't Stupid
 
+### Twenty reusable AI skills from three hundred lines of Python {.unlisted}
+
 Tim Menzies   
 timm@ieee.org   
 August, 2026  
