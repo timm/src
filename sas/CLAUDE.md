@@ -1,8 +1,9 @@
 # CLAUDE.md
 
-Book sources for "Simple Ain't Stupid: 200 Lessons in SE,
-AI, and Python from 2000 Lines of Code" (Menzies). Prose
-in ch*.md, code in src/, weaver in etc/, output in build/.
+Book sources for "Sophisticated AI: Simple Ain't Stupid --
+dozens of reusable AI skills from a few hundred lines of
+Python" (Menzies). Prose in ch*.md, code in src/, weaver
+in etc/, output in build/.
 
 ## TL;DR for claude
 
@@ -116,11 +117,15 @@ Source layout is fixed at six files: about.py (knobs),
 lib.py (substrate), lib_eg.py (its tests), skills.py (all
 chapter code, imports lib), skills_eg.py (its tests),
 coc.py (the COCOMO world for the ch20 capstone). Do not
-add src files beyond these; dragrace_eg.py (ch21
+add src files beyond these; dragrace_eg.py (ch22
 baselines) is a guest with its own venv, never imported.
 The book calls the sixteen capabilities "skills", never
 "tools"; external rivals may be called tools. Keep lib.py
 under 250 lines; promote a skills.py function to lib only
 when 2+ chapters use it and it carries no policy. story.md + story1.md are the working draft of the
 whole book (render: make story1); ch*.md are the woven
-chapters.
+chapters. Draft chapter order (3..23) is approximately
+sorted by new-LOC inside the dependency DAG; table 1 in
+story.md is the map (col2 = "verb (formal name)", plus a
+kind-tree second index). Do not renumber chapters without
+resorting that column's argument.

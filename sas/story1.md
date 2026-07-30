@@ -1,9 +1,9 @@
 ## Story 1: the tutorial chapters (working draft) {.unlisted}
 
 (Note to us: story.md holds the front matter; the book is
-"Sophisticated AI: Simple Ain't Stupid -- twenty reusable
-AI skills from three hundred lines of Python". Built
-together with it via `make story1`. Its sections 1 and 2
+"Sophisticated AI: Simple Ain't Stupid -- dozens of
+reusable AI skills from a few hundred lines of Python".
+Built together with it via `make story1`. Its sections 1 and 2
 give the sales pitch and the maths. This file drafts everything
 after that: one warm-up chapter on the data model, then one short
 chapter per row of the task table from the introduction. Each
@@ -2343,8 +2343,12 @@ Answers written only from woven transcripts. Reports follow
 the skeleton: RQ in bold, method paragraph, one small
 table, one-line bold Answer (model: ../branch/REPORT.md).
 
-STRUCTURE. story.md = front matter; its task table is the
-chapter map, one row per chapter, chapters 3..23. Chapter
+STRUCTURE. story.md = front matter; title "Sophisticated
+AI: Simple Ain't Stupid", subtitle "Dozens of reusable AI
+skills from a few hundred lines of Python". The task
+table is the chapter map, one row per chapter, chapters
+3..23, approximately sorted by new-LOC within the
+dependency DAG (four named sort-breaks under table 1). Chapter
 shape: persona title + bracketed canonical task; a few
 lines of code; tips as blockquotes (> AI tip #n / SE / Code
 / Python, numbered per stream); ends with "Lessons
