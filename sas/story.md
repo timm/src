@@ -75,7 +75,7 @@ also the map of this book: one row per chapter, in this order.
 Read it now as a menu; return to it later as a table of
 contents.
 
-| task                                             | AI tool                   | ch |
+| task                                             | skill                     | ch |
 |--------------------------------------------------|:-------------------------:|---:|
 | Put 400 cars in one table; measure any gap       | tables + distance         |  3 |
 | Guess the fuel use before we see the sticker     | prediction                |  4 |
@@ -94,20 +94,41 @@ contents.
 | Trade fast against light against cheap           | multi-objective trade-off | 17 |
 | Decide on the spot as cars arrive one at a time  | streaming                 | 18 |
 | Keep learning for years as the market moves      | lifelong active learning  | 19 |
-| Rehearse every tool on one knowable project      | capstone simulation       | 20 |
-| Race our tools against the field's best          | baselines                 | 21 |
+| Rehearse every skill on one knowable project     | capstone simulation       | 20 |
+| Race our skills against the field's best         | baselines                 | 21 |
 | Teach the next intern to run the lot             | agent onboarding          | 22 |
 
-(Four rows are not single tools: Chapter 3 builds the one data
+(Four rows are not single skills: Chapter 3 builds the one data
 structure everything shares, Chapter 11 collects the terrain
 the other chapters are tested on, Chapter 20 replays every
-tool on one simulated project, and Chapter 21 races them
+skill on one simulated project, and Chapter 21 races them
 against standard rivals. The certification chapter sits
 mid-book, not last, because the chapters after it run
 experiments and experiments need a referee.)
 
+Call the middle column what it is: these are skills.
+Each is a small, named, auditable capability, a few lines
+each, and the table is how one gets selected. Read the left
+column as a dispatch rule: find the row that names your
+situation, and the middle column names the skill to reach
+for. The chapter builds it.
+
+And where is the AI in all this? In two places. Each skill
+is a small AI in its own right: it learns from data, and
+its answers improve with evidence. But there is a second,
+newer reader of this table. Wiring skills together is
+exactly the work now handed to LLM coding assistants, and
+these skills wire well: one shared table type in, receipts
+out. Ask an assistant to "watch the stream; when the smoke
+detector fires, re-curate the memory and hunt again", and
+the glue writes itself. If you need it. Chapter 19 does
+that wiring in six lines; some of it is so easy the
+assistant would only be typing what you already said.
+Chapter 22 returns to this, with house rules for letting
+such an assistant loose on this codebase.
+
 This book makes two claims. First, behind the curtain, these
-sixteen tasks are almost the same tool. That is, the same few
+sixteen skills are almost the same skill. That is, the same few
 hundred lines of Python sit under all of them, and most chapters
 of this book add only a few dozen lines more.
 

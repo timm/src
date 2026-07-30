@@ -172,7 +172,7 @@ therefore costs kilobytes to read; better, code fed this
 way cannot peek ahead, cannot take a second pass, cannot
 ask how many rows are coming, so nothing we build can
 quietly assume the data sits still. Hence Chapter 18, where
-this toolkit runs on endless live streams without one line
+these skills run on endless live streams without one line
 changing: it was never doing anything else.
 
 ### 3.3 Columns that summarize themselves
@@ -341,7 +341,7 @@ type. `adds` ⑥ just folds a whole list, defaulting to a
 fresh `Num`, which makes one-liners like "summarize these
 numbers" free.
 
-Two tiny helpers complete the table toolkit:
+Two tiny helpers complete the table machinery:
 
     def clone(tbl, rows=[]):                         # ①
       return Tbl([tbl.cols.names] + rows)
@@ -562,7 +562,7 @@ Prediction, tree style, is now one line: drop the row to its
 leaf, then ask the leaf's clone for its centroid. Same answer
 shape as `knn`, a fraction of the cost.
 
-    %%run python3 src/tools_eg.py knn
+    %%run python3 src/skills_eg.py knn
 
 (That directive will pull in a live transcript: a few held-out
 cars, their true mileage, and the knn and leaf guesses. We
@@ -804,7 +804,7 @@ where those two poles disagree. A path from root to leaf is
 then a story: "like this, unlike that; then like this,
 unlike that", three or four sentences long.
 
-    %%run python3 src/tools_eg.py tree
+    %%run python3 src/skills_eg.py tree
 
 (The directive pulls in the printed tree for the car data,
 so the reader can check the story against the transcript.)
@@ -1081,7 +1081,7 @@ and the disty of the true best row (peeked for scoring
 only). Two result sets per table: `hunt` versus `all` (the
 best found by exhaustive labeling). Rank them with `same`.
 
-    %%run python3 src/tools_eg.py hunt
+    %%run python3 src/skills_eg.py hunt
 
 The table that lands here will have one line per dataset:
 
@@ -1279,7 +1279,7 @@ and they all speed up by the compression factor, usually at
 little cost in answer quality. And that claim, like all
 claims, is checkable:
 
-    %%run python3 src/tools_eg.py curate
+    %%run python3 src/skills_eg.py curate
 
 **RQ: does knn over a curated table certify as `same` as
 knn over the full table?** (Skeleton per Chapter 12; the
@@ -1294,7 +1294,7 @@ Answer line waits for the transcript.)
 ### Lessons sighted
 
 Leaf centroids are prototypes. Compression speeds every
-downstream tool. Certify the compression with the Referee.
+downstream skill. Certify the compression with the Referee.
 
 ## 17. The Marriage Counselor (multi-objective trade-off)
 
@@ -1305,7 +1305,7 @@ Time to reopen Chapter 3's boldest move: `disty` folds all
 goals into one distance. When does that one number tell
 the truth?
 
-The counselor's first tool is the menu. Instead of one best
+The counselor's first move is the menu. Instead of one best
 row, show the trade-offs on offer:
 
     def counsel(tbl):                                # ①
@@ -1368,7 +1368,7 @@ them all. The good news was planted back in Chapter 3:
 at a time, and `add` never looks backward. **The substrate
 was streaming all along**; only `Tbl.rows` hoards memory.
 
-So the one new tool is a fair way to keep a bounded sample
+So the one new skill is a fair way to keep a bounded sample
 of an unbounded past:
 
     def reservoir(src, k=256):                       # ①
@@ -1468,7 +1468,7 @@ luck. Continual adaptation? A drift alarm plus a
 milliseconds-cheap rebuild. **Composition did all the
 work**: five chapters, one `yield`, no new mechanism.
 
-    %%run python3 src/tools_eg.py beat
+    %%run python3 src/skills_eg.py beat
 
 **RQ: over a years-long replay of a MOOT stream, does the
 reporter's weekly pick certify as `same` as retraining
@@ -1490,14 +1490,14 @@ Lifelong learning is curation plus drift alarms plus weekly
 hunting. Rows do not catastrophically forget. Composition
 beats invention.
 
-## 20. The War Room (capstone: one project, every tool)
+## 20. The War Room (capstone: one project, every skill)
 
-Every chapter so far taught one tool on one task. Real work
+Every chapter so far taught one skill on one task. Real work
 is not like that. Real work is a Tuesday afternoon where the
 project is late, the boss wants a forecast, the new hire
 asks why, and somebody must decide what to change by
 Friday. So before this book hands over the keys (next
-chapter), we rehearse: one world, every tool, called in
+chapter), we rehearse: one world, every skill, called in
 anger.
 
 The world is coc.py, ninety lines that have sat quietly in
@@ -1517,11 +1517,11 @@ Why rehearse on a simulator instead of yet another MOOT
 table? Because here we know the truth. Chapter 11's corpus
 is wide but blind: nobody knows any table's real best row.
 coc.py is narrow but lit: the formula sits on the page, so
-every tool's answer can be checked against the machinery
+every skill's answer can be checked against the machinery
 that generated it, and every demo can end in an assert.
 
 Two functions put this world on the bench (they live in
-tools.py with everything else):
+skills.py with everything else):
 
     def ratings():                                   # ①
       lo = lambda t: [i+1 for i,v in enumerate(t)
@@ -1552,7 +1552,7 @@ drinks straight from the spout, the way Chapter 3 promised.
 
 Then the shift begins. One directive replays the book:
 
-    %%run python3 src/tools_eg.py warroom
+    %%run python3 src/skills_eg.py warroom
 
 That transcript will run, in order:
 
@@ -1566,7 +1566,7 @@ That transcript will run, in order:
 - **Diagnose** (ch7): contrast the calm leaf against the
   disaster leaf. The assert: the contrast names drivers
   from Madachy's table, sced beside rely. From 400 random
-  projects, the tool rediscovers pairs a human expert
+  projects, the skill rediscovers pairs a human expert
   hand-coded.
 - **Triage, then hunt** (ch8, ch10): pretend each
   simulation costs a year of somebody's project. On a
@@ -1585,7 +1585,7 @@ That transcript will run, in order:
   after drifting week.
 
 Count the new mechanism in this chapter: two functions and
-a driver. Everything else is calls into tools we already
+a driver. Everything else is calls into skills we already
 built and tested one at a time. That is the capstone's
 argument, made by arithmetic.
 
@@ -1593,14 +1593,14 @@ One caveat belongs in the room. COCOMO II was calibrated
 on 161 projects, most finished before 2000. Whether its
 constants fit your shop is exactly the kind of claim
 Chapter 12 taught you to test. The war room certifies the
-toolkit, not the model: swap in your own simulator (a
+skills, not the model: swap in your own simulator (a
 build system, a queueing model, a digital twin) and every
 move above replays unchanged.
 
 > AI tip #21: keep one world where you know the truth.
 > Real data tests usefulness; synthetic worlds with known
-> answers test correctness. A toolkit that has never been
-> made to rediscover a formula is a toolkit on faith.
+> answers test correctness. A skill that has never been
+> made to rediscover a formula is a skill on faith.
 
 > SE tip #15: coc.py holds its knowledge as tables, not
 > code (the Rule of Representation, one last time): scale
@@ -1610,13 +1610,14 @@ move above replays unchanged.
 
 ### Lessons sighted
 
-One world, every tool, zero new mechanism. Simulators are
-truth on tap. Certify the toolkit against known answers,
+One world, every skill, zero new mechanism. Simulators
+are truth on tap. Certify the skills against known
+answers,
 then point it at your own shop.
 
 ## 21. The Drag Race (baselines)
 
-The war room raced our tools against the truth. One race
+The war room raced our skills against the truth. One race
 remains: against the field. Nothing in this book stands if
 a standard tool, used off the shelf, beats ours while we
 were busy admiring our line count. So we line the rivals
@@ -1679,7 +1680,7 @@ strawman teaches nothing. Cheap: the rivals import
 half the Python ecosystem, so dragrace_eg.py is a guest,
 living in its own virtual environment, entering this book
 only through its transcripts. The 2000-line budget covers
-our tools, not our opponents.
+our skills, not our opponents.
 
 > SE tip #16: a baseline is a rival you tried to make win.
 > Give it its defaults, give it a tuning, give it the same
@@ -1834,7 +1835,7 @@ ride along. src/coc.py holds the COCOMO II.2000
 calibration plus Madachy's risky-pair table. The book's
 known-truth world (Chapter 20). Q: why trust a 2000-era
 calibration? (We do not; the war room certifies the
-toolkit, not the model.) See also: baseline.
+skills, not the model.) See also: baseline.
 
 **Cohen's rule** (stat). Report the gap between two
 middles in units of pooled spread; under `the.cohen`
@@ -1999,8 +2000,16 @@ replayable. Set once in about.py; reset before every
 demo. Changing it is a stop-and-ask event. See also:
 assert, reservoir sampling.
 
+**skill** (SE). A small, named, auditable capability: one
+shared table type in, receipts out, about five lines each.
+The introduction's table is the dispatch: its left column
+names a situation; find your row, read your skill. Three
+layers hold them all: representation (lib.py), skills
+(skills.py), governance (the referee, the seeds, and
+CLAUDE.md). See also: tips, baseline.
+
 **SOC** (rule). Separation of concerns: settings in
-about.py, substrate in lib.py, chapter code in tools.py.
+about.py, substrate in lib.py, chapter code in skills.py.
 See also: SSOT.
 
 **SSOT** (rule). Single source of truth: every fact has
@@ -2070,16 +2079,16 @@ Loose ends, in work order:
 
 1. Reverse-engineer the test_xxx demos promised by the
    %%run stubs (knn, tree, hunt, curate, beat, warroom),
-   all in src/tools_eg.py. Each must reseed, print, and
+   all in src/skills_eg.py. Each must reseed, print, and
    end in an assert (CLAUDE.md rule 6).
 2. DONE: lib.py now ships `same` (cohen/ks/cliffs each
    reversed into a same-predicate; lazy or, cheapest
    first). test_stats and ch04's trust-test prose updated
    to match.
 3. Layout decided: about.py, lib.py, lib_eg.py,
-   tools.py, tools_eg.py, coc.py. All chapter code goes in
-   src/tools.py (imports lib; capstone drives coc);
-   demos in src/tools_eg.py. Promote a tools function to
+   skills.py, skills_eg.py, coc.py. All chapter code goes in
+   src/skills.py (imports lib; capstone drives coc);
+   demos in src/skills_eg.py. Promote a tools function to
    lib only if 2+ chapters use it and it carries no policy
    (candidates: leaves, contrast, strange, wish). lib.py
    stays under 250 lines. hunt's budget and chunk
@@ -2113,7 +2122,7 @@ self-praise (honest(ly), genuinely, truly) and the rest of
 rite FAM2 (police by density); perfectly uniform paragraph
 shapes.
 
-CODE. Shown code is src/lib.py (or future tools.py)
+CODE. Shown code is src/lib.py (or future skills.py)
 verbatim; circled markers # ① ② ③ ride outside TIM's
 65-char limit and are explained by matching ① notes in
 nearby prose. BOB: functions ~5 lines. Every identifier
