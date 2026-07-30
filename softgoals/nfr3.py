@@ -21,9 +21,9 @@ class Box: val = None
 def shuffled(xs): return random.sample(list(xs), len(xs))
 
 class Term:                     # no/makes/.../And/Or wrapper
-  def __init__(s, op, x): s.op, s.x = op, x
-  def __and__(s, o): return [s, o]
-  def __rand__(s, o): return o + [s]
+  def __init__(i, op, x): i.op, i.x = op, x
+  def __and__(i, o): return [i, o]
+  def __rand__(i, o): return o + [i]
 
 def no(x):     return Term('no', x)
 def makes(x):  return Term('makes', x)
@@ -33,44 +33,41 @@ def hurts(x):  return Term('hurts', x)
 def And(*xs):  return Term('amin', xs)
 def Or(*xs):   return Term('amax', xs)
 
-def hardlit(l):
-  return isinstance(l, Node) or l.op == 'no'
+def hardlit(l): return isinstance(l, Node) or l.op == 'no'
 
 class Node:
-  def __init__(s, m, k): s.m, s.k, s.bodies = m, k, []
-  def __and__(s, o): return [s, o]
-  def __rand__(s, o): return o + [s]
-  def __ior__(s, b):            # head |= body (an or)
-    s.bodies.append(b if isinstance(b, list) else [b])
-    return s
-  def __call__(s, want=None):
-    m, v = s.m, s.m.b.get(s.k)
+  def __init__(i, m, k): i.m, i.k, i.bodies = m, k, []
+  def __and__(i, o): return [i, o]
+  def __rand__(i, o): return o + [i]
+  def __ior__(i, b):            # head |= body (an or)
+    i.bodies.append(b if isinstance(b, list) else [b])
+    return i
+  def __call__(i, want=None):
+    m, v = i.m, i.m.b.get(i.k)
     if v is not None: return demand(v, want)
-    if not s.bodies: return maybe(m, s.k, want)
-    hards = [b for b in s.bodies
-             if all(hardlit(l) for l in b)]
+    if not i.bodies: return maybe(m, i.k, want)
+    hards = [b for b in i.bodies if all(hardlit(l) for l in b)]
     if hards:                   # rule: pick one body, walk
       if want == -2: raise Fail # it; falsity is assumed,
-      m.b[s.k] = 2              # never derived
+      m.b[i.k] = 2              # never derived
       for l in shuffled(random.choice(hards)):
         l(2) if isinstance(l, Node) else maybe(m, l.x.k, -2)
       return 2
     if want is not None:        # edge: a demand is assumed,
-      m.b[s.k] = want           # not derived (nfr2 guess
+      m.b[i.k] = want           # not derived (nfr2 guess
       return want               # parity)
-    b = Box(); m.b[s.k] = b     # else label all bodies
-    es = [e for bd in s.bodies for e in bd]
+    b = Box(); m.b[i.k] = b     # else label all bodies
+    es = [e for bd in i.bodies for e in bd]
     return combine(b, [contrib(e) for e in shuffled(es)])
 
 class Model:
-  def __init__(s):
-    object.__setattr__(s, 'nodes', {})
-    object.__setattr__(s, 'b', {})
-  def __getattr__(s, k):
-    return s.nodes.setdefault(k, Node(s, k))
-  def __setattr__(s, k, v):
-    if isinstance(v, Node): s.nodes[k] = v
-    else: object.__setattr__(s, k, v)
+  def __init__(i):
+    object.__setattr__(i, 'nodes', {})
+    object.__setattr__(i, 'b', {})
+  def __getattr__(i, k): return i.nodes.setdefault(k, Node(i, k))
+  def __setattr__(i, k, v):
+    if isinstance(v, Node): i.nodes[k] = v
+    else: object.__setattr__(i, k, v)
 
 # ---- beliefs ----------------------------------------------
 def demand(v, want):            # agree with what is known,
@@ -94,7 +91,7 @@ def contrib(e):
   if isinstance(e, Node): return e()        # bare = makes
   if e.op == 'no': return maybe(e.x.m, e.x.k, -2)
   if e.op in ('amin', 'amax'):
-    return (e.op, tuple(contrib(i) for i in e.x))
+    return (e.op, tuple(contrib(x) for x in e.x))
   v = e.x()
   return {'makes':  v,
           'breaks': ('neg', v),
@@ -104,16 +101,16 @@ def contrib(e):
 def pends(e, out):
   if isinstance(e, Box) and e.val is None: out[id(e)] = e
   elif isinstance(e, tuple):
-    for i in e:
-      if not isinstance(i, str): pends(i, out)
+    for x in e:
+      if not isinstance(x, str): pends(x, out)
 
 def evalx(e):
   if isinstance(e, Box): return e.val
   if not isinstance(e, tuple): return e
-  op, x = e
-  if op == 'neg':  return -evalx(x)
-  if op == 'damp': return max(-1, min(1, evalx(x)))
-  ws = [evalx(i) for i in x]
+  op, a = e
+  if op == 'neg':  return -evalx(a)
+  if op == 'damp': return max(-1, min(1, evalx(a)))
+  ws = [evalx(x) for x in a]
   return min(ws) if op == 'amin' else max(ws)
 
 def combine(b, vs):
