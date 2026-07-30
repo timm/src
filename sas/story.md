@@ -95,16 +95,18 @@ contents.
 | Decide on the spot as cars arrive one at a time  | flow (streaming)           | 18 |
 | Keep learning for years as the market moves      | persist (lifelong learning)| 19 |
 | Rehearse every skill on one knowable project     | rehearse (simulation)      | 20 |
-| Race our skills against the field's best         | race (baselining)          | 21 |
-| Teach the next intern to run the lot             | teach (onboarding)         | 22 |
+| Answer the boss's morning questions with data    | brief (analytics)          | 21 |
+| Race our skills against the field's best         | race (baselining)          | 22 |
+| Teach the next intern to run the lot             | teach (onboarding)         | 23 |
 
-(Four rows are not single skills: Chapter 3 builds the one data
+(Five rows are not single skills: Chapter 3 builds the one data
 structure everything shares, Chapter 11 collects the terrain
-the other chapters are tested on, Chapter 20 replays every
-skill on one simulated project, and Chapter 21 races them
-against standard rivals. The certification chapter sits
-mid-book, not last, because the chapters after it run
-experiments and experiments need a referee.)
+the other chapters are tested on, Chapters 20 and 21 replay
+every skill twice (on a simulated project, then on a manager's
+morning questions), and Chapter 22 races them against standard
+rivals. The certification chapter sits mid-book, not last,
+because the chapters after it run experiments and experiments
+need a referee.)
 
 Call the middle column what it is: these are skills.
 Each is a small, named, auditable capability, a few lines
@@ -139,14 +141,18 @@ which Chapter 9 builds):
     |.. trusting the world
     |.. |.. prove: check (benchmarking, 11),
     |.. |.. . . . . certify (certification, 12),
-    |.. |.. . . . . race (baselining, 21)
-    |.. |.. rehearse (simulation, 20)
-    |.. |.. teach (onboarding, 22)
+    |.. |.. . . . . race (baselining, 22)
+    |.. |.. rehearse: warroom (simulation, 20),
+    |.. |.. . . . . . meeting (analytics, 21)
+    |.. |.. teach (onboarding, 23)
 
 Two indexes, one book. The table dispatches by situation
 (what just happened on the lot?); the tree dispatches by
 kind (what sort of move do we need?). Both point at the
-same twenty chapters, one skill each. And readers who keep
+same chapters, one skill each. Neither index is special;
+they are two of many ways to cut one small substrate, and
+Chapter 21 cuts it a third way, along a survey of what
+managers ask, at a cost of about a page. And readers who keep
 Pearl's ladder of causation in their heads (seeing, doing,
 imagining) can read the tree's branches as rungs: reading
 the world is association; changing the world is
@@ -164,7 +170,7 @@ detector fires, re-curate the memory and hunt again", and
 the glue writes itself. If you need it. Chapter 19 does
 that wiring in six lines; some of it is so easy the
 assistant would only be typing what you already said.
-Chapter 22 returns to this, with house rules for letting
+Chapter 23 returns to this, with house rules for letting
 such an assistant loose on this codebase.
 
 This book makes two claims. First, behind the curtain, these

@@ -1102,8 +1102,7 @@ mapping each treatment's name to its observed scores; back
 comes the winner set:
 
     def top(d, max=False):                           # ①
-      mid = lambda a: sorted(a)[len(a) // 2]
-      out = []
+      out, mid = [], lambda a: sorted(a)[len(a) // 2]
       for k in sorted(d, key=lambda k: mid(d[k]),
                       reverse=max):                  # ②
         if out and not same(d[out[0]], d[k]): break  # ③
@@ -1576,9 +1575,9 @@ Every chapter so far taught one skill on one task. Real work
 is not like that. Real work is a Tuesday afternoon where the
 project is late, the boss wants a forecast, the new hire
 asks why, and somebody must decide what to change by
-Friday. So before this book hands over the keys (next
-chapter), we rehearse: one world, every skill, called in
-anger.
+Friday. So before this book hands over the keys (final
+chapters), we rehearse: one world, every skill, called
+in anger.
 
 The world is coc.py, ninety lines that have sat quietly in
 src/ all along. It is COCOMO II, Boehm's classic software
@@ -1695,7 +1694,111 @@ are truth on tap. Certify the skills against known
 answers,
 then point it at your own shop.
 
-## 21. The Drag Race (baselines)
+## 21. The Morning Meeting (software analytics)
+
+The war room rehearsed on a simulator. This second case
+study rehearses on a job: running the morning meeting of a
+software project, where a manager asks questions and wants
+answers before the coffee cools. We did not invent the
+questions. Buse and Zimmermann surveyed 110 developers and
+managers at Microsoft about their information
+needs[^buse], and distilled the answers into a grid of
+nine analytics kinds: three time frames (past, present,
+future) crossed with three intents (explore, analyze,
+experiment). Their paper also reports what managers want
+from any analytics tool: easy, fast, concise; able to
+drill from summary down to artifact; and transparent,
+because managers distrust predictions they cannot open.
+
+[^buse]: R.P.L. Buse and T. Zimmermann, "Information Needs
+for Software Development Analytics", ICSE 2012. The PDF
+sits in this repo as buse-icse-2012.pdf.
+
+This chapter rewrites their grid in our operators. Every
+cell, one call:
+
+    their cell     their example      our call        ch
+    trends         regression         trends          18
+    alerts         anomaly detection  bouncer, smoke  5,6
+    forecasting    extrapolation      knn             4
+    summarization  topic analysis     curate, show    16,9
+    overlays       correlation        contrast        7
+    goals          root-cause         plan            13
+    modeling       machine learning   Tbl, Node       3,4
+    benchmarking   significance       top             12
+    simulation     what-if            wish            14
+
+Nine research areas, nine calls. And that ratio, not any
+single mapping, is the finding. Walking this book, each
+chapter needed less than the one before: Chapter 3 built
+about 150 lines, Chapter 4 twenty, most chapters a dozen,
+and this chapter builds almost nothing, because the
+machinery for skill i+1 was already built for skills 1
+through i. Hence a claim worth stating plainly: **our
+twenty names are not special**. Buse's nine cells, our
+dispatch table, the kind tree, the old logicians' triad:
+these are different ways of cutting the same territory,
+and however the territory gets cut, each region costs only
+a few lines, because the substrate under the cut does not
+change. The taxonomy is vocabulary; the capability lives
+in the substrate.
+
+The data for the meeting is a project telemetry table:
+rows are weekly snapshots of modules (size, churn,
+owners, defect counts as goals), in the header dialect of
+Chapter 3. The meeting itself is one function:
+
+    def morning(tbl, week):                          # ①
+      tree, ok = Node(tbl), bouncer(tbl)             # ②
+      return o(
+        alerts = [r for r in week if ok(r)],         # ③
+        moved  = smoke(tbl, week),                   # ④
+        next   = knn(tbl, week[-1]),                 # ⑤
+        blame  = mechanic(tbl),                      # ⑥
+        todo   = plan(tbl, tree, week[-1]))          # ⑦
+
+Line ① takes the history and this week's rows. Line ②
+builds the cluster tree and the doorman once. Then five
+answers, one per survey trigger: which new rows look
+strange ③; whether the project as a whole has quietly
+moved ④; what next week probably looks like ⑤; what
+separates the healthy modules from the sick ones ⑥; and
+what to change first ⑦. Trends and the what-ifs join in
+from their own chapters when the meeting runs long.
+
+    %%run python3 src/skills_eg.py morning
+
+Now hold their tool guidelines against what just
+happened. Easy: each answer is one call into a five-line
+skill. Fast and current: everything rebuilds in
+milliseconds, so the dashboard is never stale. Concise:
+the Rule of Silence; `morning` returns five values, not
+five hundred. Drill-down, their strongest demand: every
+answer above unwinds, because leaves carry clones and
+clones carry rows; from "this module cluster looks sick"
+to the offending rows is two hops, no extra machinery.
+And transparency, their deepest finding: the managers
+they surveyed would not act on a model they could not
+open. Every skill here opens. That survey, from 2012,
+reads today as the requirements document this book was
+accidentally built against.
+
+One more of their numbers deserves its own sentence: 89
+percent of the decision scenarios they collected concern
+the past and present, not the future. Managers would
+rather remember than speculate. This book agrees; that is
+the moral of Chapter 4, and the reason the meeting above
+spends most of its answers on what already happened.
+
+### Lessons sighted
+
+A survey of real managers maps onto the skills, cell by
+cell. Each new cut of the world costs a few lines,
+because the substrate under the cuts is shared.
+Drill-down is free when leaves carry clones. Transparency
+was a requirement before it was a slogan.
+
+## 22. The Drag Race (baselines)
 
 The war room raced our skills against the truth. One race
 remains: against the field. Nothing in this book stands if
@@ -1778,7 +1881,7 @@ one. Explanations race on utility, stability, and size.
 Rivals are guests: their transcripts enter, their imports
 do not.
 
-## 22. The Apprentice (agent onboarding)
+## 23. The Apprentice (agent onboarding)
 
 The last worker on the lot is new: a coding agent, a large
 language model with a shell. It is a fast intern with no
@@ -1875,7 +1978,7 @@ code. See also: seed.
 
 **baseline** (SE). A rival you tried to make win: same
 budget, defaults and tuned, best result published
-(Chapter 21). Random search is the mandatory first lane.
+(Chapter 22). Random search is the mandatory first lane.
 See also: same, MOOT.
 
 **BOB** (rule). Bob's rule: functions of about five lines,
@@ -2134,8 +2237,7 @@ return everything until the first treatment that is not
 report tables print (Chapter 12). See also: same, baseline.
 
     def top(d, max=False):
-      mid = lambda a: sorted(a)[len(a) // 2]
-      out = []
+      out, mid = [], lambda a: sorted(a)[len(a) // 2]
       for k in sorted(d, key=lambda k: mid(d[k]),
                       reverse=max):
         if out and not same(d[out[0]], d[k]): break
@@ -2174,7 +2276,8 @@ entries, and that is a boast. See also: SOC.
 Loose ends, in work order:
 
 1. Reverse-engineer the test_xxx demos promised by the
-   %%run stubs (knn, tree, hunt, curate, beat, warroom),
+   %%run stubs (knn, tree, hunt, curate, beat, warroom,
+   morning),
    all in src/skills_eg.py. Each must reseed, print, and
    end in an assert (CLAUDE.md rule 6).
 2. DONE: lib.py now ships `same` (cohen/ks/cliffs each
@@ -2189,7 +2292,7 @@ Loose ends, in work order:
    (candidates: leaves, contrast, strange, wish). lib.py
    stays under 250 lines. hunt's budget and chunk
    arguments become about.py knobs then (hard rule 7).
-   dragrace_eg.py (Chapter 21) is a guest file with its
+   dragrace_eg.py (Chapter 22) is a guest file with its
    own venv; it never imports into the 2000-line budget.
 4. Chapter numbers here continue story.md's sections 1-2.
    Renumber both together or neither.
@@ -2234,7 +2337,7 @@ the skeleton: RQ in bold, method paragraph, one small
 table, one-line bold Answer (model: ../branch/REPORT.md).
 
 STRUCTURE. story.md = front matter; its task table is the
-chapter map, one row per chapter, chapters 3..22. Chapter
+chapter map, one row per chapter, chapters 3..23. Chapter
 shape: persona title + bracketed canonical task; a few
 lines of code; tips as blockquotes (> AI tip #n / SE / Code
 / Python, numbered per stream); ends with "Lessons

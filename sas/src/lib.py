@@ -181,8 +181,7 @@ def same(xs, ys): # any judge under its threshold? lazy or
           or cliffs(xsort, ysort) <= the.cliffs)
 
 def top(d, max=False): # winners; best = least, unless max
-  mid = lambda a: sorted(a)[len(a) // 2]
-  out = []
+  out, mid = [], lambda a: sorted(a)[len(a) // 2]
   for k in sorted(d, key=lambda k: mid(d[k]), reverse=max):
     if out and not same(d[out[0]], d[k]): break
     out += [k]
