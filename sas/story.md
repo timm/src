@@ -75,29 +75,29 @@ also the map of this book: one row per chapter, in this order.
 Read it now as a menu; return to it later as a table of
 contents.
 
-| task                                             | skill                      | ch |
-|--------------------------------------------------|:---------------------------|---:|
-| Put 400 cars in one table; measure any gap       | remember (representation)  |  3 |
-| Guess the fuel use before we see the sticker     | guess (prediction)         |  4 |
-| Spot a strange car: a typo, or a scam            | spot (anomaly detection)   |  5 |
-| Notice when the lot quietly changes under us     | watch (drift detection)    |  6 |
-| Say why the bad cars are slow, or thirsty        | blame (diagnosis)          |  7 |
-| 400 cars, one afternoon, what to inspect first?  | ration (triage)            |  8 |
-| Justify any of the above to a skeptical buyer    | justify (explanation)      |  9 |
-| Find the best car, test-driving very few         | choose (optimization)      | 10 |
-| Check our tricks on a hundred other lots         | check (benchmarking)       | 11 |
-| Say when "better" is real, and when it is noise  | certify (certification)    | 12 |
-| Chart a path from this car to a better one       | route (planning)           | 13 |
-| Find the cheapest change that fixes this car     | fix (repair)               | 14 |
-| Sketch a better car from halves of two others    | blend (synthesis)          | 15 |
-| Shrink 400 cars to the dozen that summarize      | shrink (compression)       | 16 |
-| Trade fast against light against cheap           | haggle (trade-off)         | 17 |
-| Decide on the spot as cars arrive one at a time  | flow (streaming)           | 18 |
-| Keep learning for years as the market moves      | persist (lifelong learning)| 19 |
-| Rehearse every skill on one knowable project     | rehearse (simulation)      | 20 |
-| Answer the boss's morning questions with data    | brief (analytics)          | 21 |
-| Race our skills against the field's best         | race (baselining)          | 22 |
-| Teach the next intern to run the lot             | teach (onboarding)         | 23 |
+| task                                             | skill                      | ch | new LOC |
+|--------------------------------------------------|:---------------------------|---:|--------:|
+| Put 400 cars in one table; measure any gap       | remember (representation)  |  3 |     120 |
+| Guess the fuel use before we see the sticker     | guess (prediction)         |  4 |      35 |
+| Spot a strange car: a typo, or a scam            | spot (anomaly detection)   |  5 |       8 |
+| Notice when the lot quietly changes under us     | watch (drift detection)    |  6 |       5 |
+| Say why the bad cars are slow, or thirsty        | blame (diagnosis)          |  7 |      13 |
+| 400 cars, one afternoon, what to inspect first?  | ration (triage)            |  8 |       8 |
+| Justify any of the above to a skeptical buyer    | justify (explanation)      |  9 |      12 |
+| Find the best car, test-driving very few         | choose (optimization)      | 10 |      11 |
+| Check our tricks on a hundred other lots         | check (benchmarking)       | 11 |       0 |
+| Say when "better" is real, and when it is noise  | certify (certification)    | 12 |      32 |
+| Chart a path from this car to a better one       | route (planning)           | 13 |       5 |
+| Find the cheapest change that fixes this car     | fix (repair)               | 14 |      11 |
+| Sketch a better car from halves of two others    | blend (synthesis)          | 15 |       9 |
+| Shrink 400 cars to the dozen that summarize      | shrink (compression)       | 16 |       3 |
+| Trade fast against light against cheap           | haggle (trade-off)         | 17 |       6 |
+| Decide on the spot as cars arrive one at a time  | flow (streaming)           | 18 |      20 |
+| Keep learning for years as the market moves      | persist (lifelong learning)| 19 |       7 |
+| Rehearse every skill on one knowable project     | rehearse (simulation)      | 20 |      20 |
+| Answer the boss's morning questions with data    | brief (analytics)          | 21 |       8 |
+| Race our skills against the field's best         | race (baselining)          | 22 |       0 |
+| Teach the next intern to run the lot             | teach (onboarding)         | 23 |       0 |
 
 (Five rows are not single skills: Chapter 3 builds the one data
 structure everything shares, Chapter 11 collects the terrain
@@ -107,6 +107,16 @@ morning questions), and Chapter 22 races them against standard
 rivals. The certification chapter sits mid-book, not last,
 because the chapters after it run experiments and experiments
 need a referee.)
+
+The last column is the book's first claim, in miniature:
+the new executable lines each chapter needs. Big at the
+start, then small, then zero, because the machinery for
+skill i+1 was already built for skills 1 through i. The
+whole column sums to about 330 (demos and the ninety-line
+COCOMO model of Chapter 20 excluded), and the final three
+rows cost nothing at all: by then, everything is wiring.
+(These counts are estimates while this draft is a draft;
+the build pins them at weave time.)
 
 Call the middle column what it is: these are skills.
 Each is a small, named, auditable capability, a few lines
@@ -172,6 +182,22 @@ that wiring in six lines; some of it is so easy the
 assistant would only be typing what you already said.
 Chapter 23 returns to this, with house rules for letting
 such an assistant loose on this codebase.
+
+That division of labor deserves one more sentence, because
+it is a forecast. LLMs have proved excellent at two jobs:
+being an organization's interface (they read anything and
+talk to anyone), and natural-language programming (say what
+you want; receive the glue). For the inference underneath,
+the record is murkier. Asking a trillion parameters "which
+of these 400 cars is best?" costs seconds and dollars,
+resists audit, and may answer differently after the next
+model update. So route that question to the skills instead,
+and note the price of the swap: nothing. Every skill here
+answers through the same small contract, a table in and
+receipts out, so the assistant that wired the skills
+together yesterday cannot even tell that the expensive
+inference engine underneath was replaced by five lines and
+a seed.
 
 This book makes two claims. First, behind the curtain, these
 sixteen skills are almost the same skill. That is, the same few
