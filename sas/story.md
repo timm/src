@@ -306,7 +306,76 @@ the small one nobody was watching.
 
 ## 2. Some AI is Simple?
 
-(If maths is not your thing, feel free to skip this chapter.)
+(If maths is not your thing, read the first two sections of
+this chapter and skip the rest.)
+
+This chapter argues, three ways, that simple can be enough.
+First, a cognitive claim: human experts prosper using rules
+that ignore almost everything. Then, an empirical claim: our
+learners do too, on the same kinds of data. Then some
+arithmetic that explains why both keep happening. The layers
+stack: the empirical record explains the cognitive one (minds
+run on less because their worlds offer less), and the maths
+explains the empirical record (why worlds offer less).
+
+### Minds run on less
+
+Herbert Simon's word for how real decisions get made was
+satisficing: search until a good-enough option appears, then
+stop[^simon]. Minds must work this way, he argued, because
+attention, memory, and time are scarce. Forty years later,
+Gigerenzer and Goldstein made the claim sharper and stranger:
+one-reason heuristics like take-the-best (try cues in order
+of validity; decide on the first cue that discriminates;
+ignore the rest) matched or beat multiple regression on real
+prediction tasks[^ttb]. Not despite ignoring information.
+Because of it.
+
+The sightings since then read like this book's chapter list,
+staffed by humans. A coronary care unit triaged chest-pain
+patients with a three-question tree, and beat logistic
+regression at finding the high-risk cases[^green]. Managers
+predicting which customers were gone for good used one
+number, the hiatus (nine months quiet means lost), and beat
+the field's stochastic customer models[^hiatus]. And decades
+earlier, Dawes had shown the general trick: improper linear
+models, where every cue gets the same unit weight, predict
+about as well as optimally fitted regression, and transfer
+better[^dawes]. Psychologists call the pattern less-is-more,
+and its precondition ecological rationality: a heuristic
+works when the environment carries structure the heuristic
+exploits[^homo].
+
+### Data runs on less
+
+If less-is-more were only psychology, this book would be
+short. It is not only psychology. Holte tested one-rule
+classifiers (a single attribute, a few splits) on the
+standard datasets of his day and landed within a few points
+of the best decision trees, on most of them[^holte]. Domingos
+and Pazzani showed the naive Bayes classifier staying
+near-optimal even when its independence assumption is
+plainly false[^dp97]. Hand's survey of classifier progress
+concluded that most of the achievable improvement on most
+problems comes from the first, simple model, and the rest is
+epsilon chased at growing cost[^hand]. A famous audit of 179
+classifiers over 121 datasets found a few method families
+covering nearly all the wins[^fd14]. Even in tuning, plain
+random search matched careful grids at a fraction of the
+cost[^rand]. Learning theory gives these results one voice:
+with little data, complex models pay a variance bill that
+simple models never run up[^geman]; Gigerenzer and Brighton
+make the same bias-variance argument for the mind's own
+heuristics[^homo]. And later in this chapter, twenty more
+sightings, all from software engineering.
+
+Hence the first join in the ladder. Heuristics prosper in
+heads for the same reason simple learners prosper on tables:
+the worlds both live in are governed by a few keys. Which
+leaves the real question: why are worlds like that? For
+that, arithmetic.
+
+### The maths floor
 
 Some AI problems are very, very hard. Suppose we want an agent
 that is ready for anything. Then we must collect enough
@@ -343,7 +412,8 @@ Happily, some problems are even simpler. Let us admit that our
 work is not an exact science. All our data is a small sample of
 some larger phenomenon. In this statistical view, we do not want
 the best solution. We just want one that is indistinguishable
-from best. Call this near-enough optimization, or NEO. One random
+from best. Call this near-enough optimization, or NEO. (NEO
+is Simon's satisficing, with a price tag.) One random
 guess lands in the top p fraction with probability p. Thus, n
 guesses succeed at least once with probability 1-(1-p)^n. That
 equation rearranges to:
@@ -378,6 +448,53 @@ over 90% of the best known results[^howlow].
 [^cohen]: J. Cohen, "Statistical Power Analysis for the
   Behavioral Sciences", 2nd ed., Lawrence Erlbaum, 1988.
   There, d = 0.2 standard deviations marks a "small" effect.
+
+[^simon]: H.A. Simon, "Rational choice and the structure of
+  the environment", Psychological Review 63(2):129-138, 1956.
+
+[^ttb]: G. Gigerenzer and D.G. Goldstein, "Reasoning the
+  fast and frugal way: models of bounded rationality",
+  Psychological Review 103(4):650-669, 1996.
+
+[^green]: L. Green and D.R. Mehr, "What alters physicians'
+  decisions to admit to the coronary care unit?", Journal of
+  Family Practice 45(3):219-226, 1997.
+
+[^hiatus]: M. Wubben and F. von Wangenheim, "Instant
+  customer base analysis: managerial heuristics often 'get
+  it right'", Journal of Marketing 72(3):82-93, 2008.
+
+[^dawes]: R.M. Dawes, "The robust beauty of improper linear
+  models in decision making", American Psychologist
+  34(7):571-582, 1979.
+
+[^homo]: G. Gigerenzer and H. Brighton, "Homo heuristicus:
+  why biased minds make better inferences", Topics in
+  Cognitive Science 1(1):107-143, 2009.
+
+[^holte]: R.C. Holte, "Very simple classification rules
+  perform well on most commonly used datasets", Machine
+  Learning 11(1):63-90, 1993.
+
+[^dp97]: P. Domingos and M. Pazzani, "On the optimality of
+  the simple Bayesian classifier under zero-one loss",
+  Machine Learning 29:103-130, 1997.
+
+[^hand]: D.J. Hand, "Classifier technology and the illusion
+  of progress", Statistical Science 21(1):1-14, 2006.
+
+[^fd14]: M. Fernandez-Delgado, E. Cernadas, S. Barro, and
+  D. Amorim, "Do we need hundreds of classifiers to solve
+  real world classification problems?", Journal of Machine
+  Learning Research 15:3133-3181, 2014.
+
+[^rand]: J. Bergstra and Y. Bengio, "Random search for
+  hyper-parameter optimization", Journal of Machine Learning
+  Research 13:281-305, 2012.
+
+[^geman]: S. Geman, E. Bienenstock, and R. Doursat, "Neural
+  networks and the bias/variance dilemma", Neural
+  Computation 4(1):1-58, 1992.
 
 Nor is that one paper's quirk. Decades of results say that
 software problems often shrink to a few "keys": a few variables,
@@ -510,6 +627,14 @@ Two caveats:
   solutions, gentle distributions, and a host of other
   conditions that need not hold. And yet, as we shall see, it
   is remarkable how well this optimism holds up in practice.
+
+So the ladder stands, top to bottom. Minds take the best
+and stop early; they can afford to, because the worlds they
+grew up in are ruled by a few keys; and worlds like that
+are exactly the ones where equation (3)'s arithmetic says a
+fat target needs only a few shots. Simon guessed the shape
+of this in 1956, from psychology alone. The rest of this
+book is that guess, run as code, with a referee.
 
 The rest of this book checks this maths. That check waits a few
 chapters. First, we need some basic tools, definitions of core
