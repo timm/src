@@ -158,13 +158,6 @@ def cohen(xsort, ysort): # mid gap, in units of spread
   return abs(mid(xsort) - mid(ysort)) / \
          ((spd(xsort) + spd(ysort)) / 2 + TINY)
 
-def cliffs(xsort, ysort): # rank imbalance; 0..1
-  gt = lt = 0
-  for x in xsort:
-    gt += bisect.bisect_left(ysort, x)
-    lt += len(ysort) - bisect.bisect_right(ysort, x)
-  return abs(gt - lt) / (len(xsort) * len(ysort))
-
 def ks(xsort, ysort): # max cdf gap, in critical units
   nx, ny = len(xsort), len(ysort)
   d = i = j = 0
@@ -174,11 +167,23 @@ def ks(xsort, ysort): # max cdf gap, in critical units
     d = max(d, abs(i / nx - j / ny))
   return d / ((nx + ny) / (nx * ny)) ** 0.5
 
+def cliffs(xsort, ysort): # rank imbalance; 0..1
+  gt = lt = 0
+  for x in xsort:
+    gt += bisect.bisect_left(ysort, x)
+    lt += len(ysort) - bisect.bisect_right(ysort, x)
+  return abs(gt - lt) / (len(xsort) * len(ysort))
+
 def same(xs, ys): # any judge under its threshold? lazy or
   xsort, ysort = sorted(xs), sorted(ys)
   return (cohen(xsort, ysort) < the.cohen
           or ks(xsort, ysort) < the.ks
           or cliffs(xsort, ysort) <= the.cliffs)
+
+def tied(d): # treatment names same as the best (least) one
+  mid  = lambda a: sorted(a)[len(a) // 2]
+  best = min(d.values(), key=mid)
+  return [k for k, v in d.items() if same(best, v)]
 
 #-- start-up ----------------------------------------------------
 def cli(d): # --key=val flags update settings

@@ -1047,6 +1047,25 @@ constant time, `ks` is linear, and `cliffs` pays an extra
 log factor for its binary searches. In the common case,
 `cohen` answers alone and the panel adjourns.
 
+Experiments compare many treatments, not two, so one more
+helper tops off the referee. Give `tied` a dictionary
+mapping each treatment's name to its observed scores; back
+comes the winner set:
+
+    def tied(d):                                     # ①
+      mid  = lambda a: sorted(a)[len(a) // 2]
+      best = min(d.values(), key=mid)                # ②
+      return [k for k, v in d.items()
+              if same(best, v)]                      # ③
+
+Line ② crowns the treatment with the least median (least,
+because this book's scores are distances to heaven). Line
+③ then keeps the champion plus every treatment the judges
+cannot tell from it. That list is the only ranking this
+book ever reports: not first, second, third, but "these
+won and the rest lost". When a later chapter's table shows
+a verdict column, it is `tied`, spoken.
+
 > Code tip #8: line ⑪ is short-circuit evaluation doing
 > statistics. An `or` chain, cheapest test first, is the
 > lazy referee: it computes exactly as much evidence as the
@@ -1079,7 +1098,7 @@ Method: for each MOOT table, 20 repeats: shuffle, run
 `hunt`, record the disty of its answer, the labels spent,
 and the disty of the true best row (peeked for scoring
 only). Two result sets per table: `hunt` versus `all` (the
-best found by exhaustive labeling). Rank them with `same`.
+best found by exhaustive labeling). `tied` picks the winners.
 
     %%run python3 src/skills_eg.py hunt
 
@@ -1638,7 +1657,7 @@ multi-objective genetic rig, NSGA-II (as shipped in the
 pymoo library). The protocol: every MOOT table; every
 method gets the same budgets (24, 50, 100 labels); 20
 repeats; each run scored by the distance to heaven of the
-best row it bought; ranked by `same`.
+best row it bought; `tied` names each row's winner set.
 
     %%run python3 src/dragrace_eg.py --report optimize
 
@@ -2033,6 +2052,16 @@ split into x (observables) and y (goals) by the header
 p, few, stop, file, plus the referee thresholds cohen, ks,
 cliffs. All knobs, one place, all overridable from the
 command line. See also: o, SSOT.
+
+**tied** (function). The referee at scale: given
+{treatment: scores}, return the best treatment and every
+treatment `same` as it. The winner set that this book's
+report tables print (Chapter 12). See also: same, baseline.
+
+    def tied(d):
+      mid  = lambda a: sorted(a)[len(a) // 2]
+      best = min(d.values(), key=mid)
+      return [k for k, v in d.items() if same(best, v)]
 
 **TIM** (rule). timm's rule: no code line past 65
 characters (the circled markers ride outside the count).
