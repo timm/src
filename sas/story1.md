@@ -59,7 +59,7 @@ optional trailing mark.
 > simple. The payoff is flexibility. Because the schema rides
 > in the data, the reader we are about to write can swallow
 > ANY table wearing this header: new dataset, zero new code.
-> Chapter 11 cashes that in, running one loop over a hundred
+> Chapter 5 cashes that in, running one loop over a hundred
 > unseen tables. The cleverness sits in one header line; the
 > code that reads it, as we will see, is barely twenty lines.
 
@@ -171,7 +171,7 @@ lockstep, item by item, from here to there. A gigabyte file
 therefore costs kilobytes to read; better, code fed this
 way cannot peek ahead, cannot take a second pass, cannot
 ask how many rows are coming, so nothing we build can
-quietly assume the data sits still. Hence Chapter 18, where
+quietly assume the data sits still. Hence Chapter 7, where
 these skills run on endless live streams without one line
 changing: it was never doing anything else.
 
@@ -235,11 +235,11 @@ deviation at any moment, without storing any of the numbers.
 [^welford]: B. P. Welford, "Note on a method for calculating
 corrected sums of squares and products", Technometrics
 4(3):419-420, 1962. In the woven book this cite is
-[@welford62] in refs.bib.
+[welford62] in refs.bib.
 
 > AI tip #1: incremental beats batch. `welford` never re-reads
 > old data, so the same code serves a static table now and a
-> live stream in Chapter 18. When you choose an algorithm,
+> live stream in Chapter 7. When you choose an algorithm,
 > prefer the one that works one item at a time.
 
 Now we can ask a column two questions: what is your center,
@@ -416,7 +416,7 @@ barge scores near 1.
 > policy (what is good) lives in the header marks. The
 > mechanism (the folding maths) lives in ten lines you just
 > read. Separate policy from mechanism, and both stay
-> checkable. Chapter 17 pokes hard at this choice.
+> checkable. Chapter 16 pokes hard at this choice.
 
 ### 3.7 The knobs, the dice, and the defaults
 
@@ -551,7 +551,7 @@ along the a-to-b line (the cosine rule, if you want its
 name). `halve` finds the poles cheaply at ③: pick any row,
 find something far from it, then something far from that.
 Line ④ swaps the poles so `a` is the one nearer heaven;
-that small vanity pays off in Chapter 12. Line ⑤ sorts all
+that small vanity pays off in Chapter 10. Line ⑤ sorts all
 rows along the line and cuts at the middle.
 
 Recursive halving gives a tree, and dropping a row down that
@@ -602,377 +602,7 @@ The table is the model. Ask the neighbors (knn). Recursive
 halving buys log-time lookups. Small leaves are noise
 (`the.stop`).
 
-## 5. The Bouncer (anomaly detection)
-
-A car arrives with 92 horsepower and a claimed 3 miles per
-gallon. Typo? Scam? Either way, we want a doorman that says
-"you're not on the list". Anomaly detection sounds grand, but
-with Chapter 3 in hand it is a ruler plus a threshold:
-
-    def strange(tbl, row):                           # ①
-      return distx(tbl, mids(tbl), row)
-
-    def bouncer(tbl, q=0.95):                        # ②
-      d = sorted(strange(tbl, r) for r in tbl.rows)  # ③
-      cut = d[int(q * len(d))]                       # ④
-      return lambda row: strange(tbl, row) > cut     # ⑤
-
-`strange` ① is the distance from a row to the table's
-centroid. `bouncer` computes that distance for every known
-row ③, finds the 95th percentile ④, and returns a
-predicate ⑤: anything stranger than 95 percent of the
-regulars gets flagged. No density estimation, no autoencoder.
-One centroid, one sorted list, one cut.
-
-Note the shape of line ⑤: `bouncer` returns a function.
-We build the doorman once, then use him cheaply at the door,
-row after row.
-
-> Python tip #4: returning a lambda that closes over local
-> state (`cut`, `tbl`) is the poor man's object, and it is
-> often all the object you need. One behavior, no class.
-
-> AI tip #5: calibrate thresholds from your own data, never
-> from folklore. The cut at line ④ is whatever "strange"
-> means on this lot, this month. On another table it will be
-> another number, computed the same way.
-
-For finer work, swap the global centroid for the tree of
-Chapter 4: drop the row to its `leaf`, and measure strangeness
-inside the leaf's clone. A pickup truck is normal on the
-truck side of the lot and bizarre among the sports cars.
-Global bouncer, local bouncer: same six lines, different
-table.
-
-### Lessons sighted
-
-Anomaly is distance from typical. Thresholds come from
-percentiles of the data itself. Local strangeness (per leaf)
-beats global strangeness.
-
-## 6. The Smoke Detector (drift)
-
-The Bouncer checks one car. The Smoke Detector checks the
-whole lot. Markets move: one season brings heavier cars,
-another brings imports. A model trained in spring can be
-quietly wrong by fall. We want an alarm that smells the
-change early.
-
-The trick: watch the distribution of strangeness. Take the
-distances from the centroid to (a) a sample of the rows we
-trained on, and (b) the rows that arrived recently. If the
-two sets of numbers look alike, the world has not moved. If
-they differ, smoke.
-
-    def smoke(tbl, new):                             # ①
-      old = [strange(tbl, r) for r in some(tbl.rows, the.few)]  # ②
-      now = [strange(tbl, r) for r in new]           # ③
-      return not same(old, now)                      # ④
-
-Lines ② and ③ reduce "then" and "now" to two lists of
-numbers. Line ④ asks whether the lists are statistically
-the same. That `same` function is doing real work, and it
-deserves a chapter of its own; it gets one (Chapter 12, The
-Referee). For now, read it as "no statistician could
-tell these apart". When `same` fails, the detector fires,
-and the fix is blunt and cheap: `clone` a fresh table from
-recent rows and retrain. At our scale, retraining costs
-milliseconds, so we do not patch old models. We replace them.
-
-> AI tip #6: monitor distributions, not accuracy. Accuracy
-> needs labels, and labels arrive late or never. Distances
-> to a centroid need no labels at all, so the smoke alarm
-> works even when nobody is grading the predictions.
-
-> SE tip #6: cheap retraining changes the architecture. When
-> models cost milliseconds, "model management" collapses to
-> `clone` plus a cron job. Complexity in the pipeline is
-> usually rent paid on slow training.
-
-### Lessons sighted
-
-Drift is a change in the distribution of strangeness. Watch
-it without labels. When in doubt, rebuild; do not patch.
-
-## 7. The Mechanic (diagnosis)
-
-Prediction says what will happen. Diagnosis says why. Our car
-is slow and thirsty; which of its parts should we blame? The
-answer in this chapter: grow the tree of Chapter 4, find its
-best and worst leaves, and report where their summaries
-disagree. Doctors call this a differential diagnosis. We call
-it a contrast set.
-
-    def leaves(node):                                # ①
-      if node.west:
-        yield from leaves(node.west)
-        yield from leaves(node.east)
-      else: yield node.here                          # ②
-
-    def contrast(t1, t2):                            # ③
-      return [(c1.name, mid(c1), mid(c2))
-              for c1, c2 in zip(t1.cols.x, t2.cols.x)
-              if mid(c1) != mid(c2)]                 # ④
-
-    def mechanic(tbl):                               # ⑤
-      lvs = sorted(leaves(Node(tbl)), key=lambda t:
-                   disty(t, mids(t)))                # ⑥
-      return contrast(lvs[0], lvs[-1])               # ⑦
-
-`leaves` ① walks the tree and yields each leaf's clone ②;
-recall from Chapter 4 that every node carries a full table of
-its own rows. `contrast` ③ compares two tables column by
-column and keeps only the `x` columns where the centers
-disagree ④. `mechanic` ⑤ sorts the leaves by how close
-each leaf's centroid sits to heaven ⑥, then contrasts the
-best leaf against the worst ⑦. The output reads like a
-mechanic talking: "the good ones have 4 cylinders and weigh
-around 2200; yours has 8 and weighs 4300."
-
-Note what made this cheap. The tree was already built for
-prediction. Every node already carries a clone, and clones
-already know their mids. Diagnosis fell out of parts we had.
-
-> AI tip #7: explanations from contrast are short because
-> most columns do not matter. The keys literature (see the
-> introduction) says a few variables control the rest; a
-> contrast set is how those few introduce themselves.
-
-> Code tip #5: `contrast` compares summaries, not rows. Row
-> versus row comparisons drown in noise. Summary versus
-> summary comparisons say what is typical of each side,
-> which is the question a diagnosis actually asks.
-
-### Lessons sighted
-
-Diagnosis is contrast between good and bad groups. Compare
-summaries, not rows. Reuse the prediction tree; diagnosis
-is a by-product.
-
-## 8. The ER Nurse (triage)
-
-Four hundred cars arrived this afternoon. We have time to
-inspect a dozen. Which first? This is triage, and it matters
-whenever labels cost money: test drives, biopsies, code
-reviews, security audits. The nurse does not diagnose; the
-nurse ranks.
-
-Assume a handful of rows are already labeled (we test-drove
-a few cars, so we can compute their disty). Split those into
-the best quarter and the rest. Then score every unlabeled
-row by a simple pull: like the best, unlike the rest.
-
-    def triage(tbl, done, todo):                     # ①
-      done = sorted(done, key=lambda r: disty(tbl, r))  # ②
-      n    = len(done) // 4
-      best = clone(tbl, done[:n])                    # ③
-      rest = clone(tbl, done[n:])
-      f    = lambda r: (distx(tbl, mids(rest), r)
-                      - distx(tbl, mids(best), r))   # ④
-      return sorted(todo, key=f, reverse=True)       # ⑤
-
-Line ② ranks the labeled rows by distance to heaven. Line
-③ clones the top quarter into `best` and the remainder
-into `rest`. The score at ④ is a difference of two
-distances: far from the `rest` centroid is good, near the
-`best` centroid is good. Line ⑤ hands back the queue,
-most promising first. Readers who know naive Bayes will
-recognize the shape: score by "like this class, unlike the
-others". Ours swaps likelihoods for distances, which needs
-no probability model at all.
-
-> AI tip #8: triage does not need to be right. It needs to
-> be less wrong than the arrival order. Even a rough queue
-> means the dozen rows we can afford to label are spent
-> where they might matter, and Chapter 10 turns exactly
-> this loop into an optimizer.
-
-> Python tip #5: `sorted(key=...)` with a scoring lambda is
-> the whole "ranking model deployment" story at this scale.
-> No pickle files, no serving layer. A function and a sort.
-
-### Lessons sighted
-
-When labels are dear, rank before you inspect. "Like best,
-unlike rest" is a two-centroid score. Triage feeds active
-learning.
-
-## 9. The Tour Guide (explanation)
-
-A skeptical buyer does not want our numbers. They want the
-tour: what kinds of cars are on this lot, and what makes one
-kind better than another? Chapters 4 and 7 built everything
-needed; this chapter just teaches it to talk.
-
-    def show(node, lvl=0):                           # ①
-      if node:
-        t = node.here
-        print("|.. " * lvl, len(t.rows),
-              round(disty(t, mids(t)), 2))           # ②
-        show(node.west, lvl+1)
-        show(node.east, lvl+1)
-
-    def why(tbl, a, b):                              # ③
-      return [(c.name, a[c.at], b[c.at])
-              for c in tbl.cols.x
-              if a[c.at] != b[c.at]]                 # ④
-
-`show` ① prints the cluster tree as indented text: each
-line gives a group's size and, at ②, how near its centroid
-sits to heaven. Small numbers are the good neighborhoods.
-`why` ③ explains any single split in pole language: the
-split sent our row west because it looked like pole `a` and
-unlike pole `b`, and line ④ lists exactly the columns
-where those two poles disagree. A path from root to leaf is
-then a story: "like this, unlike that; then like this,
-unlike that", three or four sentences long.
-
-    %%run python3 src/skills_eg.py tree
-
-(The directive pulls in the printed tree for the car data,
-so the reader can check the story against the transcript.)
-
-Why does such a small explanation work? Because the tree is
-shallow (depth is log of the row count) and because, as the
-Mechanic found, only a few columns ever appear in the
-contrasts. An explanation that fits in a paragraph is not a
-lucky accident; it is what data with a few keys looks like.
-
-The table of contents promised that this chapter would
-justify any earlier verdict, so let us collect. Every
-verdict so far routes through the same geometry, and each
-inherits its story from it. The Fortune Teller's guess
-reads "you resemble these thirty cars; expect their
-mileage". The Bouncer's rejection reads "you sit farther
-from typical than 95 percent of this lot". The Smoke
-Detector's alarm reads "this month's arrivals sit far from
-last month's center". The Mechanic's blame list already is
-a contrast, spoken. The Nurse's queue reads "nearest the
-best labeled so far, unlike the rest". Hence one tour
-guide serves every worker on the lot: name the neighbors,
-then show the contrast.
-
-How deep do such justifications go? The standard yardstick
-is Pearl's ladder of causation, three rungs of question:
-association (what goes with what), intervention (what
-happens if we act), and counterfactual (what would have
-happened instead). XAI surveys collect the questions users
-actually put to a model; each maps to a rung, and here,
-to a skill:
-
-    trigger                        rung            skill
-    How does it work?              association     justify
-    What did it just do?           intervention    blame
-    What will it do next?          intervention    guess
-    How much effort will it take?  intervention    guess
-    What if it gets it wrong?      counterfactual  spot, watch
-    What if x were different?      counterfactual  wish, fix
-    Why didn't it do z?            counterfactual  blame, route
-
-One honesty note travels with the bottom rows. Our
-counterfactuals are matched neighborhoods: "a car like
-yours, but with four cylinders" means "the leaf such a car
-would join". That approximates rung three; it does not
-prove it. True counterfactual identification needs causal
-assumptions no table can check by itself, so this book's
-what-ifs ship as hypotheses with a grading scheme
-(Chapter 12) attached.
-
-> SE tip #7: an explanation is a user interface. Its test is
-> the same as any interface test: can a stranger, shown only
-> the output, predict what the system will do next? Prose
-> that fails that test is decoration, however accurate.
-
-> Code tip #6: `show` is the Rule of Silence with a speaking
-> part: print the few numbers a decision needs and nothing
-> else. Debug dumps belong behind a flag, not in the tour.
-
-### Lessons sighted
-
-Explanation is clustering plus contrast, spoken aloud.
-Shallow trees and few keys keep the story short. Test
-explanations like interfaces.
-
-## 10. The Bargain Hunter (optimization / active learning)
-
-Now the profitable chapter. Four hundred cars sit on the
-lot. Test-driving one car takes an hour. Find a great car by
-Friday. This is optimization under a label budget, and the
-maths of the introduction (equations 3 and 4) promised it
-should take dozens of labels, not hundreds. Let us collect.
-
-The trick is projection, aimed. Chapter 4's `halve` found
-two poles that LOOK far apart, needing no labels at all. The
-hunter changes one thing: its poles SCORE far apart. They
-are the best and worst cars labeled so far. Each round buys
-a few labels, redraws the line from best to worst, and keeps
-only the half of the pool nearest the good end.
-
-    def hunt(tbl, budget=24, chunk=4):               # ①
-      rows, done = shuffle(tbl.rows), []
-      while rows and len(done) < budget:             # ②
-        done += [rows.pop() for _ in range(chunk)]   # ③
-        done.sort(key=lambda r: disty(tbl, r))       # ④
-        a, b = done[0], done[-1]                     # ⑤
-        c = distx(tbl, a, b)
-        rows.sort(key=lambda r:
-                  project(tbl, r, a, b, c))          # ⑥
-        rows = rows[:len(rows)//2]                   # ⑦
-      return done[0], done
-
-Line ② loops until the label budget is gone or the pool is.
-Line ③ buys a few labels per round, taking rows from the
-shuffled pool. Line ④ ranks everything labeled so far by
-distance to heaven, so line ⑤ can name the poles: best
-known, worst known. Line ⑥ then orders the whole unlabeled
-pool along the best-to-worst line (the `project` of Chapter
-4), and line ⑦ discards the bad half. Each round the pool
-halves and, because the poles come from a growing labeled
-set, the line itself sharpens as the hunt closes in. For 400
-rows, the pool is gone in five or six rounds, and `done`
-holds about two dozen receipts. **A few dozen labels, not
-four hundred**, inside the NEO budget of equation (3), with
-the halving of equation (4) doing the work at line ⑦.
-
-Note the two kinds of poles now in play. Unsupervised
-structure first (`halve`: far-apart looks, free), then
-supervised steering (`hunt`: far-apart scores, two well
-spent labels). That pairing, cheap geometry aimed by a few
-dear labels, is the whole of active learning.
-
-Does it work? That is an empirical question, and it needs
-machinery: many datasets, many repeats, and a
-statistician at the door. The next two chapters build
-exactly that, then run this hunt at scale. (Encouragement
-meanwhile: a tuned cousin of this exact loop, in a sister
-codebase, restarts when its pool runs dry and keeps 0.66 of
-the pool instead of half; from around 45 labels it holds
-its own against far heavier optimizers on the corpus of
-Chapter 11.)
-
-> AI tip #9: this is active learning in a dozen lines: the
-> learner chooses what to label next, and chooses so that
-> each label kills half the remaining candidates. When
-> labels are the cost, the sampling policy is the learner.
-
-> AI tip #10: the fancy name for the general family is
-> sequential model-based optimization. The family's usual
-> members carry Gaussian processes and acquisition
-> functions. Before paying for those, check how far two
-> poles and a sort can go.
-
-> Code tip #7: keep the audit trail in the return value
-> (`spent`), not in a log file. A function that returns its
-> own receipts is testable: an assert can check the label
-> budget was honored, mechanically, every build.
-
-### Lessons sighted
-
-Under a label budget, sampling policy is the learner. Label
-a few, draw the best-to-worst line, keep the good half.
-Count every label spent, and return the receipts.
-
-## 11. The Proving Grounds (the MOOT corpus)
+## 5. The Proving Grounds (the MOOT corpus)
 
 One dataset proves nothing. Any trick can look clever on the
 car lot. Before this book makes empirical claims, we need
@@ -996,12 +626,12 @@ every experiment in the rest of this book is a loop of the
 same shape: for each file in the corpus, build `Tbl`, run
 the method, collect a number per repeat.
 
-> SE tip #8: benchmarks are fixtures, so treat them like
+> SE tip #6: benchmarks are fixtures, so treat them like
 > code: version them, fetch them with `make data`, and never
 > edit a fetched file by hand. A benchmark you tweaked is a
 > result you invented.
 
-> AI tip #11: report distributions over corpora, not wins on
+> AI tip #5: report distributions over corpora, not wins on
 > a favorite table. A method that shines on one dataset and
 > stinks on the corpus is a story about that dataset, and
 > the referee of the next chapter exists to catch exactly
@@ -1012,10 +642,10 @@ the method, collect a number per repeat.
 Claims need terrain. One header dialect makes a hundred
 datasets one loop. Fetched data is read-only.
 
-## 12. The Referee (statistical certification)
+## 6. The Referee (statistical certification)
 
-Here is the mid-book turn. Until now, each chapter showed a
-method. From now on, chapters will also run experiments:
+Here is a turn, taken early on purpose. Until now, each
+chapter showed machinery. From now on, chapters will also run experiments:
 method A versus method B, over the MOOT corpus, many
 repeats. The moment we do that, a hard question arrives:
 when are two result sets actually different? Eyeballing two
@@ -1126,30 +756,31 @@ book ever reports: not first, second, third, but "these
 won and the rest lost". When a later chapter's table shows
 a verdict column, it is `top`, spoken.
 
-> Code tip #8: line ⑪ is short-circuit evaluation doing
+> Code tip #5: line ⑪ is short-circuit evaluation doing
 > statistics. An `or` chain, cheapest test first, is the
 > lazy referee: it computes exactly as much evidence as the
 > verdict needs and not one comparison more.
 
-> SE tip #9: an earlier draft of the library shipped this
+> SE tip #7: an earlier draft of the library shipped this
 > logic in the mirror form, `differ`, as an `and` of three
 > difference-tests. De Morgan says the two are one, but the
 > `same` form is the one that gets the lazy evaluation
 > right, so `same` is what lib.py ships.
 
-> AI tip #12: certify with effect sizes plus a
+> AI tip #6: certify with effect sizes plus a
 > distributional test, never a p-value alone. With enough
 > repeats, trivial gaps become "significant". The 0.2 and
 > 0.197 thresholds encode a blunter, more useful question:
 > is the gap big enough for anyone to care?
 
-### 12.1 Reports: the skeleton
+### 6.1 Reports: the skeleton
 
 Every experiment from here on reports in one fixed shape,
 borrowed from the lab notebooks of a sister project: a
 research question, a method paragraph, one small table, and
-a bold one-line answer. For example, certifying Chapter 10's
-hunt over the corpus:
+a bold one-line answer. For example, certifying `hunt`,
+the label-frugal optimizer Chapter 10 will build, over
+the corpus:
 
 **RQ: how close does a few-dozen-label hunt get to the best
 row in the table?**
@@ -1176,7 +807,7 @@ That skeleton is the whole reporting standard: small enough
 to read in a minute, strict enough that a missing repeat or
 an uncertified claim has nowhere to hide.
 
-> SE tip #10: decide the report format before running the
+> SE tip #8: decide the report format before running the
 > experiment. A pre-committed table with an empty Answer
 > line is a mild form of preregistration, and it kills the
 > temptation to tour the numbers until one looks good.
@@ -1187,9 +818,319 @@ Ask "same?", not "different?". Three judges, cheapest
 first, lazy `or`. Effect size beats p-value. One skeleton
 for every report.
 
-## 13. The Travel Agent (planning)
+## 7. The Short-Order Cook (streaming)
 
-Diagnosis (Chapter 7) told us what is wrong. Planning tells
+Everything so far assumed the data would sit still. Now the
+orders fly in and the grill is always on: rows arrive one at
+a time, forever, and there is no disk big enough to keep
+them all. The good news was planted back in Chapter 3:
+`csv` is a generator, `welford` and `count` update one value
+at a time, and `add` never looks backward. **The substrate
+was streaming all along**; only `Tbl.rows` hoards memory.
+
+So the one new skill is a fair way to keep a bounded sample
+of an unbounded past:
+
+    def reservoir(src, k=256):                       # ①
+      keep = []
+      for n, row in enumerate(src):
+        if len(keep) < k: keep += [row]              # ②
+        elif random.random() < k / (n + 1):          # ③
+          keep[random.randrange(k)] = row            # ④
+      return keep
+
+Line ② fills the tank. After that, row number `n+1` earns
+a seat with probability `k/(n+1)` ③, evicting a random
+sitting tenant ④. A pretty induction shows every row ever
+seen ends up in the tank with equal probability, so the
+tank is an unbiased sample of the whole stream. Feed the
+tank to `clone`, and every skill in this book, met or
+still coming, runs unchanged on live data.
+
+### The Specials Board (trends)
+
+Cooks chalk up what is moving. For streams, we watch the
+goal summaries window by window:
+
+    def batches(src, k):                             # ①
+      b = []
+      for row in src:
+        b += [row]
+        if len(b) == k: yield b; b = []              # ②
+
+    def trends(tbl, src, k=64):                      # ③
+      b4 = None
+      for rows in batches(src, k):
+        now = clone(tbl, rows)
+        if b4:
+          print([(c1.name,
+                  round(mid(c2) - mid(c1), 2))
+                 for c1, c2 in zip(b4.cols.y,
+                                   now.cols.y)])     # ④
+        b4 = now
+
+`batches` ① chops the stream into windows. `trends` ③
+clones each window and, at ④, prints how each goal's
+center moved since the previous window. Mileage drifting
+down, weights creeping up: the specials board sees the
+market turn, and the Smoke Detector (Chapter 17) will
+confirm the turn statistically. Note again the absence of machinery for
+forgetting: no decay weights, no delete operations. Windows
+forget by construction, and rebuilding a window's summary
+costs milliseconds.
+
+> Python tip #4: generators compose like pipes. `csv` into
+> `batches` into `clone` is a lazy pipeline; nothing runs
+> until something downstream pulls. This is the Unix
+> pipeline instinct, native in Python.
+
+> AI tip #7: prefer forgetting by windows over forgetting
+> by arithmetic. Decay factors and decrement tricks add
+> knobs and bugs; a window plus a cheap rebuild has neither.
+
+### Lessons sighted
+
+The substrate streams natively. Reservoirs keep unbiased
+bounded memories. Windows forget for free; trends are
+window-to-window deltas.
+
+## 8. The Mechanic (diagnosis)
+
+Prediction says what will happen. Diagnosis says why. Our car
+is slow and thirsty; which of its parts should we blame? The
+answer in this chapter: grow the tree of Chapter 4, find its
+best and worst leaves, and report where their summaries
+disagree. Doctors call this a differential diagnosis. We call
+it a contrast set.
+
+    def leaves(node):                                # ①
+      if node.west:
+        yield from leaves(node.west)
+        yield from leaves(node.east)
+      else: yield node.here                          # ②
+
+    def contrast(t1, t2):                            # ③
+      return [(c1.name, mid(c1), mid(c2))
+              for c1, c2 in zip(t1.cols.x, t2.cols.x)
+              if mid(c1) != mid(c2)]                 # ④
+
+    def mechanic(tbl):                               # ⑤
+      lvs = sorted(leaves(Node(tbl)), key=lambda t:
+                   disty(t, mids(t)))                # ⑥
+      return contrast(lvs[0], lvs[-1])               # ⑦
+
+`leaves` ① walks the tree and yields each leaf's clone ②;
+recall from Chapter 4 that every node carries a full table of
+its own rows. `contrast` ③ compares two tables column by
+column and keeps only the `x` columns where the centers
+disagree ④. `mechanic` ⑤ sorts the leaves by how close
+each leaf's centroid sits to heaven ⑥, then contrasts the
+best leaf against the worst ⑦. The output reads like a
+mechanic talking: "the good ones have 4 cylinders and weigh
+around 2200; yours has 8 and weighs 4300."
+
+Note what made this cheap. The tree was already built for
+prediction. Every node already carries a clone, and clones
+already know their mids. Diagnosis fell out of parts we had.
+
+> AI tip #8: explanations from contrast are short because
+> most columns do not matter. The keys literature (see the
+> introduction) says a few variables control the rest; a
+> contrast set is how those few introduce themselves.
+
+> Code tip #6: `contrast` compares summaries, not rows. Row
+> versus row comparisons drown in noise. Summary versus
+> summary comparisons say what is typical of each side,
+> which is the question a diagnosis actually asks.
+
+### Lessons sighted
+
+Diagnosis is contrast between good and bad groups. Compare
+summaries, not rows. Reuse the prediction tree; diagnosis
+is a by-product.
+
+## 9. The Tour Guide (explanation)
+
+A skeptical buyer does not want our numbers. They want the
+tour: what kinds of cars are on this lot, and what makes one
+kind better than another? Chapters 4 and 7 built everything
+needed; this chapter just teaches it to talk.
+
+    def show(node, lvl=0):                           # ①
+      if node:
+        t = node.here
+        print("|.. " * lvl, len(t.rows),
+              round(disty(t, mids(t)), 2))           # ②
+        show(node.west, lvl+1)
+        show(node.east, lvl+1)
+
+    def why(tbl, a, b):                              # ③
+      return [(c.name, a[c.at], b[c.at])
+              for c in tbl.cols.x
+              if a[c.at] != b[c.at]]                 # ④
+
+`show` ① prints the cluster tree as indented text: each
+line gives a group's size and, at ②, how near its centroid
+sits to heaven. Small numbers are the good neighborhoods.
+`why` ③ explains any single split in pole language: the
+split sent our row west because it looked like pole `a` and
+unlike pole `b`, and line ④ lists exactly the columns
+where those two poles disagree. A path from root to leaf is
+then a story: "like this, unlike that; then like this,
+unlike that", three or four sentences long.
+
+    %%run python3 src/skills_eg.py tree
+
+(The directive pulls in the printed tree for the car data,
+so the reader can check the story against the transcript.)
+
+Why does such a small explanation work? Because the tree is
+shallow (depth is log of the row count) and because, as the
+Mechanic found, only a few columns ever appear in the
+contrasts. An explanation that fits in a paragraph is not a
+lucky accident; it is what data with a few keys looks like.
+
+The table of contents promised that this chapter would
+justify any verdict on the lot, so let us collect. Every
+verdict, already met or still ahead, routes through the
+same geometry, and each inherits its story from it. The
+Fortune Teller's guess (Chapter 4) reads "you resemble
+these thirty cars; expect their mileage". The Mechanic's
+blame list (Chapter 8) already is a contrast, spoken. And
+the workers we have not met yet inherit the same tour:
+when the Bouncer rejects a stranger (Chapter 14), that
+will read "farther from typical than 95 percent of this
+lot"; when the Smoke Detector fires (Chapter 17), "this
+month's arrivals sit far from last month's center"; when
+the Nurse ranks the queue (Chapter 15), "nearest the best
+labeled so far, unlike the rest". Hence one tour guide
+serves every worker on the lot: name the neighbors, then
+show the contrast.
+
+How deep do such justifications go? The standard yardstick
+is Pearl's ladder of causation, three rungs of question:
+association (what goes with what), intervention (what
+happens if we act), and counterfactual (what would have
+happened instead). XAI surveys collect the questions users
+actually put to a model; each maps to a rung, and here,
+to a skill:
+
+    trigger                        rung            skill
+    How does it work?              association     justify
+    What did it just do?           intervention    blame
+    What will it do next?          intervention    guess
+    How much effort will it take?  intervention    guess
+    What if it gets it wrong?      counterfactual  spot, watch
+    What if x were different?      counterfactual  wish, fix
+    Why didn't it do z?            counterfactual  blame, route
+
+One honesty note travels with the bottom rows. Our
+counterfactuals are matched neighborhoods: "a car like
+yours, but with four cylinders" means "the leaf such a car
+would join". That approximates rung three; it does not
+prove it. True counterfactual identification needs causal
+assumptions no table can check by itself, so this book's
+what-ifs ship as hypotheses with a grading scheme
+(Chapter 6) attached.
+
+> SE tip #9: an explanation is a user interface. Its test is
+> the same as any interface test: can a stranger, shown only
+> the output, predict what the system will do next? Prose
+> that fails that test is decoration, however accurate.
+
+> Code tip #7: `show` is the Rule of Silence with a speaking
+> part: print the few numbers a decision needs and nothing
+> else. Debug dumps belong behind a flag, not in the tour.
+
+### Lessons sighted
+
+Explanation is clustering plus contrast, spoken aloud.
+Shallow trees and few keys keep the story short. Test
+explanations like interfaces.
+
+## 10. The Bargain Hunter (optimization / active learning)
+
+Now the profitable chapter. Four hundred cars sit on the
+lot. Test-driving one car takes an hour. Find a great car by
+Friday. This is optimization under a label budget, and the
+maths of the introduction (equations 3 and 4) promised it
+should take dozens of labels, not hundreds. Let us collect.
+
+The trick is projection, aimed. Chapter 4's `halve` found
+two poles that LOOK far apart, needing no labels at all. The
+hunter changes one thing: its poles SCORE far apart. They
+are the best and worst cars labeled so far. Each round buys
+a few labels, redraws the line from best to worst, and keeps
+only the half of the pool nearest the good end.
+
+    def hunt(tbl, budget=24, chunk=4):               # ①
+      rows, done = shuffle(tbl.rows), []
+      while rows and len(done) < budget:             # ②
+        done += [rows.pop() for _ in range(chunk)]   # ③
+        done.sort(key=lambda r: disty(tbl, r))       # ④
+        a, b = done[0], done[-1]                     # ⑤
+        c = distx(tbl, a, b)
+        rows.sort(key=lambda r:
+                  project(tbl, r, a, b, c))          # ⑥
+        rows = rows[:len(rows)//2]                   # ⑦
+      return done[0], done
+
+Line ② loops until the label budget is gone or the pool is.
+Line ③ buys a few labels per round, taking rows from the
+shuffled pool. Line ④ ranks everything labeled so far by
+distance to heaven, so line ⑤ can name the poles: best
+known, worst known. Line ⑥ then orders the whole unlabeled
+pool along the best-to-worst line (the `project` of Chapter
+4), and line ⑦ discards the bad half. Each round the pool
+halves and, because the poles come from a growing labeled
+set, the line itself sharpens as the hunt closes in. For 400
+rows, the pool is gone in five or six rounds, and `done`
+holds about two dozen receipts. **A few dozen labels, not
+four hundred**, inside the NEO budget of equation (3), with
+the halving of equation (4) doing the work at line ⑦.
+
+Note the two kinds of poles now in play. Unsupervised
+structure first (`halve`: far-apart looks, free), then
+supervised steering (`hunt`: far-apart scores, two well
+spent labels). That pairing, cheap geometry aimed by a few
+dear labels, is the whole of active learning.
+
+Does it work? That is an empirical question, and it needs
+machinery: many datasets, many repeats, and a
+statistician at the door. Chapters 5 and 6 built exactly
+that; the war room of Chapter 20 runs this hunt at
+scale. (Encouragement
+meanwhile: a tuned cousin of this exact loop, in a sister
+codebase, restarts when its pool runs dry and keeps 0.66 of
+the pool instead of half; from around 45 labels it holds
+its own against far heavier optimizers on the corpus of
+Chapter 5.)
+
+> AI tip #9: this is active learning in a dozen lines: the
+> learner chooses what to label next, and chooses so that
+> each label kills half the remaining candidates. When
+> labels are the cost, the sampling policy is the learner.
+
+> AI tip #10: the fancy name for the general family is
+> sequential model-based optimization. The family's usual
+> members carry Gaussian processes and acquisition
+> functions. Before paying for those, check how far two
+> poles and a sort can go.
+
+> Code tip #8: keep the audit trail in the return value
+> (`spent`), not in a log file. A function that returns its
+> own receipts is testable: an assert can check the label
+> budget was honored, mechanically, every build.
+
+### Lessons sighted
+
+Under a label budget, sampling policy is the learner. Label
+a few, draw the best-to-worst line, keep the good half.
+Count every label spent, and return the receipts.
+
+## 11. The Travel Agent (planning)
+
+Diagnosis (Chapter 8) told us what is wrong. Planning tells
 us where to go instead, starting from where we actually are.
 The difference matters. The Mechanic contrasts the globally
 best and worst groups; the Travel Agent contrasts your group
@@ -1205,7 +1146,7 @@ lecture.
 Line ② finds the traveler's current neighborhood: drop the
 row down the tree, take that leaf's clone. Line ③ ranks
 all neighborhoods by their distance to heaven. Line ④
-reuses `contrast` from Chapter 7 to list the columns where your
+reuses `contrast` from Chapter 8 to list the columns where your
 neighborhood and the best one disagree. Each list item is
 one leg of the journey: "your cars have 8 cylinders; over
 there they have 4".
@@ -1213,12 +1154,12 @@ there they have 4".
 Two warnings belong in every itinerary. First, the plan
 names correlates, not causes; the data says good cars look
 like this, never that this change makes a car good. Acting
-on a plan is an experiment, and Chapter 12 told us how to
+on a plan is an experiment, and Chapter 6 told us how to
 grade experiments. Second, some columns cannot be changed
 (a used car's model year is history). A practical planner
 filters `contrast` to the columns you can actually steer.
 
-> AI tip #13: separate observation from intervention.
+> AI tip #11: separate observation from intervention.
 > Prediction rides on correlation; planning flirts with
 > causation. Ship plans as hypotheses with a grading scheme
 > attached, and nobody gets hurt.
@@ -1234,7 +1175,7 @@ Plans are contrasts against the best reachable group. Plans
 are hypotheses, not promises. Filter plans to steerable
 columns.
 
-## 14. The Cheap Fix (repair)
+## 12. The Cheap Fix (repair)
 
 The Travel Agent proposes a grand tour. The Cheap Fix asks a
 tighter question: what is the one smallest change that most
@@ -1267,13 +1208,13 @@ Note that `cheap` can return `None`: some rows need the
 full tour, and a repair shop that always finds something
 to fix is called something else.
 
-> AI tip #14: what-if estimates are interpolations. `wish`
+> AI tip #12: what-if estimates are interpolations. `wish`
 > only knows neighborhoods it has seen, so an edited row
 > that lands outside all of them gets a confident nonsense
-> score. Chapter 5's Bouncer is the guard: strange
+> score. Chapter 14's Bouncer is the guard: strange
 > hypotheticals should be flagged, not scored.
 
-> Python tip #6: line ⑤ copies with `row[:]` before
+> Python tip #5: line ⑤ copies with `row[:]` before
 > editing. Mutating a caller's row inside a scoring loop is
 > the classic aliasing bug: cheap to avoid, expensive to
 > find.
@@ -1284,13 +1225,13 @@ What-if scoring is leaf lookup (`wish`). Repair is the
 plan's best single leg. Guard what-ifs with the anomaly
 detector.
 
-## 15. The Kitbasher (synthesis)
+## 13. The Kitbasher (synthesis)
 
 Model shops sell kits. Kitbashers ignore the instructions
 and glue the best parts of several kits into something new.
 We now do that with rows: breed new candidate cars from
 halves of good old ones, and score the offspring with the
-what-if oracle of Chapter 14.
+what-if oracle of Chapter 12.
 
     def kitbash(r1, r2):                             # ①
       return [random.choice([a, b]) for a, b in zip(r1, r2)]
@@ -1317,12 +1258,12 @@ we took this chassis with that engine? Build the row, call
 same trick: score rows that never existed by the
 neighborhoods they would join.
 
-> AI tip #15: generate, then criticize. Cheap generators
+> AI tip #13: generate, then criticize. Cheap generators
 > (crossover) plus a cheap critic (`wish`) beat elaborate
 > generators with no critic. Most of the intelligence sits
 > in the critic, and ours came free from Chapter 4's tree.
 
-> SE tip #11: mark synthetic rows as synthetic if you keep
+> SE tip #10: mark synthetic rows as synthetic if you keep
 > them. A table quietly mixing observed and imagined data
 > will eventually lie to you with a straight face. This is
 > data provenance, **SSOT** applied to history.
@@ -1333,49 +1274,103 @@ Breed from the good, score with `wish`. Crossover without
 ceremony. Never let synthetic rows masquerade as
 observations.
 
-## 16. The Curator (compression / prototypes)
+## 14. The Bouncer (anomaly detection)
 
-Four hundred cars is a lot of lot. Which dozen rows would
-summarize it? Museums answer with curation: keep exemplars,
-store the rest in the basement. Our curator already exists;
-we built it in Chapter 4 and never noticed.
+A car arrives with 92 horsepower and a claimed 3 miles per
+gallon. Typo? Scam? Either way, we want a doorman that says
+"you're not on the list". Anomaly detection sounds grand, but
+with Chapter 3 in hand it is a ruler plus a threshold:
 
-    def curate(tbl):                                 # ①
-      return clone(tbl, [mids(t) for t in leaves(Node(tbl))])  # ②
+    def strange(tbl, row):                           # ①
+      return distx(tbl, mids(tbl), row)
 
-Grow the tree, take each leaf's centroid, and clone those
-few rows into a new table ②. With `the.stop` at 32, four
-hundred rows compress to about a dozen prototypes, each one
-the typical member of a real neighborhood. The instance
-selection literature (surveyed in the introduction's key
-sightings) says most rows can be discarded without losing
-the signal; `curate` is that finding as four lines.
+    def bouncer(tbl, q=0.95):                        # ②
+      d = sorted(strange(tbl, r) for r in tbl.rows)  # ③
+      cut = d[int(q * len(d))]                       # ④
+      return lambda row: strange(tbl, row) > cut     # ⑤
 
-Why bother, when four hundred rows already fit in memory?
-Because every algorithm in this book walks rows. Prediction,
-triage, hunting, planning: run them over the curated table
-and they all speed up by the compression factor, usually at
-little cost in answer quality. And that claim, like all
-claims, is checkable:
+`strange` ① is the distance from a row to the table's
+centroid. `bouncer` computes that distance for every known
+row ③, finds the 95th percentile ④, and returns a
+predicate ⑤: anything stranger than 95 percent of the
+regulars gets flagged. No density estimation, no autoencoder.
+One centroid, one sorted list, one cut.
 
-    %%run python3 src/skills_eg.py curate
+Note the shape of line ⑤: `bouncer` returns a function.
+We build the doorman once, then use him cheaply at the door,
+row after row.
 
-**RQ: does knn over a curated table certify as `same` as
-knn over the full table?** (Skeleton per Chapter 12; the
-Answer line waits for the transcript.)
+> Python tip #6: returning a lambda that closes over local
+> state (`cut`, `tbl`) is the poor man's object, and it is
+> often all the object you need. One behavior, no class.
 
-> AI tip #16: prototypes are also an explanation device. A
-> dozen named exemplars ("the thrifty import", "the muscle
-> barge") give humans handles that four hundred rows never
-> will. Compression is a communication tool wearing a
-> performance costume.
+> AI tip #14: calibrate thresholds from your own data, never
+> from folklore. The cut at line ④ is whatever "strange"
+> means on this lot, this month. On another table it will be
+> another number, computed the same way.
+
+For finer work, swap the global centroid for the tree of
+Chapter 4: drop the row to its `leaf`, and measure strangeness
+inside the leaf's clone. A pickup truck is normal on the
+truck side of the lot and bizarre among the sports cars.
+Global bouncer, local bouncer: same six lines, different
+table.
 
 ### Lessons sighted
 
-Leaf centroids are prototypes. Compression speeds every
-downstream skill. Certify the compression with the Referee.
+Anomaly is distance from typical. Thresholds come from
+percentiles of the data itself. Local strangeness (per leaf)
+beats global strangeness.
 
-## 17. The Marriage Counselor (multi-objective trade-off)
+## 15. The ER Nurse (triage)
+
+Four hundred cars arrived this afternoon. We have time to
+inspect a dozen. Which first? This is triage, and it matters
+whenever labels cost money: test drives, biopsies, code
+reviews, security audits. The nurse does not diagnose; the
+nurse ranks.
+
+Assume a handful of rows are already labeled (we test-drove
+a few cars, so we can compute their disty). Split those into
+the best quarter and the rest. Then score every unlabeled
+row by a simple pull: like the best, unlike the rest.
+
+    def triage(tbl, done, todo):                     # ①
+      done = sorted(done, key=lambda r: disty(tbl, r))  # ②
+      n    = len(done) // 4
+      best = clone(tbl, done[:n])                    # ③
+      rest = clone(tbl, done[n:])
+      f    = lambda r: (distx(tbl, mids(rest), r)
+                      - distx(tbl, mids(best), r))   # ④
+      return sorted(todo, key=f, reverse=True)       # ⑤
+
+Line ② ranks the labeled rows by distance to heaven. Line
+③ clones the top quarter into `best` and the remainder
+into `rest`. The score at ④ is a difference of two
+distances: far from the `rest` centroid is good, near the
+`best` centroid is good. Line ⑤ hands back the queue,
+most promising first. Readers who know naive Bayes will
+recognize the shape: score by "like this class, unlike the
+others". Ours swaps likelihoods for distances, which needs
+no probability model at all.
+
+> AI tip #15: triage does not need to be right. It needs to
+> be less wrong than the arrival order. Even a rough queue
+> means the dozen rows we can afford to label are spent
+> where they might matter, and Chapter 10 turns exactly
+> this loop into an optimizer.
+
+> Python tip #7: `sorted(key=...)` with a scoring lambda is
+> the whole "ranking model deployment" story at this scale.
+> No pickle files, no serving layer. A function and a sort.
+
+### Lessons sighted
+
+When labels are dear, rank before you inspect. "Like best,
+unlike rest" is a two-centroid score. Triage feeds active
+learning.
+
+## 16. The Marriage Counselor (multi-objective trade-off)
 
 Fast, light, cheap: pick two. Every interesting table has
 goals that pull against each other, and a book that hid that
@@ -1420,13 +1415,13 @@ inspect the goals you did not choose**, then pick, among
 the statistically tied, the candidate kindest to the
 unfolded goals. That kindness is usually free.
 
-> AI tip #17: ties are opportunities. Whenever the Referee
+> AI tip #16: ties are opportunities. Whenever the Referee
 > calls several options `same` on the stated goals, spend
 > the tie on an unstated goal: fairness, simplicity,
 > energy. Selection within a tie costs no measured
 > performance at all.
 
-> SE tip #12: keep goal policy in data (header marks, one
+> SE tip #11: keep goal policy in data (header marks, one
 > knob), never scattered through code. When the customer
 > changes their mind about what matters, the diff should
 > be one line long.
@@ -1437,81 +1432,91 @@ Show the menu, not just the winner. The fold's policy is
 visible and versioned. Spend statistical ties on the goals
 you did not fold.
 
-## 18. The Short-Order Cook (streaming)
+## 17. The Smoke Detector (drift)
 
-Everything so far assumed the data would sit still. Now the
-orders fly in and the grill is always on: rows arrive one at
-a time, forever, and there is no disk big enough to keep
-them all. The good news was planted back in Chapter 3:
-`csv` is a generator, `welford` and `count` update one value
-at a time, and `add` never looks backward. **The substrate
-was streaming all along**; only `Tbl.rows` hoards memory.
+The Bouncer checks one car. The Smoke Detector checks the
+whole lot. Markets move: one season brings heavier cars,
+another brings imports. A model trained in spring can be
+quietly wrong by fall. We want an alarm that smells the
+change early.
 
-So the one new skill is a fair way to keep a bounded sample
-of an unbounded past:
+The trick: watch the distribution of strangeness. Take the
+distances from the centroid to (a) a sample of the rows we
+trained on, and (b) the rows that arrived recently. If the
+two sets of numbers look alike, the world has not moved. If
+they differ, smoke.
 
-    def reservoir(src, k=256):                       # ①
-      keep = []
-      for n, row in enumerate(src):
-        if len(keep) < k: keep += [row]              # ②
-        elif random.random() < k / (n + 1):          # ③
-          keep[random.randrange(k)] = row            # ④
-      return keep
+    def smoke(tbl, new):                             # ①
+      old = [strange(tbl, r) for r in some(tbl.rows, the.few)]  # ②
+      now = [strange(tbl, r) for r in new]           # ③
+      return not same(old, now)                      # ④
 
-Line ② fills the tank. After that, row number `n+1` earns
-a seat with probability `k/(n+1)` ③, evicting a random
-sitting tenant ④. A pretty induction shows every row ever
-seen ends up in the tank with equal probability, so the
-tank is an unbiased sample of the whole stream. Feed the
-tank to `clone`, and every earlier chapter (prediction,
-triage, hunting, curation) runs unchanged on live data.
+Lines ② and ③ reduce "then" and "now" to two lists of
+numbers. Line ④ asks whether the lists are statistically
+the same. That `same` function is doing real work, and it
+deserves a chapter of its own; it gets one (Chapter 6, The
+Referee). For now, read it as "no statistician could
+tell these apart". When `same` fails, the detector fires,
+and the fix is blunt and cheap: `clone` a fresh table from
+recent rows and retrain. At our scale, retraining costs
+milliseconds, so we do not patch old models. We replace them.
 
-### The Specials Board (trends)
+> AI tip #17: monitor distributions, not accuracy. Accuracy
+> needs labels, and labels arrive late or never. Distances
+> to a centroid need no labels at all, so the smoke alarm
+> works even when nobody is grading the predictions.
 
-Cooks chalk up what is moving. For streams, we watch the
-goal summaries window by window:
-
-    def batches(src, k):                             # ①
-      b = []
-      for row in src:
-        b += [row]
-        if len(b) == k: yield b; b = []              # ②
-
-    def trends(tbl, src, k=64):                      # ③
-      b4 = None
-      for rows in batches(src, k):
-        now = clone(tbl, rows)
-        if b4:
-          print([(c1.name,
-                  round(mid(c2) - mid(c1), 2))
-                 for c1, c2 in zip(b4.cols.y,
-                                   now.cols.y)])     # ④
-        b4 = now
-
-`batches` ① chops the stream into windows. `trends` ③
-clones each window and, at ④, prints how each goal's
-center moved since the previous window. Mileage drifting
-down, weights creeping up: the specials board sees the
-market turn while the Smoke Detector (Chapter 6) confirms
-it statistically. Note again the absence of machinery for
-forgetting: no decay weights, no delete operations. Windows
-forget by construction, and rebuilding a window's summary
-costs milliseconds.
-
-> Python tip #7: generators compose like pipes. `csv` into
-> `batches` into `clone` is a lazy pipeline; nothing runs
-> until something downstream pulls. This is the Unix
-> pipeline instinct, native in Python.
-
-> AI tip #18: prefer forgetting by windows over forgetting
-> by arithmetic. Decay factors and decrement tricks add
-> knobs and bugs; a window plus a cheap rebuild has neither.
+> SE tip #12: cheap retraining changes the architecture. When
+> models cost milliseconds, "model management" collapses to
+> `clone` plus a cron job. Complexity in the pipeline is
+> usually rent paid on slow training.
 
 ### Lessons sighted
 
-The substrate streams natively. Reservoirs keep unbiased
-bounded memories. Windows forget for free; trends are
-window-to-window deltas.
+Drift is a change in the distribution of strangeness. Watch
+it without labels. When in doubt, rebuild; do not patch.
+
+## 18. The Curator (compression / prototypes)
+
+Four hundred cars is a lot of lot. Which dozen rows would
+summarize it? Museums answer with curation: keep exemplars,
+store the rest in the basement. Our curator already exists;
+we built it in Chapter 4 and never noticed.
+
+    def curate(tbl):                                 # ①
+      return clone(tbl, [mids(t) for t in leaves(Node(tbl))])  # ②
+
+Grow the tree, take each leaf's centroid, and clone those
+few rows into a new table ②. With `the.stop` at 32, four
+hundred rows compress to about a dozen prototypes, each one
+the typical member of a real neighborhood. The instance
+selection literature (surveyed in the introduction's key
+sightings) says most rows can be discarded without losing
+the signal; `curate` is that finding as four lines.
+
+Why bother, when four hundred rows already fit in memory?
+Because every algorithm in this book walks rows. Prediction,
+triage, hunting, planning: run them over the curated table
+and they all speed up by the compression factor, usually at
+little cost in answer quality. And that claim, like all
+claims, is checkable:
+
+    %%run python3 src/skills_eg.py curate
+
+**RQ: does knn over a curated table certify as `same` as
+knn over the full table?** (Skeleton per Chapter 6; the
+Answer line waits for the transcript.)
+
+> AI tip #18: prototypes are also an explanation device. A
+> dozen named exemplars ("the thrifty import", "the muscle
+> barge") give humans handles that four hundred rows never
+> will. Compression is a communication tool wearing a
+> performance costume.
+
+### Lessons sighted
+
+Leaf centroids are prototypes. Compression speeds every
+downstream skill. Certify the compression with the Referee.
 
 ## 19. The Beat Reporter (lifelong active learning)
 
@@ -1530,8 +1535,8 @@ have to build:
         yield hunt(mem)                              # ⑥
 
 Line ②: memory starts as the curated prototypes of
-Chapter 16, a dozen rows, not a data lake. Line ③: each
-week brings a batch of fresh rows (Chapter 18 showed how to
+Chapter 18, a dozen rows, not a data lake. Line ③: each
+week brings a batch of fresh rows (Chapter 7 showed how to
 window and sample them). Line ④: the Smoke Detector says
 whether the world moved. If it did, line ⑤ folds the news
 into memory and re-curates, so memory stays small forever.
@@ -1593,7 +1598,7 @@ with the trade-offs of forty years of project folklore
 folded into its tables.
 
 Why rehearse on a simulator instead of yet another MOOT
-table? Because here we know the truth. Chapter 11's corpus
+table? Because here we know the truth. Chapter 5's corpus
 is wide but blind: nobody knows any table's real best row.
 coc.py is narrow but lit: the formula sits on the page, so
 every skill's answer can be checked against the machinery
@@ -1637,29 +1642,29 @@ That transcript will run, in order:
 
 - **Forecast** (ch4): knn the effort of a proposed project;
   check the guess against coc2's own answer.
-- **Bounce** (ch5): flag configurations far from anything
+- **Bounce** (ch14): flag configurations far from anything
   this lot has seen.
-- **Smoke** (ch6): mature the organization mid-stream
+- **Smoke** (ch17): mature the organization mid-stream
   (pmat ratings drift upward); the alarm fires or the
   build breaks.
-- **Diagnose** (ch7): contrast the calm leaf against the
+- **Diagnose** (ch8): contrast the calm leaf against the
   disaster leaf. The assert: the contrast names drivers
   from Madachy's table, sced beside rely. From 400 random
   projects, the skill rediscovers pairs a human expert
   hand-coded.
-- **Triage, then hunt** (ch8, ch10): pretend each
+- **Triage, then hunt** (ch15, ch10): pretend each
   simulation costs a year of somebody's project. On a
   budget of two dozen labels, find a configuration whose
   distance to heaven certifies as `same` as the best of
-  thousands (ch12 referees it, 20 repeats).
-- **Plan and repair** (ch13, ch14): for one troubled
+  thousands (ch6 referees it, 20 repeats).
+- **Plan and repair** (ch11, ch12): for one troubled
   project, the route to the good leaf; then the cheapest
   single change. Relaxing schedule pressure one notch is
   usually cheaper than hiring analyst gods, and now we can
   say by how much.
-- **Counsel** (ch17): the menu. sced compresses months and
+- **Counsel** (ch16): the menu. sced compresses months and
   inflates risk; the leaves lay that bargain on the table.
-- **Curate, then beat** (ch16, ch19): shrink the space to
+- **Curate, then beat** (ch18, ch19): shrink the space to
   a dozen prototype projects, then keep hunting, week
   after drifting week.
 
@@ -1671,17 +1676,17 @@ argument, made by arithmetic.
 One caveat belongs in the room. COCOMO II was calibrated
 on 161 projects, most finished before 2000. Whether its
 constants fit your shop is exactly the kind of claim
-Chapter 12 taught you to test. The war room certifies the
+Chapter 6 taught you to test. The war room certifies the
 skills, not the model: swap in your own simulator (a
 build system, a queueing model, a digital twin) and every
 move above replays unchanged.
 
-> AI tip #21: keep one world where you know the truth.
+> AI tip #20: keep one world where you know the truth.
 > Real data tests usefulness; synthetic worlds with known
 > answers test correctness. A skill that has never been
 > made to rediscover a formula is a skill on faith.
 
-> SE tip #15: coc.py holds its knowledge as tables, not
+> SE tip #14: coc.py holds its knowledge as tables, not
 > code (the Rule of Representation, one last time): scale
 > factors, multipliers, risky pairs. Thirty lines of logic
 > walk sixty lines of numbers. Models you can read are
@@ -1718,15 +1723,15 @@ This chapter rewrites their grid in our operators. Every
 cell, one call:
 
     their cell     their example      our call        ch
-    trends         regression         trends          18
-    alerts         anomaly detection  bouncer, smoke  5,6
+    trends         regression         trends          7
+    alerts         anomaly detection  bouncer, smoke  14,17
     forecasting    extrapolation      knn             4
-    summarization  topic analysis     curate, show    16,9
-    overlays       correlation        contrast        7
-    goals          root-cause         plan            13
+    summarization  topic analysis     curate, show    18,9
+    overlays       correlation        contrast        8
+    goals          root-cause         plan            11
     modeling       machine learning   Tbl, Node       3,4
-    benchmarking   significance       top             12
-    simulation     what-if            wish            14
+    benchmarking   significance       top             6
+    simulation     what-if            wish            12
 
 Nine research areas, nine calls. And that ratio, not any
 single mapping, is the finding. Walking this book, each
@@ -1805,7 +1810,7 @@ remains: against the field. Nothing in this book stands if
 a standard tool, used off the shelf, beats ours while we
 were busy admiring our line count. So we line the rivals
 up on the same strip, same fuel, public clocks, with the
-Referee of Chapter 12 holding the stopwatch. (This
+Referee of Chapter 6 holding the stopwatch. (This
 chapter's working title was Deathrace 2000; cooler heads
 renamed it.)
 
@@ -1865,12 +1870,12 @@ living in its own virtual environment, entering this book
 only through its transcripts. The 2000-line budget covers
 our skills, not our opponents.
 
-> SE tip #16: a baseline is a rival you tried to make win.
+> SE tip #15: a baseline is a rival you tried to make win.
 > Give it its defaults, give it a tuning, give it the same
 > budget, and publish its best. Anything less converts
 > your victory table into marketing.
 
-> AI tip #22: score explanations by utility and stability,
+> AI tip #21: score explanations by utility and stability,
 > never by plausibility. Humans rate confident nonsense
 > highly; downstream learners and resamples do not.
 
@@ -1931,12 +1936,12 @@ zones the agent must never touch; and (e) worked exemplars
 to copy shapes from, because agents, like interns, imitate
 far better than they invent.
 
-> SE tip #14: write rules the way you write asserts: short,
+> SE tip #16: write rules the way you write asserts: short,
 > checkable, and colocated with what they protect. An
 > agent's CLAUDE.md is a test suite for behavior.
 
-> AI tip #20: give agents exemplars, not adjectives. "Copy
-> the shape of ch04" outperforms "write clearly" every
+> AI tip #22: give agents exemplars, not adjectives. "Copy
+> the shape of ch4" outperforms "write clearly" every
 > time. Retrieval beats invention; this was also the moral
 > of Chapter 4, and of the whole book: don't think,
 > remember.
@@ -1969,7 +1974,7 @@ Everything that learns, learns through `add`. See also:
 Welford's algorithm, streaming.
 
 **anomaly detection** (AI). Flagging rows far from typical
-(Chapter 5). Distance to centroid, cut at a percentile.
+(Chapter 14). Distance to centroid, cut at a percentile.
 See also: centroid, drift, what-if.
 
 **assert** (code). An executable claim. This book's demos
@@ -1996,7 +2001,7 @@ See also: mid, clone.
 **Cliff's delta** (stat). Rank-based effect: how often
 values of one list sit above and below the other, returned
 as an imbalance, 0 to 1. At or under `the.cliffs` (0.197),
-same, to this judge (Chapter 12). The `xsort, ysort` names
+same, to this judge (Chapter 6). The `xsort, ysort` names
 announce the precondition: sorted input. See also: KS
 test, Cohen's rule, same.
 
@@ -2022,12 +2027,12 @@ skills, not the model.) See also: baseline.
 
 **Cohen's rule** (stat). Report the gap between two
 middles in units of pooled spread; under `the.cohen`
-(0.2), same (Chapter 12). Q: why prefer this to a p-value? (It
+(0.2), same (Chapter 6). Q: why prefer this to a p-value? (It
 asks whether anyone would care, not whether n was large.)
 See also: Cliff's delta, KS test, same.
 
 **contrast set** (AI). The columns on which two groups'
-summaries disagree; the output of `contrast` (Chapter 7).
+summaries disagree; the output of `contrast` (Chapter 8).
 The seed of diagnosis, explanation, planning, and repair.
 See also: leaf, centroid.
 
@@ -2037,7 +2042,7 @@ goals, trailing `X` means ignore (Chapter 3). See also:
 Tbl, generator.
 
 **curation** (AI). Compressing a table to its leaf
-centroids (Chapter 16). A dozen prototypes standing in
+centroids (Chapter 18). A dozen prototypes standing in
 for hundreds of rows. See also: leaf, centroid, clone.
 
 **distance to heaven** (AI). `disty`: how far a row's
@@ -2050,7 +2055,7 @@ deviation for numbers, entropy for symbols (Chapter 3.3).
 See also: entropy, mid, Welford's algorithm.
 
 **drift** (AI). The world changing under a model
-(Chapter 6). Detected by comparing strangeness
+(Chapter 17). Detected by comparing strangeness
 distributions, then cured by rebuilding. See also:
 anomaly detection, same, streaming.
 
@@ -2096,7 +2101,7 @@ also: leaf, centroid.
 **KS test** (stat). Kolmogorov-Smirnov: walk two sorted
 samples as cumulative distribution curves and return the
 largest vertical gap, in critical-value units; under
-`the.ks` (1.36), same (Chapter 12). Distribution-free, one
+`the.ks` (1.36), same (Chapter 6). Distribution-free, one
 while-loop. See also: Cliff's delta, Cohen's rule, same.
 
     def ks(xsort, ysort):
@@ -2125,11 +2130,11 @@ centroid.
 **Minkowski distance** (stat). The family of distances
 behind `distx` and `disty`; `the.p` picks the member. At
 p=2, Euclidean; as p grows, judgment tilts to the worst
-gap (Chapter 17). See also: distance to heaven, norm.
+gap (Chapter 16). See also: distance to heaven, norm.
 
 **MOOT** (data). Many multi-objective optimization tasks:
 the public corpus (tiny.cc/moot) all experiments run over
-(Chapter 11). See also: baseline, CSV.
+(Chapter 5). See also: baseline, CSV.
 
 **NEO** (AI). Near-enough optimization: settle for
 solutions statistically indistinguishable from best
@@ -2154,19 +2159,19 @@ should do what a reader expects (`shuffle` copies before
 shuffling). See also: Rules of Unix programming.
 
 **reservoir sampling** (code). Keeping a bounded,
-unbiased sample of an unbounded stream (Chapter 18). Q:
+unbiased sample of an unbounded stream (Chapter 7). Q:
 with tank size k, what chance does row n have of being
 kept? (k/n, all n.) See also: streaming, seed.
 
 **Rules of Unix programming** (rule). As used here.
 Composition: build parts that connect (`clone`,
 generators). Parsimony: add mechanism only when nothing
-else will do (Chapter 13's planner reused three old
+else will do (Chapter 11's planner reused three old
 parts). Representation: fold knowledge into data (the
 header). Silence: print only what a decision needs
 (`show`). Least surprise: see POLA.
 
-**same** (function). The Referee's verdict (Chapter 12):
+**same** (function). The Referee's verdict (Chapter 6):
 three judges return magnitudes, cheapest first; `same`
 compares each to its about.py knob, and a lazy `or` ends
 the trial at the first small-enough score. See also:
@@ -2200,7 +2205,7 @@ one home. The header for schema, about.py for knobs,
 CLAUDE.md for agent rules. See also: SOC, CSV.
 
 **streaming** (SE). Processing rows one at a time under
-bounded memory (Chapter 18). The substrate's `add` was
+bounded memory (Chapter 7). The substrate's `add` was
 built for this from day one. See also: generator,
 reservoir sampling, Welford's algorithm.
 
@@ -2234,7 +2239,7 @@ names.
 (least by default; greatest under its `max` flag) and
 return everything until the first treatment that is not
 `same` as the champion. The winner set that this book's
-report tables print (Chapter 12). See also: same, baseline.
+report tables print (Chapter 6). See also: same, baseline.
 
     def top(d, max=False):
       out, mid = [], lambda a: sorted(a)[len(a) // 2]
@@ -2246,7 +2251,7 @@ report tables print (Chapter 12). See also: same, baseline.
 
 **triage** (AI). Ranking unlabeled rows by expected value
 of inspection: like the best seen so far, unlike the rest
-(Chapter 8). See also: active learning, centroid.
+(Chapter 15). See also: active learning, centroid.
 
 **VITAL** (rule). Very important to acquire locally: the
 counter to "not invented here" sneers. Two hundred
@@ -2263,7 +2268,7 @@ summary here is streaming-ready. See also: add, norm,
 streaming.
 
 **what-if** (AI). Scoring a row that does not exist by
-the leaf it would land in (`wish`, Chapter 14).
+the leaf it would land in (`wish`, Chapter 12).
 Interpolation only; guard it with the Bouncer. See also:
 leaf, anomaly detection.
 
@@ -2282,7 +2287,7 @@ Loose ends, in work order:
    end in an assert (CLAUDE.md rule 6).
 2. DONE: lib.py now ships `same` (cohen/ks/cliffs each
    reversed into a same-predicate; lazy or, cheapest
-   first). test_stats and ch04's trust-test prose updated
+   first). test_stats and ch4's trust-test prose updated
    to match.
 3. Layout decided: about.py, lib.py, lib_eg.py,
    skills.py, skills_eg.py, coc.py. All chapter code goes in

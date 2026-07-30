@@ -79,20 +79,20 @@ contents.
 |--------------------------------------------------|:---------------------------|---:|--------:|
 | Put 400 cars in one table; measure any gap       | remember (representation)  |  3 |     120 |
 | Guess the fuel use before we see the sticker     | guess (prediction)         |  4 |      35 |
-| Spot a strange car: a typo, or a scam            | spot (anomaly detection)   |  5 |       8 |
-| Notice when the lot quietly changes under us     | watch (drift detection)    |  6 |       5 |
-| Say why the bad cars are slow, or thirsty        | blame (diagnosis)          |  7 |      13 |
-| 400 cars, one afternoon, what to inspect first?  | ration (triage)            |  8 |       8 |
-| Justify any of the above to a skeptical buyer    | justify (explanation)      |  9 |      12 |
+| Check our tricks on a hundred other lots         | check (benchmarking)       |  5 |       0 |
+| Say when "better" is real, and when it is noise  | certify (certification)    |  6 |      32 |
+| Decide on the spot as cars arrive one at a time  | flow (streaming)           |  7 |      20 |
+| Say why the bad cars are slow, or thirsty        | blame (diagnosis)          |  8 |      13 |
+| Justify any verdict to a skeptical buyer         | justify (explanation)      |  9 |      12 |
 | Find the best car, test-driving very few         | choose (optimization)      | 10 |      11 |
-| Check our tricks on a hundred other lots         | check (benchmarking)       | 11 |       0 |
-| Say when "better" is real, and when it is noise  | certify (certification)    | 12 |      32 |
-| Chart a path from this car to a better one       | route (planning)           | 13 |       5 |
-| Find the cheapest change that fixes this car     | fix (repair)               | 14 |      11 |
-| Sketch a better car from halves of two others    | blend (synthesis)          | 15 |       9 |
-| Shrink 400 cars to the dozen that summarize      | shrink (compression)       | 16 |       3 |
-| Trade fast against light against cheap           | haggle (trade-off)         | 17 |       6 |
-| Decide on the spot as cars arrive one at a time  | flow (streaming)           | 18 |      20 |
+| Chart a path from this car to a better one       | route (planning)           | 11 |       5 |
+| Find the cheapest change that fixes this car     | fix (repair)               | 12 |      11 |
+| Sketch a better car from halves of two others    | blend (synthesis)          | 13 |       9 |
+| Spot a strange car: a typo, or a scam            | spot (anomaly detection)   | 14 |       8 |
+| 400 cars, one afternoon, what to inspect first?  | ration (triage)            | 15 |       8 |
+| Trade fast against light against cheap           | haggle (trade-off)         | 16 |       6 |
+| Notice when the lot quietly changes under us     | watch (drift detection)    | 17 |       5 |
+| Shrink 400 cars to the dozen that summarize      | shrink (compression)       | 18 |       3 |
 | Keep learning for years as the market moves      | persist (lifelong learning)| 19 |       7 |
 | Rehearse every skill on one knowable project     | rehearse (simulation)      | 20 |      20 |
 | Answer the boss's morning questions with data    | brief (analytics)          | 21 |       8 |
@@ -100,13 +100,13 @@ contents.
 | Teach the next intern to run the lot             | teach (onboarding)         | 23 |       0 |
 
 (Five rows are not single skills: Chapter 3 builds the one data
-structure everything shares, Chapter 11 collects the terrain
+structure everything shares, Chapter 5 collects the terrain
 the other chapters are tested on, Chapters 20 and 21 replay
 every skill twice (on a simulated project, then on a manager's
 morning questions), and Chapter 22 races them against standard
-rivals. The certification chapter sits mid-book, not last,
-because the chapters after it run experiments and experiments
-need a referee.)
+rivals. Certification comes early, at Chapter 6, right after
+the terrain, because everything downstream may run experiments
+and experiments need a referee.)
 
 The last column is the book's first claim, in miniature:
 the new executable lines each chapter needs. Big at the
@@ -118,18 +118,21 @@ rows cost nothing at all: by then, everything is wiring.
 (These counts are estimates while this draft is a draft;
 the build pins them at weave time.)
 
-Note that the column is nearly sorted, and could not be
-sorted exactly, and both facts argue the same point. A
-chapter is cheap because its parts were paid for earlier,
-so the cheapest chapters depend on the most chapters;
-ordering the book by cost alone would ask Chapter 20's
-eight-line rehearsal to run before the skills it
-rehearses. The bumps that break the sort are shared
-machinery bought once: the referee of Chapter 12, which
-every later experiment leans on, and the streaming
-plumbing of Chapter 18. Cheap-because-derived, dear-
-because-shared: that is what a substrate looks like,
-written as a column of integers.
+The chapters run in cost order, near enough, and the four
+breaks in the sort each tell a design story. The zero at
+Chapter 5 is data, not code; a corpus needs no lines.
+Chapter 11 undercuts Chapter 12 because planning must
+come before repair (repair edits a plan). Chapter 19
+pays seven lines after Chapter 18's three because
+lifelong learning composes five earlier skills. And
+Chapter 20's twenty lines are no skill at all; they are a
+world generator, bought so every skill can be tested
+against known truth. A chapter is cheap because its parts
+were paid for earlier, so the cheapest chapters depend on
+the most chapters, and a perfect sort is therefore
+impossible: cheap-because-derived, dear-because-shared is
+what a substrate looks like, written as a column of
+integers.
 
 Call the middle column what it is: these are skills.
 Each is a small, named, auditable capability, a few lines
@@ -148,22 +151,22 @@ which Chapter 9 builds):
     |.. reading the world
     |.. |.. remember (representation, 3)
     |.. |.. guess (prediction, 4)
-    |.. |.. guard: spot (anomaly, 5), watch (drift, 6)
-    |.. |.. explain: blame (diagnosis, 7),
+    |.. |.. guard: spot (anomaly, 14), watch (drift, 17)
+    |.. |.. explain: blame (diagnosis, 8),
     |.. |.. . . . . justify (explanation, 9)
-    |.. |.. ration (triage, 8)
+    |.. |.. ration (triage, 15)
     |.. changing the world
     |.. |.. decide: choose (optimization, 10),
-    |.. |.. . . . . haggle (trade-off, 17)
-    |.. |.. alter: route (planning, 13), fix (repair, 14),
-    |.. |.. . . . . blend (synthesis, 15)
-    |.. |.. shrink (compression, 16)
+    |.. |.. . . . . haggle (trade-off, 16)
+    |.. |.. alter: route (planning, 11), fix (repair, 12),
+    |.. |.. . . . . blend (synthesis, 13)
+    |.. |.. shrink (compression, 18)
     |.. enduring the world
-    |.. |.. flow (streaming, 18)
+    |.. |.. flow (streaming, 7)
     |.. |.. persist (lifelong learning, 19)
     |.. trusting the world
-    |.. |.. prove: check (benchmarking, 11),
-    |.. |.. . . . . certify (certification, 12),
+    |.. |.. prove: check (benchmarking, 5),
+    |.. |.. . . . . certify (certification, 6),
     |.. |.. . . . . race (baselining, 22)
     |.. |.. rehearse: warroom (simulation, 20),
     |.. |.. . . . . . meeting (analytics, 21)
