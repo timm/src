@@ -1048,32 +1048,35 @@ log factor for its binary searches. In the common case,
 `cohen` answers alone and the panel adjourns.
 
 Experiments compare many treatments, not two, so one more
-helper tops off the referee. Give `tied` a dictionary
+helper tops off the referee. Give `top` a dictionary
 mapping each treatment's name to its observed scores; back
 comes the winner set:
 
-    def tied(d):                                     # ①
+    def top(d, max=False):                           # ①
       mid = lambda a: sorted(a)[len(a) // 2]
       out = []
-      for k in sorted(d, key=lambda k: mid(d[k])):   # ②
+      for k in sorted(d, key=lambda k: mid(d[k]),
+                      reverse=max):                  # ②
         if out and not same(d[out[0]], d[k]): break  # ③
         out += [k]
       return out
 
-Line ② orders the treatments best median first (least,
-because this book's scores are distances to heaven). Line
+Line ② orders the treatments best median first: least by
+default, since this book's scores are distances to heaven,
+and greatest when the `max` flag says this score grows the
+other way. Line
 ③ walks down that order, comparing each treatment to the
 champion, and the first one the judges CAN tell apart ends
 the walk: nobody below a loser is ever compared. So the
 laziness runs two levels deep: `same` stops at its first
-small-enough judge, and `tied` stops at its first loser.
+small-enough judge, and `top` stops at its first loser.
 The break does place a bet: that once the medians drift
 too far apart they do not drift back. That is the same bet
 Scott-Knott style rankings make, and on distance-to-heaven
 scores it is a safe one. That list is the only ranking this
 book ever reports: not first, second, third, but "these
 won and the rest lost". When a later chapter's table shows
-a verdict column, it is `tied`, spoken.
+a verdict column, it is `top`, spoken.
 
 > Code tip #8: line ⑪ is short-circuit evaluation doing
 > statistics. An `or` chain, cheapest test first, is the
@@ -1107,7 +1110,7 @@ Method: for each MOOT table, 20 repeats: shuffle, run
 `hunt`, record the disty of its answer, the labels spent,
 and the disty of the true best row (peeked for scoring
 only). Two result sets per table: `hunt` versus `all` (the
-best found by exhaustive labeling). `tied` picks the winners.
+best found by exhaustive labeling). `top` picks the winners.
 
     %%run python3 src/skills_eg.py hunt
 
@@ -1666,7 +1669,7 @@ multi-objective genetic rig, NSGA-II (as shipped in the
 pymoo library). The protocol: every MOOT table; every
 method gets the same budgets (24, 50, 100 labels); 20
 repeats; each run scored by the distance to heaven of the
-best row it bought; `tied` names each row's winner set.
+best row it bought; `top` names each row's winner set.
 
     %%run python3 src/dragrace_eg.py --report optimize
 
@@ -2062,20 +2065,6 @@ p, few, stop, file, plus the referee thresholds cohen, ks,
 cliffs. All knobs, one place, all overridable from the
 command line. See also: o, SSOT.
 
-**tied** (function). The referee at scale: given
-{treatment: scores}, walk the treatments best median
-first and return everything until the first one that is
-not `same` as the champion. The winner set that this book's
-report tables print (Chapter 12). See also: same, baseline.
-
-    def tied(d):
-      mid = lambda a: sorted(a)[len(a) // 2]
-      out = []
-      for k in sorted(d, key=lambda k: mid(d[k])):
-        if out and not same(d[out[0]], d[k]): break
-        out += [k]
-      return out
-
 **TIM** (rule). timm's rule: no code line past 65
 characters (the circled markers ride outside the count).
 Q: why 65? (So code drops into books, slides, and
@@ -2087,6 +2076,22 @@ margins: AI tips (learning and data), SE tips (the craft
 around the code), Code tips (any language), Python tips
 (this language). The glossary tags reuse the same four
 names.
+
+**top** (function). The referee at scale: given
+{treatment: scores}, walk the treatments best median first
+(least by default; greatest under its `max` flag) and
+return everything until the first treatment that is not
+`same` as the champion. The winner set that this book's
+report tables print (Chapter 12). See also: same, baseline.
+
+    def top(d, max=False):
+      mid = lambda a: sorted(a)[len(a) // 2]
+      out = []
+      for k in sorted(d, key=lambda k: mid(d[k]),
+                      reverse=max):
+        if out and not same(d[out[0]], d[k]): break
+        out += [k]
+      return out
 
 **triage** (AI). Ranking unlabeled rows by expected value
 of inspection: like the best seen so far, unlike the rest

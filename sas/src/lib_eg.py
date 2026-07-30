@@ -124,12 +124,13 @@ def test_stats(): # small shift = same, big = different
           same(a, b), cohen(a, b), ks(a, b), cliffs(a, b)))
   assert same(a, a) and not same(a, shift(2))
 
-def test_tied(): # winner set = best plus its peers
+def test_top(): # winner set = best plus its peers
   random.seed(the.seed)
   g = lambda mu: [random.gauss(mu, 1) for _ in range(20)]
   d = dict(slow=g(2), fast=g(0), ok=g(0.1), bad=g(3))
-  print(sorted(tied(d)))
-  assert sorted(tied(d)) == ["fast", "ok"]
+  print(top(d), top(d, max=True))
+  assert sorted(top(d)) == ["fast", "ok"]
+  assert top(d, max=True) == ["bad"]
 
 def test_all(): # run every test_*, reseeding each
   bad = 0
