@@ -2345,7 +2345,10 @@ table, one-line bold Answer (model: ../branch/REPORT.md).
 
 STRUCTURE. story.md = front matter; title "Sophisticated
 AI: Simple Ain't Stupid", subtitle "Dozens of reusable AI
-skills from a few hundred lines of Python". The task
+skills from a few hundred lines of Python". Its ch2 runs a
+three-rung ladder (cognitive: Simon/Gigerenzer; empirical:
+Holte/Dawes/Hand; maths: NEO eqs), each layer explaining
+the one above; NEO = satisficing with a price tag. The task
 table is the chapter map, one row per chapter, chapters
 3..23, approximately sorted by new-LOC within the
 dependency DAG (four named sort-breaks under table 1). Chapter
