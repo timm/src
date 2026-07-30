@@ -146,7 +146,12 @@ which Chapter 9 builds):
 Two indexes, one book. The table dispatches by situation
 (what just happened on the lot?); the tree dispatches by
 kind (what sort of move do we need?). Both point at the
-same twenty chapters, one skill each.
+same twenty chapters, one skill each. And readers who keep
+Pearl's ladder of causation in their heads (seeing, doing,
+imagining) can read the tree's branches as rungs: reading
+the world is association; changing the world is
+intervention and counterfactual; trusting the world is the
+rung the ladder leaves implicit, where claims get checked.
 
 And where is the AI in all this? In two places. Each skill
 is a small AI in its own right: it learns from data, and

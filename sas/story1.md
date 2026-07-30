@@ -463,6 +463,29 @@ megabytes that we do not. Everything downstream of this
 chapter can be audited, by you, in an afternoon. That is the
 point of the book.
 
+### 3.8 The grammar under everything
+
+Look back at this chapter's verbs. We kept some rows
+(`clone`, `some`), we folded values into running summaries
+(`add`, `welford`, `count`), and we sorted rows by
+computed keys. Keep, fold, sort; then read an answer off a
+summary (`mid`, `div`, `norm`). That four-word grammar is
+the whole book. Every skill in every later chapter is a
+short sentence in it. Prediction keeps the nearest rows,
+folds them into a clone, reads the mids. Optimization
+folds labels, sorts the pool, keeps half, repeats. When a
+later chapter looks clever, parse it; it stops being
+clever and becomes three verbs and a readout.
+
+The old logicians had names for these moves. Building a
+summary from cases is induction. Reading an answer back
+off a summary is deduction. And picking the summary that
+best explains a surprise, which is the work of diagnosis,
+explanation, and repair, is abduction: the hunt for the
+best available explanation. So when these skills feel
+familiar, they should. They are the classical inference
+triad, running on tables, five lines at a time.
+
 ### Lessons sighted
 
 The header is the schema (SSOT, Rule of Representation).
@@ -828,6 +851,32 @@ a contrast, spoken. The Nurse's queue reads "nearest the
 best labeled so far, unlike the rest". Hence one tour
 guide serves every worker on the lot: name the neighbors,
 then show the contrast.
+
+How deep do such justifications go? The standard yardstick
+is Pearl's ladder of causation, three rungs of question:
+association (what goes with what), intervention (what
+happens if we act), and counterfactual (what would have
+happened instead). XAI surveys collect the questions users
+actually put to a model; each maps to a rung, and here,
+to a skill:
+
+    trigger                        rung            skill
+    How does it work?              association     justify
+    What did it just do?           intervention    blame
+    What will it do next?          intervention    guess
+    How much effort will it take?  intervention    guess
+    What if it gets it wrong?      counterfactual  spot, watch
+    What if x were different?      counterfactual  wish, fix
+    Why didn't it do z?            counterfactual  blame, route
+
+One honesty note travels with the bottom rows. Our
+counterfactuals are matched neighborhoods: "a car like
+yours, but with four cylinders" means "the leaf such a car
+would join". That approximates rung three; it does not
+prove it. True counterfactual identification needs causal
+assumptions no table can check by itself, so this book's
+what-ifs ship as hypotheses with a grading scheme
+(Chapter 12) attached.
 
 > SE tip #7: an explanation is a user interface. Its test is
 > the same as any interface test: can a stranger, shown only
