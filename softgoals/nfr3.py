@@ -8,22 +8,30 @@
 # (choice-or, commit), else an edge node (label all bodies,
 # combine). ISAMP replaces backtracking: a contradiction
 # raises, the world restarts fresh (nfr3's greedy mode is the
-# only mode). Pending loop values are Boxes guessed at combine
-# time; a self-loop closes iff the guess equals the computed
-# label. Labels 2 1 0 -1 -2. One looseness vs the prolog:
+# only mode). Loops: m.path holds the nodes now being computed;
+# hitting one again means a cycle, so guess its label on the
+# spot (uniform over the 5 values) and let that node's own
+# combine verify guess == computed, else the world restarts.
+# Guessing early kills nfr3.pl's symbolic pending terms: every
+# value here is a plain number. (Divergence: nfr3.pl punts
+# cyclic clusters >3 to undecided; this explores them.)
+# Labels 2 1 0 -1 -2. One looseness vs the prolog:
 # python cannot close the world, so a typo is a new leaf, not
 # an existence error.
 import random
 
 class Fail(Exception): pass
-class Box: val = None
+
+def damp(v): return max(-1, min(1, v))
 
 def shuffled(xs): return random.sample(list(xs), len(xs))
 
-class Term:                     # no/makes/.../And/Or wrapper
+class Lit:                      # `&` conjoins literals into a
+  def __and__(i, o): return [i, o]        # body (a list); rand
+  def __rand__(i, o): return o + [i]      # extends one going
+
+class Term(Lit):                # no/makes/.../And/Or wrapper
   def __init__(i, op, x): i.op, i.x = op, x
-  def __and__(i, o): return [i, o]
-  def __rand__(i, o): return o + [i]
 
 def no(x):     return Term('no', x)
 def makes(x):  return Term('makes', x)
@@ -35,16 +43,17 @@ def Or(*xs):   return Term('amax', xs)
 
 def hardlit(l): return isinstance(l, Node) or l.op == 'no'
 
-class Node:
+class Node(Lit):
+  "m : pointer to model owning node; k : name"
   def __init__(i, m, k): i.m, i.k, i.bodies = m, k, []
-  def __and__(i, o): return [i, o]
-  def __rand__(i, o): return o + [i]
   def __ior__(i, b):            # head |= body (an or)
     i.bodies.append(b if isinstance(b, list) else [b])
     return i
   def __call__(i, want=None):
     m, v = i.m, i.m.b.get(i.k)
     if v is not None: return demand(v, want)
+    if i.k in m.path:           # loop: guess; my combine
+      return maybe(m, i.k, want, (2, 1, 0, -1, -2))  # verifies
     if not i.bodies: return maybe(m, i.k, want)
     hards = [b for b in i.bodies if all(hardlit(l) for l in b)]
     if hards:                   # rule: pick one body, walk
@@ -56,78 +65,48 @@ class Node:
     if want is not None:        # edge: a demand is assumed,
       m.b[i.k] = want           # not derived (nfr2 guess
       return want               # parity)
-    b = Box(); m.b[i.k] = b     # else label all bodies
+    m.path.add(i.k)             # else label all bodies
     es = [e for bd in i.bodies for e in bd]
-    return combine(b, [contrib(e) for e in shuffled(es)])
+    ws = [contrib(e) for e in shuffled(es)]
+    m.path.discard(i.k)
+    return combine(m, i.k, ws)
 
-class Model:
-  def __init__(i):
-    object.__setattr__(i, 'nodes', {})
-    object.__setattr__(i, 'b', {})
+class Model:                    # names nodes/b/path reserved
+  def __init__(i): i.nodes, i.b, i.path = {}, {}, set()
   def __getattr__(i, k): return i.nodes.setdefault(k, Node(i, k))
-  def __setattr__(i, k, v):
-    if isinstance(v, Node): i.nodes[k] = v
-    else: object.__setattr__(i, k, v)
 
 # ---- beliefs ----------------------------------------------
 def demand(v, want):            # agree with what is known,
-  if want is None: return v     # else fill it, else die
-  if isinstance(v, Box):
-    if v.val is None: v.val = want; return want
-    if v.val == want: return want
-    raise Fail
-  if v == want: return v
+  if want is None or v == want: return v      # else die
   raise Fail
 
-def maybe(m, k, want):          # recall, else assume: leaves
-  if k in m.b: return demand(m.b[k], want)  # get the random
-  v = want if want is not None \
-           else random.choice((2, -2))      # +-2 stagger
-  m.b[k] = v
-  return v
+def maybe(m, k, want, vals=(2, -2)):   # recall, else assume:
+  if k in m.b: return demand(m.b[k], want)  # leaves stagger
+  m.b[k] = v = want if want is not None \
+                    else random.choice(vals)   # +-2, loops
+  return v                                     # guess 5-wide
 
-# ---- soft side: contributions as symbolic value trees -----
+# ---- soft side: contributions are plain numbers -----------
 def contrib(e):
   if isinstance(e, Node): return e()        # bare = makes
-  if e.op == 'no': return maybe(e.x.m, e.x.k, -2)
-  if e.op in ('amin', 'amax'):
-    return (e.op, tuple(contrib(x) for x in e.x))
+  if e.op == 'no':   return maybe(e.x.m, e.x.k, -2)
+  if e.op == 'amin': return min(contrib(x) for x in e.x)
+  if e.op == 'amax': return max(contrib(x) for x in e.x)
   v = e.x()
-  return {'makes':  v,
-          'breaks': ('neg', v),
-          'helps':  ('damp', v),
-          'hurts':  ('neg', ('damp', v))}[e.op]
+  return {'makes': v,        'breaks': -v,
+          'helps': damp(v),  'hurts': -damp(v)}[e.op]
 
-def pends(e, out):
-  if isinstance(e, Box) and e.val is None: out[id(e)] = e
-  elif isinstance(e, tuple):
-    for x in e:
-      if not isinstance(x, str): pends(x, out)
-
-def evalx(e):
-  if isinstance(e, Box): return e.val
-  if not isinstance(e, tuple): return e
-  op, a = e
-  if op == 'neg':  return -evalx(a)
-  if op == 'damp': return max(-1, min(1, evalx(a)))
-  ws = [evalx(x) for x in a]
-  return min(ws) if op == 'amin' else max(ws)
-
-def combine(b, vs):
-  ps = {}
-  for v in vs: pends(v, ps)
-  for p in ps.values():         # big cyclic cluster: punt
-    p.val = 0 if len(ps) > 3 \
-              else random.choice((2, 1, 0, -1, -2))
-  ws = [evalx(v) for v in vs]
+def combine(m, k, ws):
   hi, lo = max([0] + ws), min([0] + ws)
   if hi == 2 and lo == -2: raise Fail  # sat meets denied
-  return demand(b, hi + lo)     # closes self-loops: the
-                                # guess must equal it
+  v, w = hi + lo, m.b.get(k)  # loop closed iff any earlier
+  if w is None: m.b[k] = v; return v   # guess equals the
+  return demand(w, v)         # computed label
+
 # ---- top: a world = one try, 100 restarts max -------------
 def world(m, f):
   for _ in range(100):
-    m.b = {}
+    m.b, m.path = {}, set()
     try: return f()
     except Fail: pass
 
@@ -135,15 +114,18 @@ def picks(m):
   out = []
   for k, v in m.b.items():
     if not m.nodes[k].bodies:
-      v = v.val if isinstance(v, Box) else v
       out.append(k if v == 2 else
                  ('no', k) if v == -2 else
                  ('lab', k, v))
   return tuple(sorted(out, key=str))
 
-def abduce(m, g): return world(m, lambda: (g(2), picks(m))[1])
-def soften(m, g): return world(m, lambda: (unbox(g()), picks(m)))
-def unbox(v):     return v.val if isinstance(v, Box) else v
+def abduce(m, g):               # one world proving g, shown
+  def run(): g(2); return picks(m)         # as its leaf picks
+  return world(m, run)
+
+def soften(m, g):               # one world labelling g
+  def run(): return g(), picks(m)
+  return world(m, run)
 
 def worlds(n, f):               # sample n, keep distinct
   ws = {w for w in (f() for _ in range(n)) if w}
