@@ -237,7 +237,7 @@ change.
 
 ```
 $ python3 src/lib_eg.py the
-{:few 128 :file data/auto93.csv :p 2 :seed 1234567891 :stop 32}
+{:cliffs 0.197 :cohen 0.2 :few 128 :file data/auto93.csv :ks 1.36 :p 2 :seed 1234567891 :stop 32}
 ```
 
 The command line can override any knob, because the flag parser walks `vars(the)` and
@@ -245,7 +245,7 @@ matches names. Watch the same test, run with `--p=1`:
 
 ```
 $ python3 src/lib_eg.py the --p=1
-{:few 128 :file data/auto93.csv :p 1 :seed 1234567891 :stop 32}
+{:cliffs 0.197 :cohen 0.2 :few 128 :file data/auto93.csv :ks 1.36 :p 1 :seed 1234567891 :stop 32}
 ```
 
 No parser was written for that flag. The settings object is the parser's schema, by
@@ -470,9 +470,11 @@ spread is the 10th-to-90th percentile stretch over 2.56, since that stretch is
 binary-searches (rank shift within the 0.197 threshold) [@cliff93; @hess04]. The
 last two are the standard prescription for empirical work (one significance test,
 one effect-size test); the first is a cheap tie-breaker that keeps variance-only
-wobbles from passing as victories. Note the or-chain inside same(): the first
-judge to say "same" ends the trial, so the dear tests run only on the close
-calls, and only a pair that gets past all three may be called different. Watch it
+wobbles from passing as victories. Each judge returns a magnitude; same() compares
+each to its threshold, kept like every other knob in about.py. Note the or-chain
+inside same(): the first small-enough score ends the trial, so the dear tests run
+only on the close calls, and only a pair that gets past all three may be called
+different. Watch it
 work on a gaussian nudged by ever-larger shifts. Shifts of 0.1, 0.3, even 0.5
 standard deviations pass as same (from 0.3 on, Cohen sees a difference but
 Kolmogorov-Smirnov holds out). Only from a full standard deviation do all three
@@ -480,13 +482,13 @@ agree, and only then is the pair called different:
 
 ```
 $ python3 src/lib_eg.py stats
-shift  same   cohen  ks     cliffs
- +0.0  True   True   True   True
- +0.1  True   True   True   True
- +0.3  True   False  True   False
- +0.5  True   False  True   False
- +1.0  False  False  False  False
- +2.0  False  False  False  False
+shift  same   cohen  ks    cliffs
+ +0.0  True    0.00  0.16   0.00
+ +0.1  True    0.09  0.47   0.11
+ +0.3  True    0.28  0.79   0.21
+ +0.5  True    0.46  1.11   0.34
+ +1.0  False   0.92  1.74   0.56
+ +2.0  False   1.84  2.37   0.82
 ```
 
 Note the humility this buys. Any single test can be gamed, and p-values alone say
@@ -531,10 +533,13 @@ class o:
       if k[0] != "_") + "}"
 
 the = o(
-  seed = 1234567891,        # every random stream starts here
-  p    = 2,                 # minkowski coefficient
-  few  = 128,               # sample size for cheap guesses
-  stop = 32,                # min rows before a split halts
+  seed   = 1234567891,      # every random stream starts here
+  p      = 2,               # minkowski coefficient
+  few    = 128,             # sample size for cheap guesses
+  stop   = 32,              # min rows before a split halts
+  cohen  = 0.2,             # same if mid gap under this
+  ks     = 1.36,            # ks 5% critical multiplier
+  cliffs = 0.197,           # small rank effect ceiling
   file = "data/auto93.csv") # default table (via MOOT)
 ```
 

@@ -117,11 +117,11 @@ def test_stats(): # small shift = same, big = different
   random.seed(the.seed)
   a = sorted(random.gauss(0, 1) for _ in range(20))
   shift = lambda d: [x + d for x in a]
-  print("shift  same   cohen  ks     cliffs")
+  print("shift  same   cohen  ks    cliffs")
   for d in (0, 0.1, 0.3, 0.5, 1.0, 2.0):
     b = shift(d)
-    print(" %+.1f  %-5s  %-5s  %-5s  %s" % (d, same(a, b),
-          cohen(a, b), ks(a, b), cliffs(a, b)))
+    print(" %+.1f  %-5s  %5.2f %5.2f  %5.2f" % (d,
+          same(a, b), cohen(a, b), ks(a, b), cliffs(a, b)))
   assert same(a, a) and not same(a, shift(2))
 
 def test_all(): # run every test_*, reseeding each

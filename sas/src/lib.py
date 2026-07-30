@@ -152,32 +152,33 @@ def leaf(node, row): # walk row down to its leaf group
   return node
 
 #-- statistics --------------------------------------------------
-def cohen(xsort, ysort, d=0.2): # mids under d spreads?
+def cohen(xsort, ysort): # mid gap, in units of spread
   mid = lambda a: a[len(a) // 2]
   spd = lambda a: (a[len(a)*9//10] - a[len(a)//10]) / 2.56
-  return abs(mid(xsort) - mid(ysort)) < \
-         d * ((spd(xsort) + spd(ysort)) / 2 + TINY)
+  return abs(mid(xsort) - mid(ysort)) / \
+         ((spd(xsort) + spd(ysort)) / 2 + TINY)
 
-def cliffs(xsort, ysort): # rank effect small?
+def cliffs(xsort, ysort): # rank imbalance; 0..1
   gt = lt = 0
   for x in xsort:
     gt += bisect.bisect_left(ysort, x)
     lt += len(ysort) - bisect.bisect_right(ysort, x)
-  return abs(gt - lt) / (len(xsort) * len(ysort)) <= 0.197
+  return abs(gt - lt) / (len(xsort) * len(ysort))
 
-def ks(xsort, ysort, crit=1.36): # cdf gap under critical?
+def ks(xsort, ysort): # max cdf gap, in critical units
   nx, ny = len(xsort), len(ysort)
   d = i = j = 0
   while i < nx and j < ny:
     if xsort[i] <= ysort[j]: i += 1
     else:                    j += 1
     d = max(d, abs(i / nx - j / ny))
-  return d < crit * ((nx + ny) / (nx * ny)) ** 0.5
+  return d / ((nx + ny) / (nx * ny)) ** 0.5
 
-def same(xs, ys): # sort once; lazy or, cheapest test first
+def same(xs, ys): # any judge under its threshold? lazy or
   xsort, ysort = sorted(xs), sorted(ys)
-  return (cohen(xsort, ysort) or ks(xsort, ysort)
-          or cliffs(xsort, ysort))
+  return (cohen(xsort, ysort) < the.cohen
+          or ks(xsort, ysort) < the.ks
+          or cliffs(xsort, ysort) <= the.cliffs)
 
 #-- start-up ----------------------------------------------------
 def cli(d): # --key=val flags update settings

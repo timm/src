@@ -975,38 +975,41 @@ means is how fields fool themselves. We need a referee.
 Our referee asks the question backward. Instead of "are
 these different?" we ask "are these the same?", because in
 practice sameness is the common case and we want it cheap.
-Three small judges vote. If any judge says "same", the
-verdict is same; only results that get past all three may be
-called different. Note the engineering consequence of that
-`or`: **we do not always run all the tests**. The judges
-appear cheapest first, and the first "same" stops the panel.
+Three small judges measure; one verdict function, `same`,
+compares each measurement to its threshold. Any judge
+scoring under threshold makes the verdict same; only
+results that get past all three may be called different.
+Note the engineering consequence of that `or`: **we do not
+always run all the tests**. The judges appear cheapest
+first, and the first small-enough score stops the panel.
 
-    def cohen(xsort, ysort, d=0.2):                  # ①
+    def cohen(xsort, ysort):                         # ①
       mid = lambda a: a[len(a) // 2]
       spd = lambda a: (a[len(a)*9//10] - a[len(a)//10]) / 2.56  # ②
-      return abs(mid(xsort) - mid(ysort)) < \
-             d * ((spd(xsort) + spd(ysort)) / 2 + TINY)  # ③
+      return abs(mid(xsort) - mid(ysort)) / \
+             ((spd(xsort) + spd(ysort)) / 2 + TINY)  # ③
 
-    def ks(xsort, ysort, crit=1.36):                 # ④
+    def ks(xsort, ysort):                            # ④
       nx, ny = len(xsort), len(ysort)
       d = i = j = 0
       while i < nx and j < ny:
         if xsort[i] <= ysort[j]: i += 1
         else:                    j += 1
         d = max(d, abs(i / nx - j / ny))             # ⑤
-      return d < crit * ((nx + ny) / (nx * ny)) ** 0.5  # ⑥
+      return d / ((nx + ny) / (nx * ny)) ** 0.5      # ⑥
 
     def cliffs(xsort, ysort):                        # ⑦
       gt = lt = 0
       for x in xsort:
         gt += bisect.bisect_left(ysort, x)
         lt += len(ysort) - bisect.bisect_right(ysort, x)
-      return abs(gt-lt) / (len(xsort)*len(ysort)) <= 0.197  # ⑧
+      return abs(gt - lt) / (len(xsort) * len(ysort))  # ⑧
 
     def same(xs, ys):                                # ⑨
       xsort, ysort = sorted(xs), sorted(ys)          # ⑩
-      return (cohen(xsort, ysort) or ks(xsort, ysort)
-              or cliffs(xsort, ysort))               # ⑪
+      return (cohen(xsort, ysort) < the.cohen
+              or ks(xsort, ysort) < the.ks
+              or cliffs(xsort, ysort) <= the.cliffs) # ⑪
 
 All three judges expect sorted lists, and they say so in
 their own signatures: parameters named `xsort` and `ysort`
@@ -1014,20 +1017,30 @@ arrive sorted, by contract. `same` does that sorting, once,
 at ⑩; downstream, nobody sorts again. Judge one, `cohen`
 ①, is the pragmatist: line ② estimates the spread from
 the 10th to 90th percentile gap (that range spans 2.56
-standard deviations of a Gaussian), and line ③ says two
-result sets are the same when their medians sit closer than
-0.2 of their pooled spread. That 0.2 is Cohen's small
-effect, the same 0.2 that priced the search back in the
-maths of story.md's section 2: a gap too small for a
-practitioner to care about, whatever a p-value says. Judge two, `ks` ④,
-is the Kolmogorov-Smirnov test: walk both sorted lists as
+standard deviations of a Gaussian), and line ③ returns the
+gap between the two medians, measured in units of that
+pooled spread. Judge two, `ks` ④, is the
+Kolmogorov-Smirnov statistic: walk both sorted lists as
 two cumulative distribution curves, track the largest
-vertical gap between them ⑤, and call the sets the same
-when that gap stays under the classic 95-percent critical
-value ⑥. Judge three, `cliffs` ⑦, is Cliff's delta, a
-rank-based effect size: line ⑧ counts how often values of
-one list sit above and below the other, and small imbalance
-(under 0.197, the standard "small effect" line) means same.
+vertical gap between them ⑤, and return that gap scaled
+by the classic critical-value denominator ⑥. Judge three,
+`cliffs` ⑦, is Cliff's delta, a rank-based effect size:
+count how often values of one list sit above and below the
+other, and return the imbalance, 0 to 1, at ⑧.
+
+Note what the judges never do: they never say yes or no.
+The verdicts live in `same` ⑨, one comparison per judge at
+⑪, each against a knob in about.py. `the.cohen` is 0.2,
+Cohen's small effect, the same 0.2 that priced the search
+back in story.md's maths: a gap too small for a
+practitioner to care about, whatever a p-value says.
+`the.ks` is 1.36, the 95-percent critical multiplier.
+`the.cliffs` is 0.197, the standard small-effect line for
+rank imbalance. Measures in lib.py, policy in about.py:
+the Rule of Separation, applied to statistics. And because
+the judges return magnitudes, later chapters can reuse
+them as rulers (how much drift? which contrast column
+differs most?), not only as gates.
 
 The cost ordering is deliberate. After sorting, `cohen` is
 constant time, `ks` is linear, and `cliffs` pays an extra
@@ -1797,18 +1810,18 @@ See also: mid, clone.
       return tbl.mid
 
 **Cliff's delta** (stat). Rank-based effect: how often
-values of one list sit above and below the other. An
-imbalance at or under 0.197 means same, to this judge
-(Chapter 12). The `xsort, ysort` names announce the
-precondition: sorted input. See also: KS test, Cohen's
-rule, same.
+values of one list sit above and below the other, returned
+as an imbalance, 0 to 1. At or under `the.cliffs` (0.197),
+same, to this judge (Chapter 12). The `xsort, ysort` names
+announce the precondition: sorted input. See also: KS
+test, Cohen's rule, same.
 
     def cliffs(xsort, ysort):
       gt = lt = 0
       for x in xsort:
         gt += bisect.bisect_left(ysort, x)
         lt += len(ysort) - bisect.bisect_right(ysort, x)
-      return abs(gt-lt) / (len(xsort)*len(ysort)) <= 0.197
+      return abs(gt - lt) / (len(xsort) * len(ysort))
 
 **clone** (function). A new empty table with an old
 table's header, optionally refilled:
@@ -1823,9 +1836,9 @@ known-truth world (Chapter 20). Q: why trust a 2000-era
 calibration? (We do not; the war room certifies the
 toolkit, not the model.) See also: baseline.
 
-**Cohen's rule** (stat). Two sets of numbers are the same
-when their middles sit closer than 0.2 of their pooled
-spread (Chapter 12). Q: why prefer this to a p-value? (It
+**Cohen's rule** (stat). Report the gap between two
+middles in units of pooled spread; under `the.cohen`
+(0.2), same (Chapter 12). Q: why prefer this to a p-value? (It
 asks whether anyone would care, not whether n was large.)
 See also: Cliff's delta, KS test, same.
 
@@ -1897,19 +1910,19 @@ also: leaf, centroid.
                         around(tbl, row)[:k]))
 
 **KS test** (stat). Kolmogorov-Smirnov: walk two sorted
-samples as cumulative distribution curves; if the largest
-vertical gap stays under a critical value, same
-(Chapter 12). Distribution-free, one while-loop. See
-also: Cliff's delta, Cohen's rule, same.
+samples as cumulative distribution curves and return the
+largest vertical gap, in critical-value units; under
+`the.ks` (1.36), same (Chapter 12). Distribution-free, one
+while-loop. See also: Cliff's delta, Cohen's rule, same.
 
-    def ks(xsort, ysort, crit=1.36):
+    def ks(xsort, ysort):
       nx, ny = len(xsort), len(ysort)
       d = i = j = 0
       while i < nx and j < ny:
         if xsort[i] <= ysort[j]: i += 1
         else:                    j += 1
         d = max(d, abs(i / nx - j / ny))
-      return d < crit * ((nx + ny) / (nx * ny)) ** 0.5
+      return d / ((nx + ny) / (nx * ny)) ** 0.5
 
 **leaf** (AI). The tree node a row lands in after
 recursive halving; its clone is the row's neighborhood
@@ -1970,14 +1983,16 @@ header). Silence: print only what a decision needs
 (`show`). Least surprise: see POLA.
 
 **same** (function). The Referee's verdict (Chapter 12):
-three judges, cheapest first, lazy `or`; any judge saying
-"same" ends the trial. See also: Cohen's rule, KS test,
-Cliff's delta.
+three judges return magnitudes, cheapest first; `same`
+compares each to its about.py knob, and a lazy `or` ends
+the trial at the first small-enough score. See also:
+Cohen's rule, KS test, Cliff's delta.
 
     def same(xs, ys):
       xsort, ysort = sorted(xs), sorted(ys)
-      return (cohen(xsort, ysort) or ks(xsort, ysort)
-              or cliffs(xsort, ysort))
+      return (cohen(xsort, ysort) < the.cohen
+              or ks(xsort, ysort) < the.ks
+              or cliffs(xsort, ysort) <= the.cliffs)
 
 **seed** (SE). The number that makes randomness
 replayable. Set once in about.py; reset before every
@@ -2006,8 +2021,9 @@ split into x (observables) and y (goals) by the header
 (Chapter 3.5). See also: clone, CSV.
 
 **the** (struct). The settings struct in about.py: seed,
-p, few, stop, file. All knobs, one place, all overridable
-from the command line. See also: o, SSOT.
+p, few, stop, file, plus the referee thresholds cohen, ks,
+cliffs. All knobs, one place, all overridable from the
+command line. See also: o, SSOT.
 
 **TIM** (rule). timm's rule: no code line past 65
 characters (the circled markers ride outside the count).

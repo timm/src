@@ -124,9 +124,11 @@ spread is the 10th-to-90th percentile stretch over 2.56, since that stretch is
 binary-searches (rank shift within the 0.197 threshold) [@cliff93; @hess04]. The
 last two are the standard prescription for empirical work (one significance test,
 one effect-size test); the first is a cheap tie-breaker that keeps variance-only
-wobbles from passing as victories. Note the or-chain inside same(): the first
-judge to say "same" ends the trial, so the dear tests run only on the close
-calls, and only a pair that gets past all three may be called different. Watch it
+wobbles from passing as victories. Each judge returns a magnitude; same() compares
+each to its threshold, kept like every other knob in about.py. Note the or-chain
+inside same(): the first small-enough score ends the trial, so the dear tests run
+only on the close calls, and only a pair that gets past all three may be called
+different. Watch it
 work on a gaussian nudged by ever-larger shifts. Shifts of 0.1, 0.3, even 0.5
 standard deviations pass as same (from 0.3 on, Cohen sees a difference but
 Kolmogorov-Smirnov holds out). Only from a full standard deviation do all three

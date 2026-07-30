@@ -14,8 +14,11 @@ class o:
       if k[0] != "_") + "}"
 
 the = o(
-  seed = 1234567891,        # every random stream starts here
-  p    = 2,                 # minkowski coefficient
-  few  = 128,               # sample size for cheap guesses
-  stop = 32,                # min rows before a split halts
+  seed   = 1234567891,      # every random stream starts here
+  p      = 2,               # minkowski coefficient
+  few    = 128,             # sample size for cheap guesses
+  stop   = 32,              # min rows before a split halts
+  cohen  = 0.2,             # same if mid gap under this
+  ks     = 1.36,            # ks 5% critical multiplier
+  cliffs = 0.197,           # small rank effect ceiling
   file = "data/auto93.csv") # default table (via MOOT)
