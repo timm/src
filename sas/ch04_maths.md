@@ -117,7 +117,7 @@ Later chapters keep saying "X beats Y". Such talk is cheap, so we tax it. We ask
 the question backward, "are these the same?", since sameness is the common case
 and the common case should be cheap. Three tests judge, and one sort powers all
 three: same() sorts both lists once, then asks each judge in turn, cheapest first.
-Cohen's rule reads three indexes per list (middles within 0.35 spreads, where the
+Cohen's rule reads three indexes per list (middles within 0.2 spreads, where the
 spread is the 10th-to-90th percentile stretch over 2.56, since that stretch is
 2.56 sds on a gaussian) [@cohen88]. Kolmogorov-Smirnov merges (cdf gap under the
 5% critical value 1.36 sqrt((n + m) / nm)) [@massey51]. Cliff's delta
@@ -128,7 +128,7 @@ wobbles from passing as victories. Note the or-chain inside same(): the first
 judge to say "same" ends the trial, so the dear tests run only on the close
 calls, and only a pair that gets past all three may be called different. Watch it
 work on a gaussian nudged by ever-larger shifts. Shifts of 0.1, 0.3, even 0.5
-standard deviations pass as same (at 0.5, Cohen sees a difference but
+standard deviations pass as same (from 0.3 on, Cohen sees a difference but
 Kolmogorov-Smirnov holds out). Only from a full standard deviation do all three
 agree, and only then is the pair called different:
 

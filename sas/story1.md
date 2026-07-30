@@ -981,41 +981,45 @@ called different. Note the engineering consequence of that
 `or`: **we do not always run all the tests**. The judges
 appear cheapest first, and the first "same" stops the panel.
 
-    def cohen(xs, ys, d=0.35):                       # ①
+    def cohen(xsort, ysort, d=0.2):                  # ①
       mid = lambda a: a[len(a) // 2]
       spd = lambda a: (a[len(a)*9//10] - a[len(a)//10]) / 2.56  # ②
-      return abs(mid(xs) - mid(ys)) < \
-             d * ((spd(xs) + spd(ys)) / 2 + TINY)    # ③
+      return abs(mid(xsort) - mid(ysort)) < \
+             d * ((spd(xsort) + spd(ysort)) / 2 + TINY)  # ③
 
-    def ks(xs, ys, crit=1.36):                       # ④
-      nx, ny = len(xs), len(ys)
+    def ks(xsort, ysort, crit=1.36):                 # ④
+      nx, ny = len(xsort), len(ysort)
       d = i = j = 0
       while i < nx and j < ny:
-        if xs[i] <= ys[j]: i += 1
-        else:              j += 1
+        if xsort[i] <= ysort[j]: i += 1
+        else:                    j += 1
         d = max(d, abs(i / nx - j / ny))             # ⑤
       return d < crit * ((nx + ny) / (nx * ny)) ** 0.5  # ⑥
 
-    def cliffs(xs, ys):                              # ⑦
+    def cliffs(xsort, ysort):                        # ⑦
       gt = lt = 0
-      for x in xs:
-        gt += bisect.bisect_left(ys, x)
-        lt += len(ys) - bisect.bisect_right(ys, x)
-      return abs(gt - lt) / (len(xs) * len(ys)) <= 0.197  # ⑧
+      for x in xsort:
+        gt += bisect.bisect_left(ysort, x)
+        lt += len(ysort) - bisect.bisect_right(ysort, x)
+      return abs(gt-lt) / (len(xsort)*len(ysort)) <= 0.197  # ⑧
 
     def same(xs, ys):                                # ⑨
-      xs, ys = sorted(xs), sorted(ys)                # ⑩
-      return cohen(xs,ys) or ks(xs,ys) or cliffs(xs,ys)  # ⑪
+      xsort, ysort = sorted(xs), sorted(ys)          # ⑩
+      return (cohen(xsort, ysort) or ks(xsort, ysort)
+              or cliffs(xsort, ysort))               # ⑪
 
-All three judges expect sorted lists, so `same` sorts once
-at ⑩ and the judges never sort again. Judge one, `cohen`
+All three judges expect sorted lists, and they say so in
+their own signatures: parameters named `xsort` and `ysort`
+arrive sorted, by contract. `same` does that sorting, once,
+at ⑩; downstream, nobody sorts again. Judge one, `cohen`
 ①, is the pragmatist: line ② estimates the spread from
 the 10th to 90th percentile gap (that range spans 2.56
 standard deviations of a Gaussian), and line ③ says two
 result sets are the same when their medians sit closer than
-0.35 of their pooled spread. That 0.35 is Cohen's
-small-effect territory: a gap too small for a practitioner
-to care about, whatever a p-value says. Judge two, `ks` ④,
+0.2 of their pooled spread. That 0.2 is Cohen's small
+effect, the same 0.2 that priced the search back in the
+maths of story.md's section 2: a gap too small for a
+practitioner to care about, whatever a p-value says. Judge two, `ks` ④,
 is the Kolmogorov-Smirnov test: walk both sorted lists as
 two cumulative distribution curves, track the largest
 vertical gap between them ⑤, and call the sets the same
@@ -1043,7 +1047,7 @@ log factor for its binary searches. In the common case,
 
 > AI tip #12: certify with effect sizes plus a
 > distributional test, never a p-value alone. With enough
-> repeats, trivial gaps become "significant". The 0.35 and
+> repeats, trivial gaps become "significant". The 0.2 and
 > 0.197 thresholds encode a blunter, more useful question:
 > is the gap big enough for anyone to care?
 
@@ -1748,225 +1752,301 @@ apprentice needs the same referee everything else got.
 
 ## Glossary
 
-Each entry gives a short definition. Some add a question to
-test yourself on, or a line or two of code. Terms defined at
-length in a chapter point back to it.
+Each entry opens with a tag saying what kind of thing the
+term names: a (function) or (struct) in the code; a (rule)
+of this book's craft; a (stat), one of the referee's
+measures; an (AI), (SE), (Python), or (code) idea, matching
+the four tip streams; or (data), something fetched or
+simulated. Entries close with their nearest neighbors.
+Some carry a self-test question, or the code itself when
+the code is short enough to be its own definition.
 
-**active learning.** A learner that chooses which rows to
-label next (Chapter 10). Q: in `hunt`, how many labels does
-one round of halving spend? (Two: the poles.)
+**active learning** (AI). A learner that chooses which
+rows to label next (Chapter 10). Q: in `hunt`, how many
+labels does one round spend? (`chunk` of them, four by
+default.) See also: triage, NEO.
 
-**add.** The one verb of the substrate: fold a value into a
-column, or a row into a table (Chapter 3.5). Everything that
-learns, learns through `add`.
+**add** (function). The one verb of the substrate: fold a
+value into a column, or a row into a table (Chapter 3.5).
+Everything that learns, learns through `add`. See also:
+Welford's algorithm, streaming.
 
-**anomaly detection.** Flagging rows far from typical
+**anomaly detection** (AI). Flagging rows far from typical
 (Chapter 5). Distance to centroid, cut at a percentile.
+See also: centroid, drift, what-if.
 
-**assert.** An executable claim. This book's demos all end
-in one, so every claim in prose has a tripwire in code.
+**assert** (code). An executable claim. This book's demos
+all end in one, so every claim in prose has a tripwire in
+code. See also: seed.
 
-**baseline.** A rival you tried to make win: same budget,
-defaults and tuned, best result published (Chapter 21).
-Random search is the mandatory first lane.
+**baseline** (SE). A rival you tried to make win: same
+budget, defaults and tuned, best result published
+(Chapter 21). Random search is the mandatory first lane.
+See also: same, MOOT.
 
-**BOB.** Bob's rule: functions of about five lines, plus or
-minus four (after Robert Martin). Enforced by the build.
+**BOB** (rule). Bob's rule: functions of about five lines,
+plus or minus four (after Robert Martin). Enforced by the
+build. See also: TIM.
 
-**centroid.** A table's row of column centers.
+**centroid** (AI). A table's row of column centers.
+See also: mid, clone.
 
     def mids(tbl):
       tbl.mid = tbl.mid or [mid(c)
                             for c in tbl.cols.all]
       return tbl.mid
 
-**Cliff's delta.** Rank-based effect size: how often values
-of one list sit above values of another. Under 0.197, the
-two lists are the same to this judge (Chapter 12).
+**Cliff's delta** (stat). Rank-based effect: how often
+values of one list sit above and below the other. An
+imbalance at or under 0.197 means same, to this judge
+(Chapter 12). The `xsort, ysort` names announce the
+precondition: sorted input. See also: KS test, Cohen's
+rule, same.
 
-**clone.** A new empty table with an old table's header,
-optionally refilled: `Tbl([tbl.cols.names] + rows)`. The
-book's main structuring trick (Chapter 3.5).
+    def cliffs(xsort, ysort):
+      gt = lt = 0
+      for x in xsort:
+        gt += bisect.bisect_left(ysort, x)
+        lt += len(ysort) - bisect.bisect_right(ysort, x)
+      return abs(gt-lt) / (len(xsort)*len(ysort)) <= 0.197
 
-**COCOMO.** Boehm's software cost model: effort = a *
-kloc^e, scaled by 22 rated drivers; months and risk ride
-along. src/coc.py holds the COCOMO II.2000 calibration
-plus Madachy's risky-pair table. The book's known-truth
-world (Chapter 20). Q: why trust a 2000-era calibration?
-(We do not; the war room certifies the toolkit, not the
-model.)
+**clone** (function). A new empty table with an old
+table's header, optionally refilled:
+`Tbl([tbl.cols.names] + rows)`. The book's main
+structuring trick (Chapter 3.5). See also: Tbl, curation.
 
-**Cohen's rule.** Two sets of numbers are the same when
-their centers sit closer than 0.35 of their pooled spread
-(Chapter 12). Q: why prefer this to a p-value? (It asks
-whether anyone would care, not whether n was large.)
+**COCOMO** (data). Boehm's software cost model: effort =
+a * kloc^e, scaled by 22 rated drivers; months and risk
+ride along. src/coc.py holds the COCOMO II.2000
+calibration plus Madachy's risky-pair table. The book's
+known-truth world (Chapter 20). Q: why trust a 2000-era
+calibration? (We do not; the war room certifies the
+toolkit, not the model.) See also: baseline.
 
-**contrast set.** The columns on which two groups' summaries
-disagree; the output of `contrast` (Chapter 7). The seed of
-diagnosis, explanation, planning, and repair.
+**Cohen's rule** (stat). Two sets of numbers are the same
+when their middles sit closer than 0.2 of their pooled
+spread (Chapter 12). Q: why prefer this to a p-value? (It
+asks whether anyone would care, not whether n was large.)
+See also: Cliff's delta, KS test, same.
 
-**CSV.** Comma-separated values, plus this book's header
-dialect: case gives type, trailing `+`/`-` mark goals,
-trailing `X` means ignore (Chapter 3).
+**contrast set** (AI). The columns on which two groups'
+summaries disagree; the output of `contrast` (Chapter 7).
+The seed of diagnosis, explanation, planning, and repair.
+See also: leaf, centroid.
 
-**curation.** Compressing a table to its leaf centroids
-(Chapter 16). A dozen prototypes standing in for hundreds
-of rows.
+**CSV** (data). Comma-separated values, plus this book's
+header dialect: case gives type, trailing `+`/`-` mark
+goals, trailing `X` means ignore (Chapter 3). See also:
+Tbl, generator.
 
-**distance to heaven.** `disty`: how far a row's goal
-values sit from their ideals, 0 best, 1 worst. Defined once,
-in Chapter 3.6; used by every chapter after.
+**curation** (AI). Compressing a table to its leaf
+centroids (Chapter 16). A dozen prototypes standing in
+for hundreds of rows. See also: leaf, centroid, clone.
 
-**div.** A column's diversity: standard deviation for
-numbers, entropy for symbols (Chapter 3.3).
+**distance to heaven** (AI). `disty`: how far a row's
+goal values sit from their ideals, 0 best, 1 worst.
+Defined once, in Chapter 3.6; used by every chapter
+after. See also: heaven, Minkowski distance.
 
-**drift.** The world changing under a model (Chapter 6).
-Detected by comparing strangeness distributions, then cured
-by rebuilding.
+**div** (function). A column's diversity: standard
+deviation for numbers, entropy for symbols (Chapter 3.3).
+See also: entropy, mid, Welford's algorithm.
 
-**EAFP.** Easier to ask forgiveness than permission: try
-the operation, catch the exception. Idiomatic Python
-(Chapter 3.1). Q: what is the alternative called? (LBYL:
-look before you leap.)
+**drift** (AI). The world changing under a model
+(Chapter 6). Detected by comparing strangeness
+distributions, then cured by rebuilding. See also:
+anomaly detection, same, streaming.
 
-**entropy.** The diversity of a symbol distribution: low
-when one value dominates, high when counts are even
-(Chapter 3.3).
+**EAFP** (Python). Easier to ask forgiveness than
+permission: try the operation, catch the exception.
+Idiomatic Python (Chapter 3.1). Q: what is the
+alternative called? (LBYL: look before you leap.)
 
-**FASTNEO.** Near-enough optimization sped by binary chop
-(story.md, equation 4): about log2 of NEO's sample count.
-The pole labels of Chapter 10 follow this budget.
+**entropy** (stat). The diversity of a symbol
+distribution: low when one value dominates, high when
+counts are even (Chapter 3.3). See also: div.
 
-**generator.** A Python function that yields values on
+**FASTNEO** (AI). Near-enough optimization sped by binary
+chop (story.md, equation 4): about log2 of NEO's sample
+count. Chapter 10's halving of the pool follows this
+budget. See also: NEO, active learning.
+
+**generator** (Python). A function that yields values on
 demand (`csv`, `leaves`, `batches`, `beat`): calling it
 builds a paused machine; each `next` runs it to the next
-`yield` and freezes it there, locals intact (Chapter 3.2).
-A promise of data, not a pile of it. Q: why can code fed by
-a generator never cheat? (No peeking ahead, no second pass,
-no row count: streaming-ready by construction.)
+`yield` and freezes it there, locals intact (Chapter
+3.2). A promise of data, not a pile of it. Q: why can
+code fed by a generator never cheat? (No peeking ahead,
+no second pass, no row count: streaming-ready by
+construction.) See also: streaming, walrus operator.
 
-**heaven.** Per goal column: 0 if minimizing, 1 if
-maximizing. Set by the header, stored in the `Num`, used by
-`disty`.
+**heaven** (AI). Per goal column: 0 if minimizing, 1 if
+maximizing. Set by the header, stored in the `Num`, used
+by `disty`. See also: distance to heaven.
 
-**keys.** The few variables or rows that control the rest.
-The empirical bet of the whole book (story.md, section 2).
+**keys** (AI). The few variables or rows that control the
+rest. The empirical bet of the whole book (story.md,
+section 2). See also: contrast set, curation.
 
-**kNN.** k-nearest-neighbor prediction: answer with a
-summary of the k most similar rows (Chapter 4).
+**kNN** (AI). k-nearest-neighbor prediction: answer with
+a summary of the k most similar rows (Chapter 4). See
+also: leaf, centroid.
 
     def knn(tbl, row, k=5):
       return mids(clone(tbl,
                         around(tbl, row)[:k]))
 
-**Kolmogorov-Smirnov test.** Compares two samples by the
-largest gap between their cumulative distribution curves
-(Chapter 12). Distribution-free, one while-loop.
+**KS test** (stat). Kolmogorov-Smirnov: walk two sorted
+samples as cumulative distribution curves; if the largest
+vertical gap stays under a critical value, same
+(Chapter 12). Distribution-free, one while-loop. See
+also: Cliff's delta, Cohen's rule, same.
 
-**leaf.** The tree node a row lands in after recursive
-halving; its clone is the row's neighborhood (Chapter 4).
+    def ks(xsort, ysort, crit=1.36):
+      nx, ny = len(xsort), len(ysort)
+      d = i = j = 0
+      while i < nx and j < ny:
+        if xsort[i] <= ysort[j]: i += 1
+        else:                    j += 1
+        d = max(d, abs(i / nx - j / ny))
+      return d < crit * ((nx + ny) / (nx * ny)) ** 0.5
 
-**lifelong learning.** Learning that continues across drift
-without unbounded memory (Chapter 19): curate, watch for
-smoke, hunt weekly.
+**leaf** (AI). The tree node a row lands in after
+recursive halving; its clone is the row's neighborhood
+(Chapter 4). See also: kNN, curation, what-if.
 
-**mid.** A column's center: mean for numbers, mode for
-symbols. Q: why one function for both? (So all downstream
-code can forget the type.)
+**lifelong learning** (AI). Learning that continues
+across drift without unbounded memory (Chapter 19):
+curate, watch for smoke, hunt weekly. See also: drift,
+curation, active learning.
 
-**Minkowski distance.** The family of distances behind
-`distx` and `disty`; `the.p` picks the member. At p=2,
-Euclidean; as p grows, judgment tilts to the worst gap
-(Chapter 17).
+**mid** (function). A column's center: mean for numbers,
+mode for symbols. Q: why one function for both? (So all
+downstream code can forget the type.) See also: div,
+centroid.
 
-**MOOT.** Many multi-objective optimization tasks: the
-public corpus (tiny.cc/moot) all experiments run over
-(Chapter 11).
+**Minkowski distance** (stat). The family of distances
+behind `distx` and `disty`; `the.p` picks the member. At
+p=2, Euclidean; as p grows, judgment tilts to the worst
+gap (Chapter 17). See also: distance to heaven, norm.
 
-**NEO.** Near-enough optimization: settle for solutions
-statistically indistinguishable from best (story.md,
-equation 3). About a hundred labels, worst case.
+**MOOT** (data). Many multi-objective optimization tasks:
+the public corpus (tiny.cc/moot) all experiments run over
+(Chapter 11). See also: baseline, CSV.
 
-**norm.** Map a raw value to 0..1 via its column's running
-mean and spread, through a logistic curve (Chapter 3.4).
+**NEO** (AI). Near-enough optimization: settle for
+solutions statistically indistinguishable from best
+(story.md, equation 3). About a hundred labels, worst
+case. See also: FASTNEO, Cohen's rule.
 
-**Num.** The summary of a numeric column: count, mean, m2,
-heaven (Chapter 3.3).
+**norm** (function). Map a raw value to 0..1 via its
+column's running mean and spread, through a logistic
+curve (Chapter 3.4). See also: Welford's algorithm,
+Minkowski distance.
 
-**o.** The one struct: named slots, dot access, pretty
-print. Defined in about.py; used everywhere.
+**Num** (struct). The summary of a numeric column: count,
+mean, m2, heaven (Chapter 3.3). See also: Sym, Welford's
+algorithm.
 
-**POLA.** Principle of least astonishment: code should do
-what a reader expects (`shuffle` copies before shuffling).
+**o** (struct). The one struct: named slots, dot access,
+pretty print. Defined in about.py; used everywhere. See
+also: the.
 
-**reservoir sampling.** Keeping a bounded, unbiased sample
-of an unbounded stream (Chapter 18). Q: with tank size k,
-what chance does row n have of being kept? (k/n, all n.)
+**POLA** (rule). Principle of least astonishment: code
+should do what a reader expects (`shuffle` copies before
+shuffling). See also: Rules of Unix programming.
 
-**Rules of Unix programming (as used here).** Composition:
-build parts that connect (`clone`, generators). Parsimony:
-add mechanism only when nothing else will do (Chapter 13's
-planner reused three old parts). Representation: fold
-knowledge into data (the header). Silence: print only what
-a decision needs (`show`). Least surprise: see POLA.
+**reservoir sampling** (code). Keeping a bounded,
+unbiased sample of an unbounded stream (Chapter 18). Q:
+with tank size k, what chance does row n have of being
+kept? (k/n, all n.) See also: streaming, seed.
 
-**same.** The Referee's verdict (Chapter 12): three judges
-(Cohen, KS, Cliff's), cheapest first, lazy `or`; any judge
-saying "same" ends the trial.
+**Rules of Unix programming** (rule). As used here.
+Composition: build parts that connect (`clone`,
+generators). Parsimony: add mechanism only when nothing
+else will do (Chapter 13's planner reused three old
+parts). Representation: fold knowledge into data (the
+header). Silence: print only what a decision needs
+(`show`). Least surprise: see POLA.
 
-**seed.** The number that makes randomness replayable. Set
-once in about.py; reset before every demo. Changing it is a
-stop-and-ask event.
+**same** (function). The Referee's verdict (Chapter 12):
+three judges, cheapest first, lazy `or`; any judge saying
+"same" ends the trial. See also: Cohen's rule, KS test,
+Cliff's delta.
 
-**SOC.** Separation of concerns: settings in about.py,
-substrate in lib.py, one engine file per chapter.
+    def same(xs, ys):
+      xsort, ysort = sorted(xs), sorted(ys)
+      return (cohen(xsort, ysort) or ks(xsort, ysort)
+              or cliffs(xsort, ysort))
 
-**SSOT.** Single source of truth: every fact has one home.
-The header for schema, about.py for knobs, CLAUDE.md for
-agent rules.
+**seed** (SE). The number that makes randomness
+replayable. Set once in about.py; reset before every
+demo. Changing it is a stop-and-ask event. See also:
+assert, reservoir sampling.
 
-**streaming.** Processing rows one at a time under bounded
-memory (Chapter 18). The substrate's `add` was built for
-this from day one.
+**SOC** (rule). Separation of concerns: settings in
+about.py, substrate in lib.py, chapter code in tools.py.
+See also: SSOT.
 
-**Sym.** The summary of a symbolic column: count plus a
-dictionary of seen values (Chapter 3.3).
+**SSOT** (rule). Single source of truth: every fact has
+one home. The header for schema, about.py for knobs,
+CLAUDE.md for agent rules. See also: SOC, CSV.
 
-**Tbl.** Rows plus self-summarizing columns, split into x
-(observables) and y (goals) by the header (Chapter 3.5).
+**streaming** (SE). Processing rows one at a time under
+bounded memory (Chapter 18). The substrate's `add` was
+built for this from day one. See also: generator,
+reservoir sampling, Welford's algorithm.
 
-**the.** The settings struct in about.py: seed, p, few,
-stop, file. All knobs, one place, all overridable from the
-command line.
+**Sym** (struct). The summary of a symbolic column: count
+plus a dictionary of seen values (Chapter 3.3). See also:
+Num, entropy.
 
-**TIM.** timm's rule: no code line past 65 characters.
-Q: why 65? (So code drops into books, slides, and terminals
-without reflowing; reformatting is where transcription bugs
-breed.)
+**Tbl** (struct). Rows plus self-summarizing columns,
+split into x (observables) and y (goals) by the header
+(Chapter 3.5). See also: clone, CSV.
 
-**triage.** Ranking unlabeled rows by expected value of
-inspection: like the best seen so far, unlike the rest
-(Chapter 8).
+**the** (struct). The settings struct in about.py: seed,
+p, few, stop, file. All knobs, one place, all overridable
+from the command line. See also: o, SSOT.
 
-**VITAL.** Very important to acquire locally: the counter
-to "not invented here" sneers. Two hundred auditable lines
-beat two hundred opaque megabytes, when understanding is
-the goal (Chapter 3.7).
+**TIM** (rule). timm's rule: no code line past 65
+characters (the circled markers ride outside the count).
+Q: why 65? (So code drops into books, slides, and
+terminals without reflowing; reformatting is where
+transcription bugs breed.) See also: BOB.
 
-**walrus operator.** Python's `:=`: assign and test in one
-expression, as in `if (line := line.strip()):`.
+**tips** (rule). Four numbered streams run through the
+margins: AI tips (learning and data), SE tips (the craft
+around the code), Code tips (any language), Python tips
+(this language). The glossary tags reuse the same four
+names.
 
-**Welford's algorithm.** One-pass, numerically steady mean
-and variance (Chapter 3.3). The reason every summary here
-is streaming-ready.
+**triage** (AI). Ranking unlabeled rows by expected value
+of inspection: like the best seen so far, unlike the rest
+(Chapter 8). See also: active learning, centroid.
 
-**what-if.** Scoring a row that does not exist by the leaf
-it would land in (`wish`, Chapter 14). Interpolation only;
-guard it with the Bouncer.
+**VITAL** (rule). Very important to acquire locally: the
+counter to "not invented here" sneers. Two hundred
+auditable lines beat two hundred opaque megabytes, when
+understanding is the goal (Chapter 3.7).
 
-**YAGNI.** You ain't gonna need it: build the knob when a
-chapter demands it, not before. about.py has five entries,
-and that is a boast.
+**walrus operator** (Python). Python's `:=`: assign and
+test in one expression, as in
+`if (line := line.strip()):`. See also: generator.
+
+**Welford's algorithm** (stat). One-pass, numerically
+steady mean and variance (Chapter 3.3). The reason every
+summary here is streaming-ready. See also: add, norm,
+streaming.
+
+**what-if** (AI). Scoring a row that does not exist by
+the leaf it would land in (`wish`, Chapter 14).
+Interpolation only; guard it with the Bouncer. See also:
+leaf, anomaly detection.
+
+**YAGNI** (rule). You ain't gonna need it: build the knob
+when a chapter demands it, not before. about.py has five
+entries, and that is a boast. See also: SOC.
 
 ## Note to us (not for print) {.unlisted}
 
@@ -1995,3 +2075,57 @@ Loose ends, in work order:
 5. The experiment RQs (Chapters 12, 16, 19) have skeleton
    tables with xxx placeholders. Answers get written only
    from woven transcripts.
+
+<!-- ============================================================
+AUTHORING CAPSULE (invisible in render; keeps this file
+self-contained for any future session or tool). Digest only;
+authoritative sources: etc/style.md, ../CLAUDE.md, CLAUDE.md,
+rite/etc/style.py (FAM2). Updated 2026-07-29.
+
+VOICE. First person plural, plain, a little blunt. Mix
+sentence lengths hard; short declarative pivots ("But there
+is a problem."). Rhetorical questions drive sections.
+Connectives: Hence / That said / Also / Note that. Inline
+(a) (b) (c) enumeration. Bold the load-bearing claim once,
+inline. Concrete numbers with their arithmetic.
+
+BANNED. Em-dash pairs; "X is not Y, it is Z"; triads for
+rhythm; verbless fragments; thesis-announcement filler;
+consultant nouns; delve/crucial/pivotal/seamless/holistic/
+leverage/harness/underscore/foster; sincerity words as
+self-praise (honest(ly), genuinely, truly) and the rest of
+rite FAM2 (police by density); perfectly uniform paragraph
+shapes.
+
+CODE. Shown code is src/lib.py (or future tools.py)
+verbatim; circled markers # ① ② ③ ride outside TIM's
+65-char limit and are explained by matching ① notes in
+nearby prose. BOB: functions ~5 lines. Every identifier
+glossed at first use; parts before wholes EXCEPT where a
+one-line dispatcher reads as the schema rule (Col). Stats
+functions take xsort/ysort: sorted by contract.
+
+PROVENANCE. Program output never hand-typed; transcripts
+enter only via %%run directives (weaver: etc/weave.py).
+Experiment tables pre-committed with xxx placeholders;
+Answers written only from woven transcripts. Reports follow
+the skeleton: RQ in bold, method paragraph, one small
+table, one-line bold Answer (model: ../branch/REPORT.md).
+
+STRUCTURE. story.md = front matter; its task table is the
+chapter map, one row per chapter, chapters 3..22. Chapter
+shape: persona title + bracketed canonical task; a few
+lines of code; tips as blockquotes (> AI tip #n / SE / Code
+/ Python, numbered per stream); ends with "Lessons
+sighted". Glossary entries: **term** (tag). body; See
+also. Tags: function, struct, rule, stat, AI, SE, Python,
+code, data. Source layout is fixed at six files: about,
+lib, lib_eg, tools, tools_eg, coc (+ dragrace_eg as an
+uninported guest).
+
+BUILD. make story1 renders story.md + story1.md to
+tmp/story1.html (pandoc, TOC from numbered ## headings;
+{.unlisted} hides a heading from the TOC). make check /
+weave / lines must stay green; python code in indented
+blocks is lexed as python by the highlighter.
+============================================================ -->

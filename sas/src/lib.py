@@ -152,31 +152,32 @@ def leaf(node, row): # walk row down to its leaf group
   return node
 
 #-- statistics --------------------------------------------------
-def cohen(xs, ys, d=0.35): # sorted in; mids under d spreads?
+def cohen(xsort, ysort, d=0.2): # mids under d spreads?
   mid = lambda a: a[len(a) // 2]
   spd = lambda a: (a[len(a)*9//10] - a[len(a)//10]) / 2.56
-  return abs(mid(xs) - mid(ys)) < \
-         d * ((spd(xs) + spd(ys)) / 2 + TINY)
+  return abs(mid(xsort) - mid(ysort)) < \
+         d * ((spd(xsort) + spd(ysort)) / 2 + TINY)
 
-def cliffs(xs, ys): # sorted in; rank effect small?
+def cliffs(xsort, ysort): # rank effect small?
   gt = lt = 0
-  for x in xs:
-    gt += bisect.bisect_left(ys, x)
-    lt += len(ys) - bisect.bisect_right(ys, x)
-  return abs(gt - lt) / (len(xs) * len(ys)) <= 0.197
+  for x in xsort:
+    gt += bisect.bisect_left(ysort, x)
+    lt += len(ysort) - bisect.bisect_right(ysort, x)
+  return abs(gt - lt) / (len(xsort) * len(ysort)) <= 0.197
 
-def ks(xs, ys, crit=1.36): # sorted in; cdf gap under critical?
-  nx, ny = len(xs), len(ys)
+def ks(xsort, ysort, crit=1.36): # cdf gap under critical?
+  nx, ny = len(xsort), len(ysort)
   d = i = j = 0
   while i < nx and j < ny:
-    if xs[i] <= ys[j]: i += 1
-    else:              j += 1
+    if xsort[i] <= ysort[j]: i += 1
+    else:                    j += 1
     d = max(d, abs(i / nx - j / ny))
   return d < crit * ((nx + ny) / (nx * ny)) ** 0.5
 
 def same(xs, ys): # sort once; lazy or, cheapest test first
-  xs, ys = sorted(xs), sorted(ys)
-  return cohen(xs,ys) or ks(xs,ys) or cliffs(xs,ys)
+  xsort, ysort = sorted(xs), sorted(ys)
+  return (cohen(xsort, ysort) or ks(xsort, ysort)
+          or cliffs(xsort, ysort))
 
 #-- start-up ----------------------------------------------------
 def cli(d): # --key=val flags update settings
