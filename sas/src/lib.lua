@@ -216,8 +216,11 @@ function map(t,f,    u) -- f over values; keeps order
 function sum(t,f,    n) -- add f(v) over values
   n = 0; for _, v in pairs(t) do n = n + f(v) end; return n end
 
-function keys(t,    u) -- the keys, sorted by print name
-  u = {}; for k in pairs(t) do u[1+#u] = k end
+function keys(t,skip,    u) -- sorted keys; skip prefix?
+  u = {}
+  for k in pairs(t) do
+    if not (skip and tostring(k):sub(1,1) == skip) then
+      u[1+#u] = k end end
   return keysort(u, tostring) end
 
 function med(t,    s) -- median (sorts a copy first)
@@ -254,17 +257,16 @@ function some(lst,k,    t) -- k items at random (all, if k big)
   for at = #t, min(k, #t) + 1, -1 do t[at] = nil end
   return t end
 
-function show(t,    u,v) -- ":k v" pairs, sorted; skips _keys
+function show(t,    u,v) -- ":k v" pairs, sorted, no _keys
   u = {}
-  for _,k in ipairs(keys(t)) do
-    if tostring(k):sub(1,1) ~= "_" then
-      v = t[k]
-      if type(v) == "function" then
-        for n,f in pairs(_ENV) do if f==v then v=n end end end
-      if type(v) == "table" then v = show(v) end
-      if type(v) == "number" and v % 1 ~= 0 then
-        v = ("%."..the.round.."f"):format(v) end
-      u[#u+1] = ":"..tostring(k).." "..tostring(v) end end
+  for _,k in ipairs(keys(t, "_")) do
+    v = t[k]
+    if type(v) == "function" then
+      for n,f in pairs(_ENV) do if f==v then v=n end end end
+    if type(v) == "table" then v = show(v) end
+    if type(v) == "number" and v % 1 ~= 0 then
+      v = ("%."..the.round.."f"):format(v) end
+    u[#u+1] = ":"..tostring(k).." "..tostring(v) end
   return "{"..table.concat(u, " ").."}" end
 
 function new(kl,t) -- class table is also its metatable
