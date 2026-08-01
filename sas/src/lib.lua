@@ -37,7 +37,7 @@ function csv(file,    f) -- stream rows of coerced cells
         return t end end end end
 
 --## columns ----------------------------------------------------
-NUM, SYM, TBL = {}, {}, {}   -- metatables (see new, at end)
+NUM, SYM, TBL, NODE = {},{},{},{} -- metatables (see new)
 
 function Col(name,at) -- column kind from first letter
   return (name:sub(1,1):match"%l" and Sym or Num)(name,at) end
@@ -104,13 +104,13 @@ function adds(src,i) -- fold list or iterator; Num default
   for v in iter(src or {}) do i.add(i, v) end
   return i end
 
-function clone(tbl,rows) -- same header, fresh summaries
-  return adds(rows, Tbl{tbl.cols.names}) end
+function TBL.clone(i,rows) -- same header, fresh summaries
+  return adds(rows, Tbl{i.cols.names}) end
 
-function mids(tbl) -- return centroid of this tbl
-  tbl.mid = tbl.mid or
-            map(tbl.cols.all, function(c) return c.mid(c) end)
-  return tbl.mid end
+function TBL.mids(i) -- return centroid of this tbl
+  i.mid = i.mid or
+          map(i.cols.all, function(c) return c.mid(c) end)
+  return i.mid end
 
 --## distance ---------------------------------------------------
 function SYM.dist(i,a,b) -- gap between two syms; 0..1
@@ -124,52 +124,53 @@ function NUM.dist(i,a,b) -- gap between two nums; 0..1
   if b == "?" then b = a > 0.5 and 0 or 1 end
   return abs(a - b) end
 
-function distx(tbl,row1,row2,    d,n) -- gap over x; 0..1
+function TBL.distx(i,row1,row2,    d,n) -- gap over x; 0..1
   d, n = 0, TINY
-  for _, c in ipairs(tbl.cols.x) do
+  for _, c in ipairs(i.cols.x) do
     d = d + c.dist(c, row1[c.at], row2[c.at]) ^ the.p
     n = n + 1 end
   return (d / n) ^ (1 / the.p) end
 
-function disty(tbl,row,    d) -- gap to heaven; 0=best
-  d = sum(tbl.cols.y, function(y)
+function TBL.disty(i,row,    d) -- gap to heaven; 0=best
+  d = sum(i.cols.y, function(y)
         return abs(y.norm(y, row[y.at]) - y.heaven) ^ the.p end)
-  return (d / #tbl.cols.y) ^ (1 / the.p) end
+  return (d / #i.cols.y) ^ (1 / the.p) end
 
 --## clusters ---------------------------------------------------
-function projx(tbl,row,a,b,c) -- onto the a-b line
-  return (distx(tbl,a,row)^2 + c*c
-          - distx(tbl,b,row)^2) / (2*c + TINY) end
+function TBL.projx(i,row,a,b,c) -- onto the a-b line
+  return (i.distx(i,a,row)^2 + c*c
+          - i.distx(i,b,row)^2) / (2*c + TINY) end
 
-function halve(tbl,rows,    far,a,b,c,n)
-  rows = rows or tbl.rows   -- split on far poles, best first
+function TBL.halve(i,rows,    far,a,b,c,n)
+  rows = rows or i.rows     -- split on far poles, best first
   far = function(r) return most(some(rows, the.few),
-          function(r2) return distx(tbl, r, r2) end) end
+          function(r2) return i.distx(i, r, r2) end) end
   a = far(rows[math.random(#rows)])
   b = far(a)
-  c = distx(tbl, a, b)
-  if disty(tbl, b) < disty(tbl, a) then a, b = b, a end
-  rows = keysort(rows, function(r) return projx(tbl,r,a,b,c) end)
+  c = i.distx(i, a, b)
+  if i.disty(i, b) < i.disty(i, a) then a, b = b, a end
+  rows = keysort(rows,
+           function(r) return i.projx(i,r,a,b,c) end)
   n = floor(#rows / 2)
   return a, b, {slice(rows, 1, n)}, {slice(rows, n + 1)} end
 
 function Node(tbl,rows,    i,a,b,west,east) -- tree of halves
   rows = rows or tbl.rows
-  i = {here=clone(tbl, rows),
-       a=nil, b=nil, west=nil, east=nil}
+  i = new(NODE, {here=tbl.clone(tbl, rows),
+                 a=nil, b=nil, west=nil, east=nil})
   if #rows >= 2 * the.stop then
-    a, b, west, east = halve(tbl, rows)
+    a, b, west, east = tbl.halve(tbl, rows)
     i.a, i.b = a, b
     if #west > 0 and #east > 0 then
       i.west, i.east = Node(tbl,west), Node(tbl,east) end end
   return i end
 
-function leaf(node,row) -- walk row down to its leaf
-  while node.west do
-    node = distx(node.here, row, node.a)
-           <= distx(node.here, row, node.b)
-           and node.west or node.east end
-  return node end
+function NODE.leaf(i,row,    t) -- walk row down to its leaf
+  while i.west do
+    t = i.here
+    i = t.distx(t, row, i.a) <= t.distx(t, row, i.b)
+        and i.west or i.east end
+  return i end
 
 --## statistics -------------------------------------------------
 function cohen(xs,ys,    m,spd) -- mid gap, in spread units
