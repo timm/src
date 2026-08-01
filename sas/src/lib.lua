@@ -49,75 +49,75 @@ function some(lst,k,    t) -- k items at random (all, if k big)
   return t end
 
 --## columns ----------------------------------------------------
-Num, Sym, Tbl = {}, {}, {} -- method tables (see new, at end)
+NUM, SYM, TBL = {}, {}, {}   -- metatables (see new, at end)
 
 function Col(name,at) -- column kind from first letter
-  return (name:sub(1,1):match"%l" and Sym or Num).new(name,at) end
+  return (name:sub(1,1):match"%l" and Sym or Num)(name,at) end
 
-function Num.new(name,at) -- summary of a numeric column
+function Num(name,at) -- summary of a numeric column
   name = name or ""
-  return new(Num, {at=at or 1, name=name, n=0, mu=0, m2=0,
+  return new(NUM, {at=at or 1, name=name, n=0, mu=0, m2=0,
                    heaven = name:find"-$" and 0 or 1}) end
 
-function Sym.new(name,at) -- summary of a symbolic column
-  return new(Sym, {at=at or 1, name=name or "", n=0, has={}}) end
+function Sym(name,at) -- summary of a symbolic column
+  return new(SYM, {at=at or 1, name=name or "", n=0, has={}}) end
 
-function Sym.add(i,v) -- update symbol counts
+function SYM.add(i,v) -- update symbol counts
   if v == "?" then return v end
   i.n = i.n + 1; i.has[v] = 1 + (i.has[v] or 0); return v end
 
-function Num.add(i,v,    d) -- one-pass update of mu and m2
+function NUM.add(i,v,    d) -- one-pass update of mu and m2
   if v == "?" then return v end
   i.n  = i.n + 1
   d    = v - i.mu
   i.mu = i.mu + d / i.n
   i.m2 = i.m2 + d * (v - i.mu); return v end
 
-function Sym.mid(i,    hi,out) -- center: the mode
+function SYM.mid(i,    hi,out) -- center: the mode
   hi = -1
   for k, n in pairs(i.has) do
     if n > hi then hi, out = n, k end end
   return out end
 
-function Num.mid(i) return i.mu end -- center: the mean
+function NUM.mid(i) return i.mu end -- center: the mean
 
-function Sym.div(i) -- diversity: entropy of the counts
+function SYM.div(i) -- diversity: entropy of the counts
   return sum(i.has, function(n,    p)
     p = n / i.n; return -p * log(p, 2) end) end
 
-function Num.div(i) -- diversity: standard deviation
+function NUM.div(i) -- diversity: standard deviation
   return i.n < 2 and 0 or sqrt(max(i.m2,0) / (i.n-1)) end
 
-function Sym.norm(i,v) return v end -- syms have no cdf
+function SYM.norm(i,v) return v end -- syms have no cdf
 
-function Num.norm(i,v,    z) -- v's cdf, via logistic; 0..1
+function NUM.norm(i,v,    z) -- v's cdf, via logistic; 0..1
   if v == "?" then return v end
   z = (v - i.mu) / (i.div(i) + TINY)
   return 1 / (1 + exp(-1.702 * max(-3, min(3, z)))) end
 
 --## tables -----------------------------------------------------
-function Tbl.new(src,    names,all,x,y) -- row 1 names cols
+function Tbl(src,    names,all,x,y) -- row 1 names columns
   src = iter(src)
   names, all, x, y = src(), {}, {}, {}
   for at, s in ipairs(names) do
     all[at] = Col(s, at)
     if s:find"[+-]$" then y[#y+1] = all[at]
     elseif s:sub(-1) ~= "X" then x[#x+1] = all[at] end end
-  return adds(src, new(Tbl, {rows={}, mid=nil,
+  return adds(src, new(TBL, {rows={}, mid=nil,
                  cols={names=names, all=all, x=x, y=y}})) end
 
-function Tbl.add(i,row) -- fold a row into every column
+function TBL.add(i,row) -- fold a row into every column
   i.rows[#i.rows+1] = row; i.mid = nil
   for _, c in ipairs(i.cols.all) do c.add(c, row[c.at]) end
   return row end
 
 function adds(src,i) -- fold list or iterator; Num default
-  i = i or Num.new()
+  i = i or Num()
   for v in iter(src or {}) do i.add(i, v) end
   return i end
 
 function clone(tbl,rows) -- same header, fresh summaries
-  return adds(rows, Tbl.new{tbl.cols.names}) end
+  return adds(rows, Tbl{tbl.cols.names}) end
 
 function mids(tbl) -- return centroid of this tbl
   tbl.mid = tbl.mid or
@@ -125,11 +125,11 @@ function mids(tbl) -- return centroid of this tbl
   return tbl.mid end
 
 --## distance ---------------------------------------------------
-function Sym.dist(i,a,b) -- gap between two syms; 0..1
+function SYM.dist(i,a,b) -- gap between two syms; 0..1
   if a == "?" and b == "?" then return 1 end
   return a ~= b and 1 or 0 end
 
-function Num.dist(i,a,b) -- gap between two nums; 0..1
+function NUM.dist(i,a,b) -- gap between two nums; 0..1
   if a == "?" and b == "?" then return 1 end
   a, b = i.norm(i,a), i.norm(i,b)
   if a == "?" then a = b > 0.5 and 0 or 1 end
