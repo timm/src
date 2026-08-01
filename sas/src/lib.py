@@ -5,7 +5,7 @@ and the statistics that police every claim in this book.
 Reads its knobs from about.py. Imports nothing else but
 the standard library.
 """
-import random, bisect, sys
+import random, sys
 from math import exp, log, sqrt
 from about import o, the
 
@@ -168,10 +168,11 @@ def ks(xsort, ysort): # max cdf gap, in critical units
   return d / ((nx + ny) / (nx * ny)) ** 0.5
 
 def cliffs(xsort, ysort): # rank imbalance; 0..1
-  gt = lt = 0
-  for x in xsort:
-    gt += bisect.bisect_left(ysort, x)
-    lt += len(ysort) - bisect.bisect_right(ysort, x)
+  gt = lt = j = k = 0     # j,k: how many ys sit <x, <=x
+  for x in xsort:         # x ascends, so j,k only advance
+    while j < len(ysort) and ysort[j] <  x: j += 1
+    while k < len(ysort) and ysort[k] <= x: k += 1
+    gt += j; lt += len(ysort) - k
   return abs(gt - lt) / (len(xsort) * len(ysort))
 
 def same(xs, ys): # any judge under its threshold? lazy or
