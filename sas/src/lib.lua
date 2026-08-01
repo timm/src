@@ -143,7 +143,7 @@ function TBL.projx(i,row,a,b,c) -- onto the a-b line
 
 function TBL.halve(i,rows,    far,a,b,c,n)
   rows = rows or i.rows     -- split on far poles, best first
-  far = function(r) return most(some(rows, the.few),
+  far = function(r) return argmax(some(rows, the.few),
           function(r2) return i.distx(i, r, r2) end) end
   a = far(rows[math.random(#rows)])
   b = far(a)
@@ -234,7 +234,7 @@ function keysort(t,f,    px,ix) -- sort by f(v); stable,
            if px[u] == px[v] then return ix[u] < ix[v] end
            return px[u] < px[v] end) end
 
-function most(t,f,    hi,n,x) -- argmax: v w/ biggest f(v)
+function argmax(t,f,    hi,n,x) -- the v w/ biggest f(v)
   hi = -math.huge                 -- first winner keeps ties
   for _,v in ipairs(t) do n=f(v); if n>hi then hi,x=n,v end end
   return x end
