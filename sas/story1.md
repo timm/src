@@ -780,6 +780,21 @@ second, third, but "these won and the rest lost". When a
 later chapter's table shows a verdict column, that is
 rank zero, spoken; a rank column is `ranks` verbatim.
 
+Hence the call-site idiom, which names the result for
+what it counts:
+
+    losers  = ranks(d)
+    winners = [k for k in losers if not losers[k]]
+
+`losers[k]` is how many rank boundaries separate k from
+the champions. Zero means champion, and the test reads as
+English: keep k if k is not a loser.
+
+> Python tip #4: `not losers[k]` leans on Python treating
+> zero as false. It reads beautifully and ports badly: in
+> Lua, 0 is true, and only nil and false are false. Write
+> `== 0` the day this idiom crosses a language border.
+
 Two sentences of lineage. The classical procedure here is
 Scott and Knott's[^sk]: sort the treatments, cut where the
 two halves' means pull farthest from the parent mean,
@@ -915,7 +930,7 @@ forgetting: no decay weights, no delete operations. Windows
 forget by construction, and rebuilding a window's summary
 costs milliseconds.
 
-> Python tip #4: generators compose like pipes. `csv` into
+> Python tip #5: generators compose like pipes. `csv` into
 > `batches` into `clone` is a lazy pipeline; nothing runs
 > until something downstream pulls. This is the Unix
 > pipeline instinct, native in Python.
@@ -1250,7 +1265,7 @@ to fix is called something else.
 > score. Chapter 14's Bouncer is the guard: strange
 > hypotheticals should be flagged, not scored.
 
-> Python tip #5: line ⑤ copies with `row[:]` before
+> Python tip #6: line ⑤ copies with `row[:]` before
 > editing. Mutating a caller's row inside a scoring loop is
 > the classic aliasing bug: cheap to avoid, expensive to
 > find.
@@ -1336,7 +1351,7 @@ Note the shape of line ⑤: `bouncer` returns a function.
 We build the doorman once, then use him cheaply at the door,
 row after row.
 
-> Python tip #6: returning a lambda that closes over local
+> Python tip #7: returning a lambda that closes over local
 > state (`cut`, `tbl`) is the poor man's object, and it is
 > often all the object you need. One behavior, no class.
 
@@ -1396,7 +1411,7 @@ no probability model at all.
 > where they might matter, and Chapter 10 turns exactly
 > this loop into an optimizer.
 
-> Python tip #7: `sorted(key=...)` with a scoring lambda is
+> Python tip #8: `sorted(key=...)` with a scoring lambda is
 > the whole "ranking model deployment" story at this scale.
 > No pickle files, no serving layer. A function and a sort.
 
