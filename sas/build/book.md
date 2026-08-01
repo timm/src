@@ -237,7 +237,7 @@ change.
 
 ```
 $ python3 src/lib_eg.py the
-{:cliffs 0.197 :cohen 0.2 :few 128 :file data/auto93.csv :ks 1.36 :p 2 :seed 1234567891 :stop 32}
+{:few 128 :file data/auto93.csv :p 2 :seed 1234567891 :stop 32}
 ```
 
 The command line can override any knob, because the flag parser walks `vars(the)` and
@@ -245,7 +245,7 @@ matches names. Watch the same test, run with `--p=1`:
 
 ```
 $ python3 src/lib_eg.py the --p=1
-{:cliffs 0.197 :cohen 0.2 :few 128 :file data/auto93.csv :ks 1.36 :p 1 :seed 1234567891 :stop 32}
+{:few 128 :file data/auto93.csv :p 1 :seed 1234567891 :stop 32}
 ```
 
 No parser was written for that flag. The settings object is the parser's schema, by
@@ -471,7 +471,7 @@ binary-searches (rank shift within the 0.197 threshold) [@cliff93; @hess04]. The
 last two are the standard prescription for empirical work (one significance test,
 one effect-size test); the first is a cheap tie-breaker that keeps variance-only
 wobbles from passing as victories. Each judge returns a magnitude; same() compares
-each to its threshold, kept like every other knob in about.py. Note the or-chain
+each to its threshold, a named default in same()'s own signature, citation attached. Note the or-chain
 inside same(): the first small-enough score ends the trial, so the dear tests run
 only on the close calls, and only a pair that gets past all three may be called
 different. Watch it
@@ -537,9 +537,6 @@ the = o(
   p      = 2,               # minkowski coefficient
   few    = 128,             # sample size for cheap guesses
   stop   = 32,              # min rows before a split halts
-  cohen  = 0.2,             # same if mid gap under this
-  ks     = 1.36,            # ks 5% critical multiplier
-  cliffs = 0.197,           # small rank effect ceiling
   file = "data/auto93.csv") # default table (via MOOT)
 ```
 

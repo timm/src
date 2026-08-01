@@ -687,11 +687,14 @@ first, and the first small-enough score stops the panel.
         gt += j; lt += len(ysort) - k
       return abs(gt - lt) / (len(xsort) * len(ysort))  # ⑧
 
-    def same(xs, ys):                                # ⑨
+    def same(xs, ys,                                 # ⑨
+             Cohen=0.2,     # J. Cohen 1988
+             Ks=1.36,       # F. Massey 1951
+             Cliffs=0.197): # N. Cliff 1993
       xsort, ysort = sorted(xs), sorted(ys)          # ⑩
-      return (cohen(xsort, ysort) < the.cohen
-              or ks(xsort, ysort) < the.ks
-              or cliffs(xsort, ysort) <= the.cliffs) # ⑪
+      return (cohen(xsort, ysort) < Cohen
+              or ks(xsort, ysort) < Ks
+              or cliffs(xsort, ysort) <= Cliffs)     # ⑪
 
 All three judges expect sorted lists, and they say so in
 their own signatures: parameters named `xsort` and `ysort`
@@ -718,17 +721,21 @@ imbalance, 0 to 1.
 
 Note what the judges never do: they never say yes or no.
 The verdicts live in `same` ⑨, one comparison per judge at
-⑪, each against a knob in about.py. `the.cohen` is 0.2,
-Cohen's small effect, the same 0.2 that priced the search
-back in story.md's maths: a gap too small for a
-practitioner to care about, whatever a p-value says.
-`the.ks` is 1.36, the 95-percent critical multiplier.
-`the.cliffs` is 0.197, the standard small-effect line for
-rank imbalance. Measures in lib.py, policy in about.py:
-the Rule of Separation, applied to statistics. And because
-the judges return magnitudes, later chapters can reuse
-them as rulers (how much drift? which contrast column
-differs most?), not only as gates.
+⑪, each against a named default in same's own signature,
+its citation riding alongside as a comment. Cohen at 0.2
+is Cohen's small effect, the same 0.2 that priced the
+search back in story.md's maths: a gap too small for a
+practitioner to care about, whatever a p-value says. Ks at
+1.36 is the classic 95-percent critical multiplier. Cliffs
+at 0.197 is this book's small-effect line for rank
+imbalance (a house calibration; the widely cited
+alternative is Romano's 0.147). Keeping thresholds in the
+signature means any caller can tighten or loosen one judge
+for one call, and the capital letters matter: lowercase
+names would shadow the judge functions themselves. And
+because the judges return magnitudes, later chapters can
+reuse them as rulers (how much drift? which contrast
+column differs most?), not only as gates.
 
 The cost ordering is deliberate. After sorting, `cohen` is
 constant time, while `ks` and `cliffs` each make one linear
@@ -2184,15 +2191,16 @@ header). Silence: print only what a decision needs
 
 **same** (function). The Referee's verdict (Chapter 6):
 three judges return magnitudes, cheapest first; `same`
-compares each to its about.py knob, and a lazy `or` ends
-the trial at the first small-enough score. See also:
+compares each to a cited default in its own signature, and
+a lazy `or` ends the trial at the first small-enough
+score. See also:
 Cohen's rule, KS test, Cliff's delta.
 
-    def same(xs, ys):
+    def same(xs, ys, Cohen=0.2, Ks=1.36, Cliffs=0.197):
       xsort, ysort = sorted(xs), sorted(ys)
-      return (cohen(xsort, ysort) < the.cohen
-              or ks(xsort, ysort) < the.ks
-              or cliffs(xsort, ysort) <= the.cliffs)
+      return (cohen(xsort, ysort) < Cohen
+              or ks(xsort, ysort) < Ks
+              or cliffs(xsort, ysort) <= Cliffs)
 
 **seed** (SE). The number that makes randomness
 replayable. Set once in about.py; reset before every
@@ -2229,9 +2237,10 @@ split into x (observables) and y (goals) by the header
 (Chapter 3.5). See also: clone, CSV.
 
 **the** (struct). The settings struct in about.py: seed,
-p, few, stop, file, plus the referee thresholds cohen, ks,
-cliffs. All knobs, one place, all overridable from the
-command line. See also: o, SSOT.
+p, few, stop, file. All knobs, one place, all overridable
+from the command line. (The referee's thresholds live in
+same's signature instead: they are cited constants, not
+tuning knobs.) See also: o, SSOT.
 
 **TIM** (rule). timm's rule: no code line past 65
 characters (the circled markers ride outside the count).

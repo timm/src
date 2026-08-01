@@ -125,7 +125,7 @@ binary-searches (rank shift within the 0.197 threshold) [@cliff93; @hess04]. The
 last two are the standard prescription for empirical work (one significance test,
 one effect-size test); the first is a cheap tie-breaker that keeps variance-only
 wobbles from passing as victories. Each judge returns a magnitude; same() compares
-each to its threshold, kept like every other knob in about.py. Note the or-chain
+each to its threshold, a named default in same()'s own signature, citation attached. Note the or-chain
 inside same(): the first small-enough score ends the trial, so the dear tests run
 only on the close calls, and only a pair that gets past all three may be called
 different. Watch it

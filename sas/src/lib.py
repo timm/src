@@ -175,11 +175,14 @@ def cliffs(xsort, ysort): # rank imbalance; 0..1
     gt += j; lt += len(ysort) - k
   return abs(gt - lt) / (len(xsort) * len(ysort))
 
-def same(xs, ys): # any judge under its threshold? lazy or
+def same(xs, ys,        # any evidence of "similar"?
+         Cohen=0.2,     # J. Cohen 1988, stat. power analysis
+         Ks=1.36,       # F. Massey 1951, Kolmogorov-Smirnov
+         Cliffs=0.197): # N. Cliff 1993, dominance statistics
   xsort, ysort = sorted(xs), sorted(ys)
-  return (cohen(xsort, ysort) < the.cohen
-          or ks(xsort, ysort) < the.ks
-          or cliffs(xsort, ysort) <= the.cliffs)
+  return (cohen(xsort, ysort) < Cohen
+          or ks(xsort, ysort) < Ks
+          or cliffs(xsort, ysort) <= Cliffs)
 
 def top(d, max=False): # winners; best = least, unless max
   out, mid = [], lambda a: sorted(a)[len(a) // 2]
