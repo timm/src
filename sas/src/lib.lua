@@ -19,24 +19,8 @@ the = {
   p      = 2,              -- minkowski coefficient
   few    = 128,            -- sample size for cheap guesses
   stop   = 32,             -- min rows before a split halts
+  round  = 2,              -- decimals printed by show
   file = "data/auto93.csv" } -- default table (via MOOT)
-
-function show(t,    u,v) -- ":k v" pairs, sorted; skips _keys
-  u = {}
-  for _,k in ipairs(keysort(keys(t), tostring)) do
-    if tostring(k):sub(1,1) ~= "_" then
-      v = t[k]
-      if type(v) == "function" then
-        for n,f in pairs(_ENV) do if f==v then v=n end end end
-      if type(v) == "table" then v = show(v) end
-      u[#u+1] = ":"..tostring(k).." "..tostring(v) end end
-  return "{"..table.concat(u, " ").."}" end
-
-function new(kl,t) -- class table is also its metatable
-  kl.__index = kl; kl.__tostring = show
-  return setmetatable(t, kl) end
-
-Num, Sym, Tbl = {}, {}, {}  -- method tables (see `new`)
 
 --## cells ------------------------------------------------------
 function thing(s) -- string to number, bool, or string
@@ -65,6 +49,8 @@ function some(lst,k,    t) -- k items at random (all, if k big)
   return t end
 
 --## columns ----------------------------------------------------
+Num, Sym, Tbl = {}, {}, {} -- method tables (see new, at end)
+
 function Col(name,at) -- column kind from first letter
   return (name:sub(1,1):match"%l" and Sym or Num).new(name,at) end
 
@@ -266,6 +252,23 @@ function most(t,f,    hi,n,x) -- argmax: v w/ biggest f(v)
 function iter(src,    at) -- iterate a list or a function
   if type(src) == "function" then return src end
   at = 0; return function() at = at + 1; return src[at] end end
+
+function show(t,    u,v) -- ":k v" pairs, sorted; skips _keys
+  u = {}
+  for _,k in ipairs(keysort(keys(t), tostring)) do
+    if tostring(k):sub(1,1) ~= "_" then
+      v = t[k]
+      if type(v) == "function" then
+        for n,f in pairs(_ENV) do if f==v then v=n end end end
+      if type(v) == "table" then v = show(v) end
+      if type(v) == "number" and v % 1 ~= 0 then
+        v = ("%."..the.round.."f"):format(v) end
+      u[#u+1] = ":"..tostring(k).." "..tostring(v) end end
+  return "{"..table.concat(u, " ").."}" end
+
+function new(kl,t) -- class table is also its metatable
+  kl.__index = kl; kl.__tostring = show
+  return setmetatable(t, kl) end
 
 --## start-up ---------------------------------------------------
 function cli(d,    v) -- --key=val flags update settings
