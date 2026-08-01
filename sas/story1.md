@@ -708,9 +708,13 @@ vertical gap between them ⑤, and return that gap scaled
 by the classic critical-value denominator ⑥. Judge three,
 `cliffs` ⑦, is Cliff's delta, a rank-based effect size:
 walk two pointers up the sorted ys, counting how many sit
-below and at each ascending x (the pointers never restart,
-because what was below the last x stays below this one),
-and return the imbalance, 0 to 1, at ⑧.
+below and at each ascending x. The pointers never restart:
+each x inherits the previous count and augments it, since
+whatever sat below the last x still sits below this one.
+And note that `gt += j` re-adds the inherited ys on
+purpose: the delta sums over all pairs, and a y beneath
+two xs loses two pairs, one to each. Line ⑧ returns the
+imbalance, 0 to 1.
 
 Note what the judges never do: they never say yes or no.
 The verdicts live in `same` ⑨, one comparison per judge at
