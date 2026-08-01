@@ -202,15 +202,16 @@ function same(xs,ys,Cohen,Ks,Cliffs) -- similar evidence?
          or ks(xs, ys)    < (Ks or 1.36)
          or cliffs(xs,ys) <= (Cliffs or 0.197) end
 
-function ranks(d,big,    sign,out,rank,best) -- rank all;
+function ranks(d,big,    sign,out,win,rank,best)
   sign = big and -1 or 1        -- same-as-champion share
-  out, rank, best = {}, -1, nil
+  out, win, rank, best = {}, {}, -1, nil
   for _, k in ipairs(keysort(keys(d),
                 function(k) return sign * med(d[k]) end)) do
     if best == nil or not same(d[best], d[k]) then
       rank, best = rank + 1, k end
+    if rank == 0 then win[1+#win] = k end
     out[k] = rank end
-  return out end
+  return {winners=win, ranks=out} end
 
 --## lists ------------------------------------------------------
 function map(t,f,    u) -- f over values; keeps order

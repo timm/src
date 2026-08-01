@@ -128,9 +128,11 @@ def test_ranks(): # same-as-champion treatments share
   random.seed(the.seed)
   g = lambda mu: [random.gauss(mu, 1) for _ in range(20)]
   d = dict(a=g(0), b=g(0.05), c=g(2), e=g(4))
-  print(ranks(d), ranks(d, max=True))
-  assert ranks(d) == dict(a=0, b=0, c=1, e=2)
-  assert ranks(d, max=True)["e"] == 0
+  r = ranks(d)
+  print(r.winners, r.ranks)
+  assert r.ranks == dict(a=0, b=0, c=1, e=2)
+  assert r.winners == ["a", "b"]
+  assert ranks(d, max=True).winners == ["e"]
 
 def test_all(): # run every test_*, reseeding each
   bad = 0

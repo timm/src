@@ -191,7 +191,8 @@ def ranks(d, max=False): # same-as-champion share a rank
     if best is None or not same(d[best], d[k]):
       rank, best = rank + 1, k
     out[k] = rank
-  return out
+  return o(winners=[k for k, r in out.items() if r == 0],
+           ranks=out)
 
 #-- start-up ----------------------------------------------------
 def cli(d): # --key=val flags update settings
