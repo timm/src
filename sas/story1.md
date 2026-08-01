@@ -680,10 +680,11 @@ first, and the first small-enough score stops the panel.
       return d / ((nx + ny) / (nx * ny)) ** 0.5      # ⑥
 
     def cliffs(xsort, ysort):                        # ⑦
-      gt = lt = 0
+      gt = lt = j = k = 0
       for x in xsort:
-        gt += bisect.bisect_left(ysort, x)
-        lt += len(ysort) - bisect.bisect_right(ysort, x)
+        while j < len(ysort) and ysort[j] <  x: j += 1
+        while k < len(ysort) and ysort[k] <= x: k += 1
+        gt += j; lt += len(ysort) - k
       return abs(gt - lt) / (len(xsort) * len(ysort))  # ⑧
 
     def same(xs, ys):                                # ⑨
@@ -706,8 +707,10 @@ two cumulative distribution curves, track the largest
 vertical gap between them ⑤, and return that gap scaled
 by the classic critical-value denominator ⑥. Judge three,
 `cliffs` ⑦, is Cliff's delta, a rank-based effect size:
-count how often values of one list sit above and below the
-other, and return the imbalance, 0 to 1, at ⑧.
+walk two pointers up the sorted ys, counting how many sit
+below and at each ascending x (the pointers never restart,
+because what was below the last x stays below this one),
+and return the imbalance, 0 to 1, at ⑧.
 
 Note what the judges never do: they never say yes or no.
 The verdicts live in `same` ⑨, one comparison per judge at
@@ -724,9 +727,10 @@ them as rulers (how much drift? which contrast column
 differs most?), not only as gates.
 
 The cost ordering is deliberate. After sorting, `cohen` is
-constant time, `ks` is linear, and `cliffs` pays an extra
-log factor for its binary searches. In the common case,
-`cohen` answers alone and the panel adjourns.
+constant time, while `ks` and `cliffs` each make one linear
+pass; `cliffs` runs two pointers where `ks` runs one, so it
+goes last. In the common case, `cohen` answers alone and
+the panel adjourns.
 
 Experiments compare many treatments, not two, so one more
 helper tops off the referee. Give `top` a dictionary
@@ -2008,10 +2012,11 @@ announce the precondition: sorted input. See also: KS
 test, Cohen's rule, same.
 
     def cliffs(xsort, ysort):
-      gt = lt = 0
+      gt = lt = j = k = 0
       for x in xsort:
-        gt += bisect.bisect_left(ysort, x)
-        lt += len(ysort) - bisect.bisect_right(ysort, x)
+        while j < len(ysort) and ysort[j] <  x: j += 1
+        while k < len(ysort) and ysort[k] <= x: k += 1
+        gt += j; lt += len(ysort) - k
       return abs(gt - lt) / (len(xsort) * len(ysort))
 
 **clone** (function). A new empty table with an old
