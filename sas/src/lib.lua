@@ -196,9 +196,9 @@ function cliffs(xs,ys,    gt,lt,j,k) -- rank imbalance; 0..1
   return abs(gt - lt) / (#xs * #ys) end
 
 function same(xs,ys,Cohen,Ks,Cliffs) -- similar evidence?
-  Cohen  = Cohen  or 0.2   -- J. Cohen 1988
-  Ks     = Ks     or 1.36  -- F. Massey 1951
-  Cliffs = Cliffs or 0.197 -- N. Cliff 1993
+  Cohen  = Cohen  or 0.2   -- J. Cohen 1988, stat. power analysis
+  Ks     = Ks     or 1.36  -- F. Massey 1951, Kolmogorov-Smirnov
+  Cliffs = Cliffs or 0.197 -- N. Cliff 1993, dominance statistics
   xs, ys = sorted(xs), sorted(ys)
   return cohen(xs, ys) < Cohen
          or ks(xs, ys) < Ks
