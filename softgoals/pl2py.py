@@ -3,12 +3,12 @@
 # (Head <-- [Lit,...]. clauses; no X negation; makes/breaks/
 # helps/hurts contributions; and([..]) or([..]); compound
 # heads like goals(hard) become node names verbatim) into an
-# nfr3.py Model, so the moot/re corpus runs on the python
+# nfr3.py Theory, so the moot/re corpus runs on the python
 # engine unchanged.
 #   python3 pl2py.py model.pl   run one model's goals
 #   python3 pl2py.py dir        smoke-load every *.pl below
 import re, sys, glob, os
-from nfr3 import (Model, Node, no, makes, breaks, helps,
+from nfr3 import (Theory, Node, no, makes, breaks, helps,
                   hurts, And, Or, abduce, soften, worlds)
 
 SOFT = dict(makes=makes, breaks=breaks, helps=helps,
@@ -50,18 +50,18 @@ def plist(m, ts, i):            # ts[i] == '[' ... ']'
   return xs, i + 1
 
 def load(path):
-  m = Model()
+  m = Theory()
   for ts in clauses(open(path).read()):
     head, i = pterm(m, ts, 0)
     assert ts[i] == '<--', (path, ts[:i+1])
     body, i = plist(m, ts, i + 1)
-    head.clauses.append(body)
+    head |= body
   return m
 
 def run(path):                  # one model: its goals nodes
   m = load(path)
   for k in ('goals(hard)', 'goals(soft)'):
-    if k in m.nodes and m.nodes[k].clauses:
+    if k in m.nodes and not m.nodes[k].abducible():
       g = m.nodes[k]
       if k == 'goals(hard)':
         ws = worlds(100, lambda: abduce(m, g))
@@ -79,7 +79,7 @@ def smoke(top):                 # whole corpus: load + one
     try:
       m = load(f)
       for n in m.nodes.values():
-        if n.clauses: soften(m, n); break
+        if not n.abducible(): soften(m, n); break
       ok += 1
     except Exception as e:
       bad += 1

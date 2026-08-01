@@ -4,26 +4,29 @@
 # mentioned (__getattr__), bodies conjoin with `&`, or-clauses
 # accumulate with `|=` (each clause IS a disjunct, so the
 # operators mean what logic says). As in nfr3.pl, hard vs soft
-# is read off clause shapes: any all-hard clause makes a rule
+# is read off body shapes: any all-hard body makes a rule
 # node (choice-or, commit), else an edge node (label all
-# clauses, combine). ISAMP replaces backtracking: a
+# bodies, combine). ISAMP replaces backtracking: a
 # contradiction raises, the world restarts fresh (nfr3's greedy
 # mode is the only mode).
-# A Node is a logic Var with clauses attached. Var.binding is
-# None (unbound), PENDING (this node's combine is running now;
-# prolog's pushed-but-unbound label), or a number. unify is
-# prolog unify grown one abductive habit: asked to bind with no
-# demand, it guesses a ground value (labeling) -- leaves +-2,
-# loops uniform over all 5 -- and the guesser's own combine
-# later verifies guess == computed, else the world restarts.
+# A Node is a logic Var with bodies attached (head |= body
+# asserts one clause; the head is the Node itself). A Var
+# with no bodies is an abducible: assumable, never proved
+# (ALP framing: theory + abducibles -> explanations).
+# Var.binding is None (unbound) or a number. Head-first, like
+# the prolog: a rule binds 2 then walks its body; an edge binds
+# a coinductive guess (uniform over the 5 labels) then walks;
+# either way a loop-back just reads a bound var -- a consistent
+# subset -- and the edge's own combine verifies guess ==
+# computed, else the world restarts. unify is prolog unify
+# grown one abductive habit: asked to bind with no demand it
+# guesses (labeling): abducibles stagger +-2.
 # Labels 2 1 0 -1 -2. One looseness vs the prolog: python
 # cannot close the world, so a typo is a new leaf, not an
 # existence error.
 import random
 
 class Fail(Exception): pass
-
-PENDING = object()              # bound-but-unknown: cycle mark
 
 def damp(v): return max(-1, min(1, v))
 
@@ -47,11 +50,11 @@ def Or(*xs):   return Term('amax', xs)
 def hardlit(l): return isinstance(l, Node) or l.op == 'no'
 
 class Var(Lit):
-  "k : name; binding : None | PENDING | label"
+  "k : name; binding : None | label"
   def __init__(i, k): i.k, i.binding = k, None
   def unify(i, want=None, vals=(2, -2)):
     v = i.binding
-    if v is None or v is PENDING:     # unbound: bind the
+    if v is None:                     # unbound: bind the
       i.binding = v = want if want is not None \
                            else random.choice(vals)  # demand,
       return v                        # else guess (labeling)
@@ -59,37 +62,39 @@ class Var(Lit):
     raise Fail                              # or die
 
 class Node(Var):
-  "a Var plus its clauses (each clause one disjunct)"
-  def __init__(i, k): Var.__init__(i, k); i.clauses = []
-  def __ior__(i, b):            # head |= clause (an or)
-    i.clauses.append(b if isinstance(b, list) else [b])
+  "a Var plus its bodies, split hard/soft as they arrive"
+  def __init__(i, k): Var.__init__(i, k); i.hards, i.softs=[],[]
+
+  def abducible(i): return not (i.hards or i.softs)
+
+  def __ior__(i, b):            # head |= body (an or); any
+    b = b if isinstance(b, list) else [b]   # all-hard body
+    (i.hards if all(hardlit(l) for l in b)  # makes a rule
+             else i.softs).append(b)        # node, else edge
     return i
+
+  def combine(i, ws):
+    hi, lo = max([0] + ws), min([0] + ws)
+    if hi == 2 and lo == -2: raise Fail  # sat meets denied
+    return i.unify(hi + lo)     # computed must match my guess
+
   def __call__(i, want=None):
-    if i.binding is PENDING:    # cycle: guess 5-wide; my
-      return i.unify(want, (2, 1, 0, -1, -2))  # combine
-    if i.binding is not None: return i.unify(want)  # verifies
-    if not i.clauses: return i.unify(want)    # leaf: stagger
-    hards = [c for c in i.clauses if all(hardlit(l) for l in c)]
-    if hards:                   # rule: pick one clause, walk
+    if i.binding is not None: return i.unify(want)  # memo
+    if i.abducible(): return i.unify(want)    # stagger +-2
+    if i.hards:                 # rule: pick one body, walk
       if want == -2: raise Fail # it; falsity is assumed,
-      i.binding = 2             # never derived
-      for l in shuffled(random.choice(hards)):
+      i.binding = 2             # never derived (soft bodies
+      for l in shuffled(random.choice(i.hards)):  # dead)
         l(2) if isinstance(l, Node) else l.x.unify(-2)
       return 2
     if want is not None:        # edge: a demand is assumed,
       i.binding = want          # not derived (nfr2 guess
       return want               # parity)
-    i.binding = PENDING         # else label all clauses
-    es = [e for c in i.clauses for e in c]
+    i.binding = random.choice((2, 1, 0, -1, -2))  # guess,
+    es = [e for c in i.softs for e in c]            # head-first
     return i.combine([contrib(e) for e in shuffled(es)])
-  def combine(i, ws):
-    hi, lo = max([0] + ws), min([0] + ws)
-    if hi == 2 and lo == -2: raise Fail  # sat meets denied
-    v = hi + lo                 # cycle open: bind computed;
-    if i.binding is PENDING: i.binding = v; return v
-    return i.unify(v)           # closed: computed must match
-                                # the guess made at re-entry
-class Model:                    # name nodes reserved. `m.x |= b`
+
+class Theory:                   # name nodes reserved. `m.x |= b`
   def __init__(i): i.__dict__['nodes'] = {}   # reads m.x (making
   def __getattr__(i, k): return i.nodes.setdefault(k, Node(k))
   def __setattr__(i, k, v): i.nodes[k] = v    # it) then writes
@@ -115,7 +120,7 @@ def world(m, f):
 def picks(m):
   out = []
   for n in m.nodes.values():
-    if n.binding is not None and not n.clauses:
+    if n.binding is not None and n.abducible():
       out.append(n.k if n.binding == 2 else
                  ('no', n.k) if n.binding == -2 else
                  ('lab', n.k, n.binding))
@@ -133,8 +138,46 @@ def worlds(n, f):               # sample n, keep distinct
   ws = {w for w in (f() for _ in range(n)) if w}
   return sorted(ws, key=str)
 
+# ---- keys: score worlds, credit settings, find plateau ----
+def settle(m, hs, ss, priors=()):  # one world under priors:
+  vs = list(m.nodes.values())      # score, and its +-2
+  xs = [n for n in vs if n not in ss]        # settings
+  for _ in range(100):
+    for n in vs: n.binding = None
+    for n, v in priors: n.binding = v
+    try:
+      for h in shuffled(hs): h(2)
+    except Fail: continue
+    good = 0
+    for s in shuffled(ss):
+      snap = [(n, n.binding) for n in vs]
+      try:
+        if s() >= 2: good += 1
+      except Fail:
+        for n, b in snap: n.binding = b
+    used = sum(n.binding is not None for n in xs)
+    return (good/len(ss) - used/len(xs),   # max soft, min use
+            [(n, n.binding) for n in vs
+             if n.abducible() and n.binding in (2, -2)])
+
+def keys(m, hs, ss, runs=100, reps=20, same=None):
+  credit = {}                # setting -> scores of its worlds
+  for _ in range(runs):
+    if r := settle(m, hs, ss):
+      for kv in r[1]: credit.setdefault(kv, []).append(r[0])
+  mid = lambda a: sorted(a)[len(a)//2]
+  rank = sorted(credit, key=lambda kv: -mid(credit[kv]))
+  score = lambda pr: sorted(r[0] for _ in range(reps)
+                            if (r := settle(m, hs, ss, pr)))
+  prev, k = score(()), 0     # assert top-k until no gain
+  while k < len(rank):
+    cur = score(rank[:k+1])
+    if mid(cur) <= mid(prev) or same and same(prev, cur): break
+    prev, k = cur, k + 1
+  return rank[:k], prev
+
 # ---- eg: the nfr3-eg.pl graphs ----------------------------
-m = Model()
+m = Theory()
 m.happy |= m.rich
 m.happy |= m.loved & no(m.lonely)
 m.rich  |= m.works & m.lucky
