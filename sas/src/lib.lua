@@ -289,5 +289,4 @@ function main(g,    run,todo) -- run test_w per bare word w
            if not s:find"^%-" then return s end end)
   map(#todo > 0 and todo or {"all"}, run) end
 
-setmetatable(the, {__tostring = show})
 return _ENV
