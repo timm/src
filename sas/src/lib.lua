@@ -19,9 +19,6 @@ the = {
   p      = 2,              -- minkowski coefficient
   few    = 128,            -- sample size for cheap guesses
   stop   = 32,             -- min rows before a split halts
-  cohen  = 0.2,            -- same if mid gap under this
-  ks     = 1.36,           -- ks 5% critical multiplier
-  cliffs = 0.197,          -- small rank effect ceiling
   file = "data/auto93.csv" } -- default table (via MOOT)
 
 function show(t,    u,v) -- ":k v" pairs, sorted; skips _keys
@@ -35,7 +32,11 @@ function show(t,    u,v) -- ":k v" pairs, sorted; skips _keys
       u[#u+1] = ":"..tostring(k).." "..tostring(v) end end
   return "{"..table.concat(u, " ").."}" end
 
-o = {__tostring = show}   -- setmetatable(t,o): print(t) works
+function new(kl,t) -- class table is also its metatable
+  kl.__index = kl; kl.__tostring = show
+  return setmetatable(t, kl) end
+
+Num, Sym, Tbl = {}, {}, {}  -- method tables (see `new`)
 
 --## cells ------------------------------------------------------
 function thing(s) -- string to number, bool, or string
@@ -65,95 +66,100 @@ function some(lst,k,    t) -- k items at random (all, if k big)
 
 --## columns ----------------------------------------------------
 function Col(name,at) -- column kind from first letter
-  return (name:sub(1,1):match"%l" and Sym or Num)(name,at) end
+  return (name:sub(1,1):match"%l" and Sym or Num).new(name,at) end
 
-function Num(name,at) -- summary of a numeric column
+function Num.new(name,at) -- summary of a numeric column
   name = name or ""
-  return setmetatable({it=Num, at=at or 1, name=name, n=0,
-    mu=0, m2=0, heaven = name:find"-$" and 0 or 1}, o) end
+  return new(Num, {at=at or 1, name=name, n=0, mu=0, m2=0,
+                   heaven = name:find"-$" and 0 or 1}) end
 
-function Sym(name,at) -- summary of a symbolic column
-  return setmetatable({it=Sym, at=at or 1, name=name or "",
-                       n=0, has={}}, o) end
+function Sym.new(name,at) -- summary of a symbolic column
+  return new(Sym, {at=at or 1, name=name or "", n=0, has={}}) end
 
-function count(sym,v) -- update symbol counts
-  sym.n = sym.n + 1; sym.has[v] = 1 + (sym.has[v] or 0) end
+function Sym.add(i,v) -- update symbol counts
+  if v == "?" then return v end
+  i.n = i.n + 1; i.has[v] = 1 + (i.has[v] or 0); return v end
 
-function welford(num,v,    d) -- one-pass update of mu and m2
-  num.n  = num.n + 1
-  d      = v - num.mu
-  num.mu = num.mu + d / num.n
-  num.m2 = num.m2 + d * (v - num.mu) end
+function Num.add(i,v,    d) -- one-pass update of mu and m2
+  if v == "?" then return v end
+  i.n  = i.n + 1
+  d    = v - i.mu
+  i.mu = i.mu + d / i.n
+  i.m2 = i.m2 + d * (v - i.mu); return v end
 
-function entropy(sym) -- diversity of symbolic counts
-  return sum(sym.has, function(n,    p)
-    p = n / sym.n; return -p * log(p, 2) end) end
-
-function mid(col,    hi,out) -- center: mean or mode
-  if col.it == Num then return col.mu end
+function Sym.mid(i,    hi,out) -- center: the mode
   hi = -1
-  for k, n in pairs(col.has) do
+  for k, n in pairs(i.has) do
     if n > hi then hi, out = n, k end end
   return out end
 
-function div(col) -- diversity: sd (Num) or entropy (Sym)
-  if col.it == Sym then return entropy(col) end
-  return col.n < 2 and 0 or sqrt(max(col.m2,0) / (col.n-1)) end
+function Num.mid(i) return i.mu end -- center: the mean
 
-function norm(col,v,    z) -- v's cdf, via logistic; 0..1
-  if v == "?" or col.it == Sym then return v end
-  z = (v - col.mu) / (div(col) + TINY)
+function Sym.div(i) -- diversity: entropy of the counts
+  return sum(i.has, function(n,    p)
+    p = n / i.n; return -p * log(p, 2) end) end
+
+function Num.div(i) -- diversity: standard deviation
+  return i.n < 2 and 0 or sqrt(max(i.m2,0) / (i.n-1)) end
+
+function Sym.norm(i,v) return v end -- syms have no cdf
+
+function Num.norm(i,v,    z) -- v's cdf, via logistic; 0..1
+  if v == "?" then return v end
+  z = (v - i.mu) / (i.div(i) + TINY)
   return 1 / (1 + exp(-1.702 * max(-3, min(3, z)))) end
 
 --## tables -----------------------------------------------------
-function Tbl(src,    names,all,x,y) -- row 1 names the columns
+function Tbl.new(src,    names,all,x,y) -- row 1 names cols
   src = iter(src)
   names, all, x, y = src(), {}, {}, {}
   for at, s in ipairs(names) do
     all[at] = Col(s, at)
     if s:find"[+-]$" then y[#y+1] = all[at]
     elseif s:sub(-1) ~= "X" then x[#x+1] = all[at] end end
-  return adds(src, {it=Tbl, rows={}, mid=nil,
-                    cols={names=names, all=all, x=x, y=y}}) end
+  return adds(src, new(Tbl, {rows={}, mid=nil,
+                 cols={names=names, all=all, x=x, y=y}})) end
 
-function add(i,v) -- fold value into col, row into tbl
-  if i.it == Tbl then
-    i.rows[#i.rows+1] = v; i.mid = nil
-    for _, col in ipairs(i.cols.all) do add(col, v[col.at]) end
-  elseif v ~= "?" then
-    (i.it == Sym and count or welford)(i, v) end
-  return v end
+function Tbl.add(i,row) -- fold a row into every column
+  i.rows[#i.rows+1] = row; i.mid = nil
+  for _, c in ipairs(i.cols.all) do c.add(c, row[c.at]) end
+  return row end
 
-function adds(src,col) -- fold list or iterator; Num default
-  col = col or Num()
-  for v in iter(src or {}) do add(col, v) end
-  return col end
+function adds(src,i) -- fold list or iterator; Num default
+  i = i or Num.new()
+  for v in iter(src or {}) do i.add(i, v) end
+  return i end
 
 function clone(tbl,rows) -- same header, fresh summaries
-  return adds(rows, Tbl{tbl.cols.names}) end
+  return adds(rows, Tbl.new{tbl.cols.names}) end
 
 function mids(tbl) -- return centroid of this tbl
-  tbl.mid = tbl.mid or map(tbl.cols.all, mid)
+  tbl.mid = tbl.mid or
+            map(tbl.cols.all, function(c) return c.mid(c) end)
   return tbl.mid end
 
 --## distance ---------------------------------------------------
-function distx(tbl,row1,row2,    d,n,a,b,g) -- gap over x; 0..1
+function Sym.dist(i,a,b) -- gap between two syms; 0..1
+  if a == "?" and b == "?" then return 1 end
+  return a ~= b and 1 or 0 end
+
+function Num.dist(i,a,b) -- gap between two nums; 0..1
+  if a == "?" and b == "?" then return 1 end
+  a, b = i.norm(i,a), i.norm(i,b)
+  if a == "?" then a = b > 0.5 and 0 or 1 end
+  if b == "?" then b = a > 0.5 and 0 or 1 end
+  return abs(a - b) end
+
+function distx(tbl,row1,row2,    d,n) -- gap over x; 0..1
   d, n = 0, TINY
-  for _, col in ipairs(tbl.cols.x) do
-    a, b = row1[col.at], row2[col.at]
-    if a == "?" and b == "?" then g = 1
-    elseif col.it == Sym then g = a ~= b and 1 or 0
-    else
-      a, b = norm(col, a), norm(col, b)
-      if a == "?" then a = b > 0.5 and 0 or 1 end
-      if b == "?" then b = a > 0.5 and 0 or 1 end
-      g = abs(a - b) end
-    d, n = d + g ^ the.p, n + 1 end
+  for _, c in ipairs(tbl.cols.x) do
+    d = d + c.dist(c, row1[c.at], row2[c.at]) ^ the.p
+    n = n + 1 end
   return (d / n) ^ (1 / the.p) end
 
 function disty(tbl,row,    d) -- gap to heaven; 0=best
   d = sum(tbl.cols.y, function(y)
-        return abs(norm(y, row[y.at]) - y.heaven) ^ the.p end)
+        return abs(y.norm(y, row[y.at]) - y.heaven) ^ the.p end)
   return (d / #tbl.cols.y) ^ (1 / the.p) end
 
 --## clusters ---------------------------------------------------
@@ -175,7 +181,7 @@ function halve(tbl,rows,    far,a,b,c,n)
 
 function Node(tbl,rows,    i,a,b,west,east) -- tree of halves
   rows = rows or tbl.rows
-  i = {it=Node, here=clone(tbl, rows),
+  i = {here=clone(tbl, rows),
        a=nil, b=nil, west=nil, east=nil}
   if #rows >= 2 * the.stop then
     a, b, west, east = halve(tbl, rows)
@@ -214,11 +220,14 @@ function cliffs(xs,ys,    gt,lt,j,k) -- rank imbalance; 0..1
     gt = gt + j; lt = lt + #ys - k end
   return abs(gt - lt) / (#xs * #ys) end
 
-function same(xs,ys) -- any judge under threshold? lazy or
+function same(xs,ys,Cohen,Ks,Cliffs) -- similar evidence?
+  Cohen  = Cohen  or 0.2   -- J. Cohen 1988
+  Ks     = Ks     or 1.36  -- F. Massey 1951
+  Cliffs = Cliffs or 0.197 -- N. Cliff 1993
   xs, ys = sorted(xs), sorted(ys)
-  return cohen(xs, ys) < the.cohen
-         or ks(xs, ys) < the.ks
-         or cliffs(xs, ys) <= the.cliffs end
+  return cohen(xs, ys) < Cohen
+         or ks(xs, ys) < Ks
+         or cliffs(xs, ys) <= Cliffs end
 
 function top(d,big,    sign,out) -- winners; best = least
   sign, out = big and -1 or 1, {}  -- medians, unless big
@@ -249,9 +258,9 @@ function keysort(t,f,    px) -- Schwartzian: sort by f(v),
   px = {}; for _, v in pairs(t) do px[v] = f(v) end
   return sorted(t, function(u,v) return px[u] < px[v] end) end
 
-function most(t,f,    hi,n,x) -- v with the biggest f(v)
-  hi = -math.huge
-  for _, v in pairs(t) do n=f(v); if n>hi then hi, x=n,v end end
+function most(t,f,    hi,n,x) -- argmax: v w/ biggest f(v)
+  hi = -math.huge                 -- first winner keeps ties
+  for _,v in ipairs(t) do n=f(v); if n>hi then hi,x=n,v end end
   return x end
 
 function iter(src,    at) -- iterate a list or a function
@@ -276,5 +285,5 @@ function main(g,    run,todo) -- run test_w per bare word w
            if not s:find"^%-" then return s end end)
   map(#todo > 0 and todo or {"all"}, run) end
 
-setmetatable(the, o)
+setmetatable(the, {__tostring = show})
 return _ENV
