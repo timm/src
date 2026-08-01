@@ -170,8 +170,8 @@ def ks(xsort, ysort): # max cdf gap, in critical units
 def cliffs(xsort, ysort): # rank imbalance; 0..1
   gt = lt = j = k = 0     # j,k: how many ys sit <x, <=x
   for x in xsort:         # x ascends, so j,k only advance
-    while j < len(ysort) and ysort[j] <  x: j += 1
-    while k < len(ysort) and ysort[k] <= x: k += 1
+    while j < len(ysort) and ysort[j] <  x: j += 1; k = j
+    while k < len(ysort) and ysort[k] == x: k += 1
     gt += j; lt += len(ysort) - k
   return abs(gt - lt) / (len(xsort) * len(ysort))
 

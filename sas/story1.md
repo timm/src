@@ -690,8 +690,9 @@ first, and the first small-enough score stops the panel.
     def cliffs(xsort, ysort):                        # ⑦
       gt = lt = j = k = 0
       for x in xsort:
-        while j < len(ysort) and ysort[j] <  x: j += 1
-        while k < len(ysort) and ysort[k] <= x: k += 1
+        while j < len(ysort) and ysort[j] < x:
+          j += 1; k = j
+        while k < len(ysort) and ysort[k] == x: k += 1
         gt += j; lt += len(ysort) - k
       return abs(gt - lt) / (len(xsort) * len(ysort))  # ⑧
 
@@ -722,6 +723,8 @@ walk two pointers up the sorted ys, counting how many sit
 below and at each ascending x. The pointers never restart:
 each x inherits the previous count and augments it, since
 whatever sat below the last x still sits below this one.
+As `j` advances it drags `k` along, so the second pointer
+walks only the ties, the ys exactly equal to this x.
 And note that `gt += j` re-adds the inherited ys on
 purpose: the delta sums over all pairs, and a y beneath
 two xs loses two pairs, one to each. Line ⑧ returns the
@@ -2053,8 +2056,9 @@ test, Cohen's rule, same.
     def cliffs(xsort, ysort):
       gt = lt = j = k = 0
       for x in xsort:
-        while j < len(ysort) and ysort[j] <  x: j += 1
-        while k < len(ysort) and ysort[k] <= x: k += 1
+        while j < len(ysort) and ysort[j] < x:
+          j += 1; k = j
+        while k < len(ysort) and ysort[k] == x: k += 1
         gt += j; lt += len(ysort) - k
       return abs(gt - lt) / (len(xsort) * len(ysort))
 

@@ -191,8 +191,8 @@ function ks(xs,ys,    nx,ny,d,p,q) -- max cdf gap, in
 function cliffs(xs,ys,    gt,lt,j,k) -- rank imbalance; 0..1
   gt, lt, j, k = 0, 0, 0, 0   -- j,k: #ys sitting <x, <=x
   for _, x in ipairs(xs) do   -- x ascends: j,k only advance
-    while j < #ys and ys[j+1] <  x do j = j + 1 end
-    while k < #ys and ys[k+1] <= x do k = k + 1 end
+    while j < #ys and ys[j+1] <  x do j = j + 1; k = j end
+    while k < #ys and ys[k+1] == x do k = k + 1 end
     gt = gt + j; lt = lt + #ys - k end
   return abs(gt - lt) / (#xs * #ys) end
 
