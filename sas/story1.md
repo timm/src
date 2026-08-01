@@ -695,19 +695,19 @@ first, and the first small-enough score stops the panel.
         gt += j; lt += len(ysort) - k
       return abs(gt - lt) / (len(xsort) * len(ysort))  # ⑧
 
-    def same(xs, ys,                                 # ⑨
+    def same(xsort, ysort,  # ⑨
              Cohen=0.2,     # J. Cohen 1988
              Ks=1.36,       # F. Massey 1951
              Cliffs=0.197): # N. Cliff 1993
-      xsort, ysort = sorted(xs), sorted(ys)          # ⑩
       return (cohen(xsort, ysort) < Cohen
               or ks(xsort, ysort) < Ks
-              or cliffs(xsort, ysort) <= Cliffs)     # ⑪
+              or cliffs(xsort, ysort) <= Cliffs)     # ⑩
 
 All three judges expect sorted lists, and they say so in
 their own signatures: parameters named `xsort` and `ysort`
-arrive sorted, by contract. `same` does that sorting, once,
-at ⑩; downstream, nobody sorts again. Judge one, `cohen`
+arrive sorted, by contract. The verdict ⑨ keeps that
+contract, and those names; who finally sorts is `ranks`,
+below, once per treatment. Judge one, `cohen`
 ①, is the pragmatist: line ② estimates the spread from
 the 10th to 90th percentile gap (that range spans 2.56
 standard deviations of a Gaussian), and line ③ returns the
@@ -729,7 +729,7 @@ imbalance, 0 to 1.
 
 Note what the judges never do: they never say yes or no.
 The verdicts live in `same` ⑨, one comparison per judge at
-⑪, each against a named default in same's own signature,
+⑩, each against a named default in same's own signature,
 its citation riding alongside as a comment. Cohen at 0.2
 is Cohen's small effect, the same 0.2 that priced the
 search back in story.md's maths: a gap too small for a
@@ -756,27 +756,32 @@ helper tops off the referee. Give `ranks` a dictionary
 mapping each treatment's name to its observed scores; back
 comes every treatment's rank:
 
-    def ranks(d, max=False):                         # ①
-      mid  = lambda a: sorted(a)[len(a) // 2]
+    def ranks(d, max=False, **thresholds):           # ①
+      mid = lambda a: a[len(a) // 2]
+      d   = {k: sorted(v) for k, v in d.items()}     # ②
       out, rank, best = {}, -1, None
       for k in sorted(d, key=lambda k: mid(d[k]),
-                      reverse=max):                  # ②
-        if best is None or not same(d[best], d[k]):
-          rank, best = rank + 1, k                   # ③
+                      reverse=max):                  # ③
+        if best is None or not same(d[best], d[k],
+                                    **thresholds):   # ④
+          rank, best = rank + 1, k
         out[k] = rank
       return o(winners=[k for k, r in out.items()
                         if r == 0],
-               ranks=out)                            # ④
+               ranks=out)                            # ⑤
 
-Line ② orders the treatments best median first: least by
+Line ② settles the sorting debt for everyone: each
+treatment's scores are sorted exactly once, here, and
+every judge and every median downstream reads that work.
+Line ③ orders the treatments best median first: least by
 default, since this book's scores are distances to heaven,
 and greatest when the `max` flag says the score grows the
 other way. The walk then pools each treatment into the
 current rank while the judges cannot tell it from that
-rank's champion; when a newcomer differs ③, a new rank
+rank's champion; when a newcomer differs ④, a new rank
 opens and the newcomer is its champion. Anchoring on the
 champion, not the neighbor, stops slow drift from chaining
-unlike treatments into one rank. And ④ hands back both
+unlike treatments into one rank. And ⑤ hands back both
 spellings of the answer at once: `.ranks`, every
 treatment's shelf, and `.winners`, the rank-zero names in
 best-first order. Not first, second, third, but "these
@@ -796,7 +801,7 @@ and the walk is short enough to read aloud.
 for grouping means in the analysis of variance",
 Biometrics 30(3):507-512, 1974.
 
-> Code tip #5: line ⑪ is short-circuit evaluation doing
+> Code tip #5: line ⑩ is short-circuit evaluation doing
 > statistics. An `or` chain, cheapest test first, is the
 > lazy referee: it computes exactly as much evidence as the
 > verdict needs and not one comparison more.
@@ -1489,7 +1494,7 @@ they differ, smoke.
     def smoke(tbl, new):                             # ①
       old = [strange(tbl, r) for r in some(tbl.rows, the.few)]  # ②
       now = [strange(tbl, r) for r in new]           # ③
-      return not same(old, now)                      # ④
+      return not same(sorted(old), sorted(now))      # ④
 
 Lines ② and ③ reduce "then" and "now" to two lists of
 numbers. Line ④ asks whether the lists are statistically
@@ -2228,8 +2233,8 @@ a lazy `or` ends the trial at the first small-enough
 score. See also:
 Cohen's rule, KS test, Cliff's delta.
 
-    def same(xs, ys, Cohen=0.2, Ks=1.36, Cliffs=0.197):
-      xsort, ysort = sorted(xs), sorted(ys)
+    def same(xsort, ysort,
+             Cohen=0.2, Ks=1.36, Cliffs=0.197):
       return (cohen(xsort, ysort) < Cohen
               or ks(xsort, ysort) < Ks
               or cliffs(xsort, ysort) <= Cliffs)
@@ -2242,12 +2247,14 @@ to one champion-anchored pass; the winner set any verdict
 column prints is its rank zero (Chapter 6). See also:
 same, baseline.
 
-    def ranks(d, max=False):
-      mid  = lambda a: sorted(a)[len(a) // 2]
+    def ranks(d, max=False, **thresholds):
+      mid = lambda a: a[len(a) // 2]
+      d   = {k: sorted(v) for k, v in d.items()}
       out, rank, best = {}, -1, None
       for k in sorted(d, key=lambda k: mid(d[k]),
                       reverse=max):
-        if best is None or not same(d[best], d[k]):
+        if best is None or not same(d[best], d[k],
+                                    **thresholds):
           rank, best = rank + 1, k
         out[k] = rank
       return o(winners=[k for k, r in out.items()
