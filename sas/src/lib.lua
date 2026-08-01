@@ -202,7 +202,7 @@ function same(xs,ys,Cohen,Ks,Cliffs) -- similar evidence?
          or ks(xs, ys)    < (Ks or 1.36)
          or cliffs(xs,ys) <= (Cliffs or 0.197) end
 
-function sk(d,big,    sign,out,rank,best) -- rank all;
+function ranks(d,big,    sign,out,rank,best) -- rank all;
   sign = big and -1 or 1        -- same-as-champion share
   out, rank, best = {}, -1, nil
   for _, k in ipairs(keysort(keys(d),
@@ -211,12 +211,6 @@ function sk(d,big,    sign,out,rank,best) -- rank all;
       rank, best = rank + 1, k end
     out[k] = rank end
   return out end
-
-function top(d,big,    sign,u) -- the winners: sk's rank 0
-  sign, u = big and -1 or 1, {}
-  for k, r in pairs(sk(d, big)) do
-    if r == 0 then u[1+#u] = k end end
-  return keysort(u, function(k) return sign*med(d[k]) end) end
 
 --## lists ------------------------------------------------------
 function map(t,f,    u) -- f over values; keeps order

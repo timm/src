@@ -184,7 +184,7 @@ def same(xs, ys,        # any evidence of "similar"?
           or ks(xsort, ysort) < Ks
           or cliffs(xsort, ysort) <= Cliffs)
 
-def sk(d, max=False): # rank all; same-as-champion share
+def ranks(d, max=False): # same-as-champion share a rank
   mid  = lambda a: sorted(a)[len(a) // 2]
   out, rank, best = {}, -1, None
   for k in sorted(d, key=lambda k: mid(d[k]), reverse=max):
@@ -192,9 +192,6 @@ def sk(d, max=False): # rank all; same-as-champion share
       rank, best = rank + 1, k
     out[k] = rank
   return out
-
-def top(d, max=False): # the winners: sk's rank zero
-  return [k for k, r in sk(d, max).items() if r == 0]
 
 #-- start-up ----------------------------------------------------
 def cli(d): # --key=val flags update settings

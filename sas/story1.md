@@ -752,11 +752,11 @@ goes last. In the common case, `cohen` answers alone and
 the panel adjourns.
 
 Experiments compare many treatments, not two, so one more
-helper tops off the referee. Give `sk` a dictionary
+helper tops off the referee. Give `ranks` a dictionary
 mapping each treatment's name to its observed scores; back
 comes every treatment's rank:
 
-    def sk(d, max=False):                            # ①
+    def ranks(d, max=False):                         # ①
       mid  = lambda a: sorted(a)[len(a) // 2]
       out, rank, best = {}, -1, None
       for k in sorted(d, key=lambda k: mid(d[k]),
@@ -766,10 +766,6 @@ comes every treatment's rank:
         out[k] = rank
       return out
 
-    def top(d, max=False):                           # ④
-      return [k for k, r in sk(d, max).items()
-              if r == 0]
-
 Line ② orders the treatments best median first: least by
 default, since this book's scores are distances to heaven,
 and greatest when the `max` flag says the score grows the
@@ -778,11 +774,11 @@ current rank while the judges cannot tell it from that
 rank's champion; when a newcomer differs ③, a new rank
 opens and the newcomer is its champion. Anchoring on the
 champion, not the neighbor, stops slow drift from chaining
-unlike treatments into one rank. And ④ says the winners
-are nothing extra: rank zero, read off. Not first, second,
-third, but "these won and the rest lost". When a later
-chapter's table shows a verdict column, it is `top`,
-spoken; a rank column is `sk`.
+unlike treatments into one rank. And the winners cost
+nothing extra: they are rank zero, read off. Not first,
+second, third, but "these won and the rest lost". When a
+later chapter's table shows a verdict column, that is
+rank zero, spoken; a rank column is `ranks` verbatim.
 
 Two sentences of lineage. The classical procedure here is
 Scott and Knott's[^sk]: sort the treatments, cut where the
@@ -829,7 +825,7 @@ Method: for each MOOT table, 20 repeats: shuffle, run
 `hunt`, record the disty of its answer, the labels spent,
 and the disty of the true best row (peeked for scoring
 only). Two result sets per table: `hunt` versus `all` (the
-best found by exhaustive labeling). `top` picks the winners.
+best found by exhaustive labeling). `ranks` picks winners.
 
     %%run python3 src/skills_eg.py hunt
 
@@ -1770,7 +1766,7 @@ cell, one call:
     overlays       correlation        contrast        8
     goals          root-cause         plan            11
     modeling       machine learning   Tbl, Node       3,4
-    benchmarking   significance       top             6
+    benchmarking   significance       ranks           6
     simulation     what-if            wish            12
 
 Nine research areas, nine calls. And that ratio, not any
@@ -1866,7 +1862,7 @@ multi-objective genetic rig, NSGA-II (as shipped in the
 pymoo library). The protocol: every MOOT table; every
 method gets the same budgets (24, 50, 100 labels); 20
 repeats; each run scored by the distance to heaven of the
-best row it bought; `top` names each row's winner set.
+best row it bought; `ranks` names each row's winners.
 
     %%run python3 src/dragrace_eg.py --report optimize
 
@@ -2237,11 +2233,12 @@ Cohen's rule, KS test, Cliff's delta.
 **Scott-Knott** (stat). Classical full ranking: sort
 treatments by median, split where the halves' means pull
 farthest from the parent, recurse while a test says the
-halves differ. This book's `sk` is the idea flattened to
-one champion-anchored pass (Chapter 6). See also: top,
-same.
+halves differ. This book's `ranks` is the idea flattened
+to one champion-anchored pass; the winner set any verdict
+column prints is its rank zero (Chapter 6). See also:
+same, baseline.
 
-    def sk(d, max=False):
+    def ranks(d, max=False):
       mid  = lambda a: sorted(a)[len(a) // 2]
       out, rank, best = {}, -1, None
       for k in sorted(d, key=lambda k: mid(d[k]),
@@ -2302,14 +2299,6 @@ margins: AI tips (learning and data), SE tips (the craft
 around the code), Code tips (any language), Python tips
 (this language). The glossary tags reuse the same four
 names.
-
-**top** (function). The winner set this book's report
-tables print: rank zero of `sk`, read off in two lines
-(Chapter 6). See also: Scott-Knott, same, baseline.
-
-    def top(d, max=False):
-      return [k for k, r in sk(d, max).items()
-              if r == 0]
 
 **triage** (AI). Ranking unlabeled rows by expected value
 of inspection: like the best seen so far, unlike the rest
