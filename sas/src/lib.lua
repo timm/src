@@ -261,8 +261,6 @@ function show(t,    u,v) -- ":k v" pairs, sorted, no _keys
   u = {}
   for _,k in ipairs(keys(t, "_")) do
     v = t[k]
-    if type(v) == "function" then
-      for n,f in pairs(_ENV) do if f==v then v=n end end end
     if type(v) == "table" then v = show(v) end
     if type(v) == "number" and v % 1 ~= 0 then
       v = ("%."..the.round.."f"):format(v) end
