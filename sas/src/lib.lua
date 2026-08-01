@@ -196,13 +196,10 @@ function cliffs(xs,ys,    gt,lt,j,k) -- rank imbalance; 0..1
   return abs(gt - lt) / (#xs * #ys) end
 
 function same(xs,ys,Cohen,Ks,Cliffs) -- similar evidence?
-  Cohen  = Cohen  or 0.2   -- J. Cohen 1988, stat. power analysis
-  Ks     = Ks     or 1.36  -- F. Massey 1951, Kolmogorov-Smirnov
-  Cliffs = Cliffs or 0.197 -- N. Cliff 1993, dominance statistics
   xs, ys = sorted(xs), sorted(ys)
-  return cohen(xs, ys) < Cohen
-         or ks(xs, ys) < Ks
-         or cliffs(xs, ys) <= Cliffs end
+  return cohen(xs, ys)    < (Cohen or 0.2) 
+         or ks(xs, ys)    < (Ks or 1.36)
+         or cliffs(xs,ys) <= (Cliffs or 0.197) end
 
 function top(d,big,    sign,out) -- winners; best = least
   sign, out = big and -1 or 1, {}  -- medians, unless big
@@ -219,8 +216,9 @@ function map(t,f,    u) -- f over values; keeps order
 function sum(t,f,    n) -- add f(v) over values
   n = 0; for _, v in pairs(t) do n = n + f(v) end; return n end
 
-function keys(t,    u) -- the keys, as a list
-  u = {}; for k in pairs(t) do u[1+#u] = k end; return u end
+function keys(t,    u) -- the keys, sorted by print name
+  u = {}; for k in pairs(t) do u[1+#u] = k end
+  return keysort(u, tostring) end
 
 function med(t,    s) -- median (sorts a copy first)
   s = sorted(t); return s[#s // 2 + 1] end
@@ -229,9 +227,12 @@ function sorted(t,f,    s) -- sorted copy; f optional
   s = {}; for at, v in ipairs(t) do s[at] = v end
   table.sort(s, f); return s end
 
-function keysort(t,f,    px) -- Schwartzian: sort by f(v),
-  px = {}; for _, v in pairs(t) do px[v] = f(v) end
-  return sorted(t, function(u,v) return px[u] < px[v] end) end
+function keysort(t,f,    px,ix) -- sort by f(v); stable,
+  px, ix = {}, {}               -- so ties keep input order
+  for at, v in ipairs(t) do px[v], ix[v] = f(v), at end
+  return sorted(t, function(u,v)
+           if px[u] == px[v] then return ix[u] < ix[v] end
+           return px[u] < px[v] end) end
 
 function most(t,f,    hi,n,x) -- argmax: v w/ biggest f(v)
   hi = -math.huge                 -- first winner keeps ties
@@ -255,7 +256,7 @@ function some(lst,k,    t) -- k items at random (all, if k big)
 
 function show(t,    u,v) -- ":k v" pairs, sorted; skips _keys
   u = {}
-  for _,k in ipairs(keysort(keys(t), tostring)) do
+  for _,k in ipairs(keys(t)) do
     if tostring(k):sub(1,1) ~= "_" then
       v = t[k]
       if type(v) == "function" then
