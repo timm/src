@@ -191,6 +191,25 @@ def top(d, max=False): # winners; best = least, unless max
     out += [k]
   return out
 
+def sk(d): # Scott-Knott: treatment -> leaf rank, best first
+  mu   = lambda a: sum(a) / len(a)
+  mid  = lambda a: sorted(a)[len(a) // 2]
+  vals = lambda ks: [v for k in ks for v in d[k]]
+  out  = {}
+  def grow(ks, M=0, b=0):
+    if len(ks) > 1:
+      M  = mu(vals(ks))
+      b  = lambda l, r: (len(l) * (mu(l) - M)**2
+                         + len(r) * (mu(r) - M)**2)
+      at = max(range(1, len(ks)), key=lambda i:
+               b(vals(ks[:i]), vals(ks[i:])))
+      if not same(vals(ks[:at]), vals(ks[at:])):
+        grow(ks[:at]); return grow(ks[at:])
+    n = len(set(out.values()))
+    for k in ks: out[k] = n
+  grow(sorted(d, key=lambda k: mid(d[k])))
+  return out
+
 #-- start-up ----------------------------------------------------
 def cli(d): # --key=val flags update settings
   for k in d:

@@ -775,8 +775,43 @@ laziness runs two levels deep: `same` stops at its first
 small-enough judge, and `top` stops at its first loser.
 The break does place a bet: that once the medians drift
 too far apart they do not drift back. That is the same bet
-Scott-Knott style rankings make, and on distance-to-heaven
-scores it is a safe one. That list is the only ranking this
+Scott-Knott rankings make, and on distance-to-heaven
+scores it is a safe one.
+
+And when a report wants every rank, not just the winners,
+Scott and Knott's own procedure[^sk] is ten more lines:
+
+    def sk(d):                                       # ①
+      mu   = lambda a: sum(a) / len(a)
+      mid  = lambda a: sorted(a)[len(a) // 2]
+      vals = lambda ks: [v for k in ks for v in d[k]]
+      out  = {}
+      def grow(ks, M=0, b=0):
+        if len(ks) > 1:
+          M  = mu(vals(ks))
+          b  = lambda l, r: (len(l) * (mu(l) - M)**2
+                             + len(r) * (mu(r) - M)**2)
+          at = max(range(1, len(ks)), key=lambda i:
+                   b(vals(ks[:i]), vals(ks[i:])))    # ②
+          if not same(vals(ks[:at]), vals(ks[at:])): # ③
+            grow(ks[:at]); return grow(ks[at:])
+        n = len(set(out.values()))
+        for k in ks: out[k] = n                      # ④
+      grow(sorted(d, key=lambda k: mid(d[k])))
+      return out
+
+Order the treatments by median; find the cut whose two
+halves pull farthest from the parent mean ② (the
+between-group sum of squares, argmax over every split
+point); then let the referee veto ③: halves the judges
+cannot tell apart never split. What survives unsplit is
+one leaf, and ④ stamps every treatment in it with the
+next rank id, numbered best first. `top` is the front of
+this ranking bought lazily; `sk` is the whole thing.
+
+[^sk]: A.J. Scott and M. Knott, "A cluster analysis method
+for grouping means in the analysis of variance",
+Biometrics 30(3):507-512, 1974. That list is the only ranking this
 book ever reports: not first, second, third, but "these
 won and the rest lost". When a later chapter's table shows
 a verdict column, it is `top`, spoken.
@@ -2218,6 +2253,12 @@ Cohen's rule, KS test, Cliff's delta.
       return (cohen(xsort, ysort) < Cohen
               or ks(xsort, ysort) < Ks
               or cliffs(xsort, ysort) <= Cliffs)
+
+**Scott-Knott** (stat). Full ranking of many treatments:
+sort by median, split where the halves pull farthest from
+the parent mean, recurse only where `same` says the halves
+differ; unsplit groups share one integer rank, best first
+(`sk`, Chapter 6). See also: top, same.
 
 **seed** (SE). The number that makes randomness
 replayable. Set once in about.py; reset before every

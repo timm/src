@@ -132,6 +132,13 @@ def test_top(): # winner set = best plus its peers
   assert sorted(top(d)) == ["fast", "ok"]
   assert top(d, max=True) == ["bad"]
 
+def test_sk(): # full ranking; same leaves share an id
+  random.seed(the.seed)
+  g = lambda mu: [random.gauss(mu, 1) for _ in range(20)]
+  d = dict(a=g(0), b=g(0.05), c=g(2), e=g(4))
+  print(sk(d))
+  assert sk(d) == dict(a=0, b=0, c=1, e=2)
+
 def test_all(): # run every test_*, reseeding each
   bad = 0
   for name, fn in list(globals().items()):
