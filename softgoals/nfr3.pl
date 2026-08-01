@@ -22,13 +22,14 @@ permute(Xs,Ys) :- random_permutation(Xs,Ys).
 % ---- belief set: a Node-Value list threaded as DCG state -----------------
 peek(S,S,S).
 push(X,S,[X|S]).
+=(X,X,S,S).
 
-believed(K,V) --> peek(S), { memberchk(K-V0,S), V = V0 }.
+believed(K,V,S,S) :-  memberchk(K-V0,S), V = V0.
 
 % maybe(K,V): recall K's value, else assume one (undone on backtrack).
 % Callers cut on believed with a FRESH var, unify after: commits to
 % the recalled value, then a mismatched demand fails outright.
-maybe(K,V) --> believed(K,W), !, { V = W }.
+maybe(K,V,S,S) --> believed(K,W,S,S), !,  V = W.
 maybe(K,V) --> { var(V) -> permute([2,-2],Ps), member(V,Ps) ; true }, push(K-V).
 
 % ---- hard side: or//1, and//1, no//1 -------------------------------------
@@ -46,13 +47,13 @@ lit(no(K)) --> !, no(K).
 lit(K)     --> call(K,2).
 
 % ---- soft side: contributions are nonterminals too -----------------------
-makes(X, V) --> call(X,V).                                   % full, same
-breaks(X,V) --> call(X,W), { V = neg(W) }.                   % full, flip
-helps(X, V) --> call(X,W), { V = damp(W) }.
-hurts(X, V) --> call(X,W), { V = neg(damp(W)) }.
-and(Xs,  V) --> calls(Xs,Vs), { V = amin(Vs) }.
-or(Xs,   V) --> calls(Xs,Vs), { V = amax(Vs) }.
-no(X,    V) --> no(X), { V = -2 }.             % assume false, contribute -2
+makes(X, V)            --> call(X,V).                        % full, same
+breaks(X,neg(W))       --> call(X,W).                        % full, flip
+helps(X, damp(W))      --> call(X,W).
+hurts(X, neg(damp(W))) --> call(X,W).
+and(Xs,  amin(Vs))     --> calls(Xs,Vs).
+or(Xs,   amax(Vs))     --> calls(Xs,Vs).
+no(X,    -2)           --> no(X).              % assume false, contribute -2
 
 calls([],[])         --> [].         % one fold serves edge lists and the
 calls([X|Xs],[V|Vs]) --> call(X,V), calls(Xs,Vs).            % and/or args
