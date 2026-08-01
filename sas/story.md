@@ -77,29 +77,30 @@ also the map of this book: one row per chapter, in this order.
 Read it now as a menu; return to it later as a table of
 contents.
 
-| task                                             | skill                      | ch | new LOC |
-|--------------------------------------------------|:---------------------------|---:|--------:|
-| Put 400 cars in one table; measure any gap       | remember (representation)  |  3 |     120 |
-| Guess the fuel use before we see the sticker     | guess (prediction)         |  4 |      35 |
-| Check our tricks on a hundred other lots         | check (benchmarking)       |  5 |       0 |
-| Say when "better" is real, and when it is noise  | certify (certification)    |  6 |      32 |
-| Decide on the spot as cars arrive one at a time  | flow (streaming)           |  7 |      20 |
-| Say why the bad cars are slow, or thirsty        | blame (diagnosis)          |  8 |      13 |
-| Justify any verdict to a skeptical buyer         | justify (explanation)      |  9 |      12 |
-| Find the best car, test-driving very few         | choose (optimization)      | 10 |      11 |
-| Chart a path from this car to a better one       | route (planning)           | 11 |       5 |
-| Find the cheapest change that fixes this car     | fix (repair)               | 12 |      11 |
-| Sketch a better car from halves of two others    | blend (synthesis)          | 13 |       9 |
-| Spot a strange car: a typo, or a scam            | spot (anomaly detection)   | 14 |       8 |
-| 400 cars, one afternoon, what to inspect first?  | ration (triage)            | 15 |       8 |
-| Trade fast against light against cheap           | haggle (trade-off)         | 16 |       6 |
-| Notice when the lot quietly changes under us     | watch (drift detection)    | 17 |       5 |
-| Shrink 400 cars to the dozen that summarize      | shrink (compression)       | 18 |       3 |
-| Keep learning for years as the market moves      | persist (lifelong learning)| 19 |       7 |
-| Rehearse every skill on one knowable project     | rehearse (simulation)      | 20 |      20 |
-| Answer the boss's morning questions with data    | brief (analytics)          | 21 |       8 |
-| Race our skills against the field's best         | race (baselining)          | 22 |       0 |
-| Teach the next intern to run the lot             | teach (onboarding)         | 23 |       0 |
+| task                                             | skill                      | ch | new LOC | %LOC |
+|--------------------------------------------------|:---------------------------|---:|--------:|-----:|
+| Put 400 cars in one table; measure any gap       | remember (representation)  |  3 |     120 |  36% |
+| Guess the fuel use before we see the sticker     | guess (prediction)         |  4 |      35 |  11% |
+| Check our tricks on a hundred other lots         | check (benchmarking)       |  5 |       0 |   0% |
+| Say when "better" is real, and when it is noise  | certify (certification)    |  6 |      32 |  10% |
+| Decide on the spot as cars arrive one at a time  | flow (streaming)           |  7 |      20 |   6% |
+| Say why the bad cars are slow, or thirsty        | blame (diagnosis)          |  8 |      13 |   4% |
+| Justify any verdict to a skeptical buyer         | justify (explanation)      |  9 |      12 |   4% |
+| Find the best car, test-driving very few         | choose (optimization)      | 10 |      11 |   3% |
+| Chart a path from this car to a better one       | route (planning)           | 11 |       5 |   2% |
+| Find the cheapest change that fixes this car     | fix (repair)               | 12 |      11 |   3% |
+| Sketch a better car from halves of two others    | blend (synthesis)          | 13 |       9 |   3% |
+| Spot a strange car: a typo, or a scam            | spot (anomaly detection)   | 14 |       8 |   2% |
+| 400 cars, one afternoon, what to inspect first?  | ration (triage)            | 15 |       8 |   2% |
+| Trade fast against light against cheap           | haggle (trade-off)         | 16 |       6 |   2% |
+| Notice when the lot quietly changes under us     | watch (drift detection)    | 17 |       5 |   2% |
+| Shrink 400 cars to the dozen that summarize      | shrink (compression)       | 18 |       3 |   1% |
+| Keep learning for years as the market moves      | persist (lifelong learning)| 19 |       7 |   2% |
+| Rehearse every skill on one knowable project     | rehearse (simulation)      | 20 |      20 |   6% |
+| Answer the boss's morning questions with data    | brief (analytics)          | 21 |       8 |   2% |
+| Race our skills against the field's best         | race (baselining)          | 22 |       0 |   0% |
+| Teach the next intern to run the lot             | teach (onboarding)         | 23 |       0 |   0% |
+| Totals                                           |                            |    |     333 | 100% |
 
 (Five rows are not single skills: Chapter 3 builds the one data
 structure everything shares, Chapter 5 collects the terrain
@@ -110,13 +111,16 @@ rivals. Certification comes early, at Chapter 6, right after
 the terrain, because everything downstream may run experiments
 and experiments need a referee.)
 
-The last column is the book's first claim, in miniature:
-the new executable lines each chapter needs. Big at the
-start, then small, then zero, because the machinery for
-skill i+1 was already built for skills 1 through i. The
-whole column sums to about 330 (demos and the ninety-line
-COCOMO model of Chapter 20 excluded), and the final three
-rows cost nothing at all: by then, everything is wiring.
+The two right-hand columns are the book's first claim, in
+miniature: the new executable lines each chapter needs,
+and each chapter's share of the whole. Big at the start
+(the substrate is a third of everything), then small, then
+zero, because the machinery for skill i+1 was already
+built for skills 1 through i. The Totals row says 333
+lines (demos and the ninety-line COCOMO model of Chapter
+20 excluded; percentages round to 101, and we never round
+away the working), and the final rows cost nothing at all:
+by then, everything is wiring.
 (These counts are estimates while this draft is a draft;
 the build pins them at weave time.)
 
