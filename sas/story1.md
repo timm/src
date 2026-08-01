@@ -265,12 +265,20 @@ one symbol dominates and large when the counts are even. One
 mental model covers both: `mid` says "what to expect"; `div`
 says "how often to expect surprises".
 
-> Code tip #3: `mid` and `div` dispatch on type inside the
-> function (`col.it is Num`). No inheritance, no method
-> resolution order, no base classes. Tempero et al. report
-> that most inheritance in the wild is shallow and removable.
-> We remove it. Related logic groups together in one function,
-> instead of scattering across a class hierarchy.
+> Code tip #3: `mid` and `div` dispatch on type inside one
+> function, and the rule underneath is about geography, not
+> classes: group code by operation, not by type. A file
+> that scatters one behavior's variants far apart is a junk
+> drawer; to read one behavior you scroll everywhere. Kept
+> together, every version of a verb shows its whole
+> polymorphic story in one glance. Multi-dispatch languages
+> (CLOS, Julia) make that layout standard, and Lua's
+> metatables allow it; Python's class syntax fights it,
+> since methods must live inside class bodies. Hence this
+> book's Python style: functions over plain structs, so
+> related behavior can sit side by side. (Tempero et al.
+> report most inheritance in the wild is shallow and
+> removable. We remove it.)
 
 ### 3.4 All numbers become 0..1
 
@@ -2104,6 +2112,15 @@ construction.) See also: streaming, walrus operator.
 maximizing. Set by the header, stored in the `Num`, used
 by `disty`. See also: distance to heaven.
 
+**junk drawer file** (code). A file that scatters one
+behavior's variants far apart (the Num add up top, the Sym
+add far below), so no single scroll shows the whole
+polymorphic flow. The cure: group by operation, all the
+adds together (Chapter 3). Generic plumbing (map, sort,
+print) may still pool in a utilities corner; the rule
+guards verbs, not appendixes. See also: skill, Rules of
+Unix programming.
+
 **keys** (AI). The few variables or rows that control the
 rest. The empirical bet of the whole book (story.md,
 section 2). See also: contrast set, curation.
@@ -2352,7 +2369,10 @@ verbatim; circled markers # ① ② ③ ride outside TIM's
 nearby prose. BOB: functions ~5 lines. Every identifier
 glossed at first use; parts before wholes EXCEPT where a
 one-line dispatcher reads as the schema rule (Col). Stats
-functions take xsort/ysort: sorted by contract.
+functions take xsort/ysort: sorted by contract. Group code
+by operation, not type: all variants of a verb sit
+adjacent (Python: functions over structs; Lua: adjacent
+metatable methods); generic plumbing may pool at the back.
 
 PROVENANCE. Program output never hand-typed; transcripts
 enter only via %%run directives (weaver: etc/weave.py).

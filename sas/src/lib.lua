@@ -36,18 +36,6 @@ function csv(file,    f) -- stream rows of coerced cells
         t={}; for s in l:gmatch"[^,]+" do t[#t+1] = thing(s) end
         return t end end end end
 
---## random -----------------------------------------------------
-function shuffle(lst,    t,j) -- random re-order; copies first
-  t = {}; for at, v in ipairs(lst) do t[at] = v end
-  for at = #t, 2, -1 do
-    j = math.random(at); t[at],t[j] = t[j],t[at] end
-  return t end
-
-function some(lst,k,    t) -- k items at random (all, if k big)
-  t = shuffle(lst)
-  for at = #t, min(k, #t) + 1, -1 do t[at] = nil end
-  return t end
-
 --## columns ----------------------------------------------------
 NUM, SYM, TBL = {}, {}, {}   -- metatables (see new, at end)
 
@@ -252,6 +240,17 @@ function most(t,f,    hi,n,x) -- argmax: v w/ biggest f(v)
 function iter(src,    at) -- iterate a list or a function
   if type(src) == "function" then return src end
   at = 0; return function() at = at + 1; return src[at] end end
+
+function shuffle(lst,    t,j) -- random re-order; copies first
+  t = {}; for at, v in ipairs(lst) do t[at] = v end
+  for at = #t, 2, -1 do
+    j = math.random(at); t[at],t[j] = t[j],t[at] end
+  return t end
+
+function some(lst,k,    t) -- k items at random (all, if k big)
+  t = shuffle(lst)
+  for at = #t, min(k, #t) + 1, -1 do t[at] = nil end
+  return t end
 
 function show(t,    u,v) -- ":k v" pairs, sorted; skips _keys
   u = {}
