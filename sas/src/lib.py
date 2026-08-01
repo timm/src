@@ -184,31 +184,17 @@ def same(xs, ys,        # any evidence of "similar"?
           or ks(xsort, ysort) < Ks
           or cliffs(xsort, ysort) <= Cliffs)
 
-def top(d, max=False): # winners; best = least, unless max
-  out, mid = [], lambda a: sorted(a)[len(a) // 2]
+def sk(d, max=False): # rank all; same-as-champion share
+  mid  = lambda a: sorted(a)[len(a) // 2]
+  out, rank, best = {}, -1, None
   for k in sorted(d, key=lambda k: mid(d[k]), reverse=max):
-    if out and not same(d[out[0]], d[k]): break
-    out += [k]
+    if best is None or not same(d[best], d[k]):
+      rank, best = rank + 1, k
+    out[k] = rank
   return out
 
-def sk(d): # Scott-Knott: treatment -> leaf rank, best first
-  mu   = lambda a: sum(a) / len(a)
-  mid  = lambda a: sorted(a)[len(a) // 2]
-  vals = lambda ks: [v for k in ks for v in d[k]]
-  out  = {}
-  def grow(ks, M=0, b=0):
-    if len(ks) > 1:
-      M  = mu(vals(ks))
-      b  = lambda l, r: (len(l) * (mu(l) - M)**2
-                         + len(r) * (mu(r) - M)**2)
-      at = max(range(1, len(ks)), key=lambda i:
-               b(vals(ks[:i]), vals(ks[i:])))
-      if not same(vals(ks[:at]), vals(ks[at:])):
-        grow(ks[:at]); return grow(ks[at:])
-    n = len(set(out.values()))
-    for k in ks: out[k] = n
-  grow(sorted(d, key=lambda k: mid(d[k])))
-  return out
+def top(d, max=False): # the winners: sk's rank zero
+  return [k for k, r in sk(d, max).items() if r == 0]
 
 #-- start-up ----------------------------------------------------
 def cli(d): # --key=val flags update settings

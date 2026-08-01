@@ -752,69 +752,49 @@ goes last. In the common case, `cohen` answers alone and
 the panel adjourns.
 
 Experiments compare many treatments, not two, so one more
-helper tops off the referee. Give `top` a dictionary
+helper tops off the referee. Give `sk` a dictionary
 mapping each treatment's name to its observed scores; back
-comes the winner set:
+comes every treatment's rank:
 
-    def top(d, max=False):                           # ①
-      out, mid = [], lambda a: sorted(a)[len(a) // 2]
+    def sk(d, max=False):                            # ①
+      mid  = lambda a: sorted(a)[len(a) // 2]
+      out, rank, best = {}, -1, None
       for k in sorted(d, key=lambda k: mid(d[k]),
                       reverse=max):                  # ②
-        if out and not same(d[out[0]], d[k]): break  # ③
-        out += [k]
+        if best is None or not same(d[best], d[k]):
+          rank, best = rank + 1, k                   # ③
+        out[k] = rank
       return out
+
+    def top(d, max=False):                           # ④
+      return [k for k, r in sk(d, max).items()
+              if r == 0]
 
 Line ② orders the treatments best median first: least by
 default, since this book's scores are distances to heaven,
-and greatest when the `max` flag says this score grows the
-other way. Line
-③ walks down that order, comparing each treatment to the
-champion, and the first one the judges CAN tell apart ends
-the walk: nobody below a loser is ever compared. So the
-laziness runs two levels deep: `same` stops at its first
-small-enough judge, and `top` stops at its first loser.
-The break does place a bet: that once the medians drift
-too far apart they do not drift back. That is the same bet
-Scott-Knott rankings make, and on distance-to-heaven
-scores it is a safe one.
+and greatest when the `max` flag says the score grows the
+other way. The walk then pools each treatment into the
+current rank while the judges cannot tell it from that
+rank's champion; when a newcomer differs ③, a new rank
+opens and the newcomer is its champion. Anchoring on the
+champion, not the neighbor, stops slow drift from chaining
+unlike treatments into one rank. And ④ says the winners
+are nothing extra: rank zero, read off. Not first, second,
+third, but "these won and the rest lost". When a later
+chapter's table shows a verdict column, it is `top`,
+spoken; a rank column is `sk`.
 
-And when a report wants every rank, not just the winners,
-Scott and Knott's own procedure[^sk] is ten more lines:
-
-    def sk(d):                                       # ①
-      mu   = lambda a: sum(a) / len(a)
-      mid  = lambda a: sorted(a)[len(a) // 2]
-      vals = lambda ks: [v for k in ks for v in d[k]]
-      out  = {}
-      def grow(ks, M=0, b=0):
-        if len(ks) > 1:
-          M  = mu(vals(ks))
-          b  = lambda l, r: (len(l) * (mu(l) - M)**2
-                             + len(r) * (mu(r) - M)**2)
-          at = max(range(1, len(ks)), key=lambda i:
-                   b(vals(ks[:i]), vals(ks[i:])))    # ②
-          if not same(vals(ks[:at]), vals(ks[at:])): # ③
-            grow(ks[:at]); return grow(ks[at:])
-        n = len(set(out.values()))
-        for k in ks: out[k] = n                      # ④
-      grow(sorted(d, key=lambda k: mid(d[k])))
-      return out
-
-Order the treatments by median; find the cut whose two
-halves pull farthest from the parent mean ② (the
-between-group sum of squares, argmax over every split
-point); then let the referee veto ③: halves the judges
-cannot tell apart never split. What survives unsplit is
-one leaf, and ④ stamps every treatment in it with the
-next rank id, numbered best first. `top` is the front of
-this ranking bought lazily; `sk` is the whole thing.
+Two sentences of lineage. The classical procedure here is
+Scott and Knott's[^sk]: sort the treatments, cut where the
+two halves' means pull farthest from the parent mean,
+recurse while a statistical test says the halves differ.
+Our walk is that idea flattened to one pass, no recursion;
+on scores that separate cleanly by median the two agree,
+and the walk is short enough to read aloud.
 
 [^sk]: A.J. Scott and M. Knott, "A cluster analysis method
 for grouping means in the analysis of variance",
-Biometrics 30(3):507-512, 1974. That list is the only ranking this
-book ever reports: not first, second, third, but "these
-won and the rest lost". When a later chapter's table shows
-a verdict column, it is `top`, spoken.
+Biometrics 30(3):507-512, 1974.
 
 > Code tip #5: line ⑪ is short-circuit evaluation doing
 > statistics. An `or` chain, cheapest test first, is the
@@ -2254,11 +2234,22 @@ Cohen's rule, KS test, Cliff's delta.
               or ks(xsort, ysort) < Ks
               or cliffs(xsort, ysort) <= Cliffs)
 
-**Scott-Knott** (stat). Full ranking of many treatments:
-sort by median, split where the halves pull farthest from
-the parent mean, recurse only where `same` says the halves
-differ; unsplit groups share one integer rank, best first
-(`sk`, Chapter 6). See also: top, same.
+**Scott-Knott** (stat). Classical full ranking: sort
+treatments by median, split where the halves' means pull
+farthest from the parent, recurse while a test says the
+halves differ. This book's `sk` is the idea flattened to
+one champion-anchored pass (Chapter 6). See also: top,
+same.
+
+    def sk(d, max=False):
+      mid  = lambda a: sorted(a)[len(a) // 2]
+      out, rank, best = {}, -1, None
+      for k in sorted(d, key=lambda k: mid(d[k]),
+                      reverse=max):
+        if best is None or not same(d[best], d[k]):
+          rank, best = rank + 1, k
+        out[k] = rank
+      return out
 
 **seed** (SE). The number that makes randomness
 replayable. Set once in about.py; reset before every
@@ -2312,20 +2303,13 @@ around the code), Code tips (any language), Python tips
 (this language). The glossary tags reuse the same four
 names.
 
-**top** (function). The referee at scale: given
-{treatment: scores}, walk the treatments best median first
-(least by default; greatest under its `max` flag) and
-return everything until the first treatment that is not
-`same` as the champion. The winner set that this book's
-report tables print (Chapter 6). See also: same, baseline.
+**top** (function). The winner set this book's report
+tables print: rank zero of `sk`, read off in two lines
+(Chapter 6). See also: Scott-Knott, same, baseline.
 
     def top(d, max=False):
-      out, mid = [], lambda a: sorted(a)[len(a) // 2]
-      for k in sorted(d, key=lambda k: mid(d[k]),
-                      reverse=max):
-        if out and not same(d[out[0]], d[k]): break
-        out += [k]
-      return out
+      return [k for k, r in sk(d, max).items()
+              if r == 0]
 
 **triage** (AI). Ranking unlabeled rows by expected value
 of inspection: like the best seen so far, unlike the rest

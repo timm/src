@@ -95,7 +95,8 @@ function Tbl(src,    names,all,x,y) -- row 1 names columns
                  cols={names=names, all=all, x=x, y=y}})) end
 
 function TBL.add(i,row) -- fold a row into every column
-  i.rows[#i.rows+1] = row; i.mid = nil
+  i.rows[#i.rows+1] = row
+  i.mid = nil
   for _, c in ipairs(i.cols.all) do c.add(c, row[c.at]) end
   return row end
 
@@ -201,13 +202,21 @@ function same(xs,ys,Cohen,Ks,Cliffs) -- similar evidence?
          or ks(xs, ys)    < (Ks or 1.36)
          or cliffs(xs,ys) <= (Cliffs or 0.197) end
 
-function top(d,big,    sign,out) -- winners; best = least
-  sign, out = big and -1 or 1, {}  -- medians, unless big
+function sk(d,big,    sign,out,rank,best) -- rank all;
+  sign = big and -1 or 1        -- same-as-champion share
+  out, rank, best = {}, -1, nil
   for _, k in ipairs(keysort(keys(d),
                 function(k) return sign * med(d[k]) end)) do
-    if #out > 0 and not same(d[out[1]], d[k]) then break end
-    out[#out+1] = k end
+    if best == nil or not same(d[best], d[k]) then
+      rank, best = rank + 1, k end
+    out[k] = rank end
   return out end
+
+function top(d,big,    sign,u) -- the winners: sk's rank 0
+  sign, u = big and -1 or 1, {}
+  for k, r in pairs(sk(d, big)) do
+    if r == 0 then u[1+#u] = k end end
+  return keysort(u, function(k) return sign*med(d[k]) end) end
 
 --## lists ------------------------------------------------------
 function map(t,f,    u) -- f over values; keeps order
