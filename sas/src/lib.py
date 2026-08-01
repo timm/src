@@ -188,12 +188,10 @@ def ranks(d, max=False, **thresholds): # tied share a rank
   d   = {k: sorted(v) for k, v in d.items()}
   out, rank, best = {}, -1, None
   for k in sorted(d, key=lambda k: mid(d[k]), reverse=max):
-    if best is None or not same(d[best], d[k],
-                                **thresholds):
+    if best is None or not same(d[best], d[k], **thresholds):
       rank, best = rank + 1, k
     out[k] = rank
-  return o(winners=[k for k, r in out.items() if r == 0],
-           ranks=out)
+  return o(all=out, winners=[k for k, r in out.items() if r==0])
 
 #-- start-up ----------------------------------------------------
 def cli(d): # --key=val flags update settings
