@@ -6,12 +6,15 @@
 -- 1, not 0; everything else mirrors the Python.
 local abs,exp,log,sqrt = math.abs,math.exp,math.log,math.sqrt
 local max,min,floor    = math.max,math.min,math.floor
-local TINY, slice      = 1e-32, table.unpack  
+local TINY, slice      = 1e-32, table.unpack or unpack
 
 -- All defs below land in this fresh table (which _G backs for
 -- reads), so `function name` both defines and exports: the
--- last line returns _ENV as the module.
+-- last line returns _ENV as the module. The local works on
+-- Lua 5.2+; the setfenv line is the same trick for 5.1 and
+-- LuaJIT (where it is a plain local and setfenv is nil).
 local _ENV = setmetatable({}, {__index = _G})
+if setfenv then setfenv(1, _ENV) end
 
 the = {
   seed   = 1234567891,     -- every random stream starts here
@@ -19,27 +22,14 @@ the = {
   few    = 128,            -- sample size for cheap guesses
   stop   = 32,             -- min rows before a split halts
   round  = 2,              -- decimals printed by show
-  file = "data/auto93.csv" } -- default table (via MOOT)
-
---## cells ------------------------------------------------------
-function thing(s) -- string to number, bool, or string
-  s = s:match"^%s*(.-)%s*$"
-  return tonumber(s) or s=="True" or (s~="False" and s) end
-
-function csv(file,    f) -- stream rows of coerced cells
-  f = io.lines(file)
-  return function(    t,l)
-    for line in f do
-      l = line:gsub("%%.*",""):match"^%s*(.-)%s*$"
-      if l ~= "" then
-        t={}; for s in l:gmatch"[^,]+" do t[#t+1] = thing(s) end
-        return t end end end end
+  DATA   = "data/",        -- where tables live; $VARS ok
+  file   = "auto93.csv" }  -- default table
 
 --## columns ----------------------------------------------------
-NUM, SYM, TBL, NODE = {},{},{},{} -- metatables (see new)
+NUM, SYM, COLS, TBL, NODE = {},{},{},{},{} -- metatables (see new)
 
 function Col(name,at) -- column kind from first letter
-  return (name:sub(1,1):match"%l" and Sym or Num)(name,at) end
+  return (name:find"^%l" and Sym or Num)(name,at) end
 
 function Num(name,at) -- summary of a numeric column
   name = name or ""
@@ -91,12 +81,16 @@ function Tbl(src,    names,all,x,y) -- row 1 names columns
     if s:find"[+-]$" then y[#y+1] = all[at]
     elseif s:sub(-1) ~= "X" then x[#x+1] = all[at] end end
   return adds(src, new(TBL, {rows={}, mid=nil,
-                 cols={names=names, all=all, x=x, y=y}})) end
+                 cols=new(COLS,
+                   {names=names, all=all, x=x, y=y})})) end
 
-function TBL.add(i,row) -- fold a row into every column
-  i.rows[#i.rows+1] = row
+function COLS.add(i,row) -- fold a row into every column
+  for _, c in ipairs(i.all) do c.add(c, row[c.at]) end
+  return row end
+
+function TBL.add(i,row) -- keep the row; update summaries
+  i.rows[#i.rows+1] = i.cols.add(i.cols, row)
   i.mid = nil
-  for _, c in ipairs(i.cols.all) do c.add(c, row[c.at]) end
   return row end
 
 function adds(src,i) -- fold list or iterator; Num default
@@ -108,8 +102,7 @@ function TBL.clone(i,rows) -- same header, fresh summaries
   return adds(rows, Tbl{i.cols.names}) end
 
 function TBL.mids(i) -- return centroid of this tbl
-  i.mid = i.mid or
-          map(i.cols.all, function(c) return c.mid(c) end)
+  i.mid = i.mid or map(i.cols.all,function(c) return c.mid(c)end)
   return i.mid end
 
 --## distance ---------------------------------------------------
@@ -124,17 +117,18 @@ function NUM.dist(i,a,b) -- gap between two nums; 0..1
   if b == "?" then b = a > 0.5 and 0 or 1 end
   return abs(a - b) end
 
-function TBL.distx(i,row1,row2,    d,n) -- gap over x; 0..1
+function minkowski(cols,f,    d,n) -- p-norm mean of f(col)
   d, n = 0, TINY
-  for _, c in ipairs(i.cols.x) do
-    d = d + c.dist(c, row1[c.at], row2[c.at]) ^ the.p
-    n = n + 1 end
+  for _, c in ipairs(cols) do n, d = n+1, d + f(c) ^ the.p end
   return (d / n) ^ (1 / the.p) end
 
-function TBL.disty(i,row,    d) -- gap to heaven; 0=best
-  d = sum(i.cols.y, function(y)
-        return abs(y.norm(y, row[y.at]) - y.heaven) ^ the.p end)
-  return (d / #i.cols.y) ^ (1 / the.p) end
+function TBL.distx(i,row1,row2) -- gap over x cols; 0..1
+  return minkowski(i.cols.x, function(c)
+           return c.dist(c, row1[c.at], row2[c.at]) end) end
+
+function TBL.disty(i,row) -- gap to heaven; 0=best
+  return minkowski(i.cols.y, function(y)
+           return abs(y.norm(y, row[y.at]) - y.heaven) end) end
 
 --## clusters ---------------------------------------------------
 function TBL.projx(i,row,a,b,c) -- onto the a-b line
@@ -201,7 +195,7 @@ function same(xsort,ysort,Cohen,Ks,Cliffs) -- sorted in!
       or cliffs(xsort,ysort) <= (Cliffs or 0.197) end
 
 function ranks(d,big,    mid,dd,sign,out,win,rank,best)
-  mid = function(t) return t[#t // 2 + 1] end
+  mid = function(t) return t[floor(#t / 2) + 1] end
   dd  = {}; for k,v in pairs(d) do dd[k] = sorted(v) end
   sign = big and -1 or 1
   out, win, rank, best = {}, {}, -1, nil
@@ -213,26 +207,44 @@ function ranks(d,big,    mid,dd,sign,out,win,rank,best)
     out[k] = rank end
   return {winners=win, ranks=out} end
 
---## lists ------------------------------------------------------
+--## batteries --------------------------------------------------
+function new(kl,t) -- class table is also its metatable
+  kl.__index = kl; kl.__tostring = show
+  return setmetatable(t, kl) end
+
+function iter(src,    at) -- iterate a list or a function
+  if type(src) == "function" then return src end
+  at = 0; return function() at = at + 1; return src[at] end end
+
+function thing(s) -- string to number, bool, or string
+  s = s:match"^%s*(.-)%s*$"
+  return tonumber(s) or s=="True" or (s~="False" and s) end
+
+function csv(file,    f) -- stream rows of coerced cells;
+  -- $VARS in file expand from the environment
+  f = io.lines((file:gsub("%$(%w+)", os.getenv)))
+  return function(    t,l)
+    for line in f do
+      l = line:gsub("%%.*",""):match"^%s*(.-)%s*$"
+      if l ~= "" then
+        t={}; for s in l:gmatch"[^,]+" do t[#t+1] = thing(s) end
+        return t end end end end
+
 function map(t,f,    u) -- f over the list part, in order
   u = {}; for _,v in ipairs(t) do u[1+#u]=f(v) end; return u end
+
+function kap(t,f,    u) -- f(k,v) over all pairs, any order.
+  u = {}                -- nil results vanish: kap also filters
+  for k,v in pairs(t) do u[1+#u] = f(k,v) end; return u end
+
+function copy(t) -- shallow copy of the list part
+  return map(t, function(v) return v end) end
 
 function sum(t,f,    n) -- add f(v) over values
   n = 0; for _, v in pairs(t) do n = n + f(v) end; return n end
 
-function keys(t,skip,    u) -- sorted keys; skip prefix?
-  u = {}
-  for k in pairs(t) do
-    if not (skip and tostring(k):sub(1,1) == skip) then
-      u[1+#u] = k end end
-  return keysort(u, tostring) end
-
-function med(t,    s) -- median (sorts a copy first)
-  s = sorted(t); return s[#s // 2 + 1] end
-
 function sorted(t,f,    s) -- sorted copy; f optional
-  s = {}; for at, v in ipairs(t) do s[at] = v end
-  table.sort(s, f); return s end
+  s = copy(t); table.sort(s, f); return s end
 
 function keysort(t,f,    px,ix) -- sort by f(v); stable,
   px, ix = {}, {}               -- so ties keep input order
@@ -241,17 +253,21 @@ function keysort(t,f,    px,ix) -- sort by f(v); stable,
            if px[u] == px[v] then return ix[u] < ix[v] end
            return px[u] < px[v] end) end
 
+function keys(t,skip,    u) -- sorted keys; skip prefix?
+  u = kap(t, function(k) return
+        not (skip and tostring(k):sub(1,1) == skip) and k end)
+  return keysort(u, tostring) end
+
+function med(t,    s) -- median (sorts a copy first)
+  s = sorted(t); return s[floor(#s / 2) + 1] end
+
 function argmax(t,f,    hi,n,x) -- the v w/ biggest f(v)
   hi = -math.huge                 -- first winner keeps ties
   for _,v in ipairs(t) do n=f(v); if n>hi then hi,x=n,v end end
   return x end
 
-function iter(src,    at) -- iterate a list or a function
-  if type(src) == "function" then return src end
-  at = 0; return function() at = at + 1; return src[at] end end
-
 function shuffle(lst,    t,j) -- random re-order; copies first
-  t = {}; for at, v in ipairs(lst) do t[at] = v end
+  t = copy(lst)
   for at = #t, 2, -1 do
     j = math.random(at); t[at],t[j] = t[j],t[at] end
   return t end
@@ -261,33 +277,46 @@ function some(lst,k,    t) -- k items at random (all, if k big)
   for at = #t, min(k, #t) + 1, -1 do t[at] = nil end
   return t end
 
-function show(t,    u,v) -- ":k v" pairs, sorted, no _keys
-  u = {}
-  for _,k in ipairs(keys(t, "_")) do
-    v = t[k]
-    if type(v) == "table" then v = show(v) end
-    if type(v) == "number" and v % 1 ~= 0 then
-      v = ("%."..the.round.."f"):format(v) end
-    u[#u+1] = ":"..tostring(k).." "..tostring(v) end
-  return "{"..table.concat(u, " ").."}" end
+function round(v,n) -- round to n (default the.round) places
+  if v % 1 == 0 then return floor(v) end 
+  n = 10 ^ (n or the.round)
+  return floor(v * n + 0.5) / n end
 
-function new(kl,t) -- class table is also its metatable
-  kl.__index = kl; kl.__tostring = show
-  return setmetatable(t, kl) end
+function show(t,    u) -- render anything. tables recurse:
+  if type(t) ~= "table" then  -- lists keyless, dicts ":k v"
+    return tostring(type(t) == "number" and round(t) or t) end
+  u = #t > 0 and map(t,show) or sorted(kap(t,function(k,v) return
+                                   tostring(k):sub(1,1) ~= "_"
+                                   and ":"..k.." "..show(v) end))
+  return "{"..table.concat(u, " ").."}" end
 
 --## demos p ----------------------------------------------------
 eg = {}
 
-eg["--the"] = function() print(show(the)) end
+function run(eg,w,    ok,msg) -- one seeded example
+  math.randomseed(the.seed)   
+  if eg[w] then
+    ok, msg = xpcall(eg[w], debug.traceback)
+    if not ok then print(msg) end
+    return ok end end
 
 eg["--all"] = function ()
   for _,k in ipairs(keys(eg)) do
-    if k ~= "all" then run(eg, k) end end end
+    if k ~= "--all" then run(eg, k) end end end
 
-function run(eg,w) -- one seeded example
-  math.randomseed(the.seed)
-  return eg[w] and eg[w]() end
+eg["--the"] = function() print(show(the)) end
 
+eg["--disty"] = function(    t,d,rows) -- sort rows by disty
+  t = Tbl(csv(the.DATA .. the.file))
+  d = function(r) return t.disty(t, r) end
+  rows = keysort(t.rows, d)
+  for at, r in ipairs(rows) do
+    if at <= 3 or at > #rows - 3 then
+      print(("%.3f  %s"):format(d(r), show(r)))
+    elseif at == 4 then print"..." end end
+  assert(d(rows[1]) <= d(rows[#rows])) end
+
+--## start-up ---------------------------------------------------
 function cli(d,    v) -- --key=val flags update settings
   for _, s in ipairs(arg) do
     for k in pairs(d) do
@@ -295,8 +324,7 @@ function cli(d,    v) -- --key=val flags update settings
       if v then d[k] = thing(v) end end end
   return d end
 
---## start-up ---------------------------------------------------
 if arg and arg[0] and arg[0]:find"lib%.lua$" then 
-  cli(the); for _,w in ipairs(arg) do  run(eg, w) end end 
+  cli(the); for _,w in ipairs(arg) do run(eg, w) end end 
 
 return _ENV

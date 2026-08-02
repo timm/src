@@ -5,6 +5,16 @@ Before editing any file in this repo, read every etc/*.md
 are editing. The style files are the contract; do not
 restructure dirs or add subdirs without checking them.
 
+## Lua
+
+All Lua targets LuaJIT, i.e. Lua 5.1 semantics. No `//`,
+no `_ENV`-only tricks, `table.unpack or unpack` for slices.
+Module capture is `local _ENV = setmetatable({}, ...)` plus
+`if setfenv then setfenv(1, _ENV) end` (the pair runs on
+5.1 and 5.2+ alike). LuaJIT extensions such as two-argument
+math.log are fine. When 5.1 and newer Lua conflict, 5.1
+wins.
+
 ## Protected files
 
 sandbox/ is timm's personal play area. Leave it alone:
