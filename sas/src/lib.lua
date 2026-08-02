@@ -6,8 +6,7 @@
 -- 1, not 0; everything else mirrors the Python.
 local abs,exp,log,sqrt = math.abs,math.exp,math.log,math.sqrt
 local max,min,floor    = math.max,math.min,math.floor
-local slice = table.unpack     -- {slice(t,a,b)} = t[a..b]
-local TINY  = 1e-32
+local TINY, slice      = 1e-32, table.unpack  
 
 -- All defs below land in this fresh table (which _G backs for
 -- reads), so `function name` both defines and exports: the
@@ -215,8 +214,8 @@ function ranks(d,big,    mid,dd,sign,out,win,rank,best)
   return {winners=win, ranks=out} end
 
 --## lists ------------------------------------------------------
-function map(t,f,    u) -- f over values; keeps order
-  u = {}; for _, v in pairs(t) do u[1+#u]=f(v) end; return u end
+function map(t,f,    u) -- f over the list part, in order
+  u = {}; for _,v in ipairs(t) do u[1+#u]=f(v) end; return u end
 
 function sum(t,f,    n) -- add f(v) over values
   n = 0; for _, v in pairs(t) do n = n + f(v) end; return n end
@@ -276,22 +275,28 @@ function new(kl,t) -- class table is also its metatable
   kl.__index = kl; kl.__tostring = show
   return setmetatable(t, kl) end
 
---## start-up ---------------------------------------------------
+--## demos p ----------------------------------------------------
+eg = {}
+
+eg["--the"] = function() print(show(the)) end
+
+eg["--all"] = function ()
+  for _,k in ipairs(keys(eg)) do
+    if k ~= "all" then run(eg, k) end end end
+
+function run(eg,w) -- one seeded example
+  math.randomseed(the.seed)
+  return eg[w] and eg[w]() end
+
 function cli(d,    v) -- --key=val flags update settings
-  for k in pairs(d) do
-    for _, s in ipairs(arg or {}) do
+  for _, s in ipairs(arg) do
+    for k in pairs(d) do
       v = s:match("^%-%-" .. k .. "=(.*)")
       if v then d[k] = thing(v) end end end
   return d end
 
-function main(g,    run,todo) -- run test_w per bare word w
-  cli(the)
-  run = function(w)
-    math.randomseed(the.seed)
-    return (g["test_" .. w] or function()
-              print("?", w, "(no such test)") end)() end
-  todo = map(arg or {}, function(s)
-           if not s:find"^%-" then return s end end)
-  map(#todo > 0 and todo or {"all"}, run) end
+--## start-up ---------------------------------------------------
+if arg and arg[0] and arg[0]:find"lib%.lua$" then 
+  cli(the); for _,w in ipairs(arg) do  run(eg, w) end end 
 
 return _ENV
