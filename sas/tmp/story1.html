@@ -1477,18 +1477,19 @@ class="sourceCode python"><code class="sourceCode python"><span id="cb26-1"><a h
 <span id="cb26-16"><a href="#cb26-16" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> cliffs(xsort, ysort):                        <span class="co"># ⑦</span></span>
 <span id="cb26-17"><a href="#cb26-17" aria-hidden="true" tabindex="-1"></a>  gt <span class="op">=</span> lt <span class="op">=</span> j <span class="op">=</span> k <span class="op">=</span> <span class="dv">0</span></span>
 <span id="cb26-18"><a href="#cb26-18" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> x <span class="kw">in</span> xsort:</span>
-<span id="cb26-19"><a href="#cb26-19" aria-hidden="true" tabindex="-1"></a>    <span class="cf">while</span> j <span class="op">&lt;</span> <span class="bu">len</span>(ysort) <span class="kw">and</span> ysort[j] <span class="op">&lt;</span>  x: j <span class="op">+=</span> <span class="dv">1</span></span>
-<span id="cb26-20"><a href="#cb26-20" aria-hidden="true" tabindex="-1"></a>    <span class="cf">while</span> k <span class="op">&lt;</span> <span class="bu">len</span>(ysort) <span class="kw">and</span> ysort[k] <span class="op">&lt;=</span> x: k <span class="op">+=</span> <span class="dv">1</span></span>
-<span id="cb26-21"><a href="#cb26-21" aria-hidden="true" tabindex="-1"></a>    gt <span class="op">+=</span> j<span class="op">;</span> lt <span class="op">+=</span> <span class="bu">len</span>(ysort) <span class="op">-</span> k</span>
-<span id="cb26-22"><a href="#cb26-22" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> <span class="bu">abs</span>(gt <span class="op">-</span> lt) <span class="op">/</span> (<span class="bu">len</span>(xsort) <span class="op">*</span> <span class="bu">len</span>(ysort))  <span class="co"># ⑧</span></span>
-<span id="cb26-23"><a href="#cb26-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb26-24"><a href="#cb26-24" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> same(xsort, ysort,  <span class="co"># ⑨</span></span>
-<span id="cb26-25"><a href="#cb26-25" aria-hidden="true" tabindex="-1"></a>         Cohen<span class="op">=</span><span class="fl">0.2</span>,     <span class="co"># J. Cohen 1988</span></span>
-<span id="cb26-26"><a href="#cb26-26" aria-hidden="true" tabindex="-1"></a>         Ks<span class="op">=</span><span class="fl">1.36</span>,       <span class="co"># F. Massey 1951</span></span>
-<span id="cb26-27"><a href="#cb26-27" aria-hidden="true" tabindex="-1"></a>         Cliffs<span class="op">=</span><span class="fl">0.197</span>): <span class="co"># N. Cliff 1993</span></span>
-<span id="cb26-28"><a href="#cb26-28" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> (cohen(xsort, ysort) <span class="op">&lt;</span> Cohen</span>
-<span id="cb26-29"><a href="#cb26-29" aria-hidden="true" tabindex="-1"></a>          <span class="kw">or</span> ks(xsort, ysort) <span class="op">&lt;</span> Ks</span>
-<span id="cb26-30"><a href="#cb26-30" aria-hidden="true" tabindex="-1"></a>          <span class="kw">or</span> cliffs(xsort, ysort) <span class="op">&lt;=</span> Cliffs)     <span class="co"># ⑩</span></span></code></pre></div>
+<span id="cb26-19"><a href="#cb26-19" aria-hidden="true" tabindex="-1"></a>    <span class="cf">while</span> j <span class="op">&lt;</span> <span class="bu">len</span>(ysort) <span class="kw">and</span> ysort[j] <span class="op">&lt;</span> x:</span>
+<span id="cb26-20"><a href="#cb26-20" aria-hidden="true" tabindex="-1"></a>      j <span class="op">+=</span> <span class="dv">1</span><span class="op">;</span> k <span class="op">=</span> j</span>
+<span id="cb26-21"><a href="#cb26-21" aria-hidden="true" tabindex="-1"></a>    <span class="cf">while</span> k <span class="op">&lt;</span> <span class="bu">len</span>(ysort) <span class="kw">and</span> ysort[k] <span class="op">==</span> x: k <span class="op">+=</span> <span class="dv">1</span></span>
+<span id="cb26-22"><a href="#cb26-22" aria-hidden="true" tabindex="-1"></a>    gt <span class="op">+=</span> j<span class="op">;</span> lt <span class="op">+=</span> <span class="bu">len</span>(ysort) <span class="op">-</span> k</span>
+<span id="cb26-23"><a href="#cb26-23" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> <span class="bu">abs</span>(gt <span class="op">-</span> lt) <span class="op">/</span> (<span class="bu">len</span>(xsort) <span class="op">*</span> <span class="bu">len</span>(ysort))  <span class="co"># ⑧</span></span>
+<span id="cb26-24"><a href="#cb26-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-25"><a href="#cb26-25" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> same(xsort, ysort,  <span class="co"># ⑨</span></span>
+<span id="cb26-26"><a href="#cb26-26" aria-hidden="true" tabindex="-1"></a>         Cohen<span class="op">=</span><span class="fl">0.2</span>,     <span class="co"># J. Cohen 1988</span></span>
+<span id="cb26-27"><a href="#cb26-27" aria-hidden="true" tabindex="-1"></a>         Ks<span class="op">=</span><span class="fl">1.36</span>,       <span class="co"># F. Massey 1951</span></span>
+<span id="cb26-28"><a href="#cb26-28" aria-hidden="true" tabindex="-1"></a>         Cliffs<span class="op">=</span><span class="fl">0.197</span>): <span class="co"># N. Cliff 1993</span></span>
+<span id="cb26-29"><a href="#cb26-29" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> (cohen(xsort, ysort) <span class="op">&lt;</span> Cohen</span>
+<span id="cb26-30"><a href="#cb26-30" aria-hidden="true" tabindex="-1"></a>          <span class="kw">or</span> ks(xsort, ysort) <span class="op">&lt;</span> Ks</span>
+<span id="cb26-31"><a href="#cb26-31" aria-hidden="true" tabindex="-1"></a>          <span class="kw">or</span> cliffs(xsort, ysort) <span class="op">&lt;=</span> Cliffs)     <span class="co"># ⑩</span></span></code></pre></div>
 <p>All three judges expect sorted lists, and they say so in their own
 signatures: parameters named <code>xsort</code> and <code>ysort</code>
 arrive sorted, by contract. The verdict ⑨ keeps that contract, and those
@@ -1504,10 +1505,12 @@ classic critical-value denominator ⑥. Judge three, <code>cliffs</code>
 ⑦, is Cliff’s delta, a rank-based effect size: walk two pointers up the
 sorted ys, counting how many sit below and at each ascending x. The
 pointers never restart: each x inherits the previous count and augments
-it, since whatever sat below the last x still sits below this one. And
-note that <code>gt += j</code> re-adds the inherited ys on purpose: the
-delta sums over all pairs, and a y beneath two xs loses two pairs, one
-to each. Line ⑧ returns the imbalance, 0 to 1.</p>
+it, since whatever sat below the last x still sits below this one. As
+<code>j</code> advances it drags <code>k</code> along, so the second
+pointer walks only the ties, the ys exactly equal to this x. And note
+that <code>gt += j</code> re-adds the inherited ys on purpose: the delta
+sums over all pairs, and a y beneath two xs loses two pairs, one to
+each. Line ⑧ returns the imbalance, 0 to 1.</p>
 <p>Note what the judges never do: they never say yes or no. The verdicts
 live in <code>same</code> ⑨, one comparison per judge at ⑩, each against
 a named default in same’s own signature, its citation riding alongside
@@ -1542,9 +1545,9 @@ class="sourceCode python"><code class="sourceCode python"><span id="cb27-1"><a h
 <span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a>                                <span class="op">**</span>thresholds):   <span class="co"># ④</span></span>
 <span id="cb27-9"><a href="#cb27-9" aria-hidden="true" tabindex="-1"></a>      rank, best <span class="op">=</span> rank <span class="op">+</span> <span class="dv">1</span>, k</span>
 <span id="cb27-10"><a href="#cb27-10" aria-hidden="true" tabindex="-1"></a>    out[k] <span class="op">=</span> rank</span>
-<span id="cb27-11"><a href="#cb27-11" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> o(winners<span class="op">=</span>[k <span class="cf">for</span> k, r <span class="kw">in</span> out.items()</span>
-<span id="cb27-12"><a href="#cb27-12" aria-hidden="true" tabindex="-1"></a>                    <span class="cf">if</span> r <span class="op">==</span> <span class="dv">0</span>],</span>
-<span id="cb27-13"><a href="#cb27-13" aria-hidden="true" tabindex="-1"></a>           ranks<span class="op">=</span>out)                            <span class="co"># ⑤</span></span></code></pre></div>
+<span id="cb27-11"><a href="#cb27-11" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> o(<span class="bu">all</span><span class="op">=</span>out,</span>
+<span id="cb27-12"><a href="#cb27-12" aria-hidden="true" tabindex="-1"></a>           winners<span class="op">=</span>[k <span class="cf">for</span> k, r <span class="kw">in</span> out.items()</span>
+<span id="cb27-13"><a href="#cb27-13" aria-hidden="true" tabindex="-1"></a>                    <span class="cf">if</span> r <span class="op">==</span> <span class="dv">0</span>])                  <span class="co"># ⑤</span></span></code></pre></div>
 <p>Line ② settles the sorting debt for everyone: each treatment’s scores
 are sorted exactly once, here, and every judge and every median
 downstream reads that work. Line ③ orders the treatments best median
@@ -1555,11 +1558,11 @@ while the judges cannot tell it from that rank’s champion; when a
 newcomer differs ④, a new rank opens and the newcomer is its champion.
 Anchoring on the champion, not the neighbor, stops slow drift from
 chaining unlike treatments into one rank. And ⑤ hands back both
-spellings of the answer at once: <code>.ranks</code>, every treatment’s
+spellings of the answer at once: <code>.all</code>, every treatment’s
 shelf, and <code>.winners</code>, the rank-zero names in best-first
 order. Not first, second, third, but “these won and the rest lost”. When
 a later chapter’s table shows a verdict column, that is
-<code>.winners</code>, spoken; a rank column is <code>.ranks</code>
+<code>.winners</code>, spoken; a rank column is <code>.all</code>
 verbatim.</p>
 <p>Two sentences of lineage. The classical procedure here is Scott and
 Knott’s<a href="#fn45" class="footnote-ref" id="fnref45"
@@ -2621,10 +2624,11 @@ precondition: sorted input. See also: KS test, Cohen’s rule, same.</p>
 class="sourceCode python"><code class="sourceCode python"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> cliffs(xsort, ysort):</span>
 <span id="cb58-2"><a href="#cb58-2" aria-hidden="true" tabindex="-1"></a>  gt <span class="op">=</span> lt <span class="op">=</span> j <span class="op">=</span> k <span class="op">=</span> <span class="dv">0</span></span>
 <span id="cb58-3"><a href="#cb58-3" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> x <span class="kw">in</span> xsort:</span>
-<span id="cb58-4"><a href="#cb58-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">while</span> j <span class="op">&lt;</span> <span class="bu">len</span>(ysort) <span class="kw">and</span> ysort[j] <span class="op">&lt;</span>  x: j <span class="op">+=</span> <span class="dv">1</span></span>
-<span id="cb58-5"><a href="#cb58-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">while</span> k <span class="op">&lt;</span> <span class="bu">len</span>(ysort) <span class="kw">and</span> ysort[k] <span class="op">&lt;=</span> x: k <span class="op">+=</span> <span class="dv">1</span></span>
-<span id="cb58-6"><a href="#cb58-6" aria-hidden="true" tabindex="-1"></a>    gt <span class="op">+=</span> j<span class="op">;</span> lt <span class="op">+=</span> <span class="bu">len</span>(ysort) <span class="op">-</span> k</span>
-<span id="cb58-7"><a href="#cb58-7" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> <span class="bu">abs</span>(gt <span class="op">-</span> lt) <span class="op">/</span> (<span class="bu">len</span>(xsort) <span class="op">*</span> <span class="bu">len</span>(ysort))</span></code></pre></div>
+<span id="cb58-4"><a href="#cb58-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">while</span> j <span class="op">&lt;</span> <span class="bu">len</span>(ysort) <span class="kw">and</span> ysort[j] <span class="op">&lt;</span> x:</span>
+<span id="cb58-5"><a href="#cb58-5" aria-hidden="true" tabindex="-1"></a>      j <span class="op">+=</span> <span class="dv">1</span><span class="op">;</span> k <span class="op">=</span> j</span>
+<span id="cb58-6"><a href="#cb58-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">while</span> k <span class="op">&lt;</span> <span class="bu">len</span>(ysort) <span class="kw">and</span> ysort[k] <span class="op">==</span> x: k <span class="op">+=</span> <span class="dv">1</span></span>
+<span id="cb58-7"><a href="#cb58-7" aria-hidden="true" tabindex="-1"></a>    gt <span class="op">+=</span> j<span class="op">;</span> lt <span class="op">+=</span> <span class="bu">len</span>(ysort) <span class="op">-</span> k</span>
+<span id="cb58-8"><a href="#cb58-8" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> <span class="bu">abs</span>(gt <span class="op">-</span> lt) <span class="op">/</span> (<span class="bu">len</span>(xsort) <span class="op">*</span> <span class="bu">len</span>(ysort))</span></code></pre></div>
 <p><strong>clone</strong> (function). A new empty table with an old
 table’s header, optionally refilled:
 <code>Tbl([tbl.cols.names] + rows)</code>. The book’s main structuring
@@ -2782,9 +2786,9 @@ class="sourceCode python"><code class="sourceCode python"><span id="cb62-1"><a h
 <span id="cb62-8"><a href="#cb62-8" aria-hidden="true" tabindex="-1"></a>                                <span class="op">**</span>thresholds):</span>
 <span id="cb62-9"><a href="#cb62-9" aria-hidden="true" tabindex="-1"></a>      rank, best <span class="op">=</span> rank <span class="op">+</span> <span class="dv">1</span>, k</span>
 <span id="cb62-10"><a href="#cb62-10" aria-hidden="true" tabindex="-1"></a>    out[k] <span class="op">=</span> rank</span>
-<span id="cb62-11"><a href="#cb62-11" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> o(winners<span class="op">=</span>[k <span class="cf">for</span> k, r <span class="kw">in</span> out.items()</span>
-<span id="cb62-12"><a href="#cb62-12" aria-hidden="true" tabindex="-1"></a>                    <span class="cf">if</span> r <span class="op">==</span> <span class="dv">0</span>],</span>
-<span id="cb62-13"><a href="#cb62-13" aria-hidden="true" tabindex="-1"></a>           ranks<span class="op">=</span>out)</span></code></pre></div>
+<span id="cb62-11"><a href="#cb62-11" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> o(<span class="bu">all</span><span class="op">=</span>out,</span>
+<span id="cb62-12"><a href="#cb62-12" aria-hidden="true" tabindex="-1"></a>           winners<span class="op">=</span>[k <span class="cf">for</span> k, r <span class="kw">in</span> out.items()</span>
+<span id="cb62-13"><a href="#cb62-13" aria-hidden="true" tabindex="-1"></a>                    <span class="cf">if</span> r <span class="op">==</span> <span class="dv">0</span>])</span></code></pre></div>
 <p><strong>seed</strong> (SE). The number that makes randomness
 replayable. Set once in about.py; reset before every demo. Changing it
 is a stop-and-ask event. See also: assert, reservoir sampling.</p>

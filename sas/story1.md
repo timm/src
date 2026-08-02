@@ -769,9 +769,9 @@ comes every treatment's rank:
                                     **thresholds):   # ④
           rank, best = rank + 1, k
         out[k] = rank
-      return o(winners=[k for k, r in out.items()
-                        if r == 0],
-               ranks=out)                            # ⑤
+      return o(all=out,
+               winners=[k for k, r in out.items()
+                        if r == 0])                  # ⑤
 
 Line ② settles the sorting debt for everyone: each
 treatment's scores are sorted exactly once, here, and
@@ -785,12 +785,12 @@ rank's champion; when a newcomer differs ④, a new rank
 opens and the newcomer is its champion. Anchoring on the
 champion, not the neighbor, stops slow drift from chaining
 unlike treatments into one rank. And ⑤ hands back both
-spellings of the answer at once: `.ranks`, every
+spellings of the answer at once: `.all`, every
 treatment's shelf, and `.winners`, the rank-zero names in
 best-first order. Not first, second, third, but "these
 won and the rest lost". When a later chapter's table
 shows a verdict column, that is `.winners`, spoken; a
-rank column is `.ranks` verbatim.
+rank column is `.all` verbatim.
 
 Two sentences of lineage. The classical procedure here is
 Scott and Knott's[^sk]: sort the treatments, cut where the
@@ -2261,9 +2261,9 @@ same, baseline.
                                     **thresholds):
           rank, best = rank + 1, k
         out[k] = rank
-      return o(winners=[k for k, r in out.items()
-                        if r == 0],
-               ranks=out)
+      return o(all=out,
+               winners=[k for k, r in out.items()
+                        if r == 0])
 
 **seed** (SE). The number that makes randomness
 replayable. Set once in about.py; reset before every
