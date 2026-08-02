@@ -22,11 +22,14 @@ the = {
   few    = 128,            -- sample size for cheap guesses
   stop   = 32,             -- min rows before a split halts
   round  = 2,              -- decimals printed by show
+  leaf   = 3,              -- tree: min rows in one leaf
+  maxd   = 4,              -- tree: max depth
   DATA   = "data/",        -- where tables live; $VARS ok
   file   = "auto93.csv" }  -- default table
 
 --## columns ----------------------------------------------------
-NUM, SYM, COLS, TBL, NODE = {},{},{},{},{} -- metatables (see new)
+NUM, SYM, COLS, TBL, NODE, TREE = -- metatables (see new)
+  {},{},{},{},{},{}
 
 function Col(name,at) -- column kind from first letter
   return (name:find"^%l" and Sym or Num)(name,at) end
@@ -71,6 +74,25 @@ function NUM.norm(i,v,    z) -- v's cdf, via logistic; 0..1
   if v == "?" then return v end
   z = (v - i.mu) / (i.div(i) + TINY)
   return 1 / (1 + exp(-1.702 * max(-3, min(3, z)))) end
+
+function NUM.without(i,j,    n,d) -- i minus j's stats, as new NUM
+  n = i.n - j.n
+  if n < 1 then return Num(i.name, i.at) end
+  d = j.mu - i.mu
+  return new(NUM, {name=i.name, at=i.at, heaven=i.heaven,
+                   n=n, mu=(i.n*i.mu - j.n*j.mu) / n,
+                   m2=max(0, i.m2 - j.m2
+                             - d*d*i.n*j.n/n)}) end
+
+function SYM.without(i,j,    out,n) -- i minus j's counts
+  out = Sym(i.name, i.at)
+  for k,v in pairs(i.has) do
+    n = v - (j.has[k] or 0)
+    if n > 0 then out.has[k] = n; out.n = out.n + n end end
+  return out end
+
+function SYM.holds(i,x,v) return x == "?" or x == v  end
+function NUM.holds(i,x,v) return x == "?" or x <= v  end
 
 --## tables -----------------------------------------------------
 function Tbl(src,    names,all,x,y) -- row 1 names columns
@@ -166,6 +188,92 @@ function NODE.leaf(i,row,    t) -- walk row down to its leaf
         and i.west or i.east end
   return i end
 
+--## trees ------------------------------------------------------
+function score(a,b) -- mean diversity of two summaries
+  return (a.div(a)*a.n + b.div(b)*b.n)
+         / (a.n + b.n + TINY) end
+
+function SYM.cuts(c,xy,tot,acc,    d,out,b) -- one cut per key
+  d, out = {}, {}
+  for _,p in ipairs(xy) do
+    b = d[p[1]] or acc()
+    b.add(b, p[2]); d[p[1]] = b end
+  if #keys(d) > 1 then
+    for k,b in pairs(d) do
+      push(out, {score(b, tot.without(tot,b)), c.at, k}) end end
+  return out end
+
+function NUM.cuts(c,xy,tot,acc,    out,here) -- cuts between
+  table.sort(xy, function(a,b) return a[1] < b[1] end)
+  out, here = {}, acc()          -- each distinct, sorted x
+  for j,p in ipairs(xy) do
+    here.add(here, p[2])
+    if j < #xy and p[1] ~= xy[j+1][1] then
+      push(out, {score(here, tot.without(tot,here)),
+                 c.at, p[1]}) end end
+  return out end
+
+function TBL.cuts(i,rows,c,Y,acc,    xy,tot) -- ask col c for
+  xy = {}                        -- its candidate splits
+  for _,r in ipairs(rows) do
+    if r[c.at] ~= "?" then push(xy, {r[c.at], Y(r)}) end end
+  tot = adds(map(xy, function(p) return p[2] end), acc())
+  return c.cuts(c, xy, tot, acc) end
+
+function Tree(tbl,rows,Y,acc,lvl,    ys,t,cs,b,c,yes,no)
+  Y   = Y or function(r) return tbl.disty(tbl, r) end
+  acc, lvl = acc or Num, lvl or 0
+  ys  = adds(map(rows, Y), acc())
+  t   = new(TREE, {at=nil, v=nil, n=#rows, mu=ys.mid(ys),
+                   leafs=1, ys=ys,
+                   here=ys.has and ys.div(ys) or ys.mid(ys)})
+  t.score = t.here
+  if #rows >= 2*the.leaf and lvl < the.maxd then
+    cs = {}
+    for _,xcol in ipairs(tbl.cols.x) do
+      for _,cut in ipairs(tbl.cuts(tbl,rows,xcol,Y,acc)) do
+        push(cs, cut) end end
+    b = argmin(cs, function(z) return z[1] end)
+    if b then
+      c = tbl.cols.all[b[2]]
+      yes, no = {}, {}
+      for _,r in ipairs(rows) do
+        push(c.holds(c, r[b[2]], b[3]) and yes or no, r) end
+      if #yes > 0 and #no > 0 then
+        t.at, t.v = b[2], b[3]
+        t.yes   = Tree(tbl, yes, Y, acc, lvl+1)
+        t.no    = Tree(tbl, no,  Y, acc, lvl+1)
+        t.score = min(t.yes.score, t.no.score)
+        t.leafs = t.yes.leafs + t.no.leafs end end end
+  return t end
+
+function leafed(x) -- x, collapsed to one leaf
+  return new(TREE, {at=nil, n=x.n, mu=x.mu, here=x.here,
+                    score=x.here, leafs=1, ys=x.ys}) end
+
+function walk(t) -- yield every pruning of tree t
+  return gen(function()
+    if t.at == nil then return yield(t) end
+    for yes in sides(t.yes) do
+      for no in sides(t.no) do
+        yield(new(TREE, {at=t.at, v=t.v, n=t.n,
+                         yes=yes, no=no,
+                         score=min(yes.score, no.score),
+                         leafs=yes.leafs + no.leafs})) end end
+  end) end
+
+function sides(t) -- t as a leaf; then t's own prunings
+  return gen(function()
+    yield(leafed(t))
+    if t.at ~= nil then
+      for w in walk(t) do yield(w) end end end) end
+
+function TREE.leaf(t,tbl,row,    c) -- row's leaf, its guess
+  while t.at do
+    c = tbl.cols.all[t.at]
+    t = c.holds(c, row[t.at], t.v) and t.yes or t.no end
+  return t.mu end
+
 --## statistics -------------------------------------------------
 function cohen(xs,ys,    m,spd) -- mid gap, in spread units
   m   = function(a) return a[floor(#a / 2) + 1] end
@@ -240,6 +348,10 @@ function kap(t,f,    u) -- f(k,v) over all pairs, any order.
 function copy(t) -- shallow copy of the list part
   return map(t, function(v) return v end) end
 
+function push(t,v) t[1+#t] = v; return v end
+
+gen, yield = coroutine.wrap, coroutine.yield -- lazy walkers
+
 function sum(t,f,    n) -- add f(v) over values
   n = 0; for _, v in pairs(t) do n = n + f(v) end; return n end
 
@@ -264,6 +376,11 @@ function med(t,    s) -- median (sorts a copy first)
 function argmax(t,f,    hi,n,x) -- the v w/ biggest f(v)
   hi = -math.huge                 -- first winner keeps ties
   for _,v in ipairs(t) do n=f(v); if n>hi then hi,x=n,v end end
+  return x end
+
+function argmin(t,f,    lo,n,x) -- the v w/ least f(v)
+  lo = math.huge                  -- first winner keeps ties
+  for _,v in ipairs(t) do n=f(v); if n<lo then lo,x=n,v end end
   return x end
 
 function shuffle(lst,    t,j) -- random re-order; copies first
@@ -299,6 +416,20 @@ function run(eg,w,    ok,msg) -- one seeded example
     ok, msg = xpcall(eg[w], debug.traceback)
     if not ok then print(msg) end
     return ok end end
+
+eg["--tree"] = function(    t,tr,n,best) -- prune, keep best
+  t  = Tbl(csv(the.DATA .. the.file))
+  tr = Tree(t, t.rows)
+  n  = 0
+  for w in walk(tr) do
+    n = n + 1
+    if not best or w.score < best.score or
+       (w.score == best.score and w.leafs < best.leafs) then
+      best = w end end
+  print(("tree: %s leafs. prunings: %s. best: %s leafs,"
+         .." score %s"):format(tr.leafs, n, best.leafs,
+                               show(best.score)))
+  assert(best.score <= tr.score and best.leafs <= tr.leafs) end
 
 eg["--all"] = function ()
   for _,k in ipairs(keys(eg)) do
