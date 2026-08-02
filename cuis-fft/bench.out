@@ -1,0 +1,63 @@
+== startup only (start + quit) ==
+-- lua
+0.00 real         0.00 user         0.00 sys
+1703936  maximum resident set size
+-- luajit
+0.00 real         0.00 user         0.00 sys
+1638400  maximum resident set size
+-- python3
+0.05 real         0.01 user         0.01 sys
+16220160  maximum resident set size
+-- sbcl
+0.05 real         0.00 user         0.01 sys
+37175296  maximum resident set size
+-- cuis
+0.37 real         0.10 user         0.04 sys
+125845504  maximum resident set size
+
+== small task: egMain (one tree, full data) ==
+-- lua
+0.03 real         0.02 user         0.00 sys
+2359296  maximum resident set size
+-- luajit
+0.01 real         0.00 user         0.00 sys
+2719744  maximum resident set size
+-- python3
+0.05 real         0.04 user         0.00 sys
+18235392  maximum resident set size
+-- sbcl
+0.06 real         0.05 user         0.01 sys
+93061120  maximum resident set size
+-- cuis
+0.38 real         0.16 user         0.03 sys
+131284992  maximum resident set size
+
+== big run: egGrows 2000 reps, sample 100 ==
+-- lua
+2000x (sample 100, 16 trees): 5.735 s -> 2.9 ms
+5.74 real         5.72 user         0.00 sys
+2424832  maximum resident set size
+-- luajit
+2000x (sample 100, 16 trees): 0.924 s -> 0.5 ms
+0.92 real         0.92 user         0.00 sys
+3457024  maximum resident set size
+-- python3
+2000x (sample 100, 16 trees): 8.708 s -> 4.4 ms
+8.73 real         8.70 user         0.01 sys
+18120704  maximum resident set size
+-- sbcl (includes one stray egMain from load)
+2000x (sample 100, 16 trees): 2.275 s -> 1.1 ms
+2.36 real         2.31 user         0.03 sys
+103071744  maximum resident set size
+-- cuis
+2000x (sample 100, 16 trees): 12.426 s -> 6.2 ms
+12.77 real        12.44 user         0.10 sys
+131284992  maximum resident set size
+
+== source size ==
+     329    9837 fft.lua
+     275    7918 fft.py
+     573   12347 fft.st
+     223    7455 fft.lisp
+     145    4637 lithp.lisp
+    1545   42194 total
