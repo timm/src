@@ -75,7 +75,7 @@ function NUM.norm(i,v,    z) -- v's cdf, via logistic; 0..1
   z = (v - i.mu) / (i.div(i) + TINY)
   return 1 / (1 + exp(-1.702 * max(-3, min(3, z)))) end
 
-function NUM.without(i,j,    n,d) -- i minus j's stats, as new NUM
+function NUM.without(i,j,    n,d) -- i minus j, as new NUM
   n = i.n - j.n
   if n < 1 then return Num(i.name, i.at) end
   d = j.mu - i.mu
@@ -188,91 +188,138 @@ function NODE.leaf(i,row,    t) -- walk row down to its leaf
         and i.west or i.east end
   return i end
 
---## trees ------------------------------------------------------
-function score(a,b) -- mean diversity of two summaries
-  return (a.div(a)*a.n + b.div(b)*b.n)
-         / (a.n + b.n + TINY) end
+--## discretize -------------------------------------------------
+-- Find good cuts: places where splitting the x values most
+-- purifies some y summary. All candidates feed one `least`
+-- reducer; no cut lists are ever built.
+function val(a,b) -- mean diversity of two summaries
+  return (a.div(a)*a.n + b.div(b)*b.n) / (a.n + b.n + TINY) end
 
-function SYM.cuts(c,xy,tot,acc,    d,out,b) -- one cut per key
-  d, out = {}, {}
+function SYM.cuts(c,xy,tot,acc,best,    d,b) -- one cut per
+  d = {}                                       -- key; feed best
   for _,p in ipairs(xy) do
     b = d[p[1]] or acc()
     b.add(b, p[2]); d[p[1]] = b end
   if #keys(d) > 1 then
     for k,b in pairs(d) do
-      push(out, {score(b, tot.without(tot,b)), c.at, k}) end end
-  return out end
+      best{val(b, tot.without(tot,b)), c.at, k} end end end
 
-function NUM.cuts(c,xy,tot,acc,    out,here) -- cuts between
+function NUM.cuts(c,xy,tot,acc,best,    here) -- cuts between
   table.sort(xy, function(a,b) return a[1] < b[1] end)
-  out, here = {}, acc()          -- each distinct, sorted x
+  here = acc()                   -- each distinct, sorted x
   for j,p in ipairs(xy) do
     here.add(here, p[2])
     if j < #xy and p[1] ~= xy[j+1][1] then
-      push(out, {score(here, tot.without(tot,here)),
-                 c.at, p[1]}) end end
-  return out end
+      best{val(here,tot.without(tot,here)),c.at,p[1]} end end end
 
-function TBL.cuts(i,rows,c,Y,acc,    xy,tot) -- ask col c for
-  xy = {}                        -- its candidate splits
+function TBL.cuts(i,rows,c,Y,acc,best,    xy,tot) -- col c
+  xy = {}                        -- feeds its splits to best
   for _,r in ipairs(rows) do
     if r[c.at] ~= "?" then push(xy, {r[c.at], Y(r)}) end end
   tot = adds(map(xy, function(p) return p[2] end), acc())
-  return c.cuts(c, xy, tot, acc) end
+  c.cuts(c, xy, tot, acc, best) end
 
-function Tree(tbl,rows,Y,acc,lvl,    ys,t,cs,b,c,yes,no)
+function TBL.bestcut(i,rows,Y,acc,best) -- champion x-col cut
+  for _,c in ipairs(i.cols.x) do i.cuts(i,rows,c,Y,acc,best) end
+  return best() end
+
+function TBL.divide(i,rows,c,v,    yes,no) -- rows into holds
+  yes, no = {}, {}                         -- c<=v, or not
+  for _,r in ipairs(rows) do
+    push(c.holds(c, r[c.at], v) and yes or no, r) end
+  return yes, no end
+
+--## trees ------------------------------------------------------
+-- Recursive best-cut trees over the discretizer above, plus
+-- walk/sides: visit every pruning of a grown tree.
+function Tree(tbl,rows,Y,acc,lvl,    ys,t,b,c,yes,no)
   Y   = Y or function(r) return tbl.disty(tbl, r) end
   acc, lvl = acc or Num, lvl or 0
   ys  = adds(map(rows, Y), acc())
   t   = new(TREE, {at=nil, v=nil, n=#rows, mu=ys.mid(ys),
                    leafs=1, ys=ys,
+                   goals = map(tbl.cols.y, function(y,    g)
+                     g = Col(y.name, y.at)
+                     for _,r in ipairs(rows) do
+                       g.add(g, r[y.at]) end
+                     return g end),
                    here=ys.has and ys.div(ys) or ys.mid(ys)})
-  t.score = t.here
+  t.val = t.here
   if #rows >= 2*the.leaf and lvl < the.maxd then
-    cs = {}
-    for _,xcol in ipairs(tbl.cols.x) do
-      for _,cut in ipairs(tbl.cuts(tbl,rows,xcol,Y,acc)) do
-        push(cs, cut) end end
-    b = argmin(cs, function(z) return z[1] end)
+    b = tbl.bestcut(tbl, rows, Y, acc, least())
     if b then
       c = tbl.cols.all[b[2]]
-      yes, no = {}, {}
-      for _,r in ipairs(rows) do
-        push(c.holds(c, r[b[2]], b[3]) and yes or no, r) end
+      yes, no = tbl.divide(tbl, rows, c, b[3])
       if #yes > 0 and #no > 0 then
         t.at, t.v = b[2], b[3]
         t.yes   = Tree(tbl, yes, Y, acc, lvl+1)
         t.no    = Tree(tbl, no,  Y, acc, lvl+1)
-        t.score = min(t.yes.score, t.no.score)
+        t.val   = min(t.yes.val, t.no.val)
         t.leafs = t.yes.leafs + t.no.leafs end end end
   return t end
 
-function leafed(x) -- x, collapsed to one leaf
+function TREE.leafed(x) -- x, collapsed to one leaf
   return new(TREE, {at=nil, n=x.n, mu=x.mu, here=x.here,
-                    score=x.here, leafs=1, ys=x.ys}) end
+                    val=x.here, leafs=1, ys=x.ys,
+                    goals=x.goals}) end
 
-function walk(t) -- yield every pruning of tree t
-  return gen(function()
-    if t.at == nil then return yield(t) end
-    for yes in sides(t.yes) do
-      for no in sides(t.no) do
-        yield(new(TREE, {at=t.at, v=t.v, n=t.n,
-                         yes=yes, no=no,
-                         score=min(yes.score, no.score),
-                         leafs=yes.leafs + no.leafs})) end end
-  end) end
+function TREE.walk(t,fun) -- fun on every pruning of tree t
+  if t.at == nil then return fun(t) end
+  t.yes.sides(t.yes, function(yes)
+    t.no.sides(t.no, function(no)
+      fun(new(TREE, {at=t.at, v=t.v, n=t.n,
+                     yes=yes, no=no,
+                     val=min(yes.val, no.val),
+                     leafs=yes.leafs + no.leafs})) end) end) end
 
-function sides(t) -- t as a leaf; then t's own prunings
-  return gen(function()
-    yield(leafed(t))
-    if t.at ~= nil then
-      for w in walk(t) do yield(w) end end end) end
+function TREE.sides(t,fun) -- t as leaf; then t's prunings
+  fun(t.leafed(t))
+  if t.at ~= nil then t.walk(t, fun) end end
 
 function TREE.leaf(t,tbl,row,    c) -- row's leaf, its guess
   while t.at do
     c = tbl.cols.all[t.at]
     t = c.holds(c, row[t.at], t.v) and t.yes or t.no end
   return t.mu end
+
+--## tree show -------------------------------------------------
+-- One row per node: n, d2h, then each goal's mean under its
+-- own header column; tree structure trails on the right.
+function TREE.leaves(t,fun) -- fun on every leaf below t
+  if t.at then t.yes.leaves(t.yes, fun)
+               t.no.leaves(t.no, fun)
+  else fun(t) end end
+
+function TREE.gstr(t) -- goal means, as aligned columns
+  return table.concat(map(t.goals, function(g,    v)
+    v = g.mid(g)
+    if type(v) == "number" and v % 1 ~= 0 then
+      v = ("%."..the.round.."f"):format(v) end
+    return ("%9s"):format(v) end)) end
+
+function TREE.show(t,tbl,pre,txt,lo,hi,    c,say,m)
+  pre, txt = pre or "", txt or ""    -- print: stats left,
+  if not lo then                     -- root: leaf extremes,
+    lo, hi = math.huge, -math.huge   -- then a header
+    t.leaves(t, function(l)
+      lo, hi = min(lo, l.mu), max(hi, l.mu) end)
+    print((" %4s %5s"):format("n", "d2h") ..
+      table.concat(map(t.goals, function(g)
+        return ("%9s"):format(g.name) end))) end
+  m = (t.at == nil and t.mu == lo and "*") or  -- best leaf
+      (t.at == nil and t.mu == hi and "!") or " " -- worst
+  print(("%s%4d %5.2f%s  %s"):format(
+    m, t.n, t.mu, t.gstr(t), pre .. txt))
+  if t.at then                       -- structure right
+    c   = tbl.cols.all[t.at]
+    say = function(op)
+            return c.name .. op .. tostring(t.v) end
+    pre = pre .. (txt == "" and "" or "|  ")
+    t.yes.show(t.yes, tbl, pre,
+               say(c.has and " == " or " <= "), lo, hi)
+    t.no.show(t.no, tbl, pre,
+              say(c.has and " ~= " or " >  "), lo, hi)
+  end end
 
 --## statistics -------------------------------------------------
 function cohen(xs,ys,    m,spd) -- mid gap, in spread units
@@ -329,8 +376,7 @@ function thing(s) -- string to number, bool, or string
   return tonumber(s) or s=="True" or (s~="False" and s) end
 
 function csv(file,    f) -- stream rows of coerced cells;
-  -- $VARS in file expand from the environment
-  f = io.lines((file:gsub("%$(%w+)", os.getenv)))
+  f = io.lines((file:gsub("%$(%w+)",os.getenv))) --env expansion 
   return function(    t,l)
     for line in f do
       l = line:gsub("%%.*",""):match"^%s*(.-)%s*$"
@@ -350,7 +396,6 @@ function copy(t) -- shallow copy of the list part
 
 function push(t,v) t[1+#t] = v; return v end
 
-gen, yield = coroutine.wrap, coroutine.yield -- lazy walkers
 
 function sum(t,f,    n) -- add f(v) over values
   n = 0; for _, v in pairs(t) do n = n + f(v) end; return n end
@@ -382,6 +427,11 @@ function argmin(t,f,    lo,n,x) -- the v w/ least f(v)
   lo = math.huge                  -- first winner keeps ties
   for _,v in ipairs(t) do n=f(v); if n<lo then lo,x=n,v end end
   return x end
+
+function least(    lo) -- min-so-far reducer: call f{val,..}
+  return function(x)   -- to offer, f() to read; the champion
+    if x and (lo == nil or x[1] < lo[1]) then lo = x end
+    return lo end end  -- rides in the closure
 
 function shuffle(lst,    t,j) -- random re-order; copies first
   t = copy(lst)
@@ -421,21 +471,81 @@ eg["--tree"] = function(    t,tr,n,best) -- prune, keep best
   t  = Tbl(csv(the.DATA .. the.file))
   tr = Tree(t, t.rows)
   n  = 0
-  for w in walk(tr) do
+  tr.walk(tr, function(w)
     n = n + 1
-    if not best or w.score < best.score or
-       (w.score == best.score and w.leafs < best.leafs) then
-      best = w end end
+    if not best or w.val < best.val or
+       (w.val == best.val and w.leafs < best.leafs) then
+      best = w end end)
   print(("tree: %s leafs. prunings: %s. best: %s leafs,"
-         .." score %s"):format(tr.leafs, n, best.leafs,
-                               show(best.score)))
-  assert(best.score <= tr.score and best.leafs <= tr.leafs) end
+         .." val %s"):format(tr.leafs, n, best.leafs,
+                               show(best.val)))
+  assert(best.val <= tr.val and best.leafs <= tr.leafs) end
 
 eg["--all"] = function ()
   for _,k in ipairs(keys(eg)) do
     if k ~= "--all" then run(eg, k) end end end
 
 eg["--the"] = function() print(show(the)) end
+
+eg["--csv"] = function(    t) -- cells coerced, header named
+  t = Tbl(csv(the.DATA .. the.file))
+  print(#t.rows, show(t.cols.names))
+  assert(#t.rows == 398 and t.rows[1][1] == 8) end
+
+eg["--col"] = function(    n,s) -- Num and Sym summaries
+  n = adds{1,2,3,4,5}
+  s = adds({"a","a","b"}, Sym())
+  print(show{mu=n.mid(n), sd=n.div(n),
+             mode=s.mid(s), ent=s.div(s)})
+  assert(n.mid(n) == 3 and s.mid(s) == "a") end
+
+eg["--without"] = function(    a,b,w) -- (a+b) minus b == a
+  a, b = adds{1,2,3,4,5}, adds{10,20,30}
+  w = adds({10,20,30}, adds{1,2,3,4,5}).without(
+        adds({10,20,30}, adds{1,2,3,4,5}), b)
+  print(show{mu=w.mu, sd=w.div(w)})
+  assert(abs(w.mu - a.mu) < 1e-9) end
+
+eg["--distx"] = function(    t,d) -- self=0; far pair > near
+  t = Tbl(csv(the.DATA .. the.file))
+  d = function(a,b) return t.distx(t, a, b) end
+  print(show{self=d(t.rows[1], t.rows[1]),
+             near=d(t.rows[1], t.rows[2]),
+             far =d(t.rows[1], t.rows[398])})
+  assert(d(t.rows[1], t.rows[1]) == 0) end
+
+eg["--half"] = function(    t,a,b,west,east) -- far-pole split
+  t = Tbl(csv(the.DATA .. the.file))
+  a, b, west, east = t.halve(t, t.rows)
+  print(show{west=#west, east=#east,
+             a=t.disty(t,a), b=t.disty(t,b)})
+  assert(#west + #east == #t.rows)
+  assert(t.disty(t,a) <= t.disty(t,b)) end
+
+eg["--cuts"] = function(    t,b,c) -- champion cut, named
+  t = Tbl(csv(the.DATA .. the.file))
+  b = t.bestcut(t, t.rows, function(r)
+        return t.disty(t, r) end, Num, least())
+  c = t.cols.all[b[2]]
+  print(("best cut: %s <= %s (val %.3f)")
+        :format(c.name, b[3], b[1]))
+  assert(b[1] >= 0 and c) end
+
+eg["--show"] = function(    t,tr) -- tree, goal mean columns
+  t  = Tbl(csv(the.DATA .. the.file))
+  tr = Tree(t, t.rows)
+  tr.show(tr, t)
+  assert(tr.leafs > 1) end
+
+eg["--ranks"] = function(    g,d,r) -- ties share a rank
+  g = function(mu,    u) u = {}
+        for j = 1, 20 do
+          u[j] = mu + math.random() + math.random() - 1 end
+        return u end
+  d = {a=g(0), b=g(0.05), c=g(2), e=g(4)}
+  r = ranks(d)
+  print(show(r.ranks), show(r.winners))
+  assert(r.ranks.a == 0 and r.ranks.e > r.ranks.c) end
 
 eg["--disty"] = function(    t,d,rows) -- sort rows by disty
   t = Tbl(csv(the.DATA .. the.file))
