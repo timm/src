@@ -168,27 +168,26 @@ function TBL.halve(i,rows,    far,a,b,c,n)
   b = far(a)
   c = i.distx(i, a, b)
   if i.disty(i, b) < i.disty(i, a) then a, b = b, a end
-  rows = keysort(rows,
-           function(r) return i.projx(i,r,a,b,c) end)
+  rows = keysort(rows, function(r) return i.projx(i,r,a,b,c) end)
   n = floor(#rows / 2)
   return a, b, {slice(rows, 1, n)}, {slice(rows, n + 1)} end
 
-function Node(tbl,rows,    i,a,b,west,east) -- tree of halves
+function Node(tbl,rows,    i,a,b,lo,hi) -- tree of halves
   rows = rows or tbl.rows
-  i = new(NODE, {here=tbl.clone(tbl, rows),
-                 a=nil, b=nil, west=nil, east=nil})
+  node = new(NODE,{here = tbl.clone(tbl,rows),
+                   a=nil, b=nil, lo=nil, hi=nil})
   if #rows >= 2 * the.stop then
-    a, b, west, east = tbl.halve(tbl, rows)
-    i.a, i.b = a, b
-    if #west > 0 and #east > 0 then
-      i.west, i.east = Node(tbl,west), Node(tbl,east) end end
-  return i end
+    a, b, lo, hi = tbl.halve(tbl, rows)
+    node.a, node.b = a, b
+    if #lo > 0 and #hi > 0 then
+      node.lo, node.hi = Node(tbl,lo), Node(tbl,hi) end end
+  return node end
 
 function NODE.leaf(i,row,    t) -- walk row down to its leaf
-  while i.west do
+  while i.lo do
     t = i.here
     i = t.distx(t, row, i.a) <= t.distx(t, row, i.b)
-        and i.west or i.east end
+        and i.lo or i.hi end
   return i end
 
 --## acquire ---------------------------------------------------
@@ -196,38 +195,34 @@ function NODE.leaf(i,row,    t) -- walk row down to its leaf
 -- Rows are table refs, so lab doubles as set (lab[row]) and
 -- ordered list (lab[1..n]); the labelled members of any
 -- culled subset fall out of one lab[r] filter.
-function TBL.poles(i,rows,east,west,    x,far,c) -- projector
-  x    = function(a,b) return i.distx(i, a, b) end
-  far  = function(r) return argmax(rows,
-           function(z) return x(z, r) end) end
-  east = east or far(rows[1])
-  west = west or far(east)
-  if i.disty(i, east) > i.disty(i, west) then
-    east, west = west, east end
-  c = x(east, west) + TINY
+function TBL.poles(i,rows,    x,t,lo,hi,c) -- projector on
+  x  = function(a,b) return i.distx(i, a, b) end -- the line
+  t  = keysort(rows, function(r) return i.disty(i, r) end)
+  lo, hi = t[1], t[#t]     -- from the y-best to the y-worst
+  c  = x(lo, hi) + TINY    -- (keysort: one disty per row)
   return function(r)
-    return (x(east,r)^2 + c*c - x(west,r)^2) / (2*c) end end
+    return (x(lo,r)^2 + c*c - x(hi,r)^2) / (2*c) end end
 
-function TBL.descend(i,rows,cap,lab,east,west,    fresh,more)
+function TBL.acquire(i,rows,cap,lab,    more,at,r)
   while #rows >= 2*the.leaf and #lab < cap do
-    fresh, more = {}, min(the.more, cap - #lab)
-    for _,r in ipairs(rows) do
-      if lab[r] then push(fresh, r)      -- old labels, found
-      elseif more > 0 then               -- plus a few new
+    at, more = 0, min(the.more, cap - #lab)
+    while more > 0 and at < #rows do     -- advance till they
+      at = at + 1                        -- are issued or the
+      r  = rows[at]                      -- pool ends
+      if not lab[r] then
         more, lab[r] = more - 1, true
-        push(lab, push(fresh, r)) end end
-    rows = {slice(keysort(rows, i.poles(i,fresh,east,west)),
+        push(lab, r) end end
+    rows = {slice(keysort(rows, i.poles(i, lab)),
                   1, max(1, floor(the.keepf * #rows)))} end
   return lab end
 
-function TBL.sway(i,cap,    y,lab,seen) -- descend, restart
-  y   = function(r) return i.disty(i, r) end
-  lab = i.descend(i, shuffle(i.rows), cap, {})
-  while #lab < cap and #lab < #i.rows do
-    seen = keysort(copy(lab), y)         -- anchor restarts at
-    lab  = i.descend(i, shuffle(i.rows), cap, lab,
-                     seen[1], seen[#seen]) end -- best, worst
-  return keysort(lab, y) end
+function TBL.acquirer(i,cap,    rows,lab) -- seed a few
+  rows = shuffle(i.rows)  -- (once: kills file-order bias)
+  lab  = {slice(rows, 1, the.more)}
+  for _,r in ipairs(lab) do lab[r] = true end
+  while #lab < cap and #lab < #rows do
+    lab = i.acquire(i, rows, cap, lab) end
+  return keysort(lab, function(r) return i.disty(i,r) end) end
 
 --## discretize -------------------------------------------------
 -- Find good cuts: places where splitting the x values most
@@ -549,12 +544,12 @@ eg["--distx"] = function(    t,d) -- self=0; far pair > near
              far =d(t.rows[1], t.rows[398])})
   assert(d(t.rows[1], t.rows[1]) == 0) end
 
-eg["--half"] = function(    t,a,b,west,east) -- far-pole split
+eg["--half"] = function(    t,a,b,lo,hi) -- far-pole split
   t = Tbl(csv(the.DATA .. the.file))
-  a, b, west, east = t.halve(t, t.rows)
-  print(show{west=#west, east=#east,
+  a, b, lo, hi = t.halve(t, t.rows)
+  print(show{lo=#lo, hi=#hi,
              a=t.disty(t,a), b=t.disty(t,b)})
-  assert(#west + #east == #t.rows)
+  assert(#lo + #hi == #t.rows)
   assert(t.disty(t,a) <= t.disty(t,b)) end
 
 eg["--cuts"] = function(    t,b,c) -- champion cut, named
@@ -575,7 +570,7 @@ eg["--show"] = function(    t,tr) -- tree, goal mean columns
 eg["--acquire"] = function(    t,y,lab,best,truth)
   t     = Tbl(csv(the.DATA .. the.file))
   y     = function(r) return t.disty(t, r) end
-  lab   = t.sway(t, the.budget)
+  lab   = t.acquirer(t, the.budget)
   best  = y(lab[1])
   truth = y(keysort(t.rows, y)[1])
   print(show{labels=#lab, best=best, truth=truth})
