@@ -137,7 +137,7 @@ def halve(tbl, rows=None): # split rows on far poles, best first
 
 def Node(tbl, rows=None): # tree of halves
   rows = rows or tbl.rows
-  node = o(it=Node, here=clone(tbl, rows),
+  node = o(it=Node, tbl=tbl, rows=rows,
            a=None, b=None, west=None, east=None)
   if len(rows) >= 2 * the.stop:
     node.a, node.b, west, east = halve(tbl, rows)
@@ -145,9 +145,12 @@ def Node(tbl, rows=None): # tree of halves
       node.west, node.east = Node(tbl,west), Node(tbl,east)
   return node
 
+def here(node): # node's rows summarized, on demand
+  return clone(node.tbl, node.rows)
+
 def leaf(node, row): # walk row down to its leaf group
   while node.west:
-    d = lambda pole: distx(node.here, row, pole)
+    d = lambda pole: distx(node.tbl, row, pole)
     node = node.west if d(node.a) <= d(node.b) else node.east
   return node
 
@@ -191,7 +194,8 @@ def ranks(d, max=False, **thresholds): # tied share a rank
     if best is None or not same(d[best], d[k], **thresholds):
       rank, best = rank + 1, k
     out[k] = rank
-  return o(all=out, winners=[k for k, r in out.items() if r==0])
+  return o(ranks=out,
+           winners=[k for k, r in out.items() if r==0])
 
 #-- start-up ----------------------------------------------------
 def cli(d): # --key=val flags update settings

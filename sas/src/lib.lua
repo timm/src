@@ -156,7 +156,7 @@ function TBL.halve(i,rows,    far,a,b,c,n)
 
 function Node(tbl,rows,    i,a,b,west,east) -- tree of halves
   rows = rows or tbl.rows
-  i = new(NODE, {here=tbl.clone(tbl, rows),
+  i = new(NODE, {tbl=tbl, rows=rows,
                  a=nil, b=nil, west=nil, east=nil})
   if #rows >= 2 * the.stop then
     a, b, west, east = tbl.halve(tbl, rows)
@@ -165,9 +165,12 @@ function Node(tbl,rows,    i,a,b,west,east) -- tree of halves
       i.west, i.east = Node(tbl,west), Node(tbl,east) end end
   return i end
 
+function NODE.here(i) -- node's rows summarized, on demand
+  return i.tbl.clone(i.tbl, i.rows) end
+
 function NODE.leaf(i,row,    t) -- walk row down to its leaf
+  t = i.tbl
   while i.west do
-    t = i.here
     i = t.distx(t, row, i.a) <= t.distx(t, row, i.b)
         and i.west or i.east end
   return i end

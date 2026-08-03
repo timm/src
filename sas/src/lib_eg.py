@@ -97,16 +97,16 @@ def test_node(): # tree: small leaves, no rows lost
     return leaves(n.west) + leaves(n.east)
   ls = leaves(t)
   print("leaves %s sizes %s" % (len(ls),
-        sorted(len(l.here.rows) for l in ls)))
-  assert sum(len(l.here.rows) for l in ls) == len(tbl.rows)
-  assert all(len(l.here.rows) < 2*the.stop for l in ls)
+        sorted(len(l.rows) for l in ls)))
+  assert sum(len(l.rows) for l in ls) == len(tbl.rows)
+  assert all(len(l.rows) < 2*the.stop for l in ls)
 
 def test_leaf(): # walker drops rows into sane groups
   tbl = Tbl(csv(the.file))
   t = Node(tbl)
   rows = sorted(tbl.rows, key=lambda r: disty(tbl, r))
   best, worst = leaf(t, rows[0]), leaf(t, rows[-1])
-  m = lambda n: mid(n.here.cols.y[-1])
+  m = lambda n: mid(here(n).cols.y[-1])
   print("%s mu: best leaf %.1f worst leaf %.1f" %
         (tbl.cols.y[-1].name, m(best), m(worst)))
   assert not best.west and not worst.west
