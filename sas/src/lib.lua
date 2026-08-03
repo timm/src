@@ -24,6 +24,9 @@ the = {
   round  = 2,              -- decimals printed by show
   leaf   = 3,              -- tree: min rows in one leaf
   maxd   = 4,              -- tree: max depth
+  budget = 32,             -- acquire: max labels
+  more   = 4,              -- acquire: labels per round
+  keepf  = 0.66,           -- acquire: pool kept per cull
   DATA   = "data/",        -- where tables live; $VARS ok
   file   = "auto93.csv" }  -- default table
 
@@ -187,6 +190,44 @@ function NODE.leaf(i,row,    t) -- walk row down to its leaf
     i = t.distx(t, row, i.a) <= t.distx(t, row, i.b)
         and i.west or i.east end
   return i end
+
+--## acquire ---------------------------------------------------
+-- Label few rows, cull the pool toward the good pole, loop.
+-- Rows are table refs, so lab doubles as set (lab[row]) and
+-- ordered list (lab[1..n]); the labelled members of any
+-- culled subset fall out of one lab[r] filter.
+function TBL.poles(i,rows,east,west,    x,far,c) -- projector
+  x    = function(a,b) return i.distx(i, a, b) end
+  far  = function(r) return argmax(rows,
+           function(z) return x(z, r) end) end
+  east = east or far(rows[1])
+  west = west or far(east)
+  if i.disty(i, east) > i.disty(i, west) then
+    east, west = west, east end
+  c = x(east, west) + TINY
+  return function(r)
+    return (x(east,r)^2 + c*c - x(west,r)^2) / (2*c) end end
+
+function TBL.descend(i,rows,cap,lab,east,west,    fresh,more)
+  while #rows >= 2*the.leaf and #lab < cap do
+    fresh, more = {}, min(the.more, cap - #lab)
+    for _,r in ipairs(rows) do
+      if lab[r] then push(fresh, r)      -- old labels, found
+      elseif more > 0 then               -- plus a few new
+        more, lab[r] = more - 1, true
+        push(lab, push(fresh, r)) end end
+    rows = {slice(keysort(rows, i.poles(i,fresh,east,west)),
+                  1, max(1, floor(the.keepf * #rows)))} end
+  return lab end
+
+function TBL.sway(i,cap,    y,lab,seen) -- descend, restart
+  y   = function(r) return i.disty(i, r) end
+  lab = i.descend(i, shuffle(i.rows), cap, {})
+  while #lab < cap and #lab < #i.rows do
+    seen = keysort(copy(lab), y)         -- anchor restarts at
+    lab  = i.descend(i, shuffle(i.rows), cap, lab,
+                     seen[1], seen[#seen]) end -- best, worst
+  return keysort(lab, y) end
 
 --## discretize -------------------------------------------------
 -- Find good cuts: places where splitting the x values most
@@ -364,8 +405,7 @@ function ranks(d,big,    mid,dd,sign,out,win,rank,best)
 
 --## batteries --------------------------------------------------
 function new(kl,t) -- class table is also its metatable
-  kl.__index = kl; kl.__tostring = show
-  return setmetatable(t, kl) end
+  kl.__index=kl;kl.__tostring=show; return setmetatable(t,kl) end
 
 function iter(src,    at) -- iterate a list or a function
   if type(src) == "function" then return src end
@@ -421,11 +461,6 @@ function med(t,    s) -- median (sorts a copy first)
 function argmax(t,f,    hi,n,x) -- the v w/ biggest f(v)
   hi = -math.huge                 -- first winner keeps ties
   for _,v in ipairs(t) do n=f(v); if n>hi then hi,x=n,v end end
-  return x end
-
-function argmin(t,f,    lo,n,x) -- the v w/ least f(v)
-  lo = math.huge                  -- first winner keeps ties
-  for _,v in ipairs(t) do n=f(v); if n<lo then lo,x=n,v end end
   return x end
 
 function least(    lo) -- min-so-far reducer: call f{val,..}
@@ -536,6 +571,15 @@ eg["--show"] = function(    t,tr) -- tree, goal mean columns
   tr = Tree(t, t.rows)
   tr.show(tr, t)
   assert(tr.leafs > 1) end
+
+eg["--acquire"] = function(    t,y,lab,best,truth)
+  t     = Tbl(csv(the.DATA .. the.file))
+  y     = function(r) return t.disty(t, r) end
+  lab   = t.sway(t, the.budget)
+  best  = y(lab[1])
+  truth = y(keysort(t.rows, y)[1])
+  print(show{labels=#lab, best=best, truth=truth})
+  assert(#lab <= the.budget and best < 0.35) end
 
 eg["--ranks"] = function(    g,d,r) -- ties share a rank
   g = function(mu,    u) u = {}
