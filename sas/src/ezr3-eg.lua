@@ -117,7 +117,7 @@ eg["--col"] = function(    n,s) -- Num and Sym summaries
 
 eg["--without"] = function(    a,b,w) -- (a+b) minus b == a
   a, b = adds{1,2,3,4,5}, adds{10,20,30}
-  w = adds({10,20,30}, adds{1,2,3,4,5}):without(b)
+  w = adds({10,20,30}, adds{1,2,3,4,5}) - b
   print(show{mu=w.mu, sd=w:div()})
   assert(abs(w.mu - a.mu) < 1e-9) end
 

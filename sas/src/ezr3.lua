@@ -87,7 +87,7 @@ function NUM.norm(i,v,    z) -- v's cdf, via logistic; 0..1
   z = (v - i.mu) / (i:div() + TINY)
   return 1 / (1 + exp(-1.702 * max(-3, min(3, z)))) end
 
-function NUM.without(i,j,    n,d) -- i minus j, as new NUM
+function NUM.__sub(i,j,    n,d) -- tot - v: new NUM
   n = i.n - j.n
   if n < 1 then return Num(i.name, i.at) end
   d = j.mu - i.mu
@@ -96,7 +96,7 @@ function NUM.without(i,j,    n,d) -- i minus j, as new NUM
                    m2=max(0, i.m2 - j.m2
                              - d*d*i.n*j.n/n)}) end
 
-function SYM.without(i,j,    out,n) -- i minus j's counts
+function SYM.__sub(i,j,    out,n) -- tot - v: new counts
   out = Sym(i.name, i.at)
   for k,v in pairs(i.has) do
     n = v - (j.has[k] or 0)
@@ -266,7 +266,7 @@ function SYM.cuts(c,xy,tot,acc,best,    d,b) -- one cut per
   if #keys(d) > 1 then
     for k,v in pairs(d) do
       if big(v.n, #xy) then
-        best{val(v, tot:without(v)), c.at, k} end end end end
+        best{val(v, tot - v), c.at, k} end end end end
 
 function NUM.cuts(c,xy,tot,acc,best,    here) -- cuts between
   table.sort(xy, function(a,b) return a[1] < b[1] end)
@@ -274,7 +274,7 @@ function NUM.cuts(c,xy,tot,acc,best,    here) -- cuts between
   for j,p in ipairs(xy) do
     here:add(p[2])
     if j < #xy and p[1] ~= xy[j+1][1] and big(j, #xy) then
-      best{val(here,tot:without(here)),c.at,p[1]} end end end
+      best{val(here, tot - here),c.at,p[1]} end end end
 
 function TBL.cuts(i,rows,c,Y,acc,best,    xy,tot) -- col c
   xy = {}                        -- feeds its splits to best
