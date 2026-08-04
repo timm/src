@@ -12,11 +12,9 @@ local TINY         = 1e-32
 -- find ezr3.lua beside this file, whatever the cwd
 package.path = (arg and arg[0] or ""):gsub("[^/]*$","")
                .. "?.lua;" .. package.path
-local lib = require"ezr3"
-
--- all defs below land here; reads fall through to lib
--- (and, through lib, to _G)
-local _ENV = setmetatable({}, {__index = lib})
+-- all defs below land here; reads fall through to ezr3
+-- (and, through it, to lib and _G)
+local _ENV = setmetatable({}, {__index = require"ezr3"})
 if setfenv then setfenv(1, _ENV) end
 --## score -------------------------------------------------
 function TBL.wins(i,rows,    ys,lo,b4) -- grader: row ->
@@ -245,21 +243,6 @@ eg["--disty"] = function(    t,d,rows) -- sort rows by disty
     elseif at == 4 then print"..." end end
   assert(d(rows[1]) <= d(rows[#rows])) end
 --## start-up --------------------------------------------------
-function cli(d,    v) -- --key=val flags update settings
-  for _, s in ipairs(arg) do
-    for k in pairs(d) do
-      v = s:match("^%-%-" .. k .. "=(.*)")
-      if v then d[k] = thing(v) end end end
-  return d end
-
-function run(funs,w,    ok,msg) -- one seeded example
-  srand(the.seed)   
-  if funs[w] then
-    ok, msg = xpcall(funs[w], debug.traceback)
-    if not ok then print(msg) end
-    return ok end end
-
-if arg and arg[0] and arg[0]:find"%-eg%.lua$" then 
-  cli(the); for _,w in ipairs(arg) do run(eg, w) end end 
+go(eg)
 
 return _ENV

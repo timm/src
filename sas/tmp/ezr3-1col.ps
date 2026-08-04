@@ -1,0 +1,1261 @@
+%!PS-Adobe-3.0
+%%Title: stdin
+%%For: timm
+%%Creator: a2ps version 4.15.6
+%%CreationDate: Tue Aug  4 13:20:47 2026
+%%BoundingBox: 24 24 571 818
+%%DocumentData: Clean7Bit
+%%Orientation: Portrait
+%%Pages: 7
+%%PageOrder: Ascend
+%%DocumentMedia: A4 595 842 0 () ()
+%%DocumentNeededResources: font Courier
+%%+ font Courier-Bold
+%%+ font Courier-BoldOblique
+%%+ font Courier-Oblique
+%%+ font Helvetica
+%%+ font Helvetica-Bold
+%%+ font Symbol
+%%+ font Times-Bold
+%%+ font Times-Roman
+%%DocumentProcessColors: Black 
+%%DocumentSuppliedResources: procset a2ps-a2ps-hdr
+%%+ procset a2ps-black+white-Prolog
+%%+ encoding ISO-8859-1Encoding
+%%EndComments
+/a2psdict 200 dict def
+a2psdict begin
+%%BeginProlog
+%%Copyright: (c) 1988-2017 Free Software Foundation, Inc.
+% Check PostScript language level.
+/languagelevel where {
+  pop /gs_languagelevel languagelevel def
+} {
+  /gs_languagelevel 1 def
+} ifelse
+
+% EPSF import as in the Red Book
+/BeginInclude {
+  /b4_Inc_state save def    		% Save state for cleanup
+  /dict_count countdictstack def	% Count objects on dict stack
+  /op_count count 1 sub def		% Count objects on operand stack 
+  userdict begin
+    0 setgray 0 setlinecap
+    1 setlinewidth 0 setlinejoin
+    10 setmiterlimit [ ] 0 setdash newpath
+    gs_languagelevel 1 ne {
+      false setstrokeadjust false setoverprint 
+    } if
+} bind def
+
+/EndInclude {
+  count op_count sub { pos } repeat	% Clean up stacks
+  countdictstack dict_count sub { end } repeat
+  b4_Inc_state restore
+} bind def
+
+/BeginEPSF {
+  BeginInclude
+  /showpage { } def
+} bind def
+
+/EndEPSF {
+  EndInclude
+} bind def
+
+% Page prefeed
+/page_prefeed {         % bool -> -
+  statusdict /prefeed known {
+    statusdict exch /prefeed exch put
+  } {
+    pop
+  } ifelse
+} bind def
+
+/deffont {
+  findfont exch scalefont def
+} bind def
+
+/reencode_font {
+  findfont reencode 2 copy definefont pop def
+} bind def
+
+% Function c-show (str => -)
+% centers text only according to x axis.
+/c-show { 
+  dup stringwidth pop
+  2 div neg 0 rmoveto
+  show
+} bind def
+
+% Function l-show (str => -)
+% prints texts so that it ends at currentpoint
+/l-show {
+  dup stringwidth pop neg 
+  0 
+  rmoveto show
+} bind def
+
+% center-fit show (str w => -)
+% show centered, and scale currentfont so that the width is less than w
+/cfshow {
+  exch dup stringwidth pop
+  % If the title is too big, try to make it smaller
+  3 2 roll 2 copy
+  gt
+  { % if, i.e. too big
+    exch div
+    currentfont exch scalefont setfont
+  } { % ifelse
+    pop pop 
+  }
+  ifelse
+  c-show			% center title
+} bind def
+
+% Return the y size of the current font
+% - => fontsize
+/currentfontsize {
+  currentfont /FontType get 0 eq {
+    currentfont /FontMatrix get 3 get
+  }{
+    currentfont /FontMatrix get 3 get 1000 mul
+  } ifelse
+} bind def
+
+% reencode the font
+% <encoding-vector> <fontdict> -> <newfontdict>
+/reencode { %def
+  dup length 5 add dict begin
+    { %forall
+      % <vector> <key> <val>
+      1 index /FID ne 
+      { def }{ pop pop } ifelse
+    } forall
+    /Encoding exch def % -
+
+    % Use the font's bounding box to determine the ascent, descent,
+    % and overall height; don't forget that these values have to be
+    % transformed using the font's matrix.
+    % We use `load' because sometimes BBox is executable, sometimes not.
+    % Since we need 4 numbers an not an array avoid BBox from being executed
+    /FontBBox load aload pop
+    FontMatrix transform /Ascent exch def pop
+    FontMatrix transform /Descent exch def pop
+    /FontHeight Ascent Descent sub def
+
+    % Get the underline position and thickness if they're defined.
+    % Use 1 if they are not defined.
+    currentdict /FontInfo 2 copy known
+    { get
+      /UnderlinePosition 2 copy % <FontInfo> /UP <FontInfo> /UP
+      2 copy known
+      { get }{ pop pop 1 } ifelse
+      0 exch FontMatrix transform exch pop
+      def % <FontInfo>
+
+      /UnderlineThickness 2 copy % <FontInfo> /UT <FontInfo> /UT
+      2 copy known
+      { get }{ pop pop 1 } ifelse
+      0 exch FontMatrix transform exch pop
+      def % <FontInfo>
+      pop % -
+    }{ pop pop
+    } ifelse
+
+    currentdict
+  end 
+} bind def
+
+% composite fonts for ASCII-EUC mixed strings
+% Version 1.2 1/31/1990
+% Original Ken'ichi HANDA (handa@etl.go.jp)
+% Modified Norio Katayama (katayama@rd.nacsis.ac.jp),1998
+% Extend & Fix Koji Nakamaru (maru@on.cs.keio.ac.jp), 1999
+% Anyone can freely copy, modify, distribute this program.
+
+/copyfont {	% font-dic extra-entry-count  copyfont  font-dic
+	1 index maxlength add dict begin
+	{	1 index /FID ne 2 index /UniqueID ne and
+		{def} {pop pop} ifelse
+	} forall
+	currentdict
+	end
+} bind def
+
+/compositefont { % ASCIIFontName EUCFontName RomanScale RomanOffset Rot(T/F) compositefont font
+    /RomanRotation exch def
+    /RomanOffset exch def
+    /RomanScale exch def
+    userdict /fixeucfont_dict known not {
+	userdict begin
+	    /fixeucfont_dict 2 dict begin
+		/UpperByteEncoding [
+		    16#00 1 16#20 { pop 0 } for
+		    16#21 1 16#28 { 16#20 sub } for
+		    16#29 1 16#2F { pop 0 } for
+		    16#30 1 16#74 { 16#27 sub } for
+		    16#75 1 16#FF { pop 0 } for
+		] def
+	        /LowerByteEncoding [
+		    16#00 1 16#A0 { pop /.notdef } for
+		    16#A1 1 16#FE { 16#80 sub 16 2 string cvrs
+				    (cXX) dup 1 4 -1 roll
+				    putinterval cvn } for
+		    /.notdef
+		] def
+		currentdict
+	    end def
+	end
+    } if
+    findfont dup /FontType get 0 eq {
+	14 dict begin
+	    %
+	    % 7+8 bit EUC font
+	    %
+	    12 dict begin
+		/EUCFont exch def
+		/FontInfo (7+8 bit EUC font) readonly def
+		/PaintType 0 def
+		/FontType 0 def
+		/FontMatrix matrix def
+		% /FontName
+		/Encoding fixeucfont_dict /UpperByteEncoding get def
+		/FMapType 2 def
+		EUCFont /WMode known
+		{ EUCFont /WMode get /WMode exch def }
+		{ /WMode 0 def } ifelse
+		/FDepVector [
+		    EUCFont /FDepVector get 0 get
+		    [ 16#21 1 16#28 {} for 16#30 1 16#74 {} for ]
+		    {
+			13 dict begin
+			    /EUCFont EUCFont def
+			    /UpperByte exch 16#80 add def	
+			    % /FontName
+			    /FontInfo (EUC lower byte font) readonly def
+			    /PaintType 0 def
+			    /FontType 3 def
+			    /FontMatrix matrix def
+			    /FontBBox {0 0 0 0} def
+			    /Encoding
+				fixeucfont_dict /LowerByteEncoding get def
+			    % /UniqueID
+			    % /WMode
+			    /BuildChar {
+				gsave
+				exch dup /EUCFont get setfont
+				/UpperByte get
+				2 string
+				dup 0 4 -1 roll put
+				dup 1 4 -1 roll put
+				dup stringwidth setcharwidth
+				0 0 moveto show
+				grestore
+			    } bind def
+			    currentdict
+			end
+			/lowerbytefont exch definefont
+		    } forall
+		] def
+		currentdict
+	    end
+	    /eucfont exch definefont
+	    exch
+	    findfont 1 copyfont dup begin
+		RomanRotation {
+			/FontMatrix FontMatrix
+			[ 0 RomanScale neg RomanScale 0 RomanOffset neg 0 ]
+			matrix concatmatrix def
+		}{
+			/FontMatrix FontMatrix
+			[ RomanScale 0 0 RomanScale 0 RomanOffset ] matrix concatmatrix
+			def
+			/CDevProc
+			    {pop pop pop pop 0 exch -1000 exch 2 div 880} def
+		} ifelse
+	    end
+	    /asciifont exch definefont
+	    exch
+	    /FDepVector [ 4 2 roll ] def
+	    /FontType 0 def
+	    /WMode 0 def
+	    /FMapType 4 def
+	    /FontMatrix matrix def
+	    /Encoding [0 1] def
+	    /FontBBox {0 0 0 0} def
+%	    /FontHeight 1.0 def % XXXX
+	    /FontHeight RomanScale 1.0 ge { RomanScale }{ 1.0 } ifelse def
+	    /Descent -0.3 def   % XXXX
+	    currentdict
+	end
+	/tmpfont exch definefont
+	pop
+	/tmpfont findfont
+    }{
+	pop findfont 0 copyfont
+    } ifelse
+} def	
+
+/slantfont {	% FontName slant-degree  slantfont  font'
+    exch findfont 1 copyfont begin
+    [ 1 0 4 -1 roll 1 0 0 ] FontMatrix exch matrix concatmatrix
+    /FontMatrix exch def
+    currentdict
+    end
+} def
+
+% Function print line number (<string> # -)
+/# {
+  gsave
+    sx cw mul neg 2 div 0 rmoveto
+    f# setfont
+    c-show
+  grestore
+} bind def
+
+% -------- Some routines to enlight plain b/w printings ---------
+
+% Underline
+% width --
+/dounderline {
+  currentpoint
+  gsave
+    moveto
+    0 currentfont /Descent get currentfontsize mul rmoveto
+    0 rlineto
+    stroke
+  grestore
+} bind def
+
+% Underline a string
+% string --
+/dounderlinestring {
+  stringwidth pop
+  dounderline
+} bind def
+
+/UL {
+  /ul exch store
+} bind def
+
+% Draw a box of WIDTH wrt current font
+% width --
+/dobox {
+  currentpoint
+  gsave
+    newpath
+    moveto
+    0 currentfont /Descent get currentfontsize mul rmoveto
+    dup 0 rlineto
+    0 currentfont /FontHeight get currentfontsize mul rlineto
+    neg 0 rlineto
+    closepath
+    stroke
+  grestore
+} bind def
+
+/BX {
+  /bx exch store
+} bind def
+
+% Box a string
+% string --
+/doboxstring {
+  stringwidth pop
+  dobox
+} bind def
+
+%
+% ------------- Color routines ---------------
+%
+/FG /setrgbcolor load def
+
+% Draw the background
+% width --
+/dobackground {
+  currentpoint
+  gsave
+    newpath
+    moveto
+    0 currentfont /Descent get currentfontsize mul rmoveto
+    dup 0 rlineto
+    0 currentfont /FontHeight get currentfontsize mul rlineto
+    neg 0 rlineto
+    closepath
+    bgcolor aload pop setrgbcolor
+    fill
+  grestore
+} bind def
+
+% Draw bg for a string
+% string --
+/dobackgroundstring {
+  stringwidth pop
+  dobackground
+} bind def
+
+
+/BG {
+  dup /bg exch store
+  { mark 4 1 roll ] /bgcolor exch store } if
+} bind def
+
+
+/Show {
+  bg { dup dobackgroundstring } if
+  ul { dup dounderlinestring } if
+  bx { dup doboxstring } if
+  show
+} bind def
+
+% Function T(ab), jumps to the n-th tabulation in the current line
+/T {
+  cw mul x0 add
+  bg { dup currentpoint pop sub dobackground } if
+  ul { dup currentpoint pop sub dounderline } if
+  bx { dup currentpoint pop sub dobox } if
+  y0 moveto
+} bind def
+
+% Function n: move to the next line
+/n {
+  /y0 y0 bfs sub store
+  x0 y0 moveto
+} bind def
+
+% Function N: show and move to the next line
+/N {
+  Show
+  /y0 y0 bfs sub store
+  x0 y0 moveto
+} bind def
+
+/S {
+  Show
+} bind def
+
+%%BeginResource: procset a2ps-a2ps-hdr 2.0 2
+%%Copyright: (c) 1988, 89, 90, 91, 92, 93 Miguel Santana
+%%Copyright: (c) 1995, 96, 97, 98 Akim Demaille, Miguel Santana
+% Function title: prints page header.
+% <ct> <rt> <lt> are passed as argument
+/title { 
+  % 1. Draw the background
+  x v get y v get moveto
+  gsave
+    0 th 2 div neg rmoveto 
+    th setlinewidth
+    0.95 setgray
+    pw 0 rlineto stroke
+  grestore
+  % 2. Border it
+  gsave
+    0.7 setlinewidth
+    pw 0 rlineto
+    0 th neg rlineto
+    pw neg 0 rlineto
+    closepath stroke
+  grestore
+  % stk: ct rt lt
+  x v get y v get th sub 1 add moveto
+%%IncludeResource: font Helvetica
+  fHelvetica fnfs 0.8 mul scalefont setfont
+  % 3. The left title
+  gsave
+    dup stringwidth pop fnfs 0.8 mul add exch % leave space took on stack
+    fnfs 0.8 mul hm rmoveto
+    show			% left title
+  grestore
+  exch
+  % stk: ct ltw rt
+  % 4. the right title
+  gsave
+    dup stringwidth pop fnfs 0.8 mul add exch % leave space took on stack
+    dup
+    pw exch stringwidth pop fnfs 0.8 mul add sub
+    hm
+    rmoveto
+    show			% right title
+  grestore
+  % stk: ct ltw rtw
+  % 5. the center title
+  gsave
+    pw 3 1 roll
+    % stk: ct pw ltw rtw
+    3 copy 
+    % Move to the center of the left room
+    sub add 2 div hm rmoveto
+    % What is the available space in here?
+    add sub fnfs 0.8 mul sub fnfs 0.8 mul sub
+    % stk: ct space_left
+%%IncludeResource: font Helvetica-Bold
+  fHelvetica-Bold fnfs scalefont setfont
+    cfshow
+  grestore
+} bind def
+
+% Function border: prints virtual page border
+/border { %def
+  gsave				% print four sides
+    0 setgray
+    x v get y v get moveto
+    0.7 setlinewidth		% of the square
+    pw 0 rlineto
+    0 ph neg rlineto
+    pw neg 0 rlineto
+    closepath stroke
+  grestore
+} bind def
+
+% Function water: prints a water mark in background
+/water { %def
+  gsave
+    scx scy moveto rotate
+%%IncludeResource: font Times-Bold
+  fTimes-Bold 100 scalefont setfont
+    .97 setgray
+    dup stringwidth pop 2 div neg -50 rmoveto
+    show
+  grestore
+} bind def
+
+% Function rhead: prints the right header
+/rhead {  %def
+  lx ly moveto
+  fHelvetica fnfs 0.8 mul scalefont setfont
+  l-show
+} bind def
+
+% Function footer (cf rf lf -> -)
+/footer {
+  fHelvetica fnfs 0.8 mul scalefont setfont
+  dx dy moveto
+  show
+
+  snx sny moveto
+  l-show
+  
+  fnx fny moveto
+  c-show
+} bind def
+%%EndResource
+%%BeginResource: procset a2ps-black+white-Prolog 2.0 1
+
+% Function T(ab), jumps to the n-th tabulation in the current line
+/T { 
+  cw mul x0 add y0 moveto
+} bind def
+
+% Function n: move to the next line
+/n { %def
+  /y0 y0 bfs sub store
+  x0 y0 moveto
+} bind def
+
+% Function N: show and move to the next line
+/N {
+  Show
+  /y0 y0 bfs sub store
+  x0 y0 moveto
+}  bind def
+
+/S {
+  Show
+} bind def
+
+/p {
+  false UL
+  false BX
+  fCourier bfs scalefont setfont
+  Show
+} bind def
+
+/sy {
+  false UL
+  false BX
+  fSymbol bfs scalefont setfont
+  Show
+} bind def
+
+/k {
+  false UL
+  false BX
+  fCourier-Oblique bfs scalefont setfont
+  Show
+} bind def
+
+/K {
+  false UL
+  false BX
+  fCourier-Bold bfs scalefont setfont
+  Show
+} bind def
+
+/c {
+  false UL
+  false BX
+  fCourier-Oblique bfs scalefont setfont
+  Show
+} bind def
+
+/C {
+  false UL
+  false BX
+  fCourier-BoldOblique bfs scalefont setfont
+  Show 
+} bind def
+
+/l {
+  false UL
+  false BX
+  fHelvetica bfs scalefont setfont
+  Show
+} bind def
+
+/L {
+  false UL
+  false BX
+  fHelvetica-Bold bfs scalefont setfont
+  Show 
+} bind def
+
+/str{
+  false UL
+  false BX
+  fTimes-Roman bfs scalefont setfont
+  Show
+} bind def
+
+/e{
+  false UL
+  true BX
+  fHelvetica-Bold bfs scalefont setfont
+  Show
+} bind def
+
+%%EndResource
+%%EndProlog
+%%BeginSetup
+%%IncludeResource: font Courier
+%%IncludeResource: font Courier-Oblique
+%%IncludeResource: font Courier-Bold
+%%IncludeResource: font Times-Roman
+%%IncludeResource: font Symbol
+%%IncludeResource: font Courier-BoldOblique
+%%BeginResource: encoding ISO-8859-1Encoding
+/ISO-8859-1Encoding [
+/.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef 
+/.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef 
+/.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef 
+/.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef 
+/space /exclam /quotedbl /numbersign /dollar /percent /ampersand /quoteright 
+/parenleft /parenright /asterisk /plus /comma /minus /period /slash 
+/zero /one /two /three /four /five /six /seven 
+/eight /nine /colon /semicolon /less /equal /greater /question 
+/at /A /B /C /D /E /F /G 
+/H /I /J /K /L /M /N /O 
+/P /Q /R /S /T /U /V /W 
+/X /Y /Z /bracketleft /backslash /bracketright /asciicircum /underscore 
+/quoteleft /a /b /c /d /e /f /g 
+/h /i /j /k /l /m /n /o 
+/p /q /r /s /t /u /v /w 
+/x /y /z /braceleft /bar /braceright /asciitilde /.notdef 
+/.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef 
+/.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef 
+/.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef 
+/.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef /.notdef 
+/space /exclamdown /cent /sterling /currency /yen /brokenbar /section 
+/dieresis /copyright /ordfeminine /guillemotleft /logicalnot /hyphen /registered /macron 
+/degree /plusminus /twosuperior /threesuperior /acute /mu /paragraph /bullet 
+/cedilla /onesuperior /ordmasculine /guillemotright /onequarter /onehalf /threequarters /questiondown 
+/Agrave /Aacute /Acircumflex /Atilde /Adieresis /Aring /AE /Ccedilla 
+/Egrave /Eacute /Ecircumflex /Edieresis /Igrave /Iacute /Icircumflex /Idieresis 
+/Eth /Ntilde /Ograve /Oacute /Ocircumflex /Otilde /Odieresis /multiply 
+/Oslash /Ugrave /Uacute /Ucircumflex /Udieresis /Yacute /Thorn /germandbls 
+/agrave /aacute /acircumflex /atilde /adieresis /aring /ae /ccedilla 
+/egrave /eacute /ecircumflex /edieresis /igrave /iacute /icircumflex /idieresis 
+/eth /ntilde /ograve /oacute /ocircumflex /otilde /odieresis /divide 
+/oslash /ugrave /uacute /ucircumflex /udieresis /yacute /thorn /ydieresis 
+] def
+%%EndResource
+% Initialize page description variables.
+/sh 842 def
+/sw 595 def
+/llx 24 def
+/urx 571 def
+/ury 818 def
+/lly 24 def
+/#copies 1 def
+/th 20.000000 def
+/fnfs 15 def
+/bfs 11.591963 def
+/cw 6.955178 def
+
+% Dictionary for ISO-8859-1 support
+/iso1dict 8 dict begin
+  /fCourier ISO-8859-1Encoding /Courier reencode_font
+  /fCourier-Bold ISO-8859-1Encoding /Courier-Bold reencode_font
+  /fCourier-BoldOblique ISO-8859-1Encoding /Courier-BoldOblique reencode_font
+  /fCourier-Oblique ISO-8859-1Encoding /Courier-Oblique reencode_font
+  /fHelvetica ISO-8859-1Encoding /Helvetica reencode_font
+  /fHelvetica-Bold ISO-8859-1Encoding /Helvetica-Bold reencode_font
+  /fTimes-Bold ISO-8859-1Encoding /Times-Bold reencode_font
+  /fTimes-Roman ISO-8859-1Encoding /Times-Roman reencode_font
+currentdict end def
+/bgcolor [ 0 0 0 ] def
+/bg false def
+/ul false def
+/bx false def
+% The font for line numbering
+/f# /Helvetica findfont bfs .6 mul scalefont def
+/fSymbol /Symbol findfont def
+/hm fnfs 0.25 mul def
+/pw
+   cw 78.400000 mul
+def
+/ph
+   749.999994 th add
+def
+/pmw 0 def
+/pmh 0 def
+/v 0 def
+/x [
+  0
+] def
+/y [
+  pmh ph add 0 mul ph add
+] def
+/scx sw 2 div def
+/scy sh 2 div def
+/snx urx def
+/sny lly 2 add def
+/dx llx def
+/dy sny def
+/fnx scx def
+/fny dy def
+/lx snx def
+/ly ury fnfs 0.8 mul sub def
+/sx 0 def
+/tab 8 def
+/x0 0 def
+/y0 0 def
+%%EndSetup
+
+%%Page: (1) 1
+%%BeginPageSetup
+/pagesave save def
+%%EndPageSetup
+iso1dict begin
+gsave
+llx lly 12 add translate
+/v 0 store
+/x0 x v get 4.868624 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+(#!/usr/bin/env lua) p n
+(local help = [[) N
+(ezr3.lua: lib.py's substrate said in Lua: multi-goal trees) N
+(plus active learning. Score rig, stats and demos live next) N
+(door in ezr3-eg.lua; the batteries below, in lib.lua.) N
+(Columns index from 1, not 0; everything else mirrors the) N
+(Python.) N
+() N
+(options:) N
+(  budget=50    acquire: max labels) N
+(  cap=1024     holdout: max rows kept) N
+(  check=5      holdout: test rows labelled) N
+(  few=128      sample size for cheap guesses) N
+(  keepf=0.66   acquire: pool kept per cull) N
+(  leaf=3       tree: min rows in one leaf) N
+(  maxd=4       tree: max depth) N
+(  more=4       acquire: labels per round) N
+(  p=2          minkowski coefficient) N
+(  stop=32      min rows before a split halts]]) N
+() N
+(local abs,exp,log,sqrt = math.abs,math.exp,math.log,math.sqrt) N
+(local max,min,floor    = math.max,math.min,math.floor) N
+(local huge,rand        = math.huge,math.random) N
+(local TINY             = 1e-32) N
+() N
+(-- find lib.lua beside this file, whatever the cwd) N
+(package.path = \(arg and arg[0] or ""\):gsub\("[^/]*$",""\)) N
+(               .. "?.lua;" .. package.path) N
+(local lib = require"lib") N
+() N
+(-- all defs below land here; reads fall through to lib) N
+(-- \(and, through lib, to _G\)) N
+(local _ENV = setmetatable\({}, {__index = lib}\)) N
+(if setfenv then setfenv\(1, _ENV\) end) N
+() N
+(the = the:also\(help\)) N
+() N
+() N
+(ezr3.lua) (Page 1/7) (Aug 04, 2026 13:20) title
+border
+grestore
+(Printed by timm) rhead
+() (1/7) (Tuesday August 04, 2026) footer
+end % of iso1dict
+pagesave restore
+showpage
+%%Page: (2) 2
+%%BeginPageSetup
+/pagesave save def
+%%EndPageSetup
+iso1dict begin
+gsave
+llx lly 12 add translate
+/v 0 store
+/x0 x v get 4.868624 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+(--## columns ---------------------------------------------------) p n
+(NUM, SYM, COLS, TBL, NODE, TREE = {},{},{},{},{},{}) N
+() N
+(function Col\(name,at\) -- column kind from first letter) N
+(  return \(name:find"^%l" and Sym or Num\)\(name,at\) end) N
+() N
+(function Num\(name,at\) -- summary of a numeric column) N
+(  name = name or "") N
+(  return new\(NUM, {at=at or 1, name=name, n=0, mu=0, m2=0,) N
+(                   heaven = name:find"-$" and 0 or 1}\) end) N
+() N
+(function Sym\(name,at\) -- summary of a symbolic column) N
+(  return new\(SYM, {at=at or 1, name=name or "", n=0, has={}}\) end) N
+() N
+(function SYM.add\(i,v\) -- update symbol counts) N
+(  if v == "?" then return v end) N
+(  i.n = i.n + 1; i.has[v] = 1 + \(i.has[v] or 0\); return v end) N
+() N
+(function NUM.add\(i,v,    d\) -- one-pass update of mu and m2) N
+(  if v == "?" then return v end) N
+(  i.n  = i.n + 1) N
+(  d    = v - i.mu) N
+(  i.mu = i.mu + d / i.n) N
+(  i.m2 = i.m2 + d * \(v - i.mu\); return v end) N
+() N
+(function SYM.mid\(i,    hi,out\) -- center: the mode) N
+(  hi = -1) N
+(  for k, n in pairs\(i.has\) do) N
+(    if n > hi then hi, out = n, k end end) N
+(  return out end) N
+() N
+(function NUM.mid\(i\) return i.mu end -- center: the mean) N
+() N
+(function SYM.div\(i\) -- diversity: entropy of the counts) N
+(  return sum\(i.has, function\(n,    p\)) N
+(    p = n / i.n; return -p * log\(p, 2\) end\) end) N
+() N
+(function NUM.div\(i\) -- diversity: standard deviation) N
+(  return i.n < 2 and 0 or sqrt\(max\(i.m2,0\) / \(i.n-1\)\) end) N
+() N
+(function SYM.norm\(i,v\) return v end -- syms have no cdf) N
+() N
+(function NUM.norm\(i,v,    z\) -- v's cdf, via logistic; 0..1) N
+(  if v == "?" then return v end) N
+(  z = \(v - i.mu\) / \(i:div\(\) + TINY\)) N
+(  return 1 / \(1 + exp\(-1.702 * max\(-3, min\(3, z\)\)\)\) end) N
+() N
+(function NUM.without\(i,j,    n,d\) -- i minus j, as new NUM) N
+(  n = i.n - j.n) N
+(  if n < 1 then return Num\(i.name, i.at\) end) N
+(  d = j.mu - i.mu) N
+(  return new\(NUM, {name=i.name, at=i.at, heaven=i.heaven,) N
+(                   n=n, mu=\(i.n*i.mu - j.n*j.mu\) / n,) N
+(                   m2=max\(0, i.m2 - j.m2) N
+(                             - d*d*i.n*j.n/n\)}\) end) N
+() N
+(function SYM.without\(i,j,    out,n\) -- i minus j's counts) N
+(  out = Sym\(i.name, i.at\)) N
+(  for k,v in pairs\(i.has\) do) N
+(    n = v - \(j.has[k] or 0\)) N
+(    if n > 0 then out.has[k] = n; out.n = out.n + n end end) N
+(  return out end) N
+() N
+(function SYM.holds\(i,x,v\) return x == "?" or x == v  end) N
+(ezr3.lua) (Page 2/7) (Aug 04, 2026 13:20) title
+border
+grestore
+(Printed by timm) rhead
+() (Tuesday August 04, 2026) (2/7) footer
+end % of iso1dict
+pagesave restore
+showpage
+%%Page: (3) 3
+%%BeginPageSetup
+/pagesave save def
+%%EndPageSetup
+iso1dict begin
+gsave
+llx lly 12 add translate
+/v 0 store
+/x0 x v get 4.868624 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+(function NUM.holds\(i,x,v\) return x == "?" or x <= v  end) p n
+() N
+(--## tables ----------------------------------------------------) N
+(function Tbl\(src,    names,all,x,y\) -- row 1 names columns) N
+(  src = iter\(src\)) N
+(  names, all, x, y = src\(\), {}, {}, {}) N
+(  for at, s in ipairs\(names\) do) N
+(    all[at] = Col\(s, at\)) N
+(    if s:find"[+-]$" then y[#y+1] = all[at]) N
+(    elseif s:sub\(-1\) ~= "X" then x[#x+1] = all[at] end end) N
+(  return adds\(src, new\(TBL, {rows={}, mid=nil,) N
+(                 cols=new\(COLS,) N
+(                   {names=names, all=all, x=x, y=y}\)}\)\) end) N
+() N
+(function COLS.add\(i,row\) -- fold a row into every column) N
+(  for _, c in ipairs\(i.all\) do c:add\(row[c.at]\) end) N
+(  return row end) N
+() N
+(function TBL.add\(i,row\) -- keep the row; update summaries) N
+(  i.rows[#i.rows+1] = i.cols:add\(row\)) N
+(  i.mid = nil) N
+(  return row end) N
+() N
+(function adds\(src,i\) -- fold list or iterator; Num default) N
+(  i = i or Num\(\)) N
+(  for v in iter\(src or {}\) do i:add\(v\) end) N
+(  return i end) N
+() N
+(function TBL.clone\(i,rows\) -- same header, fresh summaries) N
+(  return adds\(rows, Tbl{i.cols.names}\) end) N
+() N
+(function TBL.mids\(i\) -- return centroid of this tbl) N
+(  i.mid = i.mid or map\(i.cols.all,function\(c\) return c:mid\(\)end\)) N
+(  return i.mid end) N
+() N
+(--## distance --------------------------------------------------) N
+(function SYM.dist\(i,a,b\) -- gap between two syms; 0..1) N
+(  if a == "?" and b == "?" then return 1 end) N
+(  return a ~= b and 1 or 0 end) N
+() N
+(function NUM.dist\(i,a,b\) -- gap between two nums; 0..1) N
+(  if a == "?" and b == "?" then return 1 end) N
+(  a, b = i:norm\(a\), i:norm\(b\)) N
+(  if a == "?" then a = b > 0.5 and 0 or 1 end) N
+(  if b == "?" then b = a > 0.5 and 0 or 1 end) N
+(  return abs\(a - b\) end) N
+() N
+(function minkowski\(cols,f,    d,n\) -- p-norm mean of f\(col\)) N
+(  d, n = 0, TINY) N
+(  for _, c in ipairs\(cols\) do n, d = n+1, d + f\(c\) ^ the.p end) N
+(  return \(d / n\) ^ \(1 / the.p\) end) N
+() N
+(function TBL.distx\(i,row1,row2\) -- gap over x cols; 0..1) N
+(  return minkowski\(i.cols.x, function\(c\)) N
+(           return c:dist\(row1[c.at], row2[c.at]\) end\) end) N
+() N
+(function TBL.disty\(i,row\) -- gap to heaven; 0=best) N
+(  return minkowski\(i.cols.y, function\(y\)) N
+(           return abs\(y:norm\(row[y.at]\) - y.heaven\) end\) end) N
+() N
+(--## clusters --------------------------------------------------) N
+(function TBL.projx\(i,row,a,b,c\) -- onto the a-b line) N
+(  return \(i:distx\(a,row\)^2 + c*c) N
+(          - i:distx\(b,row\)^2\) / \(2*c + TINY\) end) N
+(ezr3.lua) (Page 3/7) (Aug 04, 2026 13:20) title
+border
+grestore
+(Printed by timm) rhead
+() (3/7) (Tuesday August 04, 2026) footer
+end % of iso1dict
+pagesave restore
+showpage
+%%Page: (4) 4
+%%BeginPageSetup
+/pagesave save def
+%%EndPageSetup
+iso1dict begin
+gsave
+llx lly 12 add translate
+/v 0 store
+/x0 x v get 4.868624 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+() p n
+(function TBL.halve\(i,rows,    far,a,b,c,n\)) N
+(  rows = rows or i.rows     -- split on far poles, best first) N
+(  far = function\(r,    t\)) N
+(          t = keysort\(some\(rows, the.few\),) N
+(                function\(r2\) return i:distx\(r, r2\) end\)) N
+(          return t[#t] end) N
+(  a = far\(rows[rand\(#rows\)]\)) N
+(  b = far\(a\)) N
+(  c = i:distx\(a, b\)) N
+(  if i:disty\(b\) < i:disty\(a\) then a, b = b, a end) N
+(  rows = keysort\(rows, function\(r\) return i:projx\(r,a,b,c\) end\)) N
+(  n = floor\(#rows / 2\)) N
+(  return a, b, sub\(rows, 1, n\), sub\(rows, n + 1\) end) N
+() N
+(function Node\(tbl,rows,    recurse\) -- tree of halves) N
+(  function recurse\(rows,    node,a,b,lo,hi\)) N
+(    node = new\(NODE, {here=tbl:clone\(rows\),) N
+(                      a=nil, b=nil, lo=nil, hi=nil}\)) N
+(    if #rows >= 2 * the.stop then) N
+(      a, b, lo, hi = tbl:halve\(rows\)) N
+(      node.a, node.b = a, b) N
+(      if #lo > 0 and #hi > 0 then) N
+(        node.lo, node.hi = recurse\(lo\), recurse\(hi\) end end) N
+(    return node) N
+(  end -- recurse) N
+(  return recurse\(rows or tbl.rows\) end) N
+() N
+(function NODE.leaf\(i,row,    t\) -- walk row down to its leaf) N
+(  while i.lo do) N
+(    t = i.here) N
+(    i = t:distx\(row, i.a\) <= t:distx\(row, i.b\)) N
+(        and i.lo or i.hi end) N
+(  return i end) N
+() N
+(--## acquire ---------------------------------------------------) N
+(-- Label few rows, cull the pool toward the good pole, loop.) N
+(-- lab is a plain list of labelled rows; acquire rebuilds its) N
+(-- private seen set \(keyed by row ref\) on each entry. When a) N
+(-- pool dries with budget left, acquirer reshuffles and goes) N
+(-- again, anchored at the best and worst labels seen so far.) N
+(function TBL.poles\(i,rows,east,west,    x,y,far,c\) -- rows ->) N
+(  x = function\(a,b\) return i:distx\(a, b\) end -- projector on) N
+(  y = function\(r\)   return i:disty\(r\)   end -- east-west line) N
+(  far  = function\(r,    t\)) N
+(           t = keysort\(rows, function\(z\) return x\(z,r\) end\)) N
+(           return t[#t] end) N
+(  east = east or far\(rows[1]\)) N
+(  west = west or far\(east\)) N
+(  if y\(east\) > y\(west\) then east, west = west, east end) N
+(  c = x\(east, west\) + TINY) N
+(  return function\(r\)) N
+(    return \(x\(east,r\)^2 + c*c - x\(west,r\)^2\) / \(2*c\) end end) N
+() N
+(function TBL.acquire\(i,rows,cap,lab,east,west,) N
+(                     seen,more,new\)) N
+(  seen = {}) N
+(  for _,r in ipairs\(lab\) do seen[r] = true end) N
+(  while #rows >= 2*the.leaf do) N
+(    more, new = min\(the.more, cap - #lab\), {}) N
+(    for _,r in ipairs\(rows\) do -- new = labels in this pool) N
+(      if seen[r] then push\(new, r\)) N
+(      elseif more > 0 then) N
+(        more, seen[r] = more - 1, true) N
+(ezr3.lua) (Page 4/7) (Aug 04, 2026 13:20) title
+border
+grestore
+(Printed by timm) rhead
+() (Tuesday August 04, 2026) (4/7) footer
+end % of iso1dict
+pagesave restore
+showpage
+%%Page: (5) 5
+%%BeginPageSetup
+/pagesave save def
+%%EndPageSetup
+iso1dict begin
+gsave
+llx lly 12 add translate
+/v 0 store
+/x0 x v get 4.868624 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+(        push\(new, push\(lab, r\)\) end end) p n
+(    if #lab >= cap then return lab end -- budget spent) N
+(    rows = sub\(keysort\(rows, i:poles\(new, east, west\)\),) N
+(               1, max\(1, floor\(the.keepf * #rows\)\)\) end) N
+(  return lab end) N
+() N
+(function TBL.acquirer\(i,cap,    lab,east,west,t\)) N
+(  lab = {}) N
+(  while true do) N
+(    lab = i:acquire\(shuffle\(i.rows\), cap, lab, east, west\)) N
+(    if #lab >= cap or #lab >= #i.rows then break end) N
+(    t = keysort\(lab, function\(r\) return i:disty\(r\) end\)) N
+(    east, west = t[1], t[#t] end -- best+worst seen) N
+(  return keysort\(lab, function\(r\) return i:disty\(r\) end\) end) N
+(  --) N
+() N
+(--## discretize ------------------------------------------------) N
+(-- Find good cuts: places where splitting the x values most) N
+(-- purifies some y summary. All candidates feed one `least`) N
+(-- reducer; no cut lists are ever built.) N
+(function val\(a,b\) -- mean diversity of two summaries) N
+(  return \(a:div\(\)*a.n + b:div\(\)*b.n\) / \(a.n + b.n + TINY\) end) N
+() N
+(function big\(lo,n\) -- both sides of a cut hold >= the.leaf) N
+(  return the.leaf <= lo and lo <= n - the.leaf end) N
+() N
+(function SYM.cuts\(c,xy,tot,acc,best,    d,b\) -- one cut per) N
+(  d = {}                                       -- key; feed best) N
+(  for _,p in ipairs\(xy\) do) N
+(    b = d[p[1]] or acc\(\)) N
+(    b:add\(p[2]\); d[p[1]] = b end) N
+(  if #keys\(d\) > 1 then) N
+(    for k,v in pairs\(d\) do) N
+(      if big\(v.n, #xy\) then) N
+(        best{val\(v, tot:without\(v\)\), c.at, k} end end end end) N
+() N
+(function NUM.cuts\(c,xy,tot,acc,best,    here\) -- cuts between) N
+(  table.sort\(xy, function\(a,b\) return a[1] < b[1] end\)) N
+(  here = acc\(\)                   -- each distinct, sorted x) N
+(  for j,p in ipairs\(xy\) do) N
+(    here:add\(p[2]\)) N
+(    if j < #xy and p[1] ~= xy[j+1][1] and big\(j, #xy\) then) N
+(      best{val\(here,tot:without\(here\)\),c.at,p[1]} end end end) N
+() N
+(function TBL.cuts\(i,rows,c,Y,acc,best,    xy,tot\) -- col c) N
+(  xy = {}                        -- feeds its splits to best) N
+(  for _,r in ipairs\(rows\) do) N
+(    if r[c.at] ~= "?" then push\(xy, {r[c.at], Y\(r\)}\) end end) N
+(  tot = adds\(map\(xy, function\(p\) return p[2] end\), acc\(\)\)) N
+(  c:cuts\(xy, tot, acc, best\) end) N
+() N
+(function TBL.bestcut\(i,rows,Y,acc,best\) -- champion x-col cut) N
+(  for _,c in ipairs\(i.cols.x\) do i:cuts\(rows,c,Y,acc,best\) end) N
+(  return best\(\) end) N
+() N
+(function TBL.divide\(i,rows,c,v,    yes,no\) -- rows into holds) N
+(  yes, no = {}, {}                         -- c<=v, or not) N
+(  for _,r in ipairs\(rows\) do) N
+(    push\(c:holds\(r[c.at], v\) and yes or no, r\) end) N
+(  return yes, no end) N
+() N
+(--## trees -----------------------------------------------------) N
+(-- Recursive best-cut trees over the discretizer above, plus) N
+(-- walk/sides: visit every pruning of a grown tree.) N
+(ezr3.lua) (Page 5/7) (Aug 04, 2026 13:20) title
+border
+grestore
+(Printed by timm) rhead
+() (5/7) (Tuesday August 04, 2026) footer
+end % of iso1dict
+pagesave restore
+showpage
+%%Page: (6) 6
+%%BeginPageSetup
+/pagesave save def
+%%EndPageSetup
+iso1dict begin
+gsave
+llx lly 12 add translate
+/v 0 store
+/x0 x v get 4.868624 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+(function Tree\(tbl,rows,Y,acc,    recurse\)) p n
+(  function recurse\(rows,lvl,    ys,t,b,c,yes,no\)) N
+(    ys = adds\(map\(rows, Y\), acc\(\)\)) N
+(    t  = new\(TREE, {at=nil, v=nil, mu=ys:mid\(\), leafs=1,) N
+(                    here = tbl:clone\(rows\),) N
+(                    loss = ys.has and ys:div\(\) or ys:mid\(\)}\)) N
+(    t.val = t.loss) N
+(    if #rows >= 2*the.leaf and lvl < the.maxd then) N
+(      b = tbl:bestcut\(rows, Y, acc, least\(\)\)) N
+(      if b then) N
+(        c = tbl.cols.all[b[2]]) N
+(        yes, no = tbl:divide\(rows, c, b[3]\)) N
+(        if #yes > 0 and #no > 0 then) N
+(          t.at, t.v = b[2], b[3]) N
+(          t.yes   = recurse\(yes, lvl+1\)) N
+(          t.no    = recurse\(no,  lvl+1\)) N
+(          t.val   = min\(t.yes.val, t.no.val\)) N
+(          t.leafs = t.yes.leafs + t.no.leafs end end end) N
+(    return t) N
+(  end -- recurse) N
+(  Y   = Y or function\(r\) return tbl:disty\(r\) end) N
+(  acc = acc or Num) N
+(  return recurse\(rows, 0\) end) N
+() N
+(function TREE.leafed\(x\) -- x, collapsed to one leaf) N
+(  return new\(TREE, {at=nil, mu=x.mu, loss=x.loss,) N
+(                    val=x.loss, leafs=1, here=x.here}\) end) N
+() N
+(function TREE.walk\(t,fun\) -- fun on every pruning of tree t) N
+(  if t.at == nil then return fun\(t\) end) N
+(  t.yes:sides\(function\(yes\)) N
+(    t.no:sides\(function\(no\)) N
+(      fun\(new\(TREE, {at=t.at, v=t.v, here=t.here,) N
+(                     yes=yes, no=no,) N
+(                     val=min\(yes.val, no.val\),) N
+(                     leafs=yes.leafs + no.leafs}\)\) end\) end\) end) N
+() N
+(function TREE.sides\(t,fun\) -- t as leaf; then t's prunings) N
+(  fun\(t:leafed\(\)\)) N
+(  if t.at ~= nil then t:walk\(fun\) end end) N
+() N
+(function TREE.leaf\(t,tbl,row,    c\) -- row's leaf, its guess) N
+(  while t.at do) N
+(    c = tbl.cols.all[t.at]) N
+(    t = c:holds\(row[t.at], t.v\) and t.yes or t.no end) N
+(  return t.mu end) N
+() N
+(--## tree show -------------------------------------------------) N
+(-- One row per node: n, d2h, then each goal's mean under its) N
+(-- own header column; tree structure trails on the right.) N
+(function TREE.leaves\(t,fun\) -- fun on every leaf below t) N
+(  if t.at then t.yes:leaves\(fun\)) N
+(               t.no:leaves\(fun\)) N
+(  else fun\(t\) end end) N
+() N
+(function TREE.gstr\(t\) -- goal means, as aligned columns) N
+(  return table.concat\(map\(t.here.cols.y, function\(g,    v\)) N
+(    v = g:mid\(\)) N
+(    if type\(v\) == "number" and v % 1 ~= 0 then) N
+(      v = \("%."..the.round.."f"\):format\(v\) end) N
+(    return \("%9s"\):format\(v\) end\)\) end) N
+() N
+(function TREE.show\(t,tbl,    lo,hi,recurse\)) N
+(  function recurse\(t,pre,txt,    c,say,m\)) N
+(ezr3.lua) (Page 6/7) (Aug 04, 2026 13:20) title
+border
+grestore
+(Printed by timm) rhead
+() (Tuesday August 04, 2026) (6/7) footer
+end % of iso1dict
+pagesave restore
+showpage
+%%Page: (7) 7
+%%BeginPageSetup
+/pagesave save def
+%%EndPageSetup
+iso1dict begin
+gsave
+llx lly 12 add translate
+/v 0 store
+/x0 x v get 4.868624 add sx cw mul add store
+/y0 y v get bfs th add sub store
+x0 y0 moveto
+(    m = \(t.at == nil and t.mu == lo and "*"\) or -- best leaf) p n
+(        \(t.at == nil and t.mu == hi and "!"\) or " " -- worst) N
+(    print\(\("%s%4d %5.2f%s  %s"\):format\() N
+(      m, #t.here.rows, t.mu, t:gstr\(\), pre .. txt\)\)) N
+(    if t.at then                     -- structure right) N
+(      c   = tbl.cols.all[t.at]) N
+(      say = function\(op\)) N
+(              return c.name .. op .. tostring\(t.v\) end) N
+(      pre = pre .. \(txt == "" and "" or "|  "\)) N
+(      recurse\(t.yes, pre, say\(c.has and " == " or " <= "\)\)) N
+(      recurse\(t.no,  pre, say\(c.has and " ~= " or " >  "\)\)) N
+(    end) N
+(  end -- recurse) N
+(  lo, hi = huge, -huge     -- leaf extremes,) N
+(  t:leaves\(function\(l\)               -- then a header) N
+(    lo, hi = min\(lo, l.mu\), max\(hi, l.mu\) end\)) N
+(  print\(\(" %4s %5s"\):format\("n", "d2h"\) ..) N
+(    table.concat\(map\(t.here.cols.y, function\(g\)) N
+(      return \("%9s"\):format\(g.name\) end\)\)\)) N
+(  recurse\(t, "", ""\) end) N
+() N
+(return _ENV) N
+(ezr3.lua) (Page 7/7) (Aug 04, 2026 13:20) title
+border
+grestore
+(Printed by timm) rhead
+() (7/7) (Tuesday August 04, 2026) footer
+end % of iso1dict
+pagesave restore
+showpage
+
+%%Trailer
+end
+%%EOF
