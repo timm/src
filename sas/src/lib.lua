@@ -8,7 +8,7 @@ local abs,exp,log,sqrt = math.abs,math.exp,math.log,math.sqrt
 local max,min,floor    = math.max,math.min,math.floor
 local cos,pi,huge      = math.cos,math.pi,math.huge
 local rand,srand       = math.random,math.randomseed
-local TINY, slice      = 1e-32, table.unpack or unpack
+local TINY             = 1e-32
 
 -- All defs below land in this fresh table (which _G backs for
 -- reads), so `function name` both defines and exports: the
@@ -20,6 +20,8 @@ if setfenv then setfenv(1, _ENV) end
 
 the = {
   budget = 32,             -- acquire: max labels
+  cap    = 1024,           -- holdout: max rows kept
+  check  = 5,              -- holdout: test rows labelled
   DATA   = (arg and arg[0] or ""):gsub("[^/]*$","")
            .. "../data/", -- tables, besides lib.lua; $VARS ok
   few    = 128,            -- sample size for cheap guesses
@@ -174,7 +176,7 @@ function TBL.halve(i,rows,    far,a,b,c,n)
   if i:disty(b) < i:disty(a) then a, b = b, a end
   rows = keysort(rows, function(r) return i:projx(r,a,b,c) end)
   n = floor(#rows / 2)
-  return a, b, {slice(rows, 1, n)}, {slice(rows, n + 1)} end
+  return a, b, sub(rows, 1, n), sub(rows, n + 1) end
 
 function Node(tbl,rows,    recurse) -- tree of halves
   function recurse(rows,    node,a,b,lo,hi)
@@ -218,8 +220,8 @@ function TBL.acquire(i,rows,cap,lab,    seen,more)
       if not seen[r] then
         more, seen[r] = more - 1, true
         push(lab, r) end end
-    rows = {slice(keysort(rows, i:poles(lab)),
-                  1, max(1, floor(the.keepf * #rows)))} end
+    rows = sub(keysort(rows, i:poles(lab)),
+               1, max(1, floor(the.keepf * #rows))) end
   return lab end
 
 function TBL.acquirer(i,cap,    rows,lab) -- seed a few
@@ -228,6 +230,28 @@ function TBL.acquirer(i,cap,    rows,lab) -- seed a few
   while #lab < cap and #lab < #rows do
     lab = i:acquire(rows, cap, lab) end
   return keysort(lab, function(r) return i:disty(r) end) end
+
+function TBL.wins(i,rows,    ys,lo,b4) -- grader: row ->
+  ys = sorted(map(rows or i.rows,      -- % gap to best
+         function(r) return i:disty(r) end)) -- closed,
+  lo, b4 = ys[1], ys[floor(#ys/2)+1]         -- [-100,100]
+  return function(r)
+    return max(-100, min(100,
+      100*(1 - (i:disty(r)-lo) / (b4-lo+TINY)))) end end
+
+function TBL.holdout(i,how,    rows,n,train,test,lab,t,top)
+  how  = how or function(t2,cap) return t2:acquirer(cap) end
+  rows = shuffle(i.rows)     -- label train via `how`, grow
+  n    = floor(#rows/2)      -- tree, use it to sort unseen
+  train= sub(rows, 1, n)     -- test half, label the first
+  test = sub(rows, n+1)      -- the.check, return their best
+  lab  = how(i:clone(train), the.budget - the.check)
+  t    = Tree(i, lab)
+  top  = sub(keysort(test,
+           function(r) return t:leaf(i, r) end),
+           1, the.check)
+  return keysort(top,
+           function(r) return i:disty(r) end)[1] end
 
 --## discretize ------------------------------------------------
 -- Find good cuts: places where splitting the x values most
@@ -416,9 +440,11 @@ function csv(file,    f) -- stream rows of coerced cells;
   f = io.lines((file:gsub("%$(%w+)",os.getenv))) --env expansion
   return function(    t,l)
     for line in f do
-      l = line:gsub("%%.*",""):match"^%s*(.-)%s*$"
+      l = line:gsub("\239\187\191","")   -- strip any BOM
+              :gsub("%%.*",""):match"^%s*(.-)%s*$"
       if l ~= "" then
-        t={}; for s in l:gmatch"[^,]+" do t[#t+1] = thing(s) end
+        t={}                        -- (.-), keeps empty cells
+        for s in (l..","):gmatch"(.-)," do t[#t+1]=thing(s) end
         return t end end end end
 
 function map(t,f,    u) -- f over the list part, in order
@@ -427,6 +453,11 @@ function map(t,f,    u) -- f over the list part, in order
 function kap(t,f,    u) -- f(k,v) over all pairs, any order.
   u = {}                -- nil results vanish: kap also filters
   for k,v in pairs(t) do u[1+#u] = f(k,v) end; return u end
+
+function sub(t,lo,hi,    u) -- copy t[lo..hi]; any size
+  u, hi = {}, min(hi or #t, #t)
+  for j = max(lo or 1, 1), hi do u[1+#u] = t[j] end
+  return u end
 
 function copy(t) -- shallow copy of the list part
   return map(t, function(v) return v end) end
@@ -573,6 +604,32 @@ eg["--acquire"] = function(    t,y,lab,best,truth)
   truth = y(keysort(t.rows, y)[1])
   print(show{labels=#lab, best=best, truth=truth})
   assert(#lab <= the.budget and best < 0.35) end
+
+eg["--holdout"] = function(    t,b,w) -- train half, test half
+  t = Tbl(csv())
+  t.rows = some(t.rows, the.cap)
+  b = t:holdout()
+  w = t:wins()
+  print(show{disty=t:disty(b), win=w(b)})
+  assert(-100 <= w(b) and w(b) <= 100) end
+
+eg["--holdouts"] = function(    t,W,go,L,R,ml,mr,v) -- 20
+  t  = Tbl(csv())                 -- runs: active vs random
+  t.rows = some(t.rows, the.cap)
+  W  = t:wins()
+  go = function(how,    u) u = {}
+         for j = 1, 20 do
+           srand(the.seed + j)
+           u[1+#u] = W(t:holdout(how)) end
+         return sorted(u) end
+  L  = go()                       -- active acquire
+  R  = go(function(t2,cap)        -- random: first cap rows
+         return sub(t2.rows, 1, cap) end)
+  ml = sum(L, function(x) return x end) / 20
+  mr = sum(R, function(x) return x end) / 20
+  v  = same(L, R) and "tie" or (ml > mr and "land" or "rand")
+  print(show{active=ml, random=mr, verdict=v})
+  assert(#L == 20 and #R == 20) end
 
 eg["--ranks"] = function(    g,d,r) -- ties share a rank
   g = function(mu,    u) u = {}
