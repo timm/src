@@ -19,7 +19,7 @@ local _ENV = setmetatable({}, {__index = _G})
 if setfenv then setfenv(1, _ENV) end
 
 the = {
-  budget = 32,             -- acquire: max labels
+  budget = 50,             -- acquire: max labels
   cap    = 1024,           -- holdout: max rows kept
   check  = 5,              -- holdout: test rows labelled
   DATA   = (arg and arg[0] or ""):gsub("[^/]*$","")
@@ -201,34 +201,45 @@ function NODE.leaf(i,row,    t) -- walk row down to its leaf
 --## acquire ---------------------------------------------------
 -- Label few rows, cull the pool toward the good pole, loop.
 -- lab is a plain list of labelled rows; acquire rebuilds its
--- private seen set (keyed by row ref) on each entry.
-function TBL.poles(i,rows,    x,t,lo,hi,c) -- projector on
-  x  = function(a,b) return i:distx(a, b) end -- the line
-  t  = keysort(rows, function(r) return i:disty(r) end)
-  lo, hi = t[1], t[#t]     -- from the y-best to the y-worst
-  c  = x(lo, hi) + TINY    -- (keysort: one disty per row)
+-- private seen set (keyed by row ref) on each entry. When a
+-- pool dries with budget left, acquirer reshuffles and goes
+-- again, anchored at the best and worst labels seen so far.
+function TBL.poles(i,rows,east,west,    x,y,far,c) -- rows ->
+  x = function(a,b) return i:distx(a, b) end -- projector on
+  y = function(r)   return i:disty(r)   end -- east-west line
+  far  = function(r,    t)
+           t = keysort(rows, function(z) return x(z,r) end)
+           return t[#t] end
+  east = east or far(rows[1])
+  west = west or far(east)
+  if y(east) > y(west) then east, west = west, east end
+  c = x(east, west) + TINY
   return function(r)
-    return (x(lo,r)^2 + c*c - x(hi,r)^2) / (2*c) end end
+    return (x(east,r)^2 + c*c - x(west,r)^2) / (2*c) end end
 
-function TBL.acquire(i,rows,cap,lab,    seen,more)
+function TBL.acquire(i,rows,cap,lab,east,west,
+                     seen,more,new)
   seen = {}
   for _,r in ipairs(lab) do seen[r] = true end
-  while #rows >= 2*the.leaf and #lab < cap do
-    more = min(the.more, cap - #lab)
-    for _,r in ipairs(rows) do -- issue `more` new labels
-      if more < 1 then break end
-      if not seen[r] then
+  while #rows >= 2*the.leaf do
+    more, new = min(the.more, cap - #lab), {}
+    for _,r in ipairs(rows) do -- new = labels in this pool
+      if seen[r] then push(new, r)
+      elseif more > 0 then
         more, seen[r] = more - 1, true
-        push(lab, r) end end
-    rows = sub(keysort(rows, i:poles(lab)),
+        push(new, push(lab, r)) end end
+    if #lab >= cap then return lab end -- budget spent
+    rows = sub(keysort(rows, i:poles(new, east, west)),
                1, max(1, floor(the.keepf * #rows))) end
   return lab end
 
-function TBL.acquirer(i,cap,    rows,lab) -- seed a few
-  rows = shuffle(i.rows)  -- (once: kills file-order bias)
-  lab  = i:acquire(rows, the.more, {})
-  while #lab < cap and #lab < #rows do
-    lab = i:acquire(rows, cap, lab) end
+function TBL.acquirer(i,cap,    lab,east,west,t)
+  lab = {}
+  while true do
+    lab = i:acquire(shuffle(i.rows), cap, lab, east, west)
+    if #lab >= cap or #lab >= #i.rows then break end
+    t = keysort(lab, function(r) return i:disty(r) end)
+    east, west = t[1], t[#t] end -- best+worst seen
   return keysort(lab, function(r) return i:disty(r) end) end
 
 function TBL.wins(i,rows,    ys,lo,b4) -- grader: row ->
@@ -260,6 +271,9 @@ function TBL.holdout(i,how,    rows,n,train,test,lab,t,top)
 function val(a,b) -- mean diversity of two summaries
   return (a:div()*a.n + b:div()*b.n) / (a.n + b.n + TINY) end
 
+function big(lo,n) -- both sides of a cut hold >= the.leaf
+  return the.leaf <= lo and lo <= n - the.leaf end
+
 function SYM.cuts(c,xy,tot,acc,best,    d,b) -- one cut per
   d = {}                                       -- key; feed best
   for _,p in ipairs(xy) do
@@ -267,14 +281,15 @@ function SYM.cuts(c,xy,tot,acc,best,    d,b) -- one cut per
     b:add(p[2]); d[p[1]] = b end
   if #keys(d) > 1 then
     for k,b in pairs(d) do
-      best{val(b, tot:without(b)), c.at, k} end end end
+      if big(b.n, #xy) then
+        best{val(b, tot:without(b)), c.at, k} end end end end
 
 function NUM.cuts(c,xy,tot,acc,best,    here) -- cuts between
   table.sort(xy, function(a,b) return a[1] < b[1] end)
   here = acc()                   -- each distinct, sorted x
   for j,p in ipairs(xy) do
     here:add(p[2])
-    if j < #xy and p[1] ~= xy[j+1][1] then
+    if j < #xy and p[1] ~= xy[j+1][1] and big(j, #xy) then
       best{val(here,tot:without(here)),c.at,p[1]} end end end
 
 function TBL.cuts(i,rows,c,Y,acc,best,    xy,tot) -- col c
@@ -383,11 +398,11 @@ function TREE.show(t,tbl,    lo,hi,recurse)
   recurse(t, "", "") end
 
 --## statistics ------------------------------------------------
-function cohen(xs,ys,    m,spd) -- mid gap, in spread units
-  m   = function(a) return a[floor(#a / 2) + 1] end
-  spd = function(a)
-    return (a[floor(#a*9/10)+1] - a[floor(#a/10)+1])/2.56 end
-  return abs(m(xs) - m(ys)) / ((spd(xs)+spd(ys))/2 + TINY) end
+function cohen(xs,ys,    x,y,n,m,sd) -- mean gap, in
+  x, y = adds(xs), adds(ys)          -- pooled-sd units
+  n, m = x.n, y.n
+  sd = sqrt(((n-1)*x:div()^2 + (m-1)*y:div()^2)/(n+m-2))
+  return abs(x.mu - y.mu) / (sd + TINY) end
 
 function ks(xs,ys,    nx,ny,d,p,q) -- max cdf gap, in
   nx, ny  = #xs, #ys                 -- critical units
@@ -406,9 +421,9 @@ function cliffs(xs,ys,    gt,lt,j,k) -- rank imbalance; 0..1
   return abs(gt - lt) / (#xs * #ys) end
 
 function same(xsort,ysort,Cohen,Ks,Cliffs) -- sorted in!
-  return cohen(xsort,ysort)   < (Cohen  or 0.2)
-      or ks(xsort,ysort)      < (Ks     or 1.36)
-      or cliffs(xsort,ysort) <= (Cliffs or 0.197) end
+  if cohen( xsort,ysort) > (Cohen or .2)   then return false end
+  if cliffs(xsort,ysort) > (Cliffs or .195) then return false end
+  return ks(xsort,ysort) <= (Ks or 1.36) end
 
 function ranks(d,big,    mid,dd,sign,out,win,rank,best)
   mid = function(t) return t[floor(#t / 2) + 1] end
@@ -642,25 +657,26 @@ eg["--ranks"] = function(    g,d,r) -- ties share a rank
   assert(r.ranks.a == 0 and r.ranks.e > r.ranks.c) end
 
 eg["--same"] = function(    g,x,y,c,k,cl,s,n) -- 3 tests
-  g = function(    u) u = {}        -- vote; same() ORs them
+  g = function(    u) u = {}       -- vote; same() ANDs them
         for j = 1, 100 do           -- box-muller gaussians
           u[j] = sqrt(-2*log(1 - rand()))
                  * cos(2*pi*rand()) end
         return sorted(u) end
   x, n = g(), 0    -- y = x + shift: pure effect, no noise
-  print("shift  cohen     ks cliffs |  same")
+  print("shift  cohen     ks cliffs |  same    any")
   for _, mu in ipairs{0,.1,.2,.3,.4,.5,.75,1,1.5,2} do
     y  = map(x, function(v) return v + mu end)
-    c  = cohen(x, y)   < 0.2
-    k  = ks(x, y)      < 1.36
-    cl = cliffs(x, y) <= 0.197
+    c  = cohen(x, y)  <= 0.2
+    k  = ks(x, y)     <= 1.36
+    cl = cliffs(x, y) <= 0.195
     s  = same(x, y)
-    if s ~= (c and k and cl) then n = n + 1 end -- split vote
-    print(("%5.2f  %5s  %5s  %5s | %5s"):format(mu,
-      tostring(c), tostring(k), tostring(cl), tostring(s)))
+    if s ~= (c or k or cl) then n = n + 1 end -- split vote
+    print(("%5.2f  %5s  %5s  %5s | %5s  %5s"):format(mu,
+      tostring(c), tostring(k), tostring(cl),
+      tostring(s), tostring(c or k or cl)))
   end
   print("split votes: " .. n)
-  assert(n >= 1)                  -- OR beats AND somewhere
+  assert(n >= 1)          -- AND stricter than OR somewhere
   assert(same(x, x) and not same(x, map(x,
     function(v) return v + 4 end))) end
 
