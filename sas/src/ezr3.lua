@@ -360,7 +360,7 @@ function TREE.show(t,tbl,    lo,hi,recurse)
     if t.at then                     -- structure right
       c   = tbl.cols.all[t.at]
       say = function(op)
-              return c.name .. op .. tostring(t.v) end
+              return c.name .. op .. show(t.v) end
       pre = pre .. (txt == "" and "" or "|  ")
       recurse(t.yes, pre, say(c.has and " == " or " <= "))
       recurse(t.no,  pre, say(c.has and " ~= " or " >  "))
