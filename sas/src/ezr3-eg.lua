@@ -16,7 +16,8 @@ package.path = (arg and arg[0] or ""):gsub("[^/]*$","")
 -- (and, through it, to lib and _G)
 local _ENV = setmetatable({}, {__index = require"ezr3"})
 if setfenv then setfenv(1, _ENV) end
---## score -------------------------------------------------
+
+--## score -------------------------------------------------
 function TBL.wins(i,rows,    ys,lo,b4) -- grader: row ->
   ys = sorted(map(rows or i.rows,      -- % gap to best
          function(r) return i:disty(r) end)) -- closed,
@@ -38,7 +39,8 @@ function TBL.holdout(i,how,    rows,n,train,test,lab,t,top)
            1, the.check)
   return keysort(top,
            function(r) return i:disty(r) end)[1] end
---## statistics ------------------------------------------------
+
+--## statistics ------------------------------------------------
 function cohen(xs,ys,    x,y,n,m,sd) -- mean gap, in
   x, y = adds(xs), adds(ys)          -- pooled-sd units
   n, m = x.n, y.n
@@ -80,7 +82,8 @@ function ranks(d,big,    mid,dd,sign,out,win,rank,best)
     if rank == 0 then win[1+#win] = k end
     out[k] = rank end
   return {winners=win, ranks=out} end
---## demos p ---------------------------------------------------
+
+--## demos p ---------------------------------------------------
 eg = {}
 
 eg["--tree"] = function(    t,tr,n,best) -- prune, keep best
@@ -242,6 +245,7 @@ eg["--disty"] = function(    t,d,rows) -- sort rows by disty
       print(("%.3f  %s"):format(d(r), show(r)))
     elseif at == 4 then print"..." end end
   assert(d(rows[1]) <= d(rows[#rows])) end
+
 --## start-up --------------------------------------------------
 go(eg)
 

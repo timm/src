@@ -20,10 +20,10 @@ HIST = sort -n | awk '{a[NR]=$$1} \
 	     printf "%3d%% %5.1f %s\n", d*10, m, b}}'
 
 loclua: ## lua function size deciles (mean LOC)
-	@awk 'FNR==1       {if (f) print n; f=""} \
-	      /^function / {if (f) print n; f=$$2; n=0} \
-	      f && NF      {n++} \
-	      END          {if (f) print n}' *.lua | $(HIST)
+	@awk 'FNR==1              {if (f) print n; f=""} \
+	      /^function |^eg\[/  {if (f) print n; f=1; n=0} \
+	      f && NF             {n++} \
+	      END                 {if (f) print n}' *.lua | $(HIST)
 
 lint: ## luacheck all lua sources
 	luacheck *.lua; true
