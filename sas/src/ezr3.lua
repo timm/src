@@ -164,22 +164,26 @@ function TBL.disty(i,row) -- gap to heaven; 0=best
   return minkowski(i.cols.y, function(y)
            return abs(y:norm(row[y.at]) - y.heaven) end) end
 
---## clusters --------------------------------------------------
-function TBL.projx(i,row,a,b,c) -- onto the a-b line
-  return (i:distx(a,row)^2 + c*c
-          - i:distx(b,row)^2) / (2*c + TINY) end
+function TBL.Y(i) -- disty as a first-class key function
+  return function(r) return i:disty(r) end end
 
-function TBL.halve(i,rows,    far,a,b,c,n)
-  rows = rows or i.rows     -- split on far poles, best first
-  far = function(r,    t)
-          t = keysort(some(rows, the.few),
-                function(r2) return i:distx(r, r2) end)
+--## clusters --------------------------------------------------
+function TBL.poles(i,rows,lo,hi,    far,c) -- rows ->
+  far = function(r,    t) -- projector (and poles) on the
+          t = keysort(rows, function(z) return i:distx(z, r) end)
           return t[#t] end
-  a = far(rows[rand(#rows)])
-  b = far(a)
-  c = i:distx(a, b)
-  if i:disty(b) < i:disty(a) then a, b = b, a end
-  rows = keysort(rows, function(r) return i:projx(r,a,b,c) end)
+  lo = lo or far(rows[rand(#rows)])
+  hi = hi or far(lo)
+  if i:disty(lo) > i:disty(hi) then lo, hi = hi, lo end
+  c = i:distx(lo, hi) + TINY
+  return function(r) return (i:distx(lo,r)^2 + c*c
+                              - i:distx(hi,r)^2) / (2*c) end,
+         lo, hi end
+
+function TBL.halve(i,rows,    fun,a,b,n)
+  rows = rows or i.rows   -- split on far poles, best first
+  fun, a, b = i:poles(some(rows, the.few))
+  rows = keysort(rows, fun)
   n = floor(#rows / 2)
   return a, b, sub(rows, 1, n), sub(rows, n + 1) end
 
@@ -209,20 +213,7 @@ function NODE.leaf(i,row,    t) -- walk row down to its leaf
 -- private seen set (keyed by row ref) on each entry. When a
 -- pool dries with budget left, acquirer reshuffles and goes
 -- again, anchored at the best and worst labels seen so far.
-function TBL.poles(i,rows,east,west,    x,y,far,c) -- rows ->
-  x = function(a,b) return i:distx(a, b) end -- projector on
-  y = function(r)   return i:disty(r)   end -- east-west line
-  far  = function(r,    t)
-           t = keysort(rows, function(z) return x(z,r) end)
-           return t[#t] end
-  east = east or far(rows[1])
-  west = west or far(east)
-  if y(east) > y(west) then east, west = west, east end
-  c = x(east, west) + TINY
-  return function(r)
-    return (x(east,r)^2 + c*c - x(west,r)^2) / (2*c) end end
-
-function TBL.acquire(i,rows,cap,lab,east,west,
+function TBL.acquire(i,rows,cap,lab,lo,hi,
                      seen,more,new)
   seen = {}
   for _,r in ipairs(lab) do seen[r] = true end
@@ -234,18 +225,18 @@ function TBL.acquire(i,rows,cap,lab,east,west,
         more, seen[r] = more - 1, true
         push(new, push(lab, r)) end end
     if #lab >= cap then return lab end -- budget spent
-    rows = sub(keysort(rows, i:poles(new, east, west)),
+    rows = sub(keysort(rows, (i:poles(new, lo, hi))),
                1, max(1, floor(the.keepf * #rows))) end
   return lab end
 
-function TBL.acquirer(i,cap,    lab,east,west,t)
+function TBL.acquirer(i,cap,    lab,lo,hi,t)
   lab = {}
   while true do
-    lab = i:acquire(shuffle(i.rows), cap, lab, east, west)
+    lab = i:acquire(shuffle(i.rows), cap, lab, lo, hi)
     if #lab >= cap or #lab >= #i.rows then break end
-    t = keysort(lab, function(r) return i:disty(r) end)
-    east, west = t[1], t[#t] end -- best+worst seen
-  return keysort(lab, function(r) return i:disty(r) end) end
+    t = keysort(lab, i:Y())
+    lo, hi = t[1], t[#t] end -- best+worst seen
+  return keysort(lab, i:Y()) end
   --
 
 --## discretize ------------------------------------------------
@@ -316,7 +307,7 @@ function Tree(tbl,rows,Y,acc,    recurse)
           t.leafs = t.yes.leafs + t.no.leafs end end end
     return t
   end -- recurse
-  Y   = Y or function(r) return tbl:disty(r) end
+  Y   = Y or tbl:Y()
   acc = acc or Num
   return recurse(rows, 0) end
 

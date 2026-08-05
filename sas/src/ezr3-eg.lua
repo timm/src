@@ -18,27 +18,41 @@ local _ENV = setmetatable({}, {__index = require"ezr3"})
 if setfenv then setfenv(1, _ENV) end
 
 --## score -------------------------------------------------
+-- The unseen half is RANKED blind: holdout hands the tree
+-- redacted copies (y cells = "?"), so code that peeks at
+-- goals mid-rank crashes rather than cheats. Real y values
+-- return only for the rows we pay to check.
+function TBL.redact(i,rows,back,    u,r2) -- copy rows, y
+  u = {}                          -- hidden; back[copy]=real
+  for _,r in ipairs(rows) do
+    r2 = copy(r); back[r2] = r
+    for _,c in ipairs(i.cols.y) do r2[c.at] = "?" end
+    push(u, r2) end
+  return u end
+
 function TBL.wins(i,rows,    ys,lo,b4) -- grader: row ->
-  ys = sorted(map(rows or i.rows,      -- % gap to best
-         function(r) return i:disty(r) end)) -- closed,
-  lo, b4 = ys[1], ys[floor(#ys/2)+1]         -- [-100,100]
+  ys = sorted(map(rows or i.rows, i:Y())) -- % gap to best
+  lo, b4 = ys[1], ys[floor(#ys/2)+1] -- closed, [-100,100]
   return function(r)
     return max(-100, min(100,
       100*(1 - (i:disty(r)-lo) / (b4-lo+TINY)))) end end
 
-function TBL.holdout(i,how,    rows,n,train,test,lab,t,top)
+function TBL.holdout(i,how,    rows,n,train,test,back,
+                     lab,t,top)
   how  = how or function(t2,cap) return t2:acquirer(cap) end
   rows = shuffle(i.rows)     -- label train via `how`, grow
-  n    = floor(#rows/2)      -- tree, use it to sort unseen
-  train= sub(rows, 1, n)     -- test half, label the first
-  test = sub(rows, n+1)      -- the.check, return their best
+  n    = floor(#rows/2)      -- tree, use it to rank the
+  train= sub(rows, 1, n)     -- redacted test half; unmask,
+  back = {}                  -- pay for, and keep the best
+  test = i:redact(sub(rows, n+1), back)  -- of the.check
   lab  = how(i:clone(train), the.budget - the.check)
+  assert(#lab + the.check <= the.budget) -- spend, counted
   t    = Tree(i, lab)
-  top  = sub(keysort(test,
+  top  = map(sub(keysort(test,
            function(r) return t:leaf(i, r) end),
-           1, the.check)
-  return keysort(top,
-           function(r) return i:disty(r) end)[1] end
+           1, the.check),
+           function(r) return back[r] end)
+  return keysort(top, i:Y())[1] end
 
 --## statistics ------------------------------------------------
 function cohen(xs,ys,    x,y,n,m,sd) -- mean gap, in
@@ -100,9 +114,13 @@ eg["--tree"] = function(    t,tr,n,best) -- prune, keep best
                                show(best.val)))
   assert(best.val <= tr.val and best.leafs <= tr.leafs) end
 
-eg["--all"] = function ()
+eg["--all"] = function(    bad) -- all demos; fail if any do
+  bad = 0
   for _,k in ipairs(keys(eg)) do
-    if k ~= "--all" then run(eg, k) end end end
+    if k ~= "--all" and run(eg, k) == false then
+      bad = bad + 1 end end
+  print("failures: " .. bad)
+  assert(bad == 0) end
 
 eg["--the"] = function() print(show(the)) end
 
@@ -132,6 +150,24 @@ eg["--distx"] = function(    t,d) -- self=0; far pair > near
              far =d(t.rows[1], t.rows[398])})
   assert(d(t.rows[1], t.rows[1]) == 0) end
 
+eg["--laws"] = function(    t,a,b,c,v,x,yes,no) -- 100
+  t = Tbl(csv())          -- random probes of the invariants
+  for _ = 1, 100 do
+    a = t.rows[rand(#t.rows)]
+    b = t.rows[rand(#t.rows)]
+    assert(t:distx(a, a) == 0)               -- self is zero
+    assert(t:distx(a, b) == t:distx(b, a))   -- symmetry
+    v = t:distx(a, b)
+    assert(0 <= v and v <= 1)                -- bounded x gap
+    v = t:disty(a)
+    assert(0 <= v and v <= 1)                -- bounded y gap
+    c = t.cols.x[rand(#t.cols.x)]
+    yes, no = t:divide(t.rows, c, a[c.at])
+    assert(#yes + #no == #t.rows)            -- rows conserved
+    x = sorted(map(some(t.rows, 32), t:Y()))
+    assert(same(x, x)) end                   -- x is like x
+  print"100 rounds, 6 laws: ok" end
+
 eg["--half"] = function(    t,a,b,lo,hi) -- far-pole split
   t = Tbl(csv())
   a, b, lo, hi = t:halve(t.rows)
@@ -154,8 +190,7 @@ eg["--node"] = function(    t,nd,n,leafs,walk) -- rows
 
 eg["--cuts"] = function(    t,b,c) -- champion cut, named
   t = Tbl(csv())
-  b = t:bestcut(t.rows, function(r)
-        return t:disty(r) end, Num, least())
+  b = t:bestcut(t.rows, t:Y(), Num, least())
   c = t.cols.all[b[2]]
   print(("best cut: %s <= %s (val %.3f)")
         :format(c.name, b[3], b[1]))
@@ -169,7 +204,7 @@ eg["--show"] = function(    t,tr) -- tree, goal mean columns
 
 eg["--acquire"] = function(    t,y,lab,best,truth)
   t     = Tbl(csv())
-  y     = function(r) return t:disty(r) end
+  y     = t:Y()
   lab   = t:acquirer(the.budget)
   best  = y(lab[1])
   truth = y(keysort(t.rows, y)[1])
@@ -238,7 +273,7 @@ eg["--same"] = function(    g,x,y,c,k,cl,s,n) -- 3 tests
 
 eg["--disty"] = function(    t,d,rows) -- sort rows by disty
   t = Tbl(csv())
-  d = function(r) return t:disty(r) end
+  d = t:Y()
   rows = keysort(t.rows, d)
   for at, r in ipairs(rows) do
     if at <= 3 or at > #rows - 3 then

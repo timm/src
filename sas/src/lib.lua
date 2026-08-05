@@ -153,7 +153,11 @@ function cli(d,    v) -- --key=val flags update settings;
     if s == "-h" then print(d._help) end
     for k in pairs(d) do
       v = s:match("^%-%-" .. k .. "=(.*)")
-      if v then d[k] = thing(v) end end end
+      if v then
+        v = thing(v)   -- new value must keep the old type
+        assert(type(v) == type(d[k]),
+               "bad "..s.." : want "..type(d[k]))
+        d[k] = v end end end
   return d end
 
 function run(funs,w,    ok,msg) -- one seeded example
@@ -163,11 +167,14 @@ function run(funs,w,    ok,msg) -- one seeded example
     if not ok then print(msg) end
     return ok end end
 
-function go(eg) -- parse flags, run the demos named on the
-  if arg and arg[0] and       -- command line; a no-op unless
-     debug.getinfo(2,"S").source == "@"..arg[0] then -- caller
-    cli(the)                            -- is the main script
-    for _,w in ipairs(arg) do run(eg, w) end end end
+function go(eg,    n) -- parse flags, run the demos named on
+  if arg and arg[0] and     -- the command line, exiting with
+     debug.getinfo(2,"S").source == "@"..arg[0] then -- the
+    cli(the)                -- failure count. A no-op unless
+    n = 0                   -- the caller is the main script.
+    for _,w in ipairs(arg) do
+      if run(eg, w) == false then n = n + 1 end end
+    os.exit(n) end end
 
 the = The(help)
 
