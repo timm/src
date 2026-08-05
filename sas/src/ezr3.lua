@@ -1,10 +1,10 @@
 #!/usr/bin/env lua
 local help = [[
 ezr3.lua: lib.py's substrate said in Lua: multi-goal trees
-plus active learning. Score rig, stats and demos live next
-door in ezr3-eg.lua; the batteries below, in lib.lua.
-Columns index from 1, not 0; everything else mirrors the
-Python.
+plus active learning, a holdout score rig, and the stats
+that police it. Demos live next door in ezr3-eg.lua; the
+batteries below, in lib.lua. Columns index from 1, not 0;
+everything else mirrors the Python.
 
 usage:
   lua ezr3-eg.lua [-h] [--key=val ..] [--demo ..]
@@ -373,6 +373,70 @@ function TREE.show(t,tbl,    lo,hi,recurse)
     table.concat(map(t.here.cols.y, function(g)
       return ("%9s"):format(g.name) end)))
   recurse(t, "", "") end
+
+--## score -------------------------------------------------
+function TBL.wins(i,rows,    ys,lo,b4) -- grader: row ->
+  ys = sorted(map(rows or i.rows, i:Y())) -- % gap to best
+  lo, b4 = ys[1], ys[floor(#ys/2)+1] -- closed, [-100,100]
+  return function(r)
+    return max(-100, min(100,
+      100*(1 - (i:disty(r)-lo) / (b4-lo+TINY)))) end end
+
+function TBL.holdout(i,how,    rows,n,train,test,lab,t,top)
+  how  = how or function(t2,cap) return t2:acquirer(cap) end
+  rows = shuffle(i.rows)     -- label train via `how`, grow
+  n    = floor(#rows/2)      -- tree, use it to rank the
+  train= sub(rows, 1, n)     -- unseen test half; label the
+  test = sub(rows, n+1)      -- best the.check of that rank
+  lab  = how(i:clone(train), the.budget - the.check)
+  assert(#lab + the.check <= the.budget) -- spend, counted
+  t    = Tree(i, lab)
+  top  = sub(keysort(test, function(r) return t:leaf(i, r) end),
+           1, the.check)
+  return keysort(top, i:Y())[1] end
+
+--## statistics ------------------------------------------------
+function cohen(xs,ys,    x,y,n,m,sd) -- mean gap, in
+  x, y = adds(xs), adds(ys)          -- pooled-sd units
+  n, m = x.n, y.n
+  sd = sqrt(((n-1)*x:div()^2 + (m-1)*y:div()^2)/(n+m-2))
+  return abs(x.mu - y.mu) / (sd + TINY) end
+
+function ks(xs,ys,    nx,ny,d,p,q,v) -- max cdf gap, in
+  nx, ny  = #xs, #ys                  -- critical units
+  d, p, q = 0, 0, 0
+  while p < nx and q < ny do -- walk both cdfs one distinct
+    v = min(xs[p+1], ys[q+1])              -- value at a time
+    while p < nx and xs[p+1] == v do p = p + 1 end
+    while q < ny and ys[q+1] == v do q = q + 1 end
+    d = max(d, abs(p / nx - q / ny)) end
+  return d / ((nx + ny) / (nx * ny)) ^ 0.5 end
+
+function cliffs(xs,ys,    gt,lt,j,k) -- rank imbalance; 0..1
+  gt, lt, j, k = 0, 0, 0, 0   -- j,k: #ys sitting <x, <=x
+  for _, x in ipairs(xs) do   -- x ascends: j,k only advance
+    while j < #ys and ys[j+1] <  x do j = j + 1; k = j end
+    while k < #ys and ys[k+1] == x do k = k + 1 end
+    gt = gt + j; lt = lt + #ys - k end
+  return abs(gt - lt) / (#xs * #ys) end
+
+function same(xsort,ysort,Cohen,Ks,Cliffs) -- sorted in!
+  return cohen( xsort,ysort) <= (Cohen  or .35)  -- `and` is
+     and cliffs(xsort,ysort) <= (Cliffs or .195) -- lazy: all
+     and ks(    xsort,ysort) <= (Ks     or 1.36) end -- agree
+
+function ranks(d,big,    mid,dd,sign,out,win,rank,best)
+  mid = function(t) return t[floor(#t / 2) + 1] end
+  dd  = {}; for k,v in pairs(d) do dd[k] = sorted(v) end
+  sign = big and -1 or 1
+  out, win, rank, best = {}, {}, -1, nil
+  for _, k in ipairs(keysort(keys(dd),
+                function(k) return sign * mid(dd[k]) end)) do
+    if best == nil or not same(dd[best], dd[k]) then
+      rank, best = rank + 1, k end
+    if rank == 0 then win[1+#win] = k end
+    out[k] = rank end
+  return {winners=win, ranks=out} end
 
 --## the end  ---------------------------------------------------
 return _ENV
