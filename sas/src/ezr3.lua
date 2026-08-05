@@ -115,8 +115,8 @@ function Tbl(src,    names,all,x,y) -- row 1 names columns
     if s:find"[+-]$" then y[#y+1] = all[at]
     elseif s:sub(-1) ~= "X" then x[#x+1] = all[at] end end
   return adds(src, new(TBL, {rows={}, mid=nil,
-                 cols=new(COLS,
-                   {names=names, all=all, x=x, y=y})})) end
+                             cols=new(COLS, {names=names,all=all,
+                                             x=x, y=y})})) end
 
 function COLS.add(i,row) -- fold a row into every column
   for _, c in ipairs(i.all) do c:add(row[c.at]) end
@@ -229,11 +229,13 @@ function TBL.acquire(i,rows,cap,lab,lo,hi,
                1, max(1, floor(the.keepf * #rows))) end
   return lab end
 
-function TBL.acquirer(i,cap,    lab,lo,hi,t)
+function TBL.acquirer(i,cap,    lab,lo,hi,t,b4)
   lab = {}
   while true do
+    b4  = #lab
     lab = i:acquire(shuffle(i.rows), cap, lab, lo, hi)
-    if #lab >= cap or #lab >= #i.rows then break end
+    if #lab >= cap or #lab >= #i.rows or
+       #lab == b4 then break end -- full, or no progress
     t = keysort(lab, i:Y())
     lo, hi = t[1], t[#t] end -- best+worst seen
   return keysort(lab, i:Y()) end
