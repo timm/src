@@ -13,7 +13,10 @@ Module capture is `local _ENV = setmetatable({}, ...)` plus
 `if setfenv then setfenv(1, _ENV) end` (the pair runs on
 5.1 and 5.2+ alike). LuaJIT extensions such as two-argument
 math.log are fine. When 5.1 and newer Lua conflict, 5.1
-wins.
+wins. Never printf "%f" a float of uncontrolled magnitude:
+LuaJIT's own string.format renders tiny doubles (say,
+1e-170) as huge garbage integers. Route number display
+through lib.lua's round/show instead.
 
 ## Protected files
 

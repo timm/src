@@ -345,11 +345,8 @@ function TREE.leaves(t,fun) -- fun on every leaf below t
   else fun(t) end end
 
 function TREE.gstr(t) -- goal means, as aligned columns
-  return table.concat(map(t.here.cols.y, function(g,    v)
-    v = g:mid()
-    if type(v) == "number" and v % 1 ~= 0 then
-      v = ("%."..the.round.."f"):format(v) end
-    return ("%9s"):format(v) end)) end
+  return table.concat(map(t.here.cols.y, function(g)
+    return ("%9s"):format(show(g:mid())) end)) end
 
 function TREE.show(t,tbl,    lo,hi,recurse)
   function recurse(t,pre,txt,    c,say,m)

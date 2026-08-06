@@ -129,13 +129,9 @@ function TBL.clone(i,rows,    u) -- clones stay live models
   return u end
 
 function instance(t,row) -- one row: x, then f, then disty
-  print("  x  " .. table.concat(map(
-    sub(row, 1, the.Nx),
-    function(v) return ("%.2f"):format(v) end), " "))
+  print("  x  " .. show(sub(row, 1, the.Nx)))
   print(("  f  %s   (disty %.3f, lower=better)"):format(
-    table.concat(map(sub(row, the.Nx + 1),
-      function(v) return ("%.3f"):format(v) end), " "),
-    t:disty(row))) end
+    show(sub(row, the.Nx + 1)), t:disty(row))) end
 
 --## demos -----------------------------------------------------
 eg = {}
@@ -170,6 +166,26 @@ eg["--label"] = function(    t,r) -- goals appear on demand
   assert(r[t.cols.y[1].at] ~= "?")     -- now labelled
   print("labelled: " .. show(sub(r, the.Nx + 1)))
   assert(t.cols.y[1].n == 1) end       -- and folded in
+
+eg["--models"] = function(    t,d,lo,hi,best) -- all 7
+  for _,m in ipairs{"dtlz1","dtlz2","dtlz3","dtlz4", -- run;
+                    "dtlz5","dtlz6","dtlz7"} do -- 50 labels
+    the.model = m                     -- each; ruler sharpens
+    t = Dtlz()
+    for j = 1, 50 do t:disty(t.rows[j]) end -- label 50, then
+    lo, hi = 2, -1        -- rescore all on the warmed ruler
+    for j = 1, 50 do
+      d = t:disty(t.rows[j])
+      if d < lo then lo, best = d, t.rows[j] end
+      if d > hi then hi = d end end
+    print(("%-6s disty %.3f .. %.3f  best f %s"):format(
+      m, lo, hi, show(sub(best, the.Nx + 1))))
+    for _,y in ipairs(t.cols.y) do          -- finite, and
+      assert(best[y.at] == best[y.at]       -- not negative
+             and best[y.at] >= 0) end
+    assert(0 <= lo and lo < hi and hi <= 1) -- real spread
+    assert(t.cols.y[1].n == 50) end         -- 50 labels in
+  the.model = "dtlz2" end -- restore the default
 
 eg["--pure"] = function(    t,lab) -- rank whole pool, no
   t   = Dtlz()                     -- train/test split

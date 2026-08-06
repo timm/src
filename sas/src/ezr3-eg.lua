@@ -3,10 +3,8 @@
 -- reseeds, prints, then asserts. Run one with --tree etc;
 -- all with --all; set knobs with --key=val.
 local abs,log,sqrt = math.abs, math.log, math.sqrt
-local max,min,floor= math.max, math.min, math.floor
 local cos,pi       = math.cos, math.pi
 local rand,srand   = math.random, math.randomseed
-local TINY         = 1e-32
 
 -- find ezr3.lua beside this file, whatever the cwd
 package.path = (arg and arg[0] or ""):gsub("[^/]*$","")
