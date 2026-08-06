@@ -1,10 +1,11 @@
 #!/usr/bin/env lua
 local help = [[
-ezr3.lua: lib.py's substrate said in Lua: multi-goal trees
-plus active learning, a holdout score rig, and the stats
+ezr3.lua: multi-goal trees, XAI, active learning, optimization.
+(c) 2026 Tim Menzies <timm@ieee.org>, MIT license.
+
+A holdout score rig, and the stats
 that police it. Demos live next door in ezr3-eg.lua; the
-batteries below, in lib.lua. Columns index from 1, not 0;
-everything else mirrors the Python.
+batteries below, in lib.lua. 
 
 usage:
   lua ezr3-eg.lua [-h] [--key=val ..] [--demo ..]
@@ -41,7 +42,7 @@ if setfenv then setfenv(1, _ENV) end
 
 the = the:also(help)
 NUM, SYM, COLS, TBL, NODE, TREE = {},{},{},{},{},{}
-
+
 --## columns ---------------------------------------------------
 function Col(name,at) -- column kind from first letter
   return (name:find"^%l" and Sym or Num)(name,at) end
@@ -61,7 +62,6 @@ function SYM.add(i,v,inc) -- update symbol counts; inc can
   i.has[v] = inc + (i.has[v] or 0)
   if i.has[v] <= 0 then i.has[v] = nil end
   return v end
-
 
 function NUM.add(i,v,inc,    d) -- one-pass update of mu and
   if v == "?" then return v end -- m2, forwards (inc=1) or in
@@ -93,6 +93,44 @@ function NUM.norm(i,v,    z) -- v's cdf, via logistic; 0..1
   z = (v - i.mu) / (i:div() + TINY)
   return 1 / (1 + exp(-1.702 * max(-3, min(3, z)))) end
 
+--## Columns test ----------------------------------------------
+function SYM.holds(i,x,v) return x == "?" or x == v  end
+function NUM.holds(i,x,v) return x == "?" or x <= v  end
+
+--## tables ----------------------------------------------------
+function Tbl(src) -- fold rows (row 1 is the header) into
+  src = iter(src) -- fresh columns
+  return adds(src, new(TBL, {rows={}, mid=nil,
+                             cols=Cols(src())})) end
+
+function Cols(names,    all,x,y,klass) -- names, sorted
+  all, x, y = {}, {}, {}               -- into their roles
+  for at, s in ipairs(names) do
+    all[at] = Col(s, at)
+    if s:find"!$" then klass = all[at]
+    elseif s:find"[+-]$" then y[#y+1] = all[at]
+    elseif s:sub(-1) ~= "X" then x[#x+1] = all[at] end end
+  return new(COLS, {names=names,all=all,x=x,y=y,klass=klass}) end
+
+function COLS.add(i,row,inc) -- fold a row into every column
+  for _, c in ipairs(i.all) do c:add(row[c.at], inc) end
+  return row end
+
+function TBL.add(i,row) -- keep the row; update summaries
+  i.rows[#i.rows+1] = i.cols:add(row)
+  i.mid = nil
+  return row end
+
+function TBL.clone(i,rows,    u) -- same header, fresh
+  u = adds(rows, Tbl{i.cols.names}) -- summaries; clones of
+  u.model = i.model                 -- live models stay live
+  return u end
+
+function TBL.mids(i) -- return centroid of this tbl
+  i.mid = i.mid or map(i.cols.all, "mid")
+  return i.mid end
+
+--## Forgetting -----------------------------------------------
 function NUM.__sub(i,j,    n,d) -- tot - v: new NUM
   n = i.n - j.n
   if n < 1 then return Num(i.name, i.at) end
@@ -109,30 +147,8 @@ function SYM.__sub(i,j,    out,n) -- tot - v: new counts
     if n > 0 then out.has[k] = n; out.n = out.n + n end end
   return out end
 
-function SYM.holds(i,x,v) return x == "?" or x == v  end
-function NUM.holds(i,x,v) return x == "?" or x <= v  end
-
---## tables ----------------------------------------------------
-function Tbl(src,    names,all,x,y,klass) -- row 1 names cols
-  src = iter(src)
-  names, all, x, y = src(), {}, {}, {}
-  for at, s in ipairs(names) do
-    all[at] = Col(s, at)
-    if s:find"!$" then klass = all[at]
-    elseif s:find"[+-]$" then y[#y+1] = all[at]
-    elseif s:sub(-1) ~= "X" then x[#x+1] = all[at] end end
-  return adds(src, new(TBL, {rows={}, mid=nil,
-                             cols=new(COLS, {names=names,all=all,
-                               x=x, y=y, klass=klass})})) end
-
-function COLS.add(i,row,inc) -- fold a row into every column
-  for _, c in ipairs(i.all) do c:add(row[c.at], inc) end
-  return row end
-
-function TBL.add(i,row) -- keep the row; update summaries
-  i.rows[#i.rows+1] = i.cols:add(row)
-  i.mid = nil
-  return row end
+function NUM.reset(i) i.n, i.mu, i.m2 = 0, 0, 0 end
+function SYM.reset(i) i.n, i.has = 0, {} end
 
 function TBL.sub(i,row) -- forget a row. All resets happen
   i.cols:add(row, -1)   -- here: empty tbl = fresh columns
@@ -141,23 +157,13 @@ function TBL.sub(i,row) -- forget a row. All resets happen
     if r == row then table.remove(i.rows, j); break end end
   if #i.rows == 0 then map(i.cols.all, "reset") end
   return row end
-
-function NUM.reset(i) i.n, i.mu, i.m2 = 0, 0, 0 end
-function SYM.reset(i) i.n, i.has = 0, {} end
-
 function adds(src,i) -- fold list or iterator; Num default
   i = i or Num()
   for v in iter(src or {}) do i:add(v) end
   return i end
 
-function TBL.clone(i,rows) -- same header, fresh summaries
-  return adds(rows, Tbl{i.cols.names}) end
 
-function TBL.mids(i) -- return centroid of this tbl
-  i.mid = i.mid or map(i.cols.all, "mid")
-  return i.mid end
-
---## distance --------------------------------------------------
+--## distance --------------------------------------------------
 function SYM.dist(i,a,b) -- gap between two syms; 0..1
   if a == "?" and b == "?" then return 1 end
   return a ~= b and 1 or 0 end
@@ -178,7 +184,16 @@ function TBL.distx(i,row1,row2) -- gap over x cols; 0..1
   return minkowski(i.cols.x, function(c)
            return c:dist(row1[c.at], row2[c.at]) end) end
 
-function TBL.disty(i,row) -- gap to heaven; 0=best
+function TBL.label(i,row,    f) -- ask i.model for goals;
+  f = i.model(map(i.cols.x,     -- fold them in
+        function(c) return row[c.at] end), #i.cols.y)
+  for j, y in ipairs(i.cols.y) do
+    row[y.at] = y:add(f[j]) end
+  return row end
+
+function TBL.disty(i,row) -- gap to heaven; 0=best. Rows
+  if i.model and row[i.cols.y[1].at] == "?" then -- born "?"
+    i:label(row) end       -- get labelled on demand, here
   return minkowski(i.cols.y, function(y)
            return abs(y:norm(row[y.at]) - y.heaven) end) end
 
@@ -224,8 +239,8 @@ function NODE.leaf(i,row,    t) -- walk row down to its leaf
     i = t:distx(row, i.a) <= t:distx(row, i.b)
         and i.lo or i.hi end
   return i end
-
---## acquire ---------------------------------------------------
+
+--## acquire ---------------------------------------------------
 -- Label few rows, cull the pool toward the good pole, loop.
 -- lab is a plain list of labelled rows; acquire rebuilds its
 -- private seen set (keyed by row ref) on each entry. When a
@@ -303,8 +318,8 @@ function TBL.divide(i,rows,c,v,    yes,no) -- rows into holds
   for _,r in ipairs(rows) do
     push(c:holds(r[c.at], v) and yes or no, r) end
   return yes, no end
-
---## trees -----------------------------------------------------
+
+--## trees -----------------------------------------------------
 -- Recursive best-cut trees over the discretizer above, plus
 -- walk/sides: visit every pruning of a grown tree.
 function Tree(tbl,rows,Y,acc,    recurse)
@@ -388,8 +403,8 @@ function TREE.show(t,tbl,    lo,hi,recurse)
     table.concat(map(t.here.cols.y, function(g)
       return ("%9s"):format(g.name) end)))
   recurse(t, "", "") end
-
---## score -------------------------------------------------
+
+--## score -------------------------------------------------
 function TBL.wins(i,rows,    ys,lo,b4) -- grader: row ->
   ys = sorted(map(rows or i.rows, i:Y())) -- % gap to best
   lo, b4 = ys[1], ys[floor(#ys/2)+1] -- closed, [-100,100]
@@ -409,7 +424,7 @@ function TBL.holdout(i,how,    rows,n,train,test,lab,t,top)
   top  = sub(keysort(test, function(r) return t:leaf(i, r) end),
            1, the.check)
   return keysort(top, i:Y())[1] end
-
+
 --## statistics ------------------------------------------------
 function cohen(xs,ys,    x,y,n,m,sd) -- mean gap, in
   x, y = adds(xs), adds(ys)          -- pooled-sd units
@@ -452,6 +467,6 @@ function ranks(d,big,    mid,dd,sign,out,win,rank,best)
     if rank == 0 then win[1+#win] = k end
     out[k] = rank end
   return {winners=win, ranks=out} end
-
+
 --## the end  ---------------------------------------------------
 return _ENV

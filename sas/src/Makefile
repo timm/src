@@ -3,8 +3,8 @@
 # numbers; sections break clean at 74-line columns. NB: no
 # inline comments here: they leave trailing blanks in the
 # value, and awk then compares C as a string, not a number.
-Font = 5.5
-LPC  = 74
+Font = 5.4
+LPC  = 80
 include ../../Makefile
 
 POOL ?= $(HOME)/gits/moot/optimize

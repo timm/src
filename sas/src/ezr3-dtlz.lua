@@ -90,8 +90,8 @@ function dtlz7(x,M,    k,g,f,h) -- disconnected front
   return f end
 
 --## seam ------------------------------------------------------
--- Pools of unlabelled rows; goals appear only when disty
--- asks. TBL.label folds new goals into the y summaries.
+-- The lazy-label seam (t.model + TBL.label) lives in ezr3
+-- now: all this file adds is pool-making and the models.
 function Dtlz(    u,r) -- a Tbl over one fresh, blank pool
   u = {names()}
   for _ = 1, the.pool do
@@ -107,25 +107,6 @@ function names(    u) -- X1..XNx, then F1-..FM- (minimize)
   u = {}
   for j = 1, the.Nx do push(u, "X"..j) end
   for m = 1, the.M  do push(u, "F"..m.."-") end
-  return u end
-
-function TBL.label(i,row,    f) -- ask the model; fold in
-  f = i.model(map(i.cols.x,
-        function(c) return row[c.at] end), #i.cols.y)
-  for j, y in ipairs(i.cols.y) do
-    row[y.at] = y:add(f[j]) end
-  return row end
-
-local disty0 = TBL.disty
-function TBL.disty(i,row) -- the seam: goals on demand
-  if i.model and row[i.cols.y[1].at] == "?" then
-    i:label(row) end
-  return disty0(i, row) end
-
-local clone0 = TBL.clone
-function TBL.clone(i,rows,    u) -- clones stay live models
-  u = clone0(i, rows)
-  u.model = i.model
   return u end
 
 function TBL.baseline(i,    nums,f) -- mean of every goal
