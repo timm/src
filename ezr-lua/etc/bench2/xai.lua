@@ -663,10 +663,12 @@ function str.filename(s)
 function str.csv(file,    f)
   f = assert(io.open(str.filename(file)), "no " .. file)
   return function(    u)
-    for s in f:lines() do
+    for s0 in f:lines() do
+      local s = s0:gsub("\239\187\191","")
       if s:find"%S" then
         u={}
-        for x in s:gmatch"[^,]+" do lst.push(u,str.what(x)) end
+        for x in (s..","):gmatch"(.-)," do
+          lst.push(u, x=="" and "?" or str.what(x)) end
         return u end end
     f:close() end end
 

@@ -1,19 +1,18 @@
 #!/usr/bin/env lua
--- ezr3-eg.lua: demos/tests for ezr3.lua. Every demo
+-- ezr-eg.lua: demos/tests for ezr.lua. Every demo
 -- reseeds, prints, then asserts. Run one with --tree etc;
 -- all with --all; set knobs with --key=val.
 local abs,log,sqrt = math.abs, math.log, math.sqrt
 local cos,pi       = math.cos, math.pi
-local rand,srand   = math.random, math.randomseed
 
--- find ezr3.lua beside this file, whatever the cwd
+-- find ezr.lua beside this file, whatever the cwd
 package.path = (arg and arg[0] or ""):gsub("[^/]*$","")
                .. "?.lua;" .. package.path
 -- all defs below land here; reads fall through to ezr3
 -- (and, through it, to lib and _G)
-local _ENV = setmetatable({}, {__index = require"ezr3"})
+local _ENV = setmetatable({}, {__index = require"ezr"})
 if setfenv then setfenv(1, _ENV) end
-
+
 --## demos p ---------------------------------------------------
 eg = {}
 
@@ -182,8 +181,8 @@ eg["--same"] = function(    g,x,y,c,k,cl,s,n) -- 3 tests
         return sorted(u) end
   x, n = g(), 0    -- y = x + shift: pure effect, no noise
   print("shift  cohen     ks cliffs |  same    any")
-  for _, mu in ipairs{0, .1, .2, .3, .4, .42, .44,
-                      .46, .48, .5, .75, 1, 1.5, 2} do
+  for _, mu in ipairs{0, .1, .2, .3, .34, .36, .38,
+                      .4, .44, .5, .75, 1, 1.5, 2} do
     y  = map(x, function(v) return v + mu end)
     c  = cohen(x, y)  <= 0.35
     k  = ks(x, y)     <= 1.36
@@ -209,7 +208,7 @@ eg["--disty"] = function(    t,d,rows) -- sort rows by disty
     elseif at == 4 then print"..." end end
   assert(d(rows[1]) <= d(rows[#rows])) end
 
---## start-up --------------------------------------------------
+--## start-up --------------------------------------------------
 go(eg)
 
 return _ENV

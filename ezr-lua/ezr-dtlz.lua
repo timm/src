@@ -14,12 +14,11 @@ options:
   pool=1000     rows per fresh pool]]
 
 local abs,cos,sin,pi = math.abs, math.cos, math.sin, math.pi
-local rand           = math.random
 
--- find ezr3.lua beside this file, whatever the cwd
+-- find ezr.lua beside this file, whatever the cwd
 package.path = (arg and arg[0] or ""):gsub("[^/]*$","")
                .. "?.lua;" .. package.path
-local _ENV = setmetatable({}, {__index = require"ezr3"})
+local _ENV = setmetatable({}, {__index = require"ezr"})
 if setfenv then setfenv(1, _ENV) end
 
 the = the:also(help)

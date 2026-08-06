@@ -1,6 +1,6 @@
 #!/usr/bin/env lua
 local help = [[
-lib.lua: the batteries under ezr3.lua. No learners here,
+ezr-lib.lua: the batteries under ezr.lua. No learners here,
 just the little functions that make the learners short.
 Settings live in `the`, built by The() from this help;
 other files extend it with the:also"help". For LuaJIT,
@@ -9,12 +9,13 @@ or any Lua from 5.1 up.
 core options:
   round=2          decimals printed by show
   seed=1234567891  every random stream starts here
-  DATA=../data/    bare table names live here (relative
-                   DATA hangs off this script's own dir)
+  DATA=data/       bare table names live here (relative
+                   DATA hangs off this script's own dir,
+                   then ../ up: rock bins sit one level
+                   under their rock's data)
   file=auto93.csv  default table]]
 
 local max,min,floor = math.max, math.min, math.floor
-local rand,srand    = math.random, math.randomseed
 
 -- All defs below land in this fresh table (which _G backs for
 -- reads), so `function name` both defines and exports: the
@@ -36,13 +37,15 @@ function thing(s) -- string to number, bool, or string
   s = s:match"^%s*(.-)%s*$"
   return tonumber(s) or s=="True" or (s~="False" and s) end
 
-function pathname(s,    d) -- bare names live in the.DATA;
-  s = s or the.file        -- relative DATA hangs off this
-  if not s:find"/" then    -- script's dir; $VARS expand
-    d = the.DATA
-    if not d:find"^[/$]" then
-      d = (arg and arg[0] or ""):gsub("[^/]*$","") .. d end
-    s = d .. s end
+function pathname(s,    d,t,f) -- bare names live in
+  s = s or the.file   -- the.DATA; relative DATA hangs off
+  if not s:find"/" then -- this script's dir, then ../ up;
+    d = the.DATA        -- $VARS expand
+    if d:find"^[/$]" then s = d .. s else
+      t = (arg and arg[0] or ""):gsub("[^/]*$","")
+      f = io.open(t .. d .. s)
+      if f then f:close() end
+      s = (f and t or t .. "../") .. d .. s end end
   return (s:gsub("%$(%w+)", function(k)
     return os.getenv(k) or k == "MOOT" and
            os.getenv"HOME" .. "/gits/moot" end)) end
@@ -130,7 +133,22 @@ function least(    lo) -- min-so-far reducer: call f{val,..}
     return lo end end  -- rides in the closure
 
 --## randomness ------------------------------------------------
-function shuffle(lst,    t,j) -- random re-order; copies first
+-- Own Park-Miller PRNG: exact doubles, so the same seed
+-- yields the same stream on any Lua, any machine.
+Seed = 1234567891
+
+function srand(n) -- any integer; lands in 1..2^31-2
+  Seed = floor(n or 1234567891) % 2147483647
+  if Seed <= 0 then Seed = Seed + 2147483646 end end
+
+function rand(lo,hi,    x) -- () -> [0,1); (n) -> 1..n;
+  Seed = (16807 * Seed) % 2147483647  -- (lo,hi) -> lo..hi
+  x = Seed / 2147483647
+  if not lo then return x end
+  if not hi then lo, hi = 1, lo end
+  return lo + floor(x * (hi - lo + 1)) end
+
+function shuffle(lst,    t,j) -- Fisher-Yates; copies first
   t = copy(lst)
   for at = #t, 2, -1 do
     j = rand(at); t[at],t[j] = t[j],t[at] end
@@ -143,9 +161,10 @@ function some(lst,k,    t) -- k items at random (all, if k big)
 
 --## rendering -------------------------------------------------
 function round(v,n) -- round to n (default the.round) places
-  if v % 1 == 0 then return floor(v) end
-  n = 10 ^ (n or the.round)
-  return floor(v * n + 0.5) / n end
+  if v % 1 == 0 then return floor(v) end -- re-floor whole
+  n = 10 ^ (n or the.round)     -- results: 5.3+ would print
+  v = floor(v * n + 0.5) / n    -- the float 15.0 as "15.0",
+  return v % 1 == 0 and floor(v) or v end -- 5.1/JIT as "15"
 
 function show(t,    u) -- render anything. tables recurse:
   if type(t) ~= "table" then  -- lists keyless, dicts ":k v"

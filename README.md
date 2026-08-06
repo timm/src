@@ -14,7 +14,7 @@ language.
 | dir | what | docs | run its examples |
 |-----|------|------|------------------|
 | [ezr-py](ezr-py/) | explainable multi-objective optimization (Python) | [pages](https://timm.github.io/src/ezr-py/docs/xai.html) | `python3 xai-eg.py all` |
-| [ezr-lua](ezr-lua/) | same ideas, Lua, tiny-ly | [pages](https://timm.github.io/src/ezr-lua/docs/xai.html) | `lua xai-eg.lua --all` |
+| [ezr-lua](ezr-lua/) | same ideas, Lua, tiny-ly | [pages](https://timm.github.io/src/ezr-lua/docs/ezr.html) | `lua ezr-eg.lua --all` |
 | [ezr-lisp](ezr-lisp/) | same ideas, Common Lisp, tiny-function style | [pages](https://timm.github.io/src/ezr-lisp/docs/xai.html) | `sbcl --script xai-eg.lisp --all` |
 
 Retired to [attic/](attic/): [luamine](attic/luamine/),

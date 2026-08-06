@@ -17,12 +17,11 @@ options:
 
 local abs,exp,log,pi = math.abs, math.exp, math.log, math.pi
 local min,floor      = math.min, math.floor
-local rand           = math.random
 
--- find ezr3.lua beside this file, whatever the cwd
+-- find ezr.lua beside this file, whatever the cwd
 package.path = (arg and arg[0] or ""):gsub("[^/]*$","")
                .. "?.lua;" .. package.path
-local _ENV = setmetatable({}, {__index = require"ezr3"})
+local _ENV = setmetatable({}, {__index = require"ezr"})
 if setfenv then setfenv(1, _ENV) end
 
 the = the:also(help)

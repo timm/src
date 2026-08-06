@@ -25,13 +25,12 @@ eg: ## run every project's examples/tests
 	cd ezr-lisp && sbcl --script xai-eg.lisp --all
 	cd ezr-lisp && sbcl --script xaiplus-eg.lisp --all
 	cd attic/luamine  && lua luamine-eg.lua --all
-	cd ezr-lua      && lua xai-eg.lua --all
-	cd ezr-lua      && lua xaiplus-eg.lua --all
+	cd ezr-lua      && lua ezr-eg.lua --all
+	cd ezr-lua      && lua ezr-apps.lua --all
+	cd ezr-lua      && lua ezr-dtlz.lua --all
 
 check: ## glossary links <-> headings, then each course's frozen transcript
 	@python3 etc/join.py glossary.md $(wildcard */*-eg.py */*-eg.lua */*-eg.lisp)
-	@cd ezr-lua && lua xai-eg.lua --check
-	@cd ezr-lua && lua xaiplus-eg.lua --check
 	@cd ezr-lisp && sbcl --script xai-eg.lisp --check
 	@cd ezr-lisp && sbcl --script xaiplus-eg.lisp --check
 

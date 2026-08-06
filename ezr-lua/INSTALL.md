@@ -1,9 +1,8 @@
-FILES="xai.lua
-       xai-eg.lua
-       xai-eg.out
-       xaiplus.lua
-       xaiplus-eg.lua
-       xaiplus-eg.out"
+FILES="ezr.lua
+       ezr-lib.lua
+       ezr-eg.lua
+       ezr-apps.lua
+       ezr-dtlz.lua"
 : <<'DOCS'
 
 # ezr-lua
@@ -11,6 +10,11 @@ FILES="xai.lua
 Install:
 
     curl -fL https://raw.githubusercontent.com/timm/src/refs/heads/main/ezr-lua/INSTALL.md | sh
+
+Or, via luarocks (also installs the `ezr`, `ezr-apps`,
+`ezr-dtlz` commands):
+
+    luarocks install ezr
 
 List the files (reading order; also the doc page order):
 

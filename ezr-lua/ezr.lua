@@ -4,14 +4,14 @@ ezr3.lua: multi-goal trees, XAI, active learning, optimization.
 (c) 2026 Tim Menzies <timm@ieee.org>, MIT license.
 
 A holdout score rig, and the stats
-that police it. Demos live next door in ezr3-eg.lua; the
+that police it. Demos live next door in ezr-eg.lua; the
 batteries below, in lib.lua. 
 
 usage:
-  lua ezr3-eg.lua [-h] [--key=val ..] [--demo ..]
+  ezr [-h] [--key=val ..] [--demo ..]
 
 or, adding demos from your own script:
-  local ezr = require"ezr3-eg"
+  local ezr = require"ezr-eg"
   ezr.eg["--myDemo"] = function() print(ezr.the.seed) end
   ezr.go(ezr.eg)
 
@@ -29,7 +29,7 @@ inference options:
 
 local abs,exp,log,sqrt = math.abs,math.exp,math.log,math.sqrt
 local max,min,floor    = math.max,math.min,math.floor
-local huge,rand        = math.huge,math.random
+local huge             = math.huge
 local TINY             = 1e-32
 
 -- find lib.lua beside this file, whatever the cwd
@@ -37,7 +37,7 @@ package.path = (arg and arg[0] or ""):gsub("[^/]*$","")
                .. "?.lua;" .. package.path
 -- all defs below land here; reads fall through to lib
 -- (and, through lib, to _G)
-local _ENV = setmetatable({}, {__index = require"lib"})
+local _ENV = setmetatable({}, {__index = require"ezr-lib"})
 if setfenv then setfenv(1, _ENV) end
 
 the = the:also(help)
@@ -79,9 +79,10 @@ function SYM.mid(i,    hi,out) -- center: the mode
 
 function NUM.mid(i) return i.mu end -- center: the mean
 
-function SYM.div(i) -- diversity: entropy of the counts
-  return sum(i.has, function(n,    p)
-    p = n / i.n; return -p * log(p, 2) end) end
+function SYM.div(i) -- diversity: entropy of the counts.
+  return sum(i.has, function(n,    p) -- one-arg log only:
+    p = n / i.n                 -- 2-arg is LuaJIT/5.2+, and
+    return -p * log(p) / log(2) end) end -- 5.1 drops base
 
 function NUM.div(i) -- diversity: standard deviation
   return i.n < 2 and 0 or sqrt(max(i.m2,0) / (i.n-1)) end
