@@ -54,16 +54,22 @@ function Num(name,at) -- summary of a numeric column
 function Sym(name,at) -- summary of a symbolic column
   return new(SYM, {at=at or 1, name=name or "", n=0, has={}}) end
 
-function SYM.add(i,v) -- update symbol counts
-  if v == "?" then return v end
-  i.n = i.n + 1; i.has[v] = 1 + (i.has[v] or 0); return v end
+function SYM.add(i,v,inc) -- update symbol counts; inc can
+  if v == "?" then return v end -- be -1 (forget v)
+  inc = inc or 1
+  i.n = i.n + inc
+  i.has[v] = inc + (i.has[v] or 0)
+  if i.has[v] <= 0 then i.has[v] = nil end
+  return v end
 
-function NUM.add(i,v,    d) -- one-pass update of mu and m2
-  if v == "?" then return v end
-  i.n  = i.n + 1
+
+function NUM.add(i,v,inc,    d) -- one-pass update of mu and
+  if v == "?" then return v end -- m2, forwards (inc=1) or in
+  inc  = inc or 1               -- reverse (inc=-1)
+  i.n  = i.n + inc
   d    = v - i.mu
-  i.mu = i.mu + d / i.n
-  i.m2 = i.m2 + d * (v - i.mu); return v end
+  i.mu = i.mu + inc * d / i.n
+  i.m2 = i.m2 + inc * d * (v - i.mu); return v end
 
 function SYM.mid(i,    hi,out) -- center: the mode
   hi = -1
@@ -107,25 +113,37 @@ function SYM.holds(i,x,v) return x == "?" or x == v  end
 function NUM.holds(i,x,v) return x == "?" or x <= v  end
 
 --## tables ----------------------------------------------------
-function Tbl(src,    names,all,x,y) -- row 1 names columns
+function Tbl(src,    names,all,x,y,klass) -- row 1 names cols
   src = iter(src)
   names, all, x, y = src(), {}, {}, {}
   for at, s in ipairs(names) do
     all[at] = Col(s, at)
-    if s:find"[+-]$" then y[#y+1] = all[at]
+    if s:find"!$" then klass = all[at]
+    elseif s:find"[+-]$" then y[#y+1] = all[at]
     elseif s:sub(-1) ~= "X" then x[#x+1] = all[at] end end
   return adds(src, new(TBL, {rows={}, mid=nil,
                              cols=new(COLS, {names=names,all=all,
-                                             x=x, y=y})})) end
+                               x=x, y=y, klass=klass})})) end
 
-function COLS.add(i,row) -- fold a row into every column
-  for _, c in ipairs(i.all) do c:add(row[c.at]) end
+function COLS.add(i,row,inc) -- fold a row into every column
+  for _, c in ipairs(i.all) do c:add(row[c.at], inc) end
   return row end
 
 function TBL.add(i,row) -- keep the row; update summaries
   i.rows[#i.rows+1] = i.cols:add(row)
   i.mid = nil
   return row end
+
+function TBL.sub(i,row) -- forget a row. All resets happen
+  i.cols:add(row, -1)   -- here: empty tbl = fresh columns
+  i.mid = nil
+  for j,r in ipairs(i.rows) do
+    if r == row then table.remove(i.rows, j); break end end
+  if #i.rows == 0 then map(i.cols.all, "reset") end
+  return row end
+
+function NUM.reset(i) i.n, i.mu, i.m2 = 0, 0, 0 end
+function SYM.reset(i) i.n, i.has = 0, {} end
 
 function adds(src,i) -- fold list or iterator; Num default
   i = i or Num()
@@ -136,7 +154,7 @@ function TBL.clone(i,rows) -- same header, fresh summaries
   return adds(rows, Tbl{i.cols.names}) end
 
 function TBL.mids(i) -- return centroid of this tbl
-  i.mid = i.mid or map(i.cols.all,function(c) return c:mid()end)
+  i.mid = i.mid or map(i.cols.all, "mid")
   return i.mid end
 
 --## distance --------------------------------------------------
@@ -273,7 +291,7 @@ function TBL.cuts(i,rows,c,Y,acc,best,    xy,tot) -- col c
   xy = {}                        -- feeds its splits to best
   for _,r in ipairs(rows) do
     if r[c.at] ~= "?" then push(xy, {r[c.at], Y(r)}) end end
-  tot = adds(map(xy, function(p) return p[2] end), acc())
+  tot = adds(map(xy, 2), acc())
   c:cuts(xy, tot, acc, best) end
 
 function TBL.bestcut(i,rows,Y,acc,best) -- champion x-col cut

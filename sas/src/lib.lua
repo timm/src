@@ -43,7 +43,9 @@ function pathname(s,    d) -- bare names live in the.DATA;
     if not d:find"^[/$]" then
       d = (arg and arg[0] or ""):gsub("[^/]*$","") .. d end
     s = d .. s end
-  return (s:gsub("%$(%w+)", os.getenv)) end
+  return (s:gsub("%$(%w+)", function(k)
+    return os.getenv(k) or k == "MOOT" and
+           os.getenv"HOME" .. "/gits/moot" end)) end
 
 function csv(file,    f) -- stream rows of coerced cells
   f = io.lines(pathname(file))
@@ -80,7 +82,14 @@ function THE.also(i,t) -- merge new settings; string or table.
 --## list making -----------------------------------------------
 function push(t,v) t[1+#t] = v; return v end
 
-function map(t,f,    u) -- f over the list part, in order
+function fun(f) -- a callable: f itself; or method name
+  if type(f)=="string" then 
+    return function(v,...) return v[f](v,...) end end 
+  if type(f)=="number" then return function(v) return v[f]end end
+  return f end
+
+function map(t,f,    u) -- f (fn or method name) over list
+  f = fun(f)
   u = {}; for _,v in ipairs(t) do u[1+#u]=f(v) end; return u end
 
 function kap(t,f,    u) -- f(k,v) over all pairs, any order.

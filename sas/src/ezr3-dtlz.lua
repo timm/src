@@ -206,6 +206,19 @@ eg["--generalize"] = function(    t,best) -- best pick on
   instance(t, best)
   assert(t:disty(best) <= 1) end
 
+eg["--wins"] = function(    t,lab,W,w) -- grade each search
+  for _,m in ipairs{"dtlz1","dtlz2","dtlz3","dtlz4", -- vs
+                    "dtlz5","dtlz6","dtlz7"} do -- the fully
+    the.model = m           -- labelled pool: 100=true best,
+    t   = Dtlz()            -- 0=median row, negative=worse
+    lab = t:acquirer(the.budget - the.check)
+    W   = t:wins()          -- labels the whole pool
+    w   = W(lab[1])
+    print(("%-6s win %4.0f  (%s labels vs %s)"):format(
+      m, w, #lab, #t.rows))
+    assert(-100 <= w and w <= 100) end
+  the.model = "dtlz2" end -- restore the default
+
 --## start-up --------------------------------------------------
 go(eg)
 

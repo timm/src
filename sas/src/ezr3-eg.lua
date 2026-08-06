@@ -59,6 +59,16 @@ eg["--without"] = function(    a,b,w) -- (a+b) minus b == a
   print(show{mu=w.mu, sd=w:div()})
   assert(abs(w.mu - a.mu) < 1e-9) end
 
+eg["--sub"] = function(    t,c,n1,mu1,xtra) -- add then
+  t  = Tbl(csv())            -- forget: stats round-trip
+  c  = t.cols.all[1]
+  n1, mu1 = c.n, c.mu
+  xtra = some(t.rows, 50)
+  for _,r in ipairs(xtra) do t:add(r) end
+  for _,r in ipairs(xtra) do t:sub(r) end
+  print(show{n=c.n, mu=c.mu, was=mu1})
+  assert(c.n == n1 and abs(c.mu - mu1) < 1e-9) end
+
 eg["--distx"] = function(    t,d) -- self=0; far pair > near
   t = Tbl(csv())
   d = function(a,b) return t:distx(a, b) end
@@ -172,7 +182,8 @@ eg["--same"] = function(    g,x,y,c,k,cl,s,n) -- 3 tests
         return sorted(u) end
   x, n = g(), 0    -- y = x + shift: pure effect, no noise
   print("shift  cohen     ks cliffs |  same    any")
-  for _, mu in ipairs{0,.1,.2,.3,.4,.5,.75,1,1.5,2} do
+  for _, mu in ipairs{0, .1, .2, .3, .4, .42, .44,
+                      .46, .48, .5, .75, 1, 1.5, 2} do
     y  = map(x, function(v) return v + mu end)
     c  = cohen(x, y)  <= 0.35
     k  = ks(x, y)     <= 1.36
