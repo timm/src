@@ -83,8 +83,8 @@ function THE.also(i,t) -- merge new settings; string or table.
 function push(t,v) t[1+#t] = v; return v end
 
 function fun(f) -- a callable: f itself; or method name
-  if type(f)=="string" then 
-    return function(v,...) return v[f](v,...) end end 
+  if type(f)=="string" then
+    return function(v,...) return v[f](v,...) end end
   if type(f)=="number" then return function(v) return v[f]end end
   return f end
 

@@ -128,6 +128,14 @@ function TBL.clone(i,rows,    u) -- clones stay live models
   u.model = i.model
   return u end
 
+function TBL.baseline(i,    nums,f) -- mean of every goal
+  nums = map(i.cols.y, function() return Num() end) -- over
+  for _,r in ipairs(i.rows) do  -- the whole pool. Raw model
+    f = i.model(map(i.cols.x,   -- calls: nothing folds into
+          function(c) return r[c.at] end), #i.cols.y)
+    for j,v in ipairs(f) do nums[j]:add(v) end end
+  return map(nums, "mid") end
+
 function instance(t,row) -- one row: x, then f, then disty
   print("  x  " .. show(sub(row, 1, the.Nx)))
   print(("  f  %s   (disty %.3f, lower=better)"):format(
@@ -178,8 +186,9 @@ eg["--models"] = function(    t,d,lo,hi,best) -- all 7
       d = t:disty(t.rows[j])
       if d < lo then lo, best = d, t.rows[j] end
       if d > hi then hi = d end end
-    print(("%-6s disty %.3f .. %.3f  best f %s"):format(
-      m, lo, hi, show(sub(best, the.Nx + 1))))
+    print(("%-6s disty %.3f .. %.3f  best f %s  mean f %s")
+      :format(m, lo, hi, show(sub(best, the.Nx + 1)),
+              show(t:baseline())))
     for _,y in ipairs(t.cols.y) do          -- finite, and
       assert(best[y.at] == best[y.at]       -- not negative
              and best[y.at] >= 0) end
@@ -190,6 +199,8 @@ eg["--models"] = function(    t,d,lo,hi,best) -- all 7
 eg["--pure"] = function(    t,lab) -- rank whole pool, no
   t   = Dtlz()                     -- train/test split
   lab = t:acquirer(the.budget - the.check)
+  print("mean f, all " .. #t.rows .. " rows: "
+        .. show(t:baseline()))
   print("best found (one instance):")
   instance(t, lab[1])
   assert(t:disty(lab[1]) <= t:disty(lab[#lab])) end
@@ -203,6 +214,8 @@ eg["--why"] = function(    t,lab) -- which x-ranges reach
 eg["--generalize"] = function(    t,best) -- best pick on
   t    = Dtlz()                           -- unseen rows
   best = t:holdout()
+  print("mean f, all " .. #t.rows .. " rows: "
+        .. show(t:baseline()))
   instance(t, best)
   assert(t:disty(best) <= 1) end
 
