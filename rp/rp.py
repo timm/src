@@ -6,9 +6,10 @@ cover; rank everything else by 1-nn onto that cover. Constructs prune/fuse
 themselves each era, unsupervised. Same dist() runs both axes.
 
    bin    : rg.py bin  IN.csv [B=10]              raw csv -> binned csv (stdout)
-   run    : rg.py run  BINNED.csv [N=3] [eras=6] [eps=.1] [seed=1]
+   run    : rg.py run  BINNED.csv [N=3] [eras=6] [eps=.1] [seed=1] [Check=5]
             -> model as tag lines (stdout): meta / con / ele (sorted, best
-            first) / tst (guess-sorted, best first)
+            first) / tst (guess-sorted; the first Check rows are labeled,
+            so those sort on true d)
    report : rg.py report < model.txt              classify, regress, optimize
 
    e.g.   : rg.py bin coc81.csv 6 > b.csv
@@ -17,7 +18,7 @@ themselves each era, unsupervised. Same dist() runs both axes.
 
 Header suffixes: X=ignore, +=maximize, -=minimize, else input. Goals stay raw
 (binning is for x only); d2h = distance to heaven over normalized goals, 0=best.
-Total label cost = number of ele lines, plus C confirmations off the top of tst.
+Total label cost = number of ele lines, plus Check confirmations off tst's top.
 """
 import sys, random
 
@@ -74,7 +75,7 @@ def far(items, cols, B, eps):
       min(out, key=lambda o: dist(items[o["at"]], i, cols, B))["kin"] += [j]
   return out
 
-def run(path, N=3, eras=6, eps=.1, seed=1):
+def run(path, N=3, eras=6, eps=.1, seed=1, check=5):
   head, x, y, rows = read(path)
   B = max(max(r[c] for r in rows) for c in x)
   random.seed(seed); random.shuffle(rows)
@@ -103,10 +104,11 @@ def run(path, N=3, eras=6, eps=.1, seed=1):
 
   E.sort(key=lambda e: d2h(e["lead"]))           # best towards the top
   guess = lambda r: d2h(min(E, key=lambda e: dist(r, e["lead"], live, B))["lead"])
-  test.sort(key=guess)
+  test.sort(key=guess)                           # labels=0: sorted on guess
+  test[:check] = sorted(test[:check], key=d2h)   # label top Check: true d sort
   ints = lambda r: ",".join(str(int(r[c])) for c in live)
   raws = lambda r: ",".join(f"{r[c]:g}" for c, _ in y)
-  print(f"meta\teps={eps}\tB={B:g}\tN={N}\teras={eras}\t"
+  print(f"meta\teps={eps}\tB={B:g}\tN={N}\teras={eras}\tcheck={check}\t"
         f"heaven={','.join(str(h) for _, h in y)}")
   for c in C:
     print(f"con\t{head[x[c['at']]]}\t"
@@ -114,7 +116,9 @@ def run(path, N=3, eras=6, eps=.1, seed=1):
   for e in E:
     print(f"ele\td={d2h(e['lead']):.2f}\t{len(e['kin']) + 1}\t"
           f"{ints(e['lead'])}\t{raws(e['lead'])}")
-  for r in test:
+  print()
+  for j, r in enumerate(test):
+    if j == check: print()
     print(f"tst\tguess={guess(r):.2f}\td={d2h(r):.2f}\t{ints(r)}\t{raws(r)}")
 
 #--------------------------------------------------------------- report ------
@@ -158,5 +162,5 @@ if __name__ == "__main__":
   if   not a or a[0] == "report": report(sys.stdin)
   elif a[0] == "bin": bins(a[1], *[int(v) for v in a[2:3]])
   elif a[0] == "run": run(a[1], *[t(v) for t, v in
-                                  zip((int, int, float, int), a[2:])])
+                                  zip((int, int, float, int, int), a[2:])])
   else: print(__doc__)
