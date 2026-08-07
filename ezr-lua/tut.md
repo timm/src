@@ -63,7 +63,7 @@ To replay a lecture's inputs and regenerate its trace:
 | [7](#l7)  | Active learning / acquire  | 95–108  | ACQ, AL, BO, TS |
 | [8](#l8)  | The holdout rig            | 109–124 | HOLD, WIN, BASELINE |
 | [9](#l9)  | Statistics                 | 125–142 | COHEN, KS, CLIFF, SAME, POWER, SK |
-| [10](#l10)| Apps, then DTLZ (advanced) | …       | KNN, ANOM, NB, KM, DTLZ |
+| [10](#l10)| Apps, then DTLZ (advanced) | 143–170 | KNN, ANOM, NB, KM, KPP, DTLZ, SBSE |
 | [quiz](#quiz)     | Revision guide (gated questions) | | |
 | [answers](#answers) | Worked answers               | | |
 | [glossary](#glossary) | Acronyms & terms           | | |
@@ -1589,5 +1589,202 @@ optimizer where labels genuinely cost.
 
 ---
 
-*(Lecture 10, glossary, appendix, and exam bank follow as the build
-continues.)*
+<a name="l10"></a>
+# Lecture 10: Apps, then DTLZ (advanced)
+
+Everything so far was substrate. This lecture cashes it in. Four small
+functions — one per classic task — ride the columns, distances, and
+trees of Lectures 1–6 to become a predictor, an anomaly detector, a
+classifier, and a clusterer. Then, as the advanced coda, we cut the
+cord to the CSV entirely: an external model whose rows are born
+unlabelled, scored only when examined — the shape of every real
+optimization where a label costs money.
+
+**Where this bites.** The same four verbs — predict, flag, classify,
+group — cover most of what "AI" means in a product: a recommender
+(predict), fraud detection (flag), a support-ticket router
+(classify), customer segments (group). That they share one 500-line
+substrate is the course's closing argument: you did not learn four
+tools, you learned one, four times.
+
+## 10.1 The Fortune Teller: knn prediction
+
+`knn` guesses a row's `disty` from its k nearest neighbors' — no
+model, just the distances of Lecture 3. Over 32 probes it errs 0.05;
+guessing the global mean errs 0.20. Four times better, from
+neighbors alone.
+
+```
+[146]> mu = adds(map(t.rows, y)).mu
+[147]> e1 = 0; e2 = 0
+[148]> for _=1,32 do local r=t.rows[rand(#t.rows)]; e1=e1+math.abs(t:knn(r)-y(r)); e2=e2+math.abs(mu-y(r)) end
+[149]> show{knn_err=round(e1/32), mean_err=round(e2/32)}
+{:knn_err 0.05 :mean_err 0.2}
+```
+
+> **KNN — k nearest neighbors.** Cover & Hart (1967) proved a
+> startlingly strong bound: as data grows, 1-NN's error is at most
+> twice the best any classifier can achieve. No training, no model —
+> the data *is* the model. It rides entirely on Lecture 3's `distx`.
+
+**Check.** `knn` beats the mean-guess because neighbors share
+structure. On what kind of dataset would `knn` collapse to the
+mean's 0.20 error, and how does that connect to Lecture 4's
+"halves come out 0.5 vs 0.5" failure?
+
+## 10.2 The Bouncer: anomaly detection
+
+`anomaly` scores each row by its distance to its nearest *other* row,
+normalized 0..1 — 1 is loneliest. The pack sits near 0.3; one row
+stands out at 0.99.
+
+```
+[150]> det = t:anomaly()
+[151]> ss = sorted(map(t.rows, det))
+[152]> show{lo=round(ss[1]), mid=round(ss[math.floor(#ss/2)+1]), hi=round(ss[#ss])}
+{:hi 0.99 :lo 0.29 :mid 0.32}
+```
+
+> **ANOM — isolation by distance.** Anomalies are points far from
+> everything else; scoring nearest-neighbor gaps is the classic
+> unsupervised detector (the idea under LOF, Breunig 2000). The
+> streaming summaries of Lecture 2 let this run on data too big to
+> store — forget the old tail, keep scoring.
+
+**Check.** The median row scores 0.32, the loneliest 0.99. Why is the
+*gap* between mid and hi (not the hi value itself) the real signal
+that row is anomalous?
+
+## 10.3 The ER Nurse: naive Bayes
+
+`classify` runs test-then-train: predict each incoming row from
+what's been seen, then fold it in — one streaming pass, no held-out
+split. On the diabetes data it hits 73% accuracy over 759 guesses.
+
+```
+[153]> d = Tbl(csv"$MOOT/classify/diabetes.csv")
+[154]> seen = d:classify()
+[155]> show{acc=round(acc(seen)), guesses=#seen}
+{:acc 0.73 :guesses 759}
+```
+
+> **NB — naive Bayes.** Assume features are independent given the
+> class (the "naive" bit — usually false, yet it works), and pick the
+> class with the highest product of per-feature likelihoods. Domingos
+> & Pazzani (1997) explained the paradox: NB classifies well even
+> when its probability estimates are junk, because it needs only the
+> *argmax* to be right.
+
+**Check.** `classify` predicts a row *before* training on it (test-
+then-train). Why does that ordering make its 73% an honest estimate
+of future accuracy, unlike training then scoring the same rows?
+
+## 10.4 The Curator: k-means and k-means++
+
+`kmeans` assigns rows to nearest centroids and recenters, iterating;
+rows are conserved. `kpp` seeds the centroids far apart with
+distance-squared-weighted picks, so clusters start well separated
+(min gap 0.15 here).
+
+```
+[156]> cs = t:kmeans()
+[158]> show{clusters=#cs, rows=n}
+{:clusters 8 :rows 398}
+[159]> cents = t:kpp()
+[162]> show{seeds=#cents, min_gap=round(lo)}
+{:min_gap 0.15 :seeds 8}
+```
+
+> **KM / KPP — k-means and its ++ seeding.** Lloyd's k-means (1957)
+> is the workhorse clusterer; its weakness is bad random seeds.
+> k-means++ (Arthur & Vassilvitskii, 2007) picks seeds with
+> probability ∝ distance², provably tightening the result. Both ride
+> Lecture 3's `distx` and Lecture 2's `mids`.
+
+**Check.** `kpp` picks each seed with chance proportional to its
+squared distance from existing seeds. Why squared, not linear — what
+would linear weighting do to the occasional far outlier?
+
+## 10.5 ADVANCED — DTLZ: when labels cost
+
+Now the real world. `Dtlz` builds a pool of 1000 rows whose inputs
+are random and whose goals are `"?"` — unlabelled. There is no CSV; a
+model computes goals only when a row is scored. This is the seam where
+an expensive simulator or lab assay plugs in.
+
+```
+[163]> the.model
+dtlz2
+[164]> z = Dtlz()
+[165]> #z.rows
+1000
+[166]> z.rows[1][z.cols.y[1].at]
+?
+```
+
+Row 1's goal is born blank. Ask for its `disty` and the seam fires:
+the model runs, the goal fills in, the column summary folds it —
+after which the row is labelled.
+
+```
+[167]> round(z:disty(z.rows[1]))
+0.5
+[168]> z.rows[1][z.cols.y[1].at] ~= "?"
+true
+```
+
+Now optimize the black box under the label budget of Lecture 7. Fifty
+labels out of 1000 possible rows drive `disty` down to 0.29.
+
+```
+[169]> lab = z:acquirer(the.budget)
+[170]> show{labels=#lab, best=round(z:disty(lab[1]))}
+{:best 0.29 :labels 50}
+```
+
+> **DTLZ / SBSE — the optimization benchmark, and its field.**
+> Deb, Thiele, Laumanns & Zitzler (2005) designed the DTLZ suite:
+> scalable multi-objective problems with *known* Pareto fronts, so a
+> search can be graded against ground truth. Search-Based Software
+> Engineering (Harman & Jones, 2001) is the discipline of treating
+> SE tasks — test generation, configuration, planning — as exactly
+> this kind of search. Today's bet, the course's last: *a few
+> readable lines plus a label budget beat brute force when labels are
+> dear* — falsified only when labels are so cheap you should just
+> measure them all (Lecture 8's tie).
+
+**Check.** A DTLZ row is born `"?"` and labelled only when `disty` is
+called. Why is that lazy-labelling essential when each label is a
+one-hour benchmark — and what does `acquirer` spending only 50 of
+1000 possible labels save, in that world?
+
+## Recap
+
+REPL events covered: 143–170. One substrate became four tools —
+prediction ([KNN](#glossary)), anomaly ([ANOM](#glossary)),
+classification ([NB](#glossary)), clustering
+([KM](#glossary)/[KPP](#glossary)) — and then an external-model
+optimizer ([DTLZ](#glossary)/[SBSE](#glossary)) that labels only on
+demand. The course thesis, discharged: a few hundred readable lines
+run the experiment yourself.
+
+**Capstone exercise.** Pick one MOOT optimization dataset
+(`$MOOT/optimize/...`). (a) Grow and print its tree `[89]`; read off
+the best-leaf rule. (b) Run the 20-times active-vs-random holdout
+`[119]`–`[124]`; report the `same` verdict. (c) State, in three
+sentences, whether active learning earned its keep on *this* dataset
+and why — citing the label cost, the win gap, and the significance
+call. This is the whole course in one page: read the code, run the
+rig, believe only what survives the statistics.
+
+**Standing homework.** Your port now has a target for every lecture.
+By the schedule in the [contents](#contents) table, reproduce every
+event 1–170; the RNG guarantees identical numbers. A green diff is a
+correct reimplementation of a data-lite AI toolkit — written by you,
+not flown over.
+
+[contents](#contents)
+
+---
+
+*(Glossary, Lua-101 appendix, and the gated exam bank follow.)*
