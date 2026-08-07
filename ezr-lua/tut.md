@@ -125,10 +125,12 @@ number on your machine as on mine? (What did `[1]` guarantee?)
 `Tbl` folds a CSV stream into fresh columns. The first row names the
 columns; every later row is coerced cell-by-cell and summarized.
 
-    function Tbl(src)
-      src = iter(src)
-      return adds(src, new(TBL, {rows={}, mid=nil,
-                                 cols=Cols(src())})) end
+```lua
+function Tbl(src)
+  src = iter(src)
+  return adds(src, new(TBL, {rows={}, mid=nil,
+                             cols=Cols(src())})) end
+```
 
 ```lua
 [4]> t = Tbl(csv())
@@ -151,9 +153,11 @@ class; an `X` suffix means "ignore"; anything else is an ordinary
 input feature. `Cols` sorts the header into `x` (inputs) and `y`
 (goals) once, so no later code re-parses names.
 
-    if s:find"!$" then klass = all[at]
-    elseif s:find"[+-]$" then y[#y+1] = all[at]
-    elseif s:sub(-1) ~= "X" then x[#x+1] = all[at] end
+```lua
+if s:find"!$" then klass = all[at]
+elseif s:find"[+-]$" then y[#y+1] = all[at]
+elseif s:sub(-1) ~= "X" then x[#x+1] = all[at] end
+```
 
 ```lua
 [7]> show(map(t.cols.y, function(c) return c.name end))
@@ -176,10 +180,12 @@ name (say, to `MpgX`) move, and into which list?
 with no stored list — Welford's method. `mid` returns the mean; `div`
 the standard deviation.
 
-    function NUM.add(i,v,inc,   d)
-      i.n = i.n + inc; d = v - i.mu
-      i.mu = i.mu + inc * d / i.n
-      i.m2 = i.m2 + inc * d * (v - i.mu); return v end
+```lua
+function NUM.add(i,v,inc,   d)
+  i.n = i.n + inc; d = v - i.mu
+  i.mu = i.mu + inc * d / i.n
+  i.m2 = i.m2 + inc * d * (v - i.mu); return v end
+```
 
 ```lua
 [9]> n = adds{2,4,4,4,5,5,7,9}
@@ -229,9 +235,11 @@ squashing of its z-score — a smooth cumulative-position score that
 never quite hits 0 or 1 and shrugs off outliers (the z is clamped to
 ±3).
 
-    function NUM.norm(i,v,   z)
-      z = (v - i.mu) / (i:div() + TINY)
-      return 1 / (1 + exp(-1.702 * max(-3, min(3, z)))) end
+```lua
+function NUM.norm(i,v,   z)
+  z = (v - i.mu) / (i:div() + TINY)
+  return 1 / (1 + exp(-1.702 * max(-3, min(3, z)))) end
+```
 
 ```lua
 [14]> round(n:norm(2))
@@ -324,8 +332,10 @@ visible random call yet?
 `mids` maps `mid` over all columns — the mean of each number, the
 mode of each symbol — giving the table's center in one row.
 
-    function TBL.mids(i)
-      i.mid = i.mid or map(i.cols.all, "mid"); return i.mid end
+```lua
+function TBL.mids(i)
+  i.mid = i.mid or map(i.cols.all, "mid"); return i.mid end
+```
 
 ```lua
 [20]> show(t:mids())
@@ -368,9 +378,11 @@ The same recurrence that added a value ([WEL](#glossary), Lecture 1)
 runs in reverse to remove one. `NUM.__sub` subtracts a whole
 sub-summary: build A+B, subtract B, recover A.
 
-    function NUM.__sub(i,j,   n,d)  -- tot - part -> new NUM
-      n = i.n - j.n; d = j.mu - i.mu
-      return new(NUM, {n=n, mu=(i.n*i.mu - j.n*j.mu)/n, ...})
+```lua
+function NUM.__sub(i,j,   n,d)  -- tot - part -> new NUM
+  n = i.n - j.n; d = j.mu - i.mu
+  return new(NUM, {n=n, mu=(i.n*i.mu - j.n*j.mu)/n, ...})
+```
 
 ```lua
 [24]> a = adds{1,2,3,4,5}
@@ -479,8 +491,10 @@ not. Numbers: the absolute gap between the two values' normalized
 positions ([CDF](#glossary), Lecture 1), so a spread-aware distance
 falls in 0..1.
 
-    function NUM.dist(i,a,b)
-      a, b = i:norm(a), i:norm(b); return abs(a - b) end
+```lua
+function NUM.dist(i,a,b)
+  a, b = i:norm(a), i:norm(b); return abs(a - b) end
+```
 
 ```lua
 [39]> c = t.cols.all[1]
@@ -503,10 +517,12 @@ it over the input columns only. With `the.p = 2` it is ordinary
 Euclidean distance, averaged so the result stays in 0..1 whatever the
 column count.
 
-    function minkowski(cols,f,   d,n)
-      d,n = 0,TINY
-      for _,c in ipairs(cols) do n,d = n+1, d + f(c)^the.p end
-      return (d/n)^(1/the.p) end
+```lua
+function minkowski(cols,f,   d,n)
+  d,n = 0,TINY
+  for _,c in ipairs(cols) do n,d = n+1, d + f(c)^the.p end
+  return (d/n)^(1/the.p) end
+```
 
 ```lua
 [42]> the.p
@@ -540,9 +556,11 @@ Every goal column knows its `heaven` — 1 for a `+` goal (maximize),
 its gap to that column's heaven, and Minkowski-folds those gaps. Zero
 means "best possible on every goal at once."
 
-    function TBL.disty(i,row)
-      return minkowski(i.cols.y, function(y)
-               return abs(y:norm(row[y.at]) - y.heaven) end) end
+```lua
+function TBL.disty(i,row)
+  return minkowski(i.cols.y, function(y)
+           return abs(y:norm(row[y.at]) - y.heaven) end) end
+```
 
 ```lua
 [46]> round(t:disty(t.rows[1]))
@@ -645,10 +663,12 @@ FastMap-style projection), orders everyone by their projection, and
 cuts at the median. It returns the two poles `a`,`b` and the two
 halves — and it puts the pole nearer heaven first.
 
-    function TBL.halve(i,rows,   fun,a,b,n)
-      fun,a,b = i:poles(some(rows, the.few))
-      rows = keysort(rows, fun); n = floor(#rows/2)
-      return a, b, sub(rows,1,n), sub(rows,n+1) end
+```lua
+function TBL.halve(i,rows,   fun,a,b,n)
+  fun,a,b = i:poles(some(rows, the.few))
+  rows = keysort(rows, fun); n = floor(#rows/2)
+  return a, b, sub(rows,1,n), sub(rows,n+1) end
+```
 
 ```lua
 [56]> a, b, lo, hi = t:halve(t.rows)
@@ -800,9 +820,11 @@ eyeballing a scatter plot and you have folklore.
 and feeds all candidates to one `least` reducer that keeps the single
 best. It returns `{score, column-index, cut-value}`.
 
-    function TBL.bestcut(i,rows,Y,acc,best)
-      for _,c in ipairs(i.cols.x) do i:cuts(rows,c,Y,acc,best) end
-      return best() end
+```lua
+function TBL.bestcut(i,rows,Y,acc,best)
+  for _,c in ipairs(i.cols.x) do i:cuts(rows,c,Y,acc,best) end
+  return best() end
+```
 
 ```lua
 [72]> b = t:bestcut(t.rows, t:Y(), Num, least())
@@ -875,8 +897,10 @@ two sides — spread for numbers, entropy for symbols. Lower is purer.
 The winning split's `val` (0.14) sits well below the undivided
 table's diversity (0.23): the cut removed real disorder.
 
-    function val(a,b)
-      return (a:div()*a.n + b:div()*b.n) / (a.n + b.n + TINY) end
+```lua
+function val(a,b)
+  return (a:div()*a.n + b:div()*b.n) / (a.n + b.n + TINY) end
+```
 
 ```lua
 [81]> lo = adds(map(yes, t:Y()))
@@ -1117,11 +1141,13 @@ best pole found so far, keeps the promising `keepf` fraction, and
 loops until the budget is spent — reshuffling and re-anchoring on the
 best/worst seen if a pool dries early.
 
-    while #rows >= 2*the.leaf do
-      more, new = min(the.more, cap - #lab), {}
-      ...
-      rows = sub(keysort(rows, (i:poles(new, lo, hi))),
-                 1, max(1, floor(the.keepf * #rows))) end
+```lua
+while #rows >= 2*the.leaf do
+  more, new = min(the.more, cap - #lab), {}
+  ...
+  rows = sub(keysort(rows, (i:poles(new, lo, hi))),
+             1, max(1, floor(the.keepf * #rows))) end
+```
 
 ```lua
 [99]> y = t:Y()
@@ -1423,10 +1449,12 @@ from one that is *large enough to act on*.
 units — a scale-free "how many sigmas apart." Identical lists: 0. A
 +3 shift on unit-spread data: 1.9 (a large effect).
 
-    function cohen(xs,ys,   x,y,n,m,sd)
-      x,y = adds(xs), adds(ys); n,m = x.n, y.n
-      sd = sqrt(((n-1)*x:div()^2 + (m-1)*y:div()^2)/(n+m-2))
-      return abs(x.mu - y.mu) / (sd + TINY) end
+```lua
+function cohen(xs,ys,   x,y,n,m,sd)
+  x,y = adds(xs), adds(ys); n,m = x.n, y.n
+  sd = sqrt(((n-1)*x:div()^2 + (m-1)*y:div()^2)/(n+m-2))
+  return abs(x.mu - y.mu) / (sd + TINY) end
+```
 
 ```lua
 [126]> round(cohen({1,2,3,4,5}, {1,2,3,4,5}))
