@@ -33,10 +33,13 @@ eg["--tree"] = function(    t,tr,n,best) -- prune, keep best
 eg["--all"] = function(    bad) -- all demos; fail if any do
   bad = 0
   for _,k in ipairs(keys(eg)) do
-    if k ~= "--all" and run(eg, k) == false then
+    if k ~= "--all" and k ~= "--repl" and run(eg, k) == false then
       bad = bad + 1 end end
   print("failures: " .. bad)
   assert(bad == 0) end
+
+eg["--repl"] = function() repl(_ENV) end -- interactive prompt,
+                                         -- bare names (Tbl, csv..)
 
 eg["--the"] = function() print(show(the)) end
 

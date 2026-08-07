@@ -195,6 +195,18 @@ function run(funs,w,    ok,msg) -- one seeded example
     if not ok then print(msg) end
     return ok end end
 
+function repl(env,    s,f,ok,r) -- a tiny read-eval-print loop
+  while true do                  -- run via the `--repl` demo;
+    io.write("ezr> ")            -- load()s each line in `env`
+    s = io.read()                -- (a module _ENV), so bare
+    if not s then io.write"\n"; return end  -- names resolve
+    f = load("return "..s, "=repl", "t", env) or
+        load(s, "=repl", "t", env)
+    if not f then print("! syntax") else
+      ok, r = pcall(f)
+      if not ok then print("! "..tostring(r))
+      elseif r ~= nil then print(show(r)) end end end end
+
 function go(eg,    n) -- parse flags, run the demos named on
   if arg and arg[0] and     -- the command line, exiting with
      debug.getinfo(2,"S").source == "@"..arg[0] then -- the

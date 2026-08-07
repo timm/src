@@ -46,12 +46,15 @@ contents exactly; match floats to the printed precision.
 
     git clone http://github.com/timm/src
     cd src/ezr-lua
-    lua -i -e 'for _,m in ipairs{"ezr-lib","ezr","ezr-apps","ezr-dtlz"} do for k,v in pairs(require(m)) do _G[k]=_G[k] or v end end'
+    lua ezr-eg.lua --repl    # interactive prompt, names preloaded
 
-That leaves you in an interactive REPL with `the`, `Tbl`, `csv`, and
-every function loaded as globals. (Plain `lua -i ezr-eg.lua` exits
-immediately — that file's `go()` calls `os.exit` when it is the main
-script.)
+That drops you at an `ezr>` prompt with `the`, `Tbl`, `csv`, and every
+function already in scope (each line is evaluated in the module's own
+environment). Ctrl-D exits. Try:
+
+    ezr> t = Tbl(csv())
+    ezr> #t.rows
+    398
 
 To replay a lecture's inputs and regenerate its trace:
 
