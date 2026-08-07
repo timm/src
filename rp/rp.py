@@ -61,12 +61,15 @@ def dist(a, b, cols, B):
   "city block over the given columns, normalized to 0..1"
   return sum(abs(a[c] - b[c]) for c in cols) / ((B - 1) * len(cols))
 
-def far(items, cols, B, eps):
+def far(items, cols, B, eps, f=0):
   "furthest-point cover (Gonzalez). all items end within eps of a delegate."
+  "f: retreat from the fringe; pick the (100-f)th percentile, not the max."
   D    = [0]
   near = [dist(items[0], i, cols, B) for i in items]
   while max(near) >= eps:
-    j = near.index(max(near))
+    cand = sorted((i for i in range(len(near)) if near[i] >= eps),
+                  key=near.__getitem__)
+    j = cand[round((len(cand) - 1) * (1 - f / 100))]
     D += [j]
     near = [min(n, dist(items[j], i, cols, B)) for n, i in zip(near, items)]
   out = [dict(at=d, kin=[d]) for d in D]
@@ -75,7 +78,7 @@ def far(items, cols, B, eps):
       min(out, key=lambda o: dist(items[o["at"]], i, cols, B))["kin"] += [j]
   return out
 
-def run(path, N=3, eras=6, eps=.1, seed=1, check=5):
+def run(path, N=3, eras=6, eps=.1, seed=1, check=5, f=0):
   head, x, y, rows = read(path)
   B = max(max(r[c] for r in rows) for c in x)
   random.seed(seed); random.shuffle(rows)
@@ -98,7 +101,7 @@ def run(path, N=3, eras=6, eps=.1, seed=1, check=5):
         min(E, key=lambda e: dist(row, e["lead"], live, B))["kin"] += [row]
     grid = [[e["lead"][c] for c in x] for e in E]     # pause: reflect on
     cons = [[g[j] for g in grid] for j in range(len(x))]    # constructs
-    C    = (far(cons, range(len(E)), B, eps) if len(E) > 1
+    C    = (far(cons, range(len(E)), B, eps, f) if len(E) > 1
             else [dict(at=i, kin=[i]) for i in range(len(x))])
     live = [x[c["at"]] for c in C]
 
@@ -162,5 +165,5 @@ if __name__ == "__main__":
   if   not a or a[0] == "report": report(sys.stdin)
   elif a[0] == "bin": bins(a[1], *[int(v) for v in a[2:3]])
   elif a[0] == "run": run(a[1], *[t(v) for t, v in
-                                  zip((int, int, float, int, int), a[2:])])
+                                  zip((int, int, float, int, int, int), a[2:])])
   else: print(__doc__)
