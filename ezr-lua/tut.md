@@ -58,7 +58,7 @@ To replay a lecture's inputs and regenerate its trace:
 | [2](#l2)  | Tables, roles, forgetting  | 17–36   | ROLE, STREAM |
 | [3](#l3)  | Distance & gap-to-heaven   | 37–53   | MINK, D2H, PARETO |
 | [4](#l4)  | Clustering by poles        | 54–69   | POLE, FASTMAP, HALVE |
-| [5](#l5)  | Discretization & cuts      | …       | ENT, CUT, IG |
+| [5](#l5)  | Discretization & cuts      | 70–84   | CUT, IG, VAL |
 | [6](#l6)  | Trees & XAI                | …       | CART, XAI |
 | [7](#l7)  | Active learning / acquire  | …       | ACQ, AL, BO |
 | [8](#l8)  | The holdout rig            | …       | HOLD, WIN |
@@ -775,5 +775,155 @@ instead of geometry, prints as an explainable tree:
 
 ---
 
-*(Lectures 5–10, glossary, appendix, and exam bank follow as the
+<a name="l5"></a>
+# Lecture 5: Discretization & cuts
+
+Lecture 4 split rows by geometry. Now we split by *purpose*: find the
+one place, in one input column, where cutting the data most separates
+good rows from bad. This is the atom of a decision tree — and, run
+once, already a useful thing: it names the single most informative
+threshold in your data.
+
+**Where this bites.** "At what mileage does a used car's value fall
+off a cliff?" "Above what request rate does p99 latency break?" Every
+such question asks for a *cut* — a threshold that carves one variable
+so the outcome on each side is as pure as possible. Get the cut
+right and you have an explanation a manager can act on; get it from
+eyeballing a scatter plot and you have folklore.
+
+## 5.1 The champion cut
+
+`bestcut` scans every input column, asks each for its purest split
+(numbers try thresholds between sorted values; symbols try each key),
+and feeds all candidates to one `least` reducer that keeps the single
+best. It returns `{score, column-index, cut-value}`.
+
+    function TBL.bestcut(i,rows,Y,acc,best)
+      for _,c in ipairs(i.cols.x) do i:cuts(rows,c,Y,acc,best) end
+      return best() end
+
+```
+[72]> b = t:bestcut(t.rows, t:Y(), Num, least())
+[73]> c = t.cols.all[b[2]]
+[74]> c.name
+Volume
+[75]> round(b[3])
+262
+[76]> round(b[1])
+0.14
+```
+
+The most informative split in 398 cars: engine `Volume ≤ 262`. One
+line named the variable and the threshold that best sorts good cars
+from bad.
+
+> **CUT — supervised discretization.** Turning a continuous column
+> into "≤ v vs > v" by the split that most purifies an outcome is
+> supervised discretization (Fayyad & Irani, 1993, used entropy for
+> exactly this). It is the recursive step of CART trees and the
+> feature-engineering move behind rule learners. Today's bet: *one
+> axis-aligned threshold carries real signal* — falsified when the
+> boundary is diagonal (two features only matter together).
+
+**Check.** `bestcut` never builds a list of candidate cuts — it
+streams them into `least`. Why does that matter for a column with
+10,000 distinct values, and what would the naive "collect then sort"
+version cost?
+
+## 5.2 Apply the cut
+
+`divide` sends each row left or right by `c:holds` (`≤ v` for
+numbers). Rows are conserved.
+
+```
+[77]> yes, no = t:divide(t.rows, c, b[3])
+[78]> show{yes=#yes, no=#no, total=#yes + #no}
+{:no 99 :total 398 :yes 299}
+```
+
+299 smaller-engined cars on one side, 99 big blocks on the other.
+
+**Check.** The cut `Volume ≤ 262` put 299 rows in `yes`. From the
+centroid in `[20]` (mean Volume 193), why is the majority on the `≤`
+side unsurprising?
+
+## 5.3 The sides differ in goodness
+
+The split earns its keep: the small-engine side averages far nearer
+heaven than the big-engine side.
+
+```
+[79]> round(adds(map(yes, t:Y())).mu)
+0.42
+[80]> round(adds(map(no, t:Y())).mu)
+0.84
+```
+
+Smaller engines, better cars (lighter, thriftier) — 0.42 vs 0.84. The
+threshold discovered a real regularity in the fleet.
+
+**Check.** Both sides were scored by `disty` (goals), but the cut was
+chosen on an *input* column. How is that different from
+"test-on-train" leakage, which Lecture 8 warns against?
+
+## 5.4 val: why 262 wins
+
+`val` scores a split by the size-weighted average diversity of its
+two sides — spread for numbers, entropy for symbols. Lower is purer.
+The winning split's `val` (0.14) sits well below the undivided
+table's diversity (0.23): the cut removed real disorder.
+
+    function val(a,b)
+      return (a:div()*a.n + b:div()*b.n) / (a.n + b.n + TINY) end
+
+```
+[81]> lo = adds(map(yes, t:Y()))
+[82]> hi = adds(map(no, t:Y()))
+[83]> round(val(lo, hi))
+0.14
+[84]> round(adds(map(t.rows, t:Y())):div())
+0.23
+```
+
+> **IG / VAL — impurity reduction.** Information gain is
+> (parent impurity − weighted child impurity); a cut is worth making
+> when that gap is positive. `val` is the child term; comparing it to
+> the parent's 0.23 is the gain (here ≈ 0.09). Quinlan's ID3/C4.5
+> built entire trees by greedily maximizing this. Lecture 6 does the
+> same, recursively.
+
+**Check.** The gain here is 0.23 − 0.14 ≈ 0.09. A second cut deeper
+in the tree shows gain 0.01. Why might you still make the 0.01 cut —
+and what course principle (Lecture 6) tells you when to *stop*?
+
+## Recap
+
+REPL events covered: 70–84. `bestcut` streams every candidate
+threshold through one reducer to name the single most purifying split
+([CUT](#glossary)); `divide` applies it; `val` scores a split's
+purity, and its gap to the parent's diversity is the information gain
+([IG](#glossary)/[VAL](#glossary)). Recurse this and you have a tree —
+Lecture 6.
+
+**Coming attraction.** Stack these cuts and print the result:
+
+    lua ezr-eg.lua --cuts
+
+**Exercises.**
+1. Rerun `[72]` with `the.leaf = 40`. Does the champion cut move off
+   `Volume`? Explain via `big` (both sides must hold ≥ `the.leaf`).
+2. Compute the information gain (parent 0.23 − `val`) for a cut you
+   force on `Clndrs` instead. Is it above or below `Volume`'s 0.09?
+3. Feed `bestcut` only `sub(t.rows, 1, 50)`. Does the winning column
+   change? What does that say about cuts from small samples
+   (Lecture 9's theme)?
+4. **Field trip.** Print the yes/no mean `Mpg+` (not `disty`) for the
+   `Volume ≤ 262` split. By how many miles per gallon do small
+   engines lead?
+
+[contents](#contents)
+
+---
+
+*(Lectures 6–10, glossary, appendix, and exam bank follow as the
 build continues.)*
