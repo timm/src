@@ -55,7 +55,7 @@ To replay a lecture's inputs and regenerate its trace:
 | # | Lecture | REPL | Ideas |
 |---|---------|------|-------|
 | [1](#l1)  | Orientation & columns      | 1–16    | NOIR, WEL, CDF, LOG |
-| [2](#l2)  | Tables, roles, forgetting  | 17–…    | ROLE, STREAM |
+| [2](#l2)  | Tables, roles, forgetting  | 17–36   | ROLE, STREAM |
 | [3](#l3)  | Distance & gap-to-heaven   | …       | MINK, D2H, PARETO |
 | [4](#l4)  | Clustering by poles        | …       | POLE, FASTMAP |
 | [5](#l5)  | Discretization & cuts      | …       | ENT, CUT, IG |
@@ -284,5 +284,174 @@ explainable tree you can print at the shell:
 
 ---
 
-*(Lectures 2–10, glossary, appendix, and exam bank follow as the
+<a name="l2"></a>
+# Lecture 2: Tables, roles, forgetting
+
+Lecture 1 summarized single columns. Now we fold columns into a whole
+table that keeps its rows, reports a centroid, and — the surprising
+part — can *forget* a row as cheaply as it learned it. Forgetting is
+not a party trick: it is what lets a model slide a window over a
+stream, or undo a trial move during search, without ever rebuilding
+from scratch.
+
+**Where this bites.** Fraud and click-stream models age fast: last
+month's normal is this month's anomaly. Teams that retrain nightly on
+the full history pay for data they mean to expire. A summary that
+subtracts as easily as it adds turns "retrain" into "forget the old
+tail" — O(1) per row, not O(n).
+
+## 2.1 A table is columns plus rows
+
+Rebuilding in a fresh process (every lecture starts clean — so must
+your port). `TBL.add` files each row and updates every column
+summary; `#t.rows` counts the data past the header.
+
+```
+[17]> srand(the.seed);
+[18]> t = Tbl(csv())
+[19]> #t.rows
+398
+```
+
+**Check.** Why does re-issuing `srand(the.seed)` at the top of every
+lecture matter for the homework diff, even in a lecture with no
+visible random call yet?
+
+## 2.2 The centroid: every middle at once
+
+`mids` maps `mid` over all columns — the mean of each number, the
+mode of each symbol — giving the table's center in one row.
+
+    function TBL.mids(i)
+      i.mid = i.mid or map(i.cols.all, "mid"); return i.mid end
+
+```
+[20]> show(t:mids())
+{5.46 193.43 104.47 76.01 1 2970.42 15.57 23.84}
+```
+
+The average car: 5.46 cylinders, 2970 lbs, 23.8 mpg. Column 5
+(`origin`) is symbolic, so its "middle" is the mode, 1.
+
+> **ROLE — features versus goals.** A supervised table splits
+> columns into inputs (x) and outputs/goals (y). Keeping the split in
+> the header — not in separate files — means every row carries its
+> own labels-in-waiting, and any column can be read as either without
+> a schema change. Lecture 3 scores rows by their y-columns alone.
+
+**Check.** In `[20]`, which of the eight numbers is a mode rather
+than a mean, and how could you tell from Lecture 1's `[8]` alone?
+
+## 2.3 clone: same header, empty summaries
+
+`clone` makes a new table with identical column roles but no rows —
+the workhorse for splitting data (trees, holdouts, clusters) without
+re-reading names or re-deciding types.
+
+```
+[21]> u = t:clone()
+[22]> #u.rows
+0
+[23]> show(u.cols.names)
+{Clndrs Volume HpX Model origin Lbs- Acc+ Mpg+}
+```
+
+**Check.** A clone starts with zero rows but full column structure.
+Why is that exactly what a tree node needs when it splits its rows in
+two (Lecture 6)?
+
+## 2.4 Forgetting a Num, with Welford run backwards
+
+The same recurrence that added a value ([WEL](#glossary), Lecture 1)
+runs in reverse to remove one. `NUM.__sub` subtracts a whole
+sub-summary: build A+B, subtract B, recover A.
+
+    function NUM.__sub(i,j,   n,d)  -- tot - part -> new NUM
+      n = i.n - j.n; d = j.mu - i.mu
+      return new(NUM, {n=n, mu=(i.n*i.mu - j.n*j.mu)/n, ...})
+
+```
+[24]> a = adds{1,2,3,4,5}
+[25]> b = adds{10,20,30}
+[26]> ab = adds({10,20,30}, adds{1,2,3,4,5})
+[27]> show{mu=ab.mu, n=ab.n}
+{:mu 9.38 :n 8}
+[28]> back = ab - b
+[29]> show{mu=back.mu, sd=round(back:div())}
+{:mu 3 :sd 1.58}
+```
+
+`back` recovers A's mean (3) and spread (1.58) exactly, having never
+stored A's five numbers — only the combined summary and B's.
+
+> **STREAM — subtractable summaries.** A summary is *invertible* when
+> removing a datum costs the same as adding it. Welford's mean/m2
+> pair qualifies; a stored median does not. Invertibility is what
+> makes the tree of Lecture 6 cheap: moving a row across a split
+> updates two summaries by ±1, never a rescan.
+
+**Check.** `[29]` recovers A without A's data. What two summaries did
+it subtract, and why could you NOT do this if `div` had stored the
+raw list instead of `m2`?
+
+## 2.5 Add fifty rows, then forget them
+
+The whole-table version: `TBL.sub` folds a row out of every column
+(and drops it from `rows`). Add 50 sampled rows to column 1, then
+subtract them — the count and mean return to exactly where they
+began.
+
+```
+[30]> c = t.cols.all[1]
+[31]> show{n=c.n, mu=round(c.mu)}
+{:mu 5.46 :n 398}
+[32]> xtra = some(t.rows, 50)
+[33]> for _,r in ipairs(xtra) do t:add(r) end
+[34]> show{n=c.n, mu=round(c.mu)}
+{:mu 5.46 :n 448}
+[35]> for _,r in ipairs(xtra) do t:sub(r) end
+[36]> show{n=c.n, mu=round(c.mu)}
+{:mu 5.46 :n 398}
+```
+
+Watch `n`: 398 → 448 → 398. The mean is stable because we re-added
+rows already like the population; the *count* is the honest witness
+that add and subtract are true inverses.
+
+**Check.** The mean printed 5.46 at all three steps. Why is `n` (not
+`mu`) the trustworthy evidence that `sub` truly undid `add` here?
+Design a two-line change to `[32]` that would make `mu` move visibly.
+
+## Recap
+
+REPL events covered: 17–36. Tables fold Lecture 1's columns
+([ROLE](#glossary)) and report a centroid; `clone` copies structure
+without data; and invertible summaries ([STREAM](#glossary), built on
+[WEL](#glossary)) let a table forget a row as cheaply as it learned
+it. Next: distance — turning these columns into a ruler between any
+two rows, and a single "how good" score across all the goals at once.
+
+**Coming attraction.** Forgetting is the engine under the anomaly
+detector of Lecture 10:
+
+    lua ezr-apps.lua --detect
+
+**Exercises.**
+1. Rerun `[24]`–`[29]` with `b = adds{10,20,30,40}`. Does `back`
+   still recover A exactly? Why is the answer independent of B's
+   contents?
+2. After `[33]`, print `#t.rows` as well as `c.n`. Confirm both grew
+   by 50; then predict both after `[35]`.
+3. Modify `[32]` to `xtra = some(t.rows, 50)` from only the heaviest
+   cars (hint: `keysort` by `Lbs-`), re-run add/sub, and explain why
+   `mu` now dips then returns.
+4. **Field trip.** Compute the centroid `[20]` of just the first 100
+   rows (`t:clone(sub(t.rows,1,100))`) and compare Mpg+ to the full
+   table. Are early rows thirstier or leaner?
+
+[contents](#contents)
+
+---
+
+*(Lectures 3–10, glossary, appendix, and exam bank follow as the
 build continues.)*
