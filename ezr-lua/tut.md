@@ -70,7 +70,9 @@ To replay a lecture's inputs and regenerate its trace:
 | [appendix](#appendix) | Lua-101                    | 1000–  | |
 | [refs](#refs)     | References                       | | |
 
-*(REPL ranges fill in as lectures land; this is an in-progress build.)*
+All ten lectures, the appendix, glossary, references, and the public
+exam bank are complete; every trace is machine-verified against the
+code by `etc/tut/repl.lua`.
 
 ---
 
@@ -1517,7 +1519,7 @@ change; the power to see it did.
 {:detected 30 :n 2000 :of 30}
 ```
 
-> **POWER — absence of evidence isn't evidence of absence. A
+> **POWER — absence of evidence isn't evidence of absence.** A
 > statistical test's power is its chance of catching a real effect;
 > it climbs with sample size. An underpowered "no difference" (n=10
 > here) means "we couldn't see it," not "it isn't there." Half of
@@ -2028,5 +2030,275 @@ use; every later mention links here. Alphabetical.
 
 ---
 
-*(The gated exam bank — ~100 public questions with answers, plus a
-secret set — follows as the final layer.)*
+<a name="quiz"></a>
+# Revision guide (gated questions)
+
+Each question is numbered by its **REPL gate**: after you understand
+prompt [N], you can answer every question gated at ≤ N. So the gates
+double as a map of the course — work them in order and a "can't
+answer yet" tells you exactly which prompt to revisit.
+
+Every question has two parts, at opposite ends of Bloom's ladder:
+**(a) recall** — attempt from memory *before* opening the glossary
+(retrieval practice beats re-reading); **(b) diagnosis** — a short
+scenario with exactly ONE planted mistake; name the mistake, its
+consequence, and the fix, *in English, not code*. Answers are in the
+[next section](#answers). This is the public set; a secret set (higher
+gates) is held for the exam.
+
+**Q1 (gate 3).**
+(a) `the` holds every knob, and `srand(the.seed)` opens each run.
+What does re-seeding from a *fixed* `the.seed` guarantee about two
+runs on two machines, and why does the homework depend on it?
+(b) A team ports the course to Python and uses Python's own
+`random.seed(1234)` instead of the tutorial's Park-Miller `rand`.
+Their traces diverge from ours by event 10. What is the mistake, its
+consequence, and the fix?
+
+**Q2 (gate 8).**
+(a) A column with a `-` suffix is a goal to minimize; one with `X` is
+ignored. Which list — `x` or `y` — does each land in (or neither),
+and where is that decided?
+(b) A new analyst renames the target column from `Mpg+` to `Mpg` to
+"keep it clean," then wonders why the optimizer ignores fuel economy
+entirely. What is the mistake, its consequence, and the fix?
+
+**Q3 (gate 16).**
+(a) `NUM.norm` sends a column's mean to 0.5. State, from the shape of
+a cumulative-position score, why the mean of a symmetric column *must*
+map there.
+(b) A colleague normalizes a skewed "income" column with min-max
+scaling instead of the logistic z-score, and a single billionaire
+squashes everyone else into 0.0–0.02. What is the mistake, its
+consequence, and the fix (name the property `NUM.norm` has that
+min-max lacks)?
+
+**Q4 (gate 29).**
+(a) `NUM.__sub` recovers a sub-summary's mean and spread without the
+original data. Which two stored fields make that possible, and why
+would a stored median block it?
+(b) A streaming dashboard keeps a 30-day rolling mean by re-summing
+all 30 days of stored points every night. What is the inefficiency,
+its consequence at scale, and the fix this course teaches?
+
+**Q5 (gate 36).**
+(a) After adding then subtracting 50 rows, `n` returned to 398 but
+`mu` never visibly moved. Why is `n`, not `mu`, the trustworthy
+witness that `sub` inverted `add`?
+(b) A test asserts a forgetting routine works by checking only that
+the mean is unchanged after add-then-remove. It passes even when
+`sub` silently drops the row from the list but forgets to decrement
+`n`. What is the mistake, its consequence, and the fix?
+
+**Q6 (gate 45).**
+(a) `distx` Minkowski-folds per-column gaps and stays in 0..1
+whatever the column count. What does dividing by the column count
+(inside `minkowski`) buy you when comparing tables of different
+widths?
+(b) A team computes row distance by summing raw feature differences
+with no per-column normalization, so a "salary" column in dollars
+drowns out an "age" column in years. What is the mistake, its
+consequence, and the fix?
+
+**Q7 (gate 53).**
+(a) `disty` uses only the y-columns. Why is that correct for ranking
+cars by overall goodness, and what does it deliberately ignore?
+(b) An engineer builds `disty` over the *input* columns by mistake,
+then reports that the "best" configurations are simply the most
+average ones. What is the mistake, its consequence, and the fix?
+
+**Q8 (gate 61).**
+(a) `halve` split purely on inputs, yet the two halves differed in
+mean `disty` (0.36 vs 0.69). What assumption about the data makes
+that free lunch possible?
+(b) A colleague concludes from one 0.36-vs-0.69 split that "input
+clustering always finds good rows," and applies it to a dataset where
+inputs and goals are unrelated. What is the mistake, its consequence,
+and the fix (name the check that would have warned them)?
+
+**Q9 (gate 76).**
+(a) `bestcut` streams every candidate threshold through one `least`
+reducer instead of building a list. On a column with 10,000 distinct
+values, what does that save?
+(b) A rule-mining script collects all candidate cuts into an array,
+sorts it, and takes the top one — and runs out of memory on a
+wide, high-cardinality table. What is the mistake, its consequence,
+and the fix?
+
+**Q10 (gate 84).**
+(a) The winning cut's `val` (0.14) sits below the parent's diversity
+(0.23); the gap (~0.09) is the information gain. Why does a positive
+gain mean the cut removed real disorder?
+(b) A modeler keeps splitting until every leaf is pure, reporting
+zero training impurity as success. What is the mistake, its
+consequence on unseen data, and the fix (name the course principle)?
+
+**Q11 (gate 94).**
+(a) Given two prunings with equal `val`, the code keeps the one with
+fewer leaves. State the principle that tie-break encodes.
+(b) A team selects its final tree by lowest *training* error and
+ships the full 14-leaf version. On new cars it does worse than the
+5-leaf pruning. What is the mistake, its consequence, and the fix?
+
+**Q12 (gate 108).**
+(a) `acquire` guards against scoring a row twice with a `seen` set.
+Why is that guard essential to counting the label budget honestly?
+(b) A hyperparameter search re-evaluates some configs it already
+measured because its "seen" check compares configs by object
+identity, not value, so equal-but-rebuilt configs slip through. What
+is the mistake, its consequence on the budget, and the fix?
+
+**Q13 (gate 124).**
+(a) Active scored 84.68, random 86.93, and `same` returned "tie."
+Explain how a 2-point gap can be a tie.
+(b) A blog post reports "our method beats random, 86.9 vs 84.7" from
+a single 20-run holdout, with no significance test. What is the
+mistake, its consequence, and the fix?
+
+**Q14 (gate 131).**
+(a) Two samples from the *same* Gaussian scored Cohen's d = 0.11, not
+0. Name the theorem that explains why same-source samples always
+differ a little.
+(b) A paper claims a real effect from d = 0.11 between its method and
+a baseline, each measured once. What must you demand before believing
+it, and why (use the phrase *noise floor*)?
+
+**Q15 (gate 138).**
+(a) A fixed 0.2 shift was detected 15/30 times at n=10 but 30/30 at
+n=2000. Did the effect change? What did?
+(b) A team runs an A/B test once on 12 users, sees "no significant
+difference," and ships the change as "proven harmless." State their
+error using the word *power*, and the one-line fix.
+
+**Q16 (gate 170).**
+(a) A DTLZ row is born `"?"` and labelled only when `disty` is
+called. Why is that laziness essential when a label is a one-hour
+benchmark?
+(b) A researcher benchmarks an optimizer by pre-computing all 1000
+labels up front "to save time," then reports it needed only 50. What
+is the mistake, its consequence for the claim, and the fix?
+
+[contents](#contents)
+
+---
+
+<a name="answers"></a>
+# Worked answers
+
+**A1.** (a) Same seed + same PRNG ⇒ identical random streams, so every
+stochastic trace matches bit-for-bit; the homework is graded by
+diffing your numbers against these. (b) Mistake: swapping the
+portable Park-Miller `rand` for a language-specific RNG. Consequence:
+different random stream ⇒ every seeded trace diverges, diff fails
+even for a correct port. Fix: port the tutorial's 10-line `rand`
+verbatim; never use the host RNG.
+
+**A2.** (a) `-` → `y` (minimize), `X` → neither (ignored); decided
+once in `Cols`, from the name suffix. (b) Mistake: dropping the `+`
+suffix. Consequence: `Mpg` now parses as an ordinary input `x`, not a
+goal, so `disty` never optimizes it. Fix: restore the suffix — roles
+live in the name, not a config file.
+
+**A3.** (a) The mean is the balance point of a symmetric
+distribution, so exactly half the mass sits below it; any
+cumulative-position score reports that as 0.5. (b) Mistake: min-max
+scaling on a heavy-tailed column. Consequence: one outlier sets the
+max, crushing all real variation into a hair above 0. Fix: use the
+logistic z-score, which is spread-aware and clamps outliers (±3) so
+the bulk keeps its resolution.
+
+**A4.** (a) `mu` and `m2`; Welford's recurrence runs backward on
+them. A stored median has no inverse update — you cannot un-see a
+value without the list. (b) Inefficiency: O(30) re-sum nightly
+instead of O(1) add-new/forget-oldest. Consequence: cost grows with
+the window; a year-long window is 12× worse. Fix: subtractable
+summaries (`__sub`) — forget the expiring day, add the new one.
+
+**A5.** (a) We re-added rows already like the population, so `mu`
+barely moves; `n` (398→448→398) is the only field that visibly proves
+add and subtract are true inverses. (b) Mistake: asserting only on
+the mean. Consequence: a bug that drops the row but leaves `n` too
+high passes the test, and every later mean is silently wrong. Fix:
+assert on `n` (and ideally `m2`) too, not just `mu`.
+
+**A6.** (a) Dividing by the count makes the distance a per-column
+*average*, so a 4-column and a 40-column table both yield 0..1 —
+comparable widths. (b) Mistake: unnormalized raw differences.
+Consequence: large-unit columns dominate; distance ≈ salary-distance,
+age ignored. Fix: normalize each column to 0..1 (`norm`) before
+folding — exactly what `dist` does.
+
+**A7.** (a) Overall goodness is defined by outcomes (goals), so
+ranking must use only y; it ignores which inputs produced them, which
+is correct — two cars with identical goals are equally good. (b)
+Mistake: folding x-columns into `disty`. Consequence: "best" rows are
+the ones nearest the input centroid — the most average, not the best.
+Fix: `disty` over `cols.y` only.
+
+**A8.** (a) That input structure tracks goal quality — near rows in x
+tend to be near in y. (b) Mistake: treating a lucky single split as a
+law and transferring it to unrelated x/y. Consequence: halves come
+out ~0.5 vs 0.5, the method finds nothing. Fix: check the halves'
+mean `disty` differ before trusting the clustering (the warning sign
+named in L4.2).
+
+**A9.** (a) Streaming avoids ever holding 10,000 candidates in
+memory; it keeps only the running best. (b) Mistake: collect-then-
+sort all cuts. Consequence: O(distinct-values) memory per column ⇒
+OOM on wide high-cardinality data. Fix: feed candidates through a
+`least` reducer; never materialize the list.
+
+**A10.** (a) `val` is the children's weighted impurity; below the
+parent's means the split concentrated the disorder onto one side —
+information gained. (b) Mistake: splitting to pure leaves. Consequence:
+the tree memorizes noise (overfits) and generalizes worse. Fix: stop
+early (`the.leaf`, `the.maxd`) or prune — the PRUNE principle of L6.
+
+**A11.** (a) Occam's razor: among models that fit equally, prefer the
+simplest. (b) Mistake: selecting by training error, which always
+favors the bigger tree. Consequence: overfit model, worse on unseen
+cars. Fix: prefer the smallest tree that ties the best score
+(evaluated out-of-sample) — the `[93]` tie-break.
+
+**A12.** (a) Double-scoring would spend budget it doesn't count,
+breaking the "50 labels" guarantee. (b) Mistake: identity-based seen
+check on value-equal configs. Consequence: hidden re-evaluations
+overspend the true budget while the counter reads 50. Fix: key
+"seen" by config *value*, not object identity.
+
+**A13.** (a) Over 20 noisy runs, a 2-point mean gap is within the
+scatter; `same` ANDs three effect-size tests and none clears its
+threshold. (b) Mistake: reporting raw means with no significance
+test. Consequence: a noise difference paraded as a result — and here
+it even points the *wrong* way. Fix: run `same` (or any effect-size
+test); report "tie" when it says tie.
+
+**A14.** (a) The central limit theorem (means scatter as σ/√n). (b)
+Demand repetition and a significance test: a single d = 0.11 is
+indistinguishable from the noise floor two same-source samples
+produce, so one measurement each proves nothing.
+
+**A15.** (a) The effect did not change; the *power* to detect it did
+— larger n narrows the sampling scatter until the fixed shift clears
+the threshold. (b) Mistake: reading an underpowered "no difference"
+as "no effect." Consequence: a real regression ships as harmless.
+Fix: raise n (or replicate) until the test has power to see an effect
+that size.
+
+**A16.** (a) Because labelling is the expensive step; computing a
+goal only when a row is actually examined means you pay for 50
+benchmarks, not 1000. (b) Mistake: pre-computing all labels, then
+claiming a 50-label budget. Consequence: the "only 50 labels" claim
+is false — 1000 were spent; the whole point (cheap search under
+costly labels) is unmeasured. Fix: keep labels lazy; count a label
+only when `disty` actually fires.
+
+[contents](#contents)
+
+---
+
+*Secret exam questions (higher gates, no public answers) are held
+outside the repo, per the course's assessment design.*
+
+[contents](#contents)
+
