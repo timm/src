@@ -60,7 +60,7 @@ To replay a lecture's inputs and regenerate its trace:
 | [4](#l4)  | Clustering by poles        | 54–69   | POLE, FASTMAP, HALVE |
 | [5](#l5)  | Discretization & cuts      | 70–84   | CUT, IG, VAL |
 | [6](#l6)  | Trees & XAI                | 85–94   | CART, XAI, PRUNE |
-| [7](#l7)  | Active learning / acquire  | …       | ACQ, AL, BO |
+| [7](#l7)  | Active learning / acquire  | 95–108  | ACQ, AL, BO, TS |
 | [8](#l8)  | The holdout rig            | …       | HOLD, WIN |
 | [9](#l9)  | Statistics                 | …       | COHEN, KS, CLIFF, SAME, SK |
 | [10](#l10)| Apps, then DTLZ (advanced) | …       | KNN, ANOM, NB, KM, DTLZ |
@@ -1076,5 +1076,163 @@ start *choosing which rows to label* — active learning.
 
 ---
 
-*(Lectures 7–10, glossary, appendix, and exam bank follow as the
+<a name="l7"></a>
+# Lecture 7: Active learning — spend labels wisely
+
+Until now every row arrived pre-scored. Reality is stingier: scoring
+a row can mean a wet-lab assay, a week-long benchmark, a human
+grader. So the question flips from "what does the data say?" to
+"which few rows should I pay to label?" This lecture's `acquire` labels
+a handful, culls the pool toward the promising pole, and repeats —
+finding a near-best row after touching a small fraction of the data.
+
+**Where this bites.** Tuning a compiler, a chemical process, or a
+deep net's hyperparameters, each trial costs hours of compute. A
+2017 config-tuning study (Nair et al.) found that ranking software
+configurations well needed only *dozens* of measured samples, not the
+thousands a full grid demands. Active learning is how you buy a good
+answer when every answer has a price tag.
+
+## 7.1 The label budget
+
+`the.budget` caps how many rows may be scored. `acquirer` returns the
+labelled set, best-first.
+
+```
+[97]> #t.rows
+398
+[98]> the.budget
+50
+```
+
+**Check.** The budget is 50 against 398 rows. Why is "labels spent,"
+not "rows in the file," the cost that matters in the scenarios above?
+
+## 7.2 Acquire: label, cull, loop
+
+`acquirer` shuffles the rows, labels a few, sorts the pool toward the
+best pole found so far, keeps the promising `keepf` fraction, and
+loops until the budget is spent — reshuffling and re-anchoring on the
+best/worst seen if a pool dries early.
+
+    while #rows >= 2*the.leaf do
+      more, new = min(the.more, cap - #lab), {}
+      ...
+      rows = sub(keysort(rows, (i:poles(new, lo, hi))),
+                 1, max(1, floor(the.keepf * #rows))) end
+
+```
+[99]> y = t:Y()
+[100]> lab = t:acquirer(the.budget)
+[101]> #lab
+50
+```
+
+> **ACQ / AL / BO — buy the label that teaches most.** Active
+> learning (Settles, 2009) lets the model choose its next query
+> instead of taking labels in file order. Bayesian optimization is
+> the continuous cousin: fit a cheap surrogate, then sample where it
+> promises the most gain. Both rest on an *acquisition function* — a
+> rule for "where next." Here the rule is geometric: cull toward the
+> pole nearest heaven.
+
+**Check.** `acquire` never scores a row twice (a `seen` set guards
+it). Why is that guard essential to *counting* the budget honestly —
+and what would double-scoring do to the "labels spent" claim?
+
+## 7.3 Fifty labels find a near-best car
+
+The best of the 50 labelled rows scores 0.09 — against the true best
+of all 398, which is 0.07. Thirteen percent of the labels, essentially
+the right answer.
+
+```
+[102]> round(y(lab[1]))
+0.09
+[103]> round(y(keysort(t.rows, y)[1]))
+0.07
+```
+
+> **TS — Thompson's old idea.** Thompson (1933) proposed choosing an
+> action in proportion to the probability it is best — balancing
+> *exploiting* the current best guess against *exploring* uncertain
+> options. Every acquisition rule since is a variation on that
+> balance. `acquire`'s reshuffle-and-re-anchor when a pool dries is
+> its exploration valve.
+
+**Check.** `acquire` labelled 50 rows and returned them sorted; the
+best is 0.09, not the true 0.07. Name one row the method could only
+have found by *luck*, and explain why 0.09-not-0.07 is a feature, not
+a bug, of a budget-bounded search.
+
+## 7.4 The labelled set spans good to bad
+
+`acquirer` returns labels sorted best-first, so the pool it explored
+runs from near-heaven to mediocre — it did not only sample winners.
+
+```
+[104]> round(y(lab[1]))
+0.09
+[105]> round(y(lab[#lab]))
+0.68
+```
+
+Seeing bad rows matters: the poles need a far anchor to project
+against.
+
+**Check.** Why would an acquirer that labelled ONLY good-looking rows
+(no 0.68 tail) actually find *worse* answers? Tie your reason to the
+poles of Lecture 4.
+
+## 7.5 More budget, smaller gap
+
+Double the budget to 100 and the best labelled row matches the true
+best exactly (0.07). Diminishing returns, honestly shown.
+
+```
+[106]> the.budget = 100
+[107]> lab2 = t:acquirer(the.budget)
+[108]> show{labels=#lab2, best=round(y(lab2[1]))}
+{:best 0.07 :labels 100}
+```
+
+Is active selection actually *better* than spending those 100 labels
+at random? A single run cannot say — the honest, repeated comparison
+is Lecture 8's job.
+
+**Check.** Going 50 → 100 labels moved the best from 0.09 to 0.07.
+Extrapolate: would 200 labels help much? What does that curve's shape
+tell you about when to STOP buying labels?
+
+## Recap
+
+REPL events covered: 95–108. `acquire` spends a label budget by
+labelling a few rows, culling the pool toward the good pole
+([ACQ](#glossary)/[AL](#glossary)/[BO](#glossary)), and looping with
+an explore/exploit valve ([TS](#glossary)). Fifty labels found a
+near-best car; a hundred nailed it. Whether that beats random needs a
+rig — Lecture 8.
+
+**Coming attraction.** The honest active-vs-random showdown, repeated
+20 times:
+
+    lua ezr-eg.lua --holdouts
+
+**Exercises.**
+1. Rerun `[100]`/`[102]` at `the.budget = 30` and `= 200`. Plot best
+   vs budget; where does the curve flatten?
+2. Halve `the.keepf` (cull harder) and re-check `[102]`. Faster or
+   worse? Explain the explore/exploit cost of aggressive culling.
+3. Set `the.more = 1` (one label per round). Does the best improve or
+   degrade at fixed budget? Why might labelling in bigger batches
+   waste budget?
+4. **Field trip.** Print `lab[1]`'s full row and compare it to the
+   tree's `*` leaf rule from `[89]`. Did active learning rediscover
+   the small-four-cylinder winner?
+
+[contents](#contents)
+
+---
+
+*(Lectures 8–10, glossary, appendix, and exam bank follow as the
 build continues.)*
