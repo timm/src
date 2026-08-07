@@ -35,6 +35,13 @@ Or via luarocks (installs the `ezr`, `ezr-apps` and
 Data comes from [moot](https://github.com/timm/moot)
 (`$MOOT` env var, else `~/gits/moot`).
 
+## Tutorial
+
+[tut.md](tut.md) — ten REPL lectures on data-lite AI, every trace
+machine-verified against this code. Regenerate any lecture's trace:
+
+    EZR=$(pwd) lua etc/tut/repl.lua etc/tut/l1.in 1
+
 ## Documentation
 
 Annotated source, one page per file, in reading order
