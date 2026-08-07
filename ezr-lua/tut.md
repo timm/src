@@ -1787,4 +1787,246 @@ not flown over.
 
 ---
 
-*(Glossary, Lua-101 appendix, and the gated exam bank follow.)*
+<a name="appendix"></a>
+# Appendix: Lua-101
+
+Just enough Lua to read the sources — the constructs they actually
+use, nothing more. Numbered from 1000 so lecture edits never disturb
+these. Pure language: no project code, no data; paste into a bare
+`lua -i`.
+
+## A.1 Tables are the only structure
+
+A Lua table is list, dict, and object at once. `#t` is the list
+length; string keys make it a record.
+
+```
+[1000]> t = {10, 20, 30}
+[1001]> #t
+3
+[1002]> t[1]
+10
+[1003]> t.name = "cars";
+[1004]> t.name
+cars
+```
+
+Lua indexes from 1, not 0 — why every loop in the sources reads
+`for j=1,#t`.
+
+## A.2 Metatables make objects
+
+`setmetatable` with `__index` pointing at a table of methods gives
+you classes. `a:speak()` is sugar for `a.speak(a)`. This is exactly
+`new` in `ezr-lib.lua` — re-read it now.
+
+```
+[1006]> function Animal.new(sound) return setmetatable({sound=sound}, Animal) end
+[1008]> a = Animal.new("moo")
+[1009]> a:speak()
+moo!
+```
+
+## A.3 Closures capture locals
+
+A function remembers the locals in scope when it was made. `counter`
+returns a function with its own private `n` — the pattern behind
+`least` (Lecture 5) and `Y` (Lecture 3), which carry state in a
+closure instead of a field.
+
+```
+[1011]> c = counter()
+[1012]> c()
+1
+[1013]> c()
+2
+[1014]> c()
+3
+```
+
+## A.4 Hidden locals after the comma
+
+The sources declare scratch locals as extra parameters after a big
+gap of spaces — `function f(x,    tmp)`. They are never passed; the
+gap just flags "these are locals, not arguments." A house style, not
+a language feature.
+
+```
+[1015]> adder = function(x,   sofar) sofar = (sofar or 0) + x; return sofar end
+[1016]> adder(5)
+5
+```
+
+## A.5 Varargs and multiple returns
+
+`...` collects extra arguments; a function may return several values.
+`lo, hi = minmax(...)` is how `poles` (Lecture 4) and `halve` hand
+back two things at once.
+
+```
+[1018]> lo, hi = minmax(3, 1, 4, 1, 5, 9, 2)
+[1019]> lo
+1
+[1020]> hi
+9
+```
+
+## A.6 String patterns coerce cells
+
+Lua patterns (not full regexes) trim and classify CSV cells. `%s` is
+whitespace; `(.-)` is a lazy capture; `$` anchors the end. These four
+calls ARE the column-role logic of Lecture 1.
+
+```
+[1021]> ("  42 "):match"^%s*(.-)%s*$"
+42
+[1022]> tonumber("3.14")
+3.14
+[1023]> ("Mpg+"):find"[+-]$"
+4	4
+[1024]> ("HpX"):sub(-1)
+X
+```
+
+`find` returns the start and end positions of the match (4, 4 for the
+single trailing char) — truthy, which is all the role code needs.
+
+## A.7 Re-read the source
+
+You now have every construct. `("Lbs-"):find"-$"` is the exact test
+inside `Num` that sets a column's heaven to 0 (minimize):
+
+```
+[1025]> ("Lbs-"):find"-$"
+4	4
+```
+
+**Deliberately skipped:** coroutines, `goto`, integer/float split
+(5.3+), the `os`/`io` libraries beyond `io.lines`, and metamethods
+other than `__index`/`__tostring`/`__sub`. The sources use none of
+them. Reference: Lua 5.1 short reference (see [refs](#refs)).
+
+[contents](#contents)
+
+---
+
+<a name="glossary"></a>
+# Glossary
+
+Each acronym appears in exactly one vignette, at its first executable
+use; every later mention links here. Alphabetical.
+
+| Acro | Expansion | One line | First use | Ref |
+|------|-----------|----------|-----------|-----|
+| ACQ | Acquisition function | Rule for which unlabelled row to score next | [L7.2](#l7) | Settles 2009 |
+| AL | Active learning | Model chooses its own next label | [L7.2](#l7) | Settles 2009 |
+| ANOM | Anomaly by distance | Loneliest row = farthest from its nearest neighbor | [L10.2](#l10) | Breunig 2000 |
+| BASELINE | Dumb baseline | Beat random, or admit you didn't | [L8.3](#l8) | Dacrema 2019 |
+| BO | Bayesian optimization | Fit a surrogate, sample where it promises most | [L7.2](#l7) | Settles 2009 |
+| CART | Classification & regression tree | A tree whose every split is a named threshold | [L6.2](#l6) | Breiman 1984 |
+| CDF | Cumulative distribution | Fraction of a population at or below a value | [L1.6](#l1) | — |
+| CLIFF | Cliff's delta | Rank-imbalance effect size, 0..1 | [L9.3](#l9) | Cliff 1993 |
+| CLT | Central limit theorem | Sample means scatter as σ/√n — the noise floor | [L9.2](#l9) | — |
+| COHEN | Cohen's d | Mean gap in pooled-sd units; size, not p-value | [L9.1](#l9) | Cohen 1969 |
+| CUT | Supervised discretization | The threshold that most purifies an outcome | [L5.1](#l5) | Fayyad 1993 |
+| D2H | Distance to heaven | One 0..1 score: gap to the ideal on every goal | [L3.3](#l3) | — |
+| DTLZ | DTLZ benchmark suite | Scalable multi-objective problems, known fronts | [L10.5](#l10) | Deb 2005 |
+| ENT | Shannon entropy | A symbol column's spread, in bits | [L1.5](#l1) | Shannon 1948 |
+| FASTMAP | FastMap projection | Place points by distance to two pivots | [L4.1](#l4) | Faloutsos 1995 |
+| HALVE | Recursive bisection | Split on the principal axis, recurse | [L4.3](#l4) | — |
+| HOLD | Holdout / cross-validation | Never grade a model on rows it trained on | [L8.2](#l8) | Stone 1974 |
+| IG | Information gain | Parent impurity − weighted child impurity | [L5.4](#l5) | Quinlan 1986 |
+| KM | k-means | Assign to nearest centroid, recenter, repeat | [L10.4](#l10) | Lloyd 1957 |
+| KNN | k nearest neighbors | The data is the model; ≤2× best error (1-NN) | [L10.1](#l10) | Cover 1967 |
+| KPP | k-means++ | Seed centroids with chance ∝ distance² | [L10.4](#l10) | Arthur 2007 |
+| KS | Kolmogorov–Smirnov | Largest gap between two CDFs | [L9.3](#l9) | — |
+| LOG | Logistic squashing | Logistic approximates the normal CDF (±1%) | [L1.6](#l1) | — |
+| MINK | Minkowski distance | p-norm family: p=1 Manhattan, p=2 Euclidean | [L3.2](#l3) | — |
+| NB | Naive Bayes | Argmax of per-feature likelihoods; right despite bad probs | [L10.3](#l10) | Domingos 1997 |
+| NOIR | Nominal/Ordinal/Interval/Ratio | Scales of measurement; symbol vs number here | [L1.1](#l1) | Stevens 1946 |
+| PARETO | Pareto optimality | No other solution beats it on every goal | [L3.3](#l3) | — |
+| POLE | Far-pair poles | Project rows onto the line between two extremes | [L4.1](#l4) | Faloutsos 1995 |
+| POWER | Statistical power | Chance of catching a real effect; climbs with n | [L9.4](#l9) | — |
+| PRUNE | Tree pruning | Occam: smallest tree that still fits | [L6.4](#l6) | Breiman 1984 |
+| ROLE | Feature vs goal | x-inputs and y-goals, split from the header | [L2.2](#l2) | — |
+| SAME | Conservative sameness | AND three effect-size tests before crying "different" | [L9.3](#l9) | — |
+| SBSE | Search-based SE | SE tasks as optimization problems | [L10.5](#l10) | Harman 2001 |
+| SK | Scott-Knott ranking | Group statistical ties into one rank | [L9.5](#l9) | Scott 1974 |
+| STREAM | Subtractable summary | Removing a datum costs the same as adding it | [L2.4](#l2) | Welford 1962 |
+| TS | Thompson sampling | Choose in proportion to chance-of-being-best | [L7.3](#l7) | Thompson 1933 |
+| VAL | Split purity | Size-weighted mean diversity of a cut's two sides | [L5.4](#l5) | Quinlan 1986 |
+| WEL | Welford's online variance | Mean and variance in one pass, no stored data | [L1.4](#l1) | Welford 1962 |
+| WIN | Win score | % of the way from median to best; capped [-100,100] | [L8.1](#l8) | — |
+| XAI | Explainable AI | Models whose reasoning a human can audit | [L6.2](#l6) | Breiman 1984 |
+
+[contents](#contents)
+
+---
+
+<a name="refs"></a>
+# References
+
+- Arthur & Vassilvitskii 2007, *k-means++: The Advantages of Careful
+  Seeding*, SODA. https://dl.acm.org/doi/10.5555/1283383.1283494
+- Breiman, Friedman, Olshen & Stone 1984, *Classification and
+  Regression Trees*, Wadsworth.
+  https://doi.org/10.1201/9781315139470
+- Breunig, Kriegel, Ng & Sander 2000, *LOF: Identifying Density-Based
+  Local Outliers*, SIGMOD. https://doi.org/10.1145/342009.335388
+- Cliff 1993, *Dominance Statistics*, Psychological Bulletin.
+  https://doi.org/10.1037/0033-2909.114.3.494
+- Cohen 1969, *Statistical Power Analysis for the Behavioral
+  Sciences*, Academic Press.
+  https://doi.org/10.4324/9780203771587
+- Cover & Hart 1967, *Nearest Neighbor Pattern Classification*, IEEE
+  Trans. Information Theory. https://doi.org/10.1109/TIT.1967.1053964
+- Dacrema, Cremonesi & Jannach 2019, *Are We Really Making Much
+  Progress?*, RecSys. https://doi.org/10.1145/3298689.3347058
+- Deb, Thiele, Laumanns & Zitzler 2005, *Scalable Test Problems for
+  Evolutionary Multiobjective Optimization*, in
+  *Evolutionary Multiobjective Optimization*, Springer.
+  https://doi.org/10.1007/1-84628-137-7_6
+- Domingos & Pazzani 1997, *On the Optimality of the Simple Bayesian
+  Classifier under Zero-One Loss*, Machine Learning.
+  https://doi.org/10.1023/A:1007413511361
+- Faloutsos & Lin 1995, *FastMap*, SIGMOD.
+  https://doi.org/10.1145/223784.223812
+- Fayyad & Irani 1993, *Multi-Interval Discretization of
+  Continuous-Valued Attributes*, IJCAI.
+  https://dl.acm.org/doi/10.5555/1623264.1623359
+- Harman & Jones 2001, *Search-Based Software Engineering*,
+  Information and Software Technology.
+  https://doi.org/10.1016/S0950-5849(01)00189-6
+- Lloyd 1982 (1957), *Least Squares Quantization in PCM*, IEEE Trans.
+  Information Theory. https://doi.org/10.1109/TIT.1982.1056489
+- Nair, Menzies, Siegmund & Apel 2017, *Using Bad Learners to Find
+  Good Configurations*, FSE. https://doi.org/10.1145/3106237.3106238
+- Quinlan 1986, *Induction of Decision Trees*, Machine Learning.
+  https://doi.org/10.1007/BF00116251
+- Scott & Knott 1974, *A Cluster Analysis Method for Grouping Means*,
+  Biometrics. https://doi.org/10.2307/2529204
+- Settles 2009, *Active Learning Literature Survey*, Univ. Wisconsin
+  TR-1648. https://minds.wisconsin.edu/handle/1793/60660
+- Shannon 1948, *A Mathematical Theory of Communication*, Bell System
+  Technical Journal.
+  https://doi.org/10.1002/j.1538-7305.1948.tb01338.x
+- Stevens 1946, *On the Theory of Scales of Measurement*, Science.
+  https://doi.org/10.1126/science.103.2684.677
+- Stone 1974, *Cross-Validatory Choice and Assessment of Statistical
+  Predictions*, JRSS-B.
+  https://doi.org/10.1111/j.2517-6161.1974.tb00994.x
+- Thompson 1933, *On the Likelihood that One Unknown Probability
+  Exceeds Another*, Biometrika.
+  https://doi.org/10.1093/biomet/25.3-4.285
+- Welford 1962, *Note on a Method for Calculating Corrected Sums of
+  Squares and Products*, Technometrics.
+  https://doi.org/10.1080/00401706.1962.10490022
+- Lua 5.1 Short Reference, Lauer.
+  https://thomaslauer.com/download/luarefv51single.pdf
+
+[contents](#contents)
+
+---
+
+*(The gated exam bank — ~100 public questions with answers, plus a
+secret set — follows as the final layer.)*

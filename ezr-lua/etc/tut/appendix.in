@@ -1,0 +1,34 @@
+#### A.1 tables are Lua's only data structure
+t = {10, 20, 30}
+#t
+t[1]
+t.name = "cars";
+t.name
+#### A.2 a table with a metatable becomes an "object"
+Animal = {}
+Animal.__index = Animal
+function Animal.new(sound) return setmetatable({sound=sound}, Animal) end
+function Animal.speak(self) return self.sound .. "!" end
+a = Animal.new("moo")
+a:speak()
+#### A.3 closures capture locals: a counter with private state
+function counter(  n) n = 0; return function() n = n + 1; return n end end
+c = counter()
+c()
+c()
+c()
+#### A.4 hidden locals after the comma are the code's style
+adder = function(x,   sofar) sofar = (sofar or 0) + x; return sofar end
+adder(5)
+#### A.5 varargs and multiple returns
+function minmax(...) local t = {...}; table.sort(t); return t[1], t[#t] end
+lo, hi = minmax(3, 1, 4, 1, 5, 9, 2)
+lo
+hi
+#### A.6 string patterns coerce the CSV cells
+("  42 "):match"^%s*(.-)%s*$"
+tonumber("3.14")
+("Mpg+"):find"[+-]$"
+("HpX"):sub(-1)
+#### A.7 now re-read the source: this is Num(), one line
+("Lbs-"):find"-$"
