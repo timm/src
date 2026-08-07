@@ -103,7 +103,7 @@ run becomes reproducible — the whole point of the homework diff.
     the = The(help)      -- in ezr-lib.lua
     function srand(n) Seed = floor(n or 1234567891) % 2147483647 ...
 
-```
+```lua
 [1]> srand(the.seed);
 [2]> the.seed
 1234567891
@@ -130,7 +130,7 @@ columns; every later row is coerced cell-by-cell and summarized.
       return adds(src, new(TBL, {rows={}, mid=nil,
                                  cols=Cols(src())})) end
 
-```
+```lua
 [4]> t = Tbl(csv())
 [5]> #t.rows
 398
@@ -155,7 +155,7 @@ input feature. `Cols` sorts the header into `x` (inputs) and `y`
     elseif s:find"[+-]$" then y[#y+1] = all[at]
     elseif s:sub(-1) ~= "X" then x[#x+1] = all[at] end
 
-```
+```lua
 [7]> show(map(t.cols.y, function(c) return c.name end))
 {Lbs- Acc+ Mpg+}
 [8]> show(map(t.cols.x, function(c) return c.name end))
@@ -181,7 +181,7 @@ the standard deviation.
       i.mu = i.mu + inc * d / i.n
       i.m2 = i.m2 + inc * d * (v - i.mu); return v end
 
-```
+```lua
 [9]> n = adds{2,4,4,4,5,5,7,9}
 [10]> show{mu=n:mid(), sd=round(n:div())}
 {:mu 5 :sd 2.14}
@@ -203,7 +203,7 @@ Symbols cannot be averaged. `SYM.mid` returns the mode (commonest
 value); `SYM.div` returns entropy — the spread of a distribution with
 no arithmetic mean.
 
-```
+```lua
 [11]> s = adds({"a","a","a","b","b","c"}, Sym())
 [12]> s:mid()
 a
@@ -233,7 +233,7 @@ never quite hits 0 or 1 and shrugs off outliers (the z is clamped to
       z = (v - i.mu) / (i:div() + TINY)
       return 1 / (1 + exp(-1.702 * max(-3, min(3, z)))) end
 
-```
+```lua
 [14]> round(n:norm(2))
 0.08
 [15]> round(n:norm(5))
@@ -308,7 +308,7 @@ Rebuilding in a fresh process (every lecture starts clean — so must
 your port). `TBL.add` files each row and updates every column
 summary; `#t.rows` counts the data past the header.
 
-```
+```lua
 [17]> srand(the.seed);
 [18]> t = Tbl(csv())
 [19]> #t.rows
@@ -327,7 +327,7 @@ mode of each symbol — giving the table's center in one row.
     function TBL.mids(i)
       i.mid = i.mid or map(i.cols.all, "mid"); return i.mid end
 
-```
+```lua
 [20]> show(t:mids())
 {5.46 193.43 104.47 76.01 1 2970.42 15.57 23.84}
 ```
@@ -350,7 +350,7 @@ than a mean, and how could you tell from Lecture 1's `[8]` alone?
 the workhorse for splitting data (trees, holdouts, clusters) without
 re-reading names or re-deciding types.
 
-```
+```lua
 [21]> u = t:clone()
 [22]> #u.rows
 0
@@ -372,7 +372,7 @@ sub-summary: build A+B, subtract B, recover A.
       n = i.n - j.n; d = j.mu - i.mu
       return new(NUM, {n=n, mu=(i.n*i.mu - j.n*j.mu)/n, ...})
 
-```
+```lua
 [24]> a = adds{1,2,3,4,5}
 [25]> b = adds{10,20,30}
 [26]> ab = adds({10,20,30}, adds{1,2,3,4,5})
@@ -403,7 +403,7 @@ The whole-table version: `TBL.sub` folds a row out of every column
 subtract them — the count and mean return to exactly where they
 began.
 
-```
+```lua
 [30]> c = t.cols.all[1]
 [31]> show{n=c.n, mu=round(c.mu)}
 {:mu 5.46 :n 398}
@@ -482,7 +482,7 @@ falls in 0..1.
     function NUM.dist(i,a,b)
       a, b = i:norm(a), i:norm(b); return abs(a - b) end
 
-```
+```lua
 [39]> c = t.cols.all[1]
 [40]> c:dist(4, 4)
 0.0
@@ -508,7 +508,7 @@ column count.
       for _,c in ipairs(cols) do n,d = n+1, d + f(c)^the.p end
       return (d/n)^(1/the.p) end
 
-```
+```lua
 [42]> the.p
 2
 [43]> round(t:distx(t.rows[1], t.rows[1]))
@@ -544,7 +544,7 @@ means "best possible on every goal at once."
       return minkowski(i.cols.y, function(y)
                return abs(y:norm(row[y.at]) - y.heaven) end) end
 
-```
+```lua
 [46]> round(t:disty(t.rows[1]))
 0.79
 ```
@@ -569,7 +569,7 @@ something you care about?
 `Y` hands `disty` back as a plain key function, so `keysort` lines
 every row up best-first. The extremes tell the story.
 
-```
+```lua
 [47]> d = t:Y()
 [48]> rows = keysort(t.rows, d)
 [49]> round(d(rows[1]))
@@ -650,7 +650,7 @@ halves — and it puts the pole nearer heaven first.
       rows = keysort(rows, fun); n = floor(#rows/2)
       return a, b, sub(rows,1,n), sub(rows,n+1) end
 
-```
+```lua
 [56]> a, b, lo, hi = t:halve(t.rows)
 [57]> show{lo=#lo, hi=#hi, total=#lo + #hi}
 {:hi 199 :lo 199 :total 398}
@@ -683,7 +683,7 @@ The split is not cosmetic. Average `disty` over each half: the `lo`
 half beats the `hi` half on the goals, even though `halve` only ever
 looked at input columns to make the cut.
 
-```
+```lua
 [60]> round(adds(map(lo, t:Y())).mu)
 0.36
 [61]> round(adds(map(hi, t:Y())).mu)
@@ -705,7 +705,7 @@ halves come out 0.5 vs 0.5)?
 (`the.stop`), building a binary tree of clusters. Rows are conserved:
 every original row lands in exactly one leaf.
 
-```
+```lua
 [62]> nd = Node(t)
 [63]> leaves = 0; rows = 0
 [64]> walk = function(x) if x.lo then walk(x.lo); walk(x.hi) else leaves = leaves + 1; rows = rows + #x.here.rows end end;
@@ -732,7 +732,7 @@ nodes) avoid double-counting?
 `NODE.leaf` walks a row down the tree, at each node going to whichever
 pole it is nearer. The landing leaf is that row's neighborhood.
 
-```
+```lua
 [67]> leaf1 = nd:leaf(t.rows[1])
 [68]> #leaf1.here.rows
 50
@@ -804,7 +804,7 @@ best. It returns `{score, column-index, cut-value}`.
       for _,c in ipairs(i.cols.x) do i:cuts(rows,c,Y,acc,best) end
       return best() end
 
-```
+```lua
 [72]> b = t:bestcut(t.rows, t:Y(), Num, least())
 [73]> c = t.cols.all[b[2]]
 [74]> c.name
@@ -837,7 +837,7 @@ version cost?
 `divide` sends each row left or right by `c:holds` (`≤ v` for
 numbers). Rows are conserved.
 
-```
+```lua
 [77]> yes, no = t:divide(t.rows, c, b[3])
 [78]> show{yes=#yes, no=#no, total=#yes + #no}
 {:no 99 :total 398 :yes 299}
@@ -854,7 +854,7 @@ side unsurprising?
 The split earns its keep: the small-engine side averages far nearer
 heaven than the big-engine side.
 
-```
+```lua
 [79]> round(adds(map(yes, t:Y())).mu)
 0.42
 [80]> round(adds(map(no, t:Y())).mu)
@@ -878,7 +878,7 @@ table's diversity (0.23): the cut removed real disorder.
     function val(a,b)
       return (a:div()*a.n + b:div()*b.n) / (a.n + b.n + TINY) end
 
-```
+```lua
 [81]> lo = adds(map(yes, t:Y()))
 [82]> hi = adds(map(no, t:Y()))
 [83]> round(val(lo, hi))
@@ -948,7 +948,7 @@ back, expensively, what a small tree gives for free.
 `Tree` recurses `bestcut`/`divide`, stopping at `the.maxd` depth or
 `the.leaf` rows. Each node summarizes its rows' `disty`.
 
-```
+```lua
 [87]> tr = Tree(t, t.rows)
 [88]> tr.leafs
 14
@@ -966,7 +966,7 @@ is protecting against *overfitting* (Lecture 8)?
 each goal's mean in its own column, then the branch condition trailing
 right. `*` marks the best leaf, `!` the worst.
 
-```
+```lua
 [89]> tr:show(t)
     n   d2h     Lbs-     Acc+     Mpg+
   398  0.53  2970.42    15.57    23.84
@@ -1007,7 +1007,7 @@ the tree partitioned rather than duplicated rows?
 `disty` — a prediction. For row 1, the tree guesses 0.81; the true
 `disty` is 0.79.
 
-```
+```lua
 [90]> round(tr:leaf(t, t.rows[1]))
 0.81
 [91]> round(t:disty(t.rows[1]))
@@ -1028,7 +1028,7 @@ or kept). Scoring all 256 of them, the best keeps only 5 leaves at
 `val` 0.17 — nearly a third the size of the full 14-leaf tree, no
 worse on the score.
 
-```
+```lua
 [92]> n = 0; best = nil
 [93]> tr:walk(function(w) n = n + 1; if not best or w.val < best.val or (w.val == best.val and w.leafs < best.leafs) then best = w end end);
 [94]> show{prunings=n, full_leafs=tr.leafs, best_leafs=best.leafs, best_val=round(best.val)}
@@ -1100,7 +1100,7 @@ answer when every answer has a price tag.
 `the.budget` caps how many rows may be scored. `acquirer` returns the
 labelled set, best-first.
 
-```
+```lua
 [97]> #t.rows
 398
 [98]> the.budget
@@ -1123,7 +1123,7 @@ best/worst seen if a pool dries early.
       rows = sub(keysort(rows, (i:poles(new, lo, hi))),
                  1, max(1, floor(the.keepf * #rows))) end
 
-```
+```lua
 [99]> y = t:Y()
 [100]> lab = t:acquirer(the.budget)
 [101]> #lab
@@ -1148,7 +1148,7 @@ The best of the 50 labelled rows scores 0.09 — against the true best
 of all 398, which is 0.07. Thirteen percent of the labels, essentially
 the right answer.
 
-```
+```lua
 [102]> round(y(lab[1]))
 0.09
 [103]> round(y(keysort(t.rows, y)[1]))
@@ -1172,7 +1172,7 @@ a bug, of a budget-bounded search.
 `acquirer` returns labels sorted best-first, so the pool it explored
 runs from near-heaven to mediocre — it did not only sample winners.
 
-```
+```lua
 [104]> round(y(lab[1]))
 0.09
 [105]> round(y(lab[#lab]))
@@ -1191,7 +1191,7 @@ poles of Lecture 4.
 Double the budget to 100 and the best labelled row matches the true
 best exactly (0.07). Diminishing returns, honestly shown.
 
-```
+```lua
 [106]> the.budget = 100
 [107]> lab2 = t:acquirer(the.budget)
 [108]> show{labels=#lab2, best=round(y(lab2[1]))}
@@ -1260,7 +1260,7 @@ confidence interval.
 0 is the median, negatives are worse-than-median. It makes runs
 comparable across datasets with different `disty` ranges.
 
-```
+```lua
 [111]> t.rows = some(t.rows, the.cap)
 [112]> #t.rows
 398
@@ -1295,7 +1295,7 @@ overspends the budget.
     top   = sub(keysort(test, function(r) return t:leaf(i,r) end),
               1, the.check)
 
-```
+```lua
 [116]> b = t:holdout()
 [117]> show{disty=round(t:disty(b)), win=round(W(b))}
 {:disty 0.14 :win 85.68}
@@ -1321,7 +1321,7 @@ A single run is an anecdote. `go` runs 20 seeded holdouts and sorts
 the wins; `L` uses active `acquire`, `R` uses the first `cap` rows
 (random order = a random baseline).
 
-```
+```lua
 [118]> go = function(how, u) u = {}; for j=1,20 do srand(the.seed+j); u[1+#u]=W(t:holdout(how)) end; return sorted(u) end
 [119]> L = go()
 [120]> R = go(function(t2,cap) return sub(t2.rows, 1, cap) end)
@@ -1348,7 +1348,7 @@ Two means differ — but 84.68 vs 86.93, over 20 noisy runs, might be
 nothing. `same` (Lecture 9) runs three effect-size tests and reports
 whether the two samples are statistically indistinguishable.
 
-```
+```lua
 [124]> same(L, R) and "tie" or (ml > mr and "active wins" or "random wins")
 tie
 ```
@@ -1428,7 +1428,7 @@ units — a scale-free "how many sigmas apart." Identical lists: 0. A
       sd = sqrt(((n-1)*x:div()^2 + (m-1)*y:div()^2)/(n+m-2))
       return abs(x.mu - y.mu) / (sd + TINY) end
 
-```
+```lua
 [126]> round(cohen({1,2,3,4,5}, {1,2,3,4,5}))
 0
 [127]> round(cohen({1,2,3,4,5}, {4,5,6,7,8}))
@@ -1451,7 +1451,7 @@ Draw two samples from the *same* Gaussian. They are not identical —
 sampling jitter gives them a small but nonzero effect size (0.11 here)
 — yet `same` correctly calls them indistinguishable.
 
-```
+```lua
 [128]> g = function(n, mu, u) u={}; for j=1,n do u[j]=(mu or 0)+math.sqrt(-2*math.log(1-rand()))*math.cos(2*math.pi*rand()) end; return sorted(u) end
 [129]> x = g(500, 0)
 [130]> y = g(500, 0)
@@ -1480,7 +1480,7 @@ normalized KS (max CDF gap). Sweep a growing shift and watch which
 test trips first — KS breaks at 0.30 while Cohen still says "close"
 to 0.50; `same`, being an AND, follows the strictest.
 
-```
+```lua
 [135]> for _,mu in ipairs{0, .1, .2, .3, .35, .5, 1} do ... end
  0.00   true  true   true |  true
  0.10   true  true   true |  true
@@ -1511,7 +1511,7 @@ in only 15 of 30 trials — half the time it hides under the noise
 floor. At n=2000 it is caught every time. The difference did not
 change; the power to see it did.
 
-```
+```lua
 [136]> rate = function(n, u) u=0; for j=1,30 do srand(the.seed+j); local x=g(n,0); local y=map(x,function(v) return v+0.2 end); if not same(sorted(x),sorted(y)) then u=u+1 end end; return u end
 [137]> show{n=10, detected=rate(10), of=30}
 {:detected 15 :n 10 :of 30}
@@ -1538,7 +1538,7 @@ current best — so statistical ties share a rank. Here `a` and `b`
 (shifts 0 and 0.05) tie at rank 0 and are both winners; `c` (shift 2)
 and `e` (shift 4) separate into ranks 1 and 2.
 
-```
+```lua
 [139]> d = {a=g(20,0), b=g(20,0.05), c=g(20,2), e=g(20,4)}
 [140]> r = ranks(d)
 [141]> show(r.ranks)
@@ -1616,7 +1616,7 @@ model, just the distances of Lecture 3. Over 32 probes it errs 0.05;
 guessing the global mean errs 0.20. Four times better, from
 neighbors alone.
 
-```
+```lua
 [146]> mu = adds(map(t.rows, y)).mu
 [147]> e1 = 0; e2 = 0
 [148]> for _=1,32 do local r=t.rows[rand(#t.rows)]; e1=e1+math.abs(t:knn(r)-y(r)); e2=e2+math.abs(mu-y(r)) end
@@ -1640,7 +1640,7 @@ mean's 0.20 error, and how does that connect to Lecture 4's
 normalized 0..1 — 1 is loneliest. The pack sits near 0.3; one row
 stands out at 0.99.
 
-```
+```lua
 [150]> det = t:anomaly()
 [151]> ss = sorted(map(t.rows, det))
 [152]> show{lo=round(ss[1]), mid=round(ss[math.floor(#ss/2)+1]), hi=round(ss[#ss])}
@@ -1663,7 +1663,7 @@ that row is anomalous?
 what's been seen, then fold it in — one streaming pass, no held-out
 split. On the diabetes data it hits 73% accuracy over 759 guesses.
 
-```
+```lua
 [153]> d = Tbl(csv"$MOOT/classify/diabetes.csv")
 [154]> seen = d:classify()
 [155]> show{acc=round(acc(seen)), guesses=#seen}
@@ -1688,7 +1688,7 @@ rows are conserved. `kpp` seeds the centroids far apart with
 distance-squared-weighted picks, so clusters start well separated
 (min gap 0.15 here).
 
-```
+```lua
 [156]> cs = t:kmeans()
 [158]> show{clusters=#cs, rows=n}
 {:clusters 8 :rows 398}
@@ -1714,7 +1714,7 @@ are random and whose goals are `"?"` — unlabelled. There is no CSV; a
 model computes goals only when a row is scored. This is the seam where
 an expensive simulator or lab assay plugs in.
 
-```
+```lua
 [163]> the.model
 dtlz2
 [164]> z = Dtlz()
@@ -1728,7 +1728,7 @@ Row 1's goal is born blank. Ask for its `disty` and the seam fires:
 the model runs, the goal fills in, the column summary folds it —
 after which the row is labelled.
 
-```
+```lua
 [167]> round(z:disty(z.rows[1]))
 0.5
 [168]> z.rows[1][z.cols.y[1].at] ~= "?"
@@ -1738,7 +1738,7 @@ true
 Now optimize the black box under the label budget of Lecture 7. Fifty
 labels out of 1000 possible rows drive `disty` down to 0.29.
 
-```
+```lua
 [169]> lab = z:acquirer(the.budget)
 [170]> show{labels=#lab, best=round(z:disty(lab[1]))}
 {:best 0.29 :labels 50}
@@ -1802,7 +1802,7 @@ these. Pure language: no project code, no data; paste into a bare
 A Lua table is list, dict, and object at once. `#t` is the list
 length; string keys make it a record.
 
-```
+```lua
 [1000]> t = {10, 20, 30}
 [1001]> #t
 3
@@ -1822,7 +1822,7 @@ Lua indexes from 1, not 0 — why every loop in the sources reads
 you classes. `a:speak()` is sugar for `a.speak(a)`. This is exactly
 `new` in `ezr-lib.lua` — re-read it now.
 
-```
+```lua
 [1006]> function Animal.new(sound) return setmetatable({sound=sound}, Animal) end
 [1008]> a = Animal.new("moo")
 [1009]> a:speak()
@@ -1836,7 +1836,7 @@ returns a function with its own private `n` — the pattern behind
 `least` (Lecture 5) and `Y` (Lecture 3), which carry state in a
 closure instead of a field.
 
-```
+```lua
 [1011]> c = counter()
 [1012]> c()
 1
@@ -1853,7 +1853,7 @@ gap of spaces — `function f(x,    tmp)`. They are never passed; the
 gap just flags "these are locals, not arguments." A house style, not
 a language feature.
 
-```
+```lua
 [1015]> adder = function(x,   sofar) sofar = (sofar or 0) + x; return sofar end
 [1016]> adder(5)
 5
@@ -1865,7 +1865,7 @@ a language feature.
 `lo, hi = minmax(...)` is how `poles` (Lecture 4) and `halve` hand
 back two things at once.
 
-```
+```lua
 [1018]> lo, hi = minmax(3, 1, 4, 1, 5, 9, 2)
 [1019]> lo
 1
@@ -1879,7 +1879,7 @@ Lua patterns (not full regexes) trim and classify CSV cells. `%s` is
 whitespace; `(.-)` is a lazy capture; `$` anchors the end. These four
 calls ARE the column-role logic of Lecture 1.
 
-```
+```lua
 [1021]> ("  42 "):match"^%s*(.-)%s*$"
 42
 [1022]> tonumber("3.14")
@@ -1898,7 +1898,7 @@ single trailing char) — truthy, which is all the role code needs.
 You now have every construct. `("Lbs-"):find"-$"` is the exact test
 inside `Num` that sets a column's heaven to 0 (minimize):
 
-```
+```lua
 [1025]> ("Lbs-"):find"-$"
 4	4
 ```
