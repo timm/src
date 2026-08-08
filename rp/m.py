@@ -17,15 +17,16 @@ complement, always vs random labeling at matched budget):
   free sweeps + label survivors (~12): matches, except rough sets;
   free + label one per nearest pair (~6): usually beats random,
     loses where x-near rows are y-far (smoothness fails: LLVM);
-  cap=10 grids: safe on compressible data, HARMFUL on tables whose
-    redundancy profile is flat (X264) -- don't force the cap there.
+  p sweep: labelled arm indifferent (p=2 a nudge better on the
+    rough sets), so house p=2 stays; free arm swings per dataset
+    (p=2 rescued X264's capped grid, 46->100; p=1 better SS-O/I).
 
 Demos: python3 m.py [--k v].  (c) 2026 Tim Menzies, MIT license."""
 import os, re, sys
 from types import SimpleNamespace as o
 from random import choice as any1, sample as anys, seed as srand
 
-the  = o(anchors=10, close=.3, budget=50, top=.5, cap=10,
+the  = o(anchors=10, close=.3, budget=50, top=.5, cap=10, p=2,
          seed=1234567891,
          file=os.environ["HOME"] + "/gits/moot/optimize/misc/auto93.csv")
 TINY = 1e-32
@@ -73,28 +74,31 @@ def M(src):
            w=[s[-1] != "-" for s in head])
 
 def dist(N, i, j, cols):
-  "mean abs gap over shared cells; nothing shared = 1"
+  "minkowski over shared cells; nothing shared = 1"
   d = n = 0
   for c in cols:
     a, b = N[i][c], N[j][c]
-    if a is not None and b is not None: d += abs(a - b); n += 1
-  return d / n if n else 1
+    if a is not None and b is not None:
+      d += abs(a - b) ** the.p; n += 1
+  return (d / n) ** (1 / the.p) if n else 1
 
 def distc(N, rows, c1, c2):
-  "column-column gap over the live rows"
+  "column-column minkowski over the live rows"
   d = n = 0
   for i in rows:
     a, b = N[i][c1], N[i][c2]
-    if a is not None and b is not None: d += abs(a - b); n += 1
-  return d / n if n else 1
+    if a is not None and b is not None:
+      d += abs(a - b) ** the.p; n += 1
+  return (d / n) ** (1 / the.p) if n else 1
 
 def disty(m, i):
   "distance to heaven; 0 = best"
   d = n = 0
   for c in m.y:
     v = m.N[i][c]
-    if v is not None: d += abs(v - (1 if m.w[c] else 0)); n += 1
-  return d / n if n else 1
+    if v is not None:
+      d += abs(v - (1 if m.w[c] else 0)) ** the.p; n += 1
+  return (d / n) ** (1 / the.p) if n else 1
 
 def sweep(items, distf, ylab=None):
   "anchors -> weighted pair views -> marks -> cull below top/2"
