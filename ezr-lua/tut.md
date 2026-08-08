@@ -62,16 +62,16 @@ To replay a lecture's inputs and regenerate its trace:
 
 | # | Lecture | REPL | Ideas |
 |---|---------|------|-------|
-| [1](#l1)  | Orientation & columns      | 1–16    | NOIR, WEL, CDF, LOG |
-| [2](#l2)  | Tables, roles, forgetting  | 17–36   | ROLE, STREAM |
-| [3](#l3)  | Distance & gap-to-heaven   | 37–53   | MINK, D2H, PARETO |
-| [4](#l4)  | Clustering by poles        | 54–69   | POLE, FASTMAP, HALVE |
-| [5](#l5)  | Discretization & cuts      | 70–84   | CUT, IG, VAL |
-| [6](#l6)  | Trees & XAI                | 85–94   | CART, XAI, PRUNE |
-| [7](#l7)  | Active learning / acquire  | 95–108  | ACQ, AL, BO, TS |
-| [8](#l8)  | The holdout rig            | 109–124 | HOLD, WIN, BASELINE |
-| [9](#l9)  | Statistics                 | 125–142 | COHEN, KS, CLIFF, SAME, POWER, SK |
-| [10](#l10)| Apps, then DTLZ (advanced) | 143–170 | KNN, ANOM, NB, KM, KPP, DTLZ, SBSE |
+| [1](#l1)  | Orientation & columns      | 1–16    | [NOIR](#g-noir), [WEL](#g-wel), [CDF](#g-cdf), [LOG](#g-log) |
+| [2](#l2)  | Tables, roles, forgetting  | 17–36   | [ROLE](#g-role), [STREAM](#g-stream) |
+| [3](#l3)  | Distance & gap-to-heaven   | 37–53   | [MINK](#g-mink), [D2H](#g-d2h), [PARETO](#g-pareto) |
+| [4](#l4)  | Clustering by poles        | 54–69   | [POLE](#g-pole), [FASTMAP](#g-fastmap), [HALVE](#g-halve) |
+| [5](#l5)  | Discretization & cuts      | 70–84   | [CUT](#g-cut), [IG](#g-ig), [VAL](#g-val) |
+| [6](#l6)  | Trees & XAI                | 85–94   | [CART](#g-cart), [XAI](#g-xai), [PRUNE](#g-prune) |
+| [7](#l7)  | Active learning / acquire  | 95–108  | [ACQ](#g-acq), [AL](#g-al), [BO](#g-bo), [TS](#g-ts) |
+| [8](#l8)  | The holdout rig            | 109–124 | [HOLD](#g-hold), [WIN](#g-win), [BASELINE](#g-baseline) |
+| [9](#l9)  | Statistics                 | 125–142 | [COHEN](#g-cohen), [KS](#g-ks), [CLIFF](#g-cliff), [SAME](#g-same), [POWER](#g-power), [SK](#g-sk) |
+| [10](#l10)| Apps, then DTLZ (advanced) | 143–170 | [KNN](#g-knn), [ANOM](#g-anom), [NB](#g-nb), [KM](#g-km), [KPP](#g-kpp), [DTLZ](#g-dtlz), [SBSE](#g-sbse) |
 | [quiz](#quiz)     | Revision guide (gated questions) | | |
 | [answers](#answers) | Worked answers               | | |
 | [glossary](#glossary) | Acronyms & terms           | | |
@@ -119,7 +119,7 @@ run becomes reproducible — the whole point of the homework diff.
 auto93.csv
 ```
 
-> **NOIR — the scales of measurement.** Stevens (1946) split data
+> **[NOIR](#g-noir) — the scales of measurement.** Stevens (1946) split data
 > into Nominal, Ordinal, Interval, Ratio. This code keeps the
 > cut that matters for arithmetic: symbols (Nominal — a mode, a
 > count) versus numbers (Ratio — a mean, a spread). A column's role
@@ -201,7 +201,7 @@ function NUM.add(i,v,inc,   d)
 {:mu 5 :sd 2.14}
 ```
 
-> **WEL — Welford's online variance.** Welford (1962) computes
+> **[WEL](#g-wel) — Welford's online variance.** Welford (1962) computes
 > variance in one pass, updating mean and `m2` per value, never
 > storing the data. It matters here twice: streaming tables that
 > never hold history, and the forgetting trick of Lecture 2, where
@@ -225,7 +225,7 @@ a
 1.46
 ```
 
-> **ENT — Shannon entropy.** Shannon (1948) measures a symbol
+> **[ENT](#g-ent) — Shannon entropy.** Shannon (1948) measures a symbol
 > distribution's disorder as −Σ p·log₂p, in bits. Here it is a
 > symbol column's "spread," standing in for the standard deviation a
 > mode cannot supply. A pure column scores 0; a uniform one scores
@@ -260,7 +260,7 @@ function NUM.norm(i,v,   z)
 
 The mean (5) lands at 0.5, low values near 0, high near 1.
 
-> **CDF / LOG — cumulative position via a logistic.** A cumulative
+> **[CDF](#g-cdf) / [LOG](#g-log) — cumulative position via a logistic.** A cumulative
 > distribution function reports the fraction of a population at or
 > below a value. This code approximates the normal CDF with a
 > logistic curve (the 1.702 constant matches the two within ~1%),
@@ -273,10 +273,10 @@ cumulative-position score send the mean of a symmetric column there?
 ## Recap
 
 REPL events covered: 1–16. A column knows its kind from its name
-([NOIR](#glossary)); numbers summarize in one streaming pass
-([WEL](#glossary)) as mean and sd; symbols summarize as mode and
-entropy ([ENT](#glossary)); `norm` puts any value on a shared 0..1
-ruler ([CDF](#glossary)/[LOG](#glossary)). Next lecture folds these
+([NOIR](#g-noir)); numbers summarize in one streaming pass
+([WEL](#g-wel)) as mean and sd; symbols summarize as mode and
+entropy ([ENT](#g-ent)); `norm` puts any value on a shared 0..1
+ruler ([CDF](#g-cdf)/[LOG](#g-log)). Next lecture folds these
 columns into whole tables that can also *forget*.
 
 **Coming attraction.** By Lecture 6 these summaries grow an
@@ -353,7 +353,7 @@ function TBL.mids(i)
 The average car: 5.46 cylinders, 2970 lbs, 23.8 mpg. Column 5
 (`origin`) is symbolic, so its "middle" is the mode, 1.
 
-> **ROLE — features versus goals.** A supervised table splits
+> **[ROLE](#g-role) — features versus goals.** A supervised table splits
 > columns into inputs (x) and outputs/goals (y). Keeping the split in
 > the header — not in separate files — means every row carries its
 > own labels-in-waiting, and any column can be read as either without
@@ -382,7 +382,7 @@ two (Lecture 6)?
 
 ## 2.4 Forgetting a Num, with Welford run backwards
 
-The same recurrence that added a value ([WEL](#glossary), Lecture 1)
+The same recurrence that added a value ([WEL](#g-wel), Lecture 1)
 runs in reverse to remove one. `NUM.__sub` subtracts a whole
 sub-summary: build A+B, subtract B, recover A.
 
@@ -406,7 +406,7 @@ function NUM.__sub(i,j,   n,d)  -- tot - part -> new NUM
 `back` recovers A's mean (3) and spread (1.58) exactly, having never
 stored A's five numbers — only the combined summary and B's.
 
-> **STREAM — subtractable summaries.** A summary is *invertible* when
+> **[STREAM](#g-stream) — subtractable summaries.** A summary is *invertible* when
 > removing a datum costs the same as adding it. Welford's mean/m2
 > pair qualifies; a stored median does not. Invertibility is what
 > makes the tree of Lecture 6 cheap: moving a row across a split
@@ -447,9 +447,9 @@ Design a two-line change to `[32]` that would make `mu` move visibly.
 ## Recap
 
 REPL events covered: 17–36. Tables fold Lecture 1's columns
-([ROLE](#glossary)) and report a centroid; `clone` copies structure
-without data; and invertible summaries ([STREAM](#glossary), built on
-[WEL](#glossary)) let a table forget a row as cheaply as it learned
+([ROLE](#g-role)) and report a centroid; `clone` copies structure
+without data; and invertible summaries ([STREAM](#g-stream), built on
+[WEL](#g-wel)) let a table forget a row as cheaply as it learned
 it. Next: distance — turning these columns into a ruler between any
 two rows, and a single "how good" score across all the goals at once.
 
@@ -496,7 +496,7 @@ trade-off is gone.
 
 Each column type defines its own `dist`. Symbols: 0 if equal, 1 if
 not. Numbers: the absolute gap between the two values' normalized
-positions ([CDF](#glossary), Lecture 1), so a spread-aware distance
+positions ([CDF](#g-cdf), Lecture 1), so a spread-aware distance
 falls in 0..1.
 
 ```lua
@@ -546,7 +546,7 @@ function minkowski(cols,f,   d,n)
 Row 1 to itself is 0; to its neighbor, 0.04; to the last row, 0.82.
 The ruler behaves.
 
-> **MINK — the Minkowski distance.** Minkowski's p-norm unifies a
+> **[MINK](#g-mink) — the Minkowski distance.** Minkowski's p-norm unifies a
 > family: p=1 is Manhattan (city blocks), p=2 is Euclidean (straight
 > line), p→∞ is Chebyshev (the single worst gap). `the.p` is one
 > knob that reshapes every distance, cluster, and tree downstream —
@@ -577,7 +577,7 @@ function TBL.disty(i,row)
 
 Row 1 sits 0.79 from heaven — a poor all-rounder.
 
-> **D2H / PARETO — one score for many goals.** A solution is
+> **[D2H](#g-d2h) / [PARETO](#g-pareto) — one score for many goals.** A solution is
 > Pareto-optimal when no other beats it on every goal at once; the
 > Pareto front is the set of such solutions, and reading it is the
 > whole task of multi-objective work. "Distance to heaven" projects
@@ -623,8 +623,8 @@ reach it?
 ## Recap
 
 REPL events covered: 37–53. Per-column `dist` becomes a whole-row
-ruler through [MINK](#glossary); goal columns fold into a single
-gap-to-heaven score ([D2H](#glossary)/[PARETO](#glossary)) that sorts
+ruler through [MINK](#g-mink); goal columns fold into a single
+gap-to-heaven score ([D2H](#g-d2h)/[PARETO](#g-pareto)) that sorts
 every row best-first. This one sortable key is the foundation for
 clustering (Lecture 4), active learning (Lecture 7), and the whole
 optimization story.
@@ -692,7 +692,7 @@ A clean split (199/199), and the two poles sit at opposite ends of
 goodness: `a` at 0.12 (near heaven), `b` at 0.87 (far). We found a
 good car and a bad car with no labels beyond these two.
 
-> **POLE / FASTMAP — projection onto a far pair.** Faloutsos &
+> **[POLE](#g-pole) / [FASTMAP](#g-fastmap) — projection onto a far pair.** Faloutsos &
 > Lin's FastMap (1995) places points on a line by their distance to
 > two "pivot" objects, approximating an expensive embedding with O(n)
 > distance calls. Here the pivots are the far pair, and the
@@ -745,7 +745,7 @@ every original row lands in exactly one leaf.
 Eight leaves, 398 rows accounted for — no row lost, none double
 counted.
 
-> **HALVE — recursive bisection.** Repeatedly splitting a set on its
+> **[HALVE](#g-halve) — recursive bisection.** Repeatedly splitting a set on its
 > principal axis is the shared skeleton of k-d trees, hierarchical
 > clustering, and the decision trees of Lecture 6. The difference is
 > only the split rule: geometry here, goal-purity there. Same
@@ -776,10 +776,10 @@ poles the tree was *built* with, and where are those stored?
 
 ## Recap
 
-REPL events covered: 54–69. Two far poles ([POLE](#glossary)/
-[FASTMAP](#glossary)) project rows onto a line for a median cut; the
+REPL events covered: 54–69. Two far poles ([POLE](#g-pole)/
+[FASTMAP](#g-fastmap)) project rows onto a line for a median cut; the
 good half is genuinely better on the goals; recursion
-([HALVE](#glossary)) grows a cluster tree that conserves every row;
+([HALVE](#g-halve)) grows a cluster tree that conserves every row;
 and `leaf` drops any row into its neighborhood. Lecture 5 swaps the
 geometric split for a goal-purity split — the seed of decision trees.
 
@@ -849,7 +849,7 @@ The most informative split in 398 cars: engine `Volume ≤ 262`. One
 line named the variable and the threshold that best sorts good cars
 from bad.
 
-> **CUT — supervised discretization.** Turning a continuous column
+> **[CUT](#g-cut) — supervised discretization.** Turning a continuous column
 > into "≤ v vs > v" by the split that most purifies an outcome is
 > supervised discretization (Fayyad & Irani, 1993, used entropy for
 > exactly this). It is the recursive step of CART trees and the
@@ -919,7 +919,7 @@ function val(a,b)
 0.23
 ```
 
-> **IG / VAL — impurity reduction.** Information gain is
+> **[IG](#g-ig) / [VAL](#g-val) — impurity reduction.** Information gain is
 > (parent impurity − weighted child impurity); a cut is worth making
 > when that gap is positive. `val` is the child term; comparing it to
 > the parent's 0.23 is the gain (here ≈ 0.09). Quinlan's ID3/C4.5
@@ -934,9 +934,9 @@ and what course principle (Lecture 6) tells you when to *stop*?
 
 REPL events covered: 70–84. `bestcut` streams every candidate
 threshold through one reducer to name the single most purifying split
-([CUT](#glossary)); `divide` applies it; `val` scores a split's
+([CUT](#g-cut)); `divide` applies it; `val` scores a split's
 purity, and its gap to the parent's diversity is the information gain
-([IG](#glossary)/[VAL](#glossary)). Recurse this and you have a tree —
+([IG](#g-ig)/[VAL](#g-val)). Recurse this and you have a tree —
 Lecture 6.
 
 **Coming attraction.** Stack these cuts and print the result:
@@ -1022,7 +1022,7 @@ worst (`!`): 39 heavy cars, 11.8 mpg, `d2h` 0.91. The path IS the
 explanation: small four-cylinder engines make the best all-round
 cars in this fleet.
 
-> **CART / XAI — trees you can read.** Breiman's CART (1984) grows a
+> **[CART](#g-cart) / [XAI](#g-xai) — trees you can read.** Breiman's CART (1984) grows a
 > recursive-partition model whose every decision is a named
 > threshold. "Explainable AI" is the modern name for wanting exactly
 > that: a model whose reasoning a human can audit. The trade — trees
@@ -1067,7 +1067,7 @@ worse on the score.
 {:best_leafs 5 :best_val 0.17 :full_leafs 14 :prunings 256}
 ```
 
-> **PRUNE — Occam's razor, enumerated.** Post-pruning removes
+> **[PRUNE](#g-prune) — Occam's razor, enumerated.** Post-pruning removes
 > branches that do not earn their complexity, trading fit for
 > simplicity (CART's cost-complexity pruning does this with a
 > penalty term). Here it is brute force: enumerate every pruning,
@@ -1084,9 +1084,9 @@ sentence.
 ## Recap
 
 REPL events covered: 85–94. Recursive cuts grow a readable tree
-([CART](#glossary)/[XAI](#glossary)); `show` prints the rules and
+([CART](#g-cart)/[XAI](#g-xai)); `show` prints the rules and
 flags best/worst leaves; `leaf` predicts by walking a row down; and
-enumerating prunings ([PRUNE](#glossary)) finds the smallest tree
+enumerating prunings ([PRUNE](#g-prune)) finds the smallest tree
 that still explains the data. Next: stop grading rows we can see, and
 start *choosing which rows to label* — active learning.
 
@@ -1164,7 +1164,7 @@ while #rows >= 2*the.leaf do
 50
 ```
 
-> **ACQ / AL / BO — buy the label that teaches most.** Active
+> **[ACQ](#g-acq) / [AL](#g-al) / [BO](#g-bo) — buy the label that teaches most.** Active
 > learning (Settles, 2009) lets the model choose its next query
 > instead of taking labels in file order. Bayesian optimization is
 > the continuous cousin: fit a cheap surrogate, then sample where it
@@ -1189,7 +1189,7 @@ the right answer.
 0.07
 ```
 
-> **TS — Thompson's old idea.** Thompson (1933) proposed choosing an
+> **[TS](#g-ts) — Thompson's old idea.** Thompson (1933) proposed choosing an
 > action in proportion to the probability it is best — balancing
 > *exploiting* the current best guess against *exploring* uncertain
 > options. Every acquisition rule since is a variation on that
@@ -1244,8 +1244,8 @@ tell you about when to STOP buying labels?
 
 REPL events covered: 95–108. `acquire` spends a label budget by
 labelling a few rows, culling the pool toward the good pole
-([ACQ](#glossary)/[AL](#glossary)/[BO](#glossary)), and looping with
-an explore/exploit valve ([TS](#glossary)). Fifty labels found a
+([ACQ](#g-acq)/[AL](#g-al)/[BO](#g-bo)), and looping with
+an explore/exploit valve ([TS](#g-ts)). Fifty labels found a
 near-best car; a hundred nailed it. Whether that beats random needs a
 rig — Lecture 8.
 
@@ -1304,7 +1304,7 @@ comparable across datasets with different `disty` ranges.
 100
 ```
 
-> **WIN — a normalized, capped score.** Reporting raw error hides
+> **[WIN](#g-win) — a normalized, capped score.** Reporting raw error hides
 > whether "0.14" is good. Rescaling to "% of the way from median to
 > best" makes results legible and cross-dataset comparable — the same
 > reason optimization papers report normalized regret, not raw
@@ -1338,7 +1338,7 @@ overspends the budget.
 One honest pass: the row it picked from data it had never scored lands
 at win 86 — most of the way to best.
 
-> **HOLD — train/test separation.** The holdout (Stone, 1974,
+> **[HOLD](#g-hold) — train/test separation.** The holdout (Stone, 1974,
 > formalized cross-validation) is the oldest defense against fooling
 > yourself: never grade a model on rows it learned from. Every
 > `assert` in this function is a tripwire against the subtle leak of
@@ -1365,7 +1365,7 @@ the wins; `L` uses active `acquire`, `R` uses the first `cap` rows
 {:active 84.68 :random 86.93}
 ```
 
-> **BASELINE — beat random, or admit you didn't.** The most
+> **[BASELINE](#g-baseline) — beat random, or admit you didn't.** The most
 > informative line in any results table is the dumb baseline. A 2019
 > reproducibility study of recommender-system papers (Dacrema et al.)
 > found most "state of the art" methods lost to well-tuned trivial
@@ -1404,9 +1404,9 @@ crime.
 ## Recap
 
 REPL events covered: 109–124. `wins` grades on a legible 0–100 scale
-([WIN](#glossary)); `holdout` trains and tests on separate halves
-([HOLD](#glossary)); and 20 repeated runs against a random
-[BASELINE](#glossary), judged by `same`, delivered an honest tie —
+([WIN](#g-win)); `holdout` trains and tests on separate halves
+([HOLD](#g-hold)); and 20 repeated runs against a random
+[BASELINE](#g-baseline), judged by `same`, delivered an honest tie —
 the rig's willingness to say "no difference" is what makes its
 occasional "yes" trustworthy. Lecture 9 opens the statistics that
 made the call.
@@ -1471,7 +1471,7 @@ function cohen(xs,ys,   x,y,n,m,sd)
 1.9
 ```
 
-> **COHEN — effect size, not p-value.** Cohen's d (1969) measures
+> **[COHEN](#g-cohen) — effect size, not p-value.** Cohen's d (1969) measures
 > *how big* a difference is, in standard-deviation units, independent
 > of sample size. This is the number that matters for decisions: a
 > p-value shrinks to "significant" with enough data even for a
@@ -1497,7 +1497,7 @@ sampling jitter gives them a small but nonzero effect size (0.11 here)
 true
 ```
 
-> **CLT — why the floor exists.** The central limit theorem says a
+> **[CLT](#g-clt) — why the floor exists.** The central limit theorem says a
 > sample mean scatters around the true mean with spread σ/√n. So two
 > honest samples of the same thing *always* differ by a little; the
 > noise floor is that scatter. Any threshold for "different" must sit
@@ -1527,7 +1527,7 @@ to 0.50; `same`, being an AND, follows the strictest.
  1.00  false false  false | false
 ```
 
-> **KS / CLIFF / SAME — agree, or it isn't real.** The
+> **[KS](#g-ks) / [CLIFF](#g-cliff) / [SAME](#g-same) — agree, or it isn't real.** The
 > Kolmogorov–Smirnov statistic is the largest gap between two
 > cumulative distributions; Cliff's delta counts how often one
 > sample outranks the other. Combining three tests with AND
@@ -1555,7 +1555,7 @@ change; the power to see it did.
 {:detected 30 :n 2000 :of 30}
 ```
 
-> **POWER — absence of evidence isn't evidence of absence.** A
+> **[POWER](#g-power) — absence of evidence isn't evidence of absence.** A
 > statistical test's power is its chance of catching a real effect;
 > it climbs with sample size. An underpowered "no difference" (n=10
 > here) means "we couldn't see it," not "it isn't there." Half of
@@ -1583,7 +1583,7 @@ and `e` (shift 4) separate into ranks 1 and 2.
 {a b}
 ```
 
-> **SK — Scott-Knott ranking.** Scott & Knott (1974) rank many
+> **[SK](#g-sk) — Scott-Knott ranking.** Scott & Knott (1974) rank many
 > treatments into statistically distinct groups, so a results table
 > shows "these three tie for first, then a gap, then the rest" —
 > never a spurious strict ordering of indistinguishable methods.
@@ -1597,12 +1597,12 @@ just *distinguishable*?
 
 ## Recap
 
-REPL events covered: 125–142. Effect size ([COHEN](#glossary))
-measures how big, not just whether; the noise floor ([CLT](#glossary))
+REPL events covered: 125–142. Effect size ([COHEN](#g-cohen))
+measures how big, not just whether; the noise floor ([CLT](#g-clt))
 means same-source samples always differ a little; `same`
-([KS](#glossary)/[CLIFF](#glossary)/[SAME](#glossary)) ANDs three
-tests to stay conservative; power ([POWER](#glossary)) means small
-samples miss real effects; and [SK](#glossary) ranking groups
+([KS](#g-ks)/[CLIFF](#g-cliff)/[SAME](#g-same)) ANDs three
+tests to stay conservative; power ([POWER](#g-power)) means small
+samples miss real effects; and [SK](#g-sk) ranking groups
 statistical ties. This is the machinery that kept Lecture 8 honest.
 Lecture 10 spends it on the real payoff: apps, then an external-model
 optimizer where labels genuinely cost.
@@ -1660,7 +1660,7 @@ neighbors alone.
 {:knn_err 0.05 :mean_err 0.2}
 ```
 
-> **KNN — k nearest neighbors.** Cover & Hart (1967) proved a
+> **[KNN](#g-knn) — k nearest neighbors.** Cover & Hart (1967) proved a
 > startlingly strong bound: as data grows, 1-NN's error is at most
 > twice the best any classifier can achieve. No training, no model —
 > the data *is* the model. It rides entirely on Lecture 3's `distx`.
@@ -1683,7 +1683,7 @@ stands out at 0.99.
 {:hi 0.99 :lo 0.29 :mid 0.32}
 ```
 
-> **ANOM — isolation by distance.** Anomalies are points far from
+> **[ANOM](#g-anom) — isolation by distance.** Anomalies are points far from
 > everything else; scoring nearest-neighbor gaps is the classic
 > unsupervised detector (the idea under LOF, Breunig 2000). The
 > streaming summaries of Lecture 2 let this run on data too big to
@@ -1706,7 +1706,7 @@ split. On the diabetes data it hits 73% accuracy over 759 guesses.
 {:acc 0.73 :guesses 759}
 ```
 
-> **NB — naive Bayes.** Assume features are independent given the
+> **[NB](#g-nb) — naive Bayes.** Assume features are independent given the
 > class (the "naive" bit — usually false, yet it works), and pick the
 > class with the highest product of per-feature likelihoods. Domingos
 > & Pazzani (1997) explained the paradox: NB classifies well even
@@ -1733,7 +1733,7 @@ distance-squared-weighted picks, so clusters start well separated
 {:min_gap 0.15 :seeds 8}
 ```
 
-> **KM / KPP — k-means and its ++ seeding.** Lloyd's k-means (1957)
+> **[KM](#g-km) / [KPP](#g-kpp) — k-means and its ++ seeding.** Lloyd's k-means (1957)
 > is the workhorse clusterer; its weakness is bad random seeds.
 > k-means++ (Arthur & Vassilvitskii, 2007) picks seeds with
 > probability ∝ distance², provably tightening the result. Both ride
@@ -1780,7 +1780,7 @@ labels out of 1000 possible rows drive `disty` down to 0.29.
 {:best 0.29 :labels 50}
 ```
 
-> **DTLZ / SBSE — the optimization benchmark, and its field.**
+> **[DTLZ](#g-dtlz) / [SBSE](#g-sbse) — the optimization benchmark, and its field.**
 > Deb, Thiele, Laumanns & Zitzler (2005) designed the DTLZ suite:
 > scalable multi-objective problems with *known* Pareto fronts, so a
 > search can be graded against ground truth. Search-Based Software
@@ -1799,10 +1799,10 @@ one-hour benchmark — and what does `acquirer` spending only 50 of
 ## Recap
 
 REPL events covered: 143–170. One substrate became four tools —
-prediction ([KNN](#glossary)), anomaly ([ANOM](#glossary)),
-classification ([NB](#glossary)), clustering
-([KM](#glossary)/[KPP](#glossary)) — and then an external-model
-optimizer ([DTLZ](#glossary)/[SBSE](#glossary)) that labels only on
+prediction ([KNN](#g-knn)), anomaly ([ANOM](#g-anom)),
+classification ([NB](#g-nb)), clustering
+([KM](#g-km)/[KPP](#g-kpp)) — and then an external-model
+optimizer ([DTLZ](#g-dtlz)/[SBSE](#g-sbse)) that labels only on
 demand. The course thesis, discharged: a few hundred readable lines
 run the experiment yourself.
 
@@ -1952,50 +1952,51 @@ them. Reference: Lua 5.1 short reference (see [refs](#refs)).
 # Glossary
 
 Each acronym appears in exactly one vignette, at its first executable
-use; every later mention links here. Alphabetical.
+use; every later mention links here. Listed in discovery order:
+the order the REPL first meets each idea.
 
 | Acro | Expansion | One line | First use | Ref |
 |------|-----------|----------|-----------|-----|
-| ACQ | Acquisition function | Rule for which unlabelled row to score next | [L7.2](#l7) | Settles 2009 |
-| AL | Active learning | Model chooses its own next label | [L7.2](#l7) | Settles 2009 |
-| ANOM | Anomaly by distance | Loneliest row = farthest from its nearest neighbor | [L10.2](#l10) | Breunig 2000 |
-| BASELINE | Dumb baseline | Beat random, or admit you didn't | [L8.3](#l8) | Dacrema 2019 |
-| BO | Bayesian optimization | Fit a surrogate, sample where it promises most | [L7.2](#l7) | Settles 2009 |
-| CART | Classification & regression tree | A tree whose every split is a named threshold | [L6.2](#l6) | Breiman 1984 |
-| CDF | Cumulative distribution | Fraction of a population at or below a value | [L1.6](#l1) | — |
-| CLIFF | Cliff's delta | Rank-imbalance effect size, 0..1 | [L9.3](#l9) | Cliff 1993 |
-| CLT | Central limit theorem | Sample means scatter as σ/√n — the noise floor | [L9.2](#l9) | — |
-| COHEN | Cohen's d | Mean gap in pooled-sd units; size, not p-value | [L9.1](#l9) | Cohen 1969 |
-| CUT | Supervised discretization | The threshold that most purifies an outcome | [L5.1](#l5) | Fayyad 1993 |
-| D2H | Distance to heaven | One 0..1 score: gap to the ideal on every goal | [L3.3](#l3) | — |
-| DTLZ | DTLZ benchmark suite | Scalable multi-objective problems, known fronts | [L10.5](#l10) | Deb 2005 |
-| ENT | Shannon entropy | A symbol column's spread, in bits | [L1.5](#l1) | Shannon 1948 |
-| FASTMAP | FastMap projection | Place points by distance to two pivots | [L4.1](#l4) | Faloutsos 1995 |
-| HALVE | Recursive bisection | Split on the principal axis, recurse | [L4.3](#l4) | — |
-| HOLD | Holdout / cross-validation | Never grade a model on rows it trained on | [L8.2](#l8) | Stone 1974 |
-| IG | Information gain | Parent impurity − weighted child impurity | [L5.4](#l5) | Quinlan 1986 |
-| KM | k-means | Assign to nearest centroid, recenter, repeat | [L10.4](#l10) | Lloyd 1957 |
-| KNN | k nearest neighbors | The data is the model; ≤2× best error (1-NN) | [L10.1](#l10) | Cover 1967 |
-| KPP | k-means++ | Seed centroids with chance ∝ distance² | [L10.4](#l10) | Arthur 2007 |
-| KS | Kolmogorov–Smirnov | Largest gap between two CDFs | [L9.3](#l9) | — |
-| LOG | Logistic squashing | Logistic approximates the normal CDF (±1%) | [L1.6](#l1) | — |
-| MINK | Minkowski distance | p-norm family: p=1 Manhattan, p=2 Euclidean | [L3.2](#l3) | — |
-| NB | Naive Bayes | Argmax of per-feature likelihoods; right despite bad probs | [L10.3](#l10) | Domingos 1997 |
-| NOIR | Nominal/Ordinal/Interval/Ratio | Scales of measurement; symbol vs number here | [L1.1](#l1) | Stevens 1946 |
-| PARETO | Pareto optimality | No other solution beats it on every goal | [L3.3](#l3) | — |
-| POLE | Far-pair poles | Project rows onto the line between two extremes | [L4.1](#l4) | Faloutsos 1995 |
-| POWER | Statistical power | Chance of catching a real effect; climbs with n | [L9.4](#l9) | — |
-| PRUNE | Tree pruning | Occam: smallest tree that still fits | [L6.4](#l6) | Breiman 1984 |
-| ROLE | Feature vs goal | x-inputs and y-goals, split from the header | [L2.2](#l2) | — |
-| SAME | Conservative sameness | AND three effect-size tests before crying "different" | [L9.3](#l9) | — |
-| SBSE | Search-based SE | SE tasks as optimization problems | [L10.5](#l10) | Harman 2001 |
-| SK | Scott-Knott ranking | Group statistical ties into one rank | [L9.5](#l9) | Scott 1974 |
-| STREAM | Subtractable summary | Removing a datum costs the same as adding it | [L2.4](#l2) | Welford 1962 |
-| TS | Thompson sampling | Choose in proportion to chance-of-being-best | [L7.3](#l7) | Thompson 1933 |
-| VAL | Split purity | Size-weighted mean diversity of a cut's two sides | [L5.4](#l5) | Quinlan 1986 |
-| WEL | Welford's online variance | Mean and variance in one pass, no stored data | [L1.4](#l1) | Welford 1962 |
-| WIN | Win score | % of the way from median to best; capped [-100,100] | [L8.1](#l8) | — |
-| XAI | Explainable AI | Models whose reasoning a human can audit | [L6.2](#l6) | Breiman 1984 |
+| <a name="g-noir"></a>NOIR | Nominal/Ordinal/Interval/Ratio | Scales of measurement; symbol vs number here | [L1.1](#l1) | Stevens 1946 |
+| <a name="g-wel"></a>WEL | Welford's online variance | Mean and variance in one pass, no stored data | [L1.4](#l1) | Welford 1962 |
+| <a name="g-ent"></a>ENT | Shannon entropy | A symbol column's spread, in bits | [L1.5](#l1) | Shannon 1948 |
+| <a name="g-cdf"></a>CDF | Cumulative distribution | Fraction of a population at or below a value | [L1.6](#l1) | — |
+| <a name="g-log"></a>LOG | Logistic squashing | Logistic approximates the normal CDF (±1%) | [L1.6](#l1) | — |
+| <a name="g-role"></a>ROLE | Feature vs goal | x-inputs and y-goals, split from the header | [L2.2](#l2) | — |
+| <a name="g-stream"></a>STREAM | Subtractable summary | Removing a datum costs the same as adding it | [L2.4](#l2) | Welford 1962 |
+| <a name="g-mink"></a>MINK | Minkowski distance | p-norm family: p=1 Manhattan, p=2 Euclidean | [L3.2](#l3) | — |
+| <a name="g-d2h"></a>D2H | Distance to heaven | One 0..1 score: gap to the ideal on every goal | [L3.3](#l3) | — |
+| <a name="g-pareto"></a>PARETO | Pareto optimality | No other solution beats it on every goal | [L3.3](#l3) | — |
+| <a name="g-pole"></a>POLE | Far-pair poles | Project rows onto the line between two extremes | [L4.1](#l4) | Faloutsos 1995 |
+| <a name="g-fastmap"></a>FASTMAP | FastMap projection | Place points by distance to two pivots | [L4.1](#l4) | Faloutsos 1995 |
+| <a name="g-halve"></a>HALVE | Recursive bisection | Split on the principal axis, recurse | [L4.3](#l4) | — |
+| <a name="g-cut"></a>CUT | Supervised discretization | The threshold that most purifies an outcome | [L5.1](#l5) | Fayyad 1993 |
+| <a name="g-ig"></a>IG | Information gain | Parent impurity − weighted child impurity | [L5.4](#l5) | Quinlan 1986 |
+| <a name="g-val"></a>VAL | Split purity | Size-weighted mean diversity of a cut's two sides | [L5.4](#l5) | Quinlan 1986 |
+| <a name="g-cart"></a>CART | Classification & regression tree | A tree whose every split is a named threshold | [L6.2](#l6) | Breiman 1984 |
+| <a name="g-xai"></a>XAI | Explainable AI | Models whose reasoning a human can audit | [L6.2](#l6) | Breiman 1984 |
+| <a name="g-prune"></a>PRUNE | Tree pruning | Occam: smallest tree that still fits | [L6.4](#l6) | Breiman 1984 |
+| <a name="g-acq"></a>ACQ | Acquisition function | Rule for which unlabelled row to score next | [L7.2](#l7) | Settles 2009 |
+| <a name="g-al"></a>AL | Active learning | Model chooses its own next label | [L7.2](#l7) | Settles 2009 |
+| <a name="g-bo"></a>BO | Bayesian optimization | Fit a surrogate, sample where it promises most | [L7.2](#l7) | Settles 2009 |
+| <a name="g-ts"></a>TS | Thompson sampling | Choose in proportion to chance-of-being-best | [L7.3](#l7) | Thompson 1933 |
+| <a name="g-win"></a>WIN | Win score | % of the way from median to best; capped [-100,100] | [L8.1](#l8) | — |
+| <a name="g-hold"></a>HOLD | Holdout / cross-validation | Never grade a model on rows it trained on | [L8.2](#l8) | Stone 1974 |
+| <a name="g-baseline"></a>BASELINE | Dumb baseline | Beat random, or admit you didn't | [L8.3](#l8) | Dacrema 2019 |
+| <a name="g-cohen"></a>COHEN | Cohen's d | Mean gap in pooled-sd units; size, not p-value | [L9.1](#l9) | Cohen 1969 |
+| <a name="g-clt"></a>CLT | Central limit theorem | Sample means scatter as σ/√n — the noise floor | [L9.2](#l9) | — |
+| <a name="g-ks"></a>KS | Kolmogorov–Smirnov | Largest gap between two CDFs | [L9.3](#l9) | — |
+| <a name="g-cliff"></a>CLIFF | Cliff's delta | Rank-imbalance effect size, 0..1 | [L9.3](#l9) | Cliff 1993 |
+| <a name="g-same"></a>SAME | Conservative sameness | AND three effect-size tests before crying "different" | [L9.3](#l9) | — |
+| <a name="g-power"></a>POWER | Statistical power | Chance of catching a real effect; climbs with n | [L9.4](#l9) | — |
+| <a name="g-sk"></a>SK | Scott-Knott ranking | Group statistical ties into one rank | [L9.5](#l9) | Scott 1974 |
+| <a name="g-knn"></a>KNN | k nearest neighbors | The data is the model; ≤2× best error (1-NN) | [L10.1](#l10) | Cover 1967 |
+| <a name="g-anom"></a>ANOM | Anomaly by distance | Loneliest row = farthest from its nearest neighbor | [L10.2](#l10) | Breunig 2000 |
+| <a name="g-nb"></a>NB | Naive Bayes | Argmax of per-feature likelihoods; right despite bad probs | [L10.3](#l10) | Domingos 1997 |
+| <a name="g-km"></a>KM | k-means | Assign to nearest centroid, recenter, repeat | [L10.4](#l10) | Lloyd 1957 |
+| <a name="g-kpp"></a>KPP | k-means++ | Seed centroids with chance ∝ distance² | [L10.4](#l10) | Arthur 2007 |
+| <a name="g-dtlz"></a>DTLZ | DTLZ benchmark suite | Scalable multi-objective problems, known fronts | [L10.5](#l10) | Deb 2005 |
+| <a name="g-sbse"></a>SBSE | Search-based SE | SE tasks as optimization problems | [L10.5](#l10) | Harman 2001 |
 
 [contents](#contents)
 
