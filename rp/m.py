@@ -68,25 +68,16 @@ def M(src):
       f  = lambda v, ks=ks, k1=k1: ks[v] / k1
     for i, r in enumerate(rows):
       if r[c] != "?": N[i][c] = f(r[c])
-  return o(head=head, rows=rows, N=N,
+  return o(head=head, rows=rows, N=N, NT=[list(v) for v in zip(*N)],
            x=[c for c, s in enumerate(head) if s[-1] not in "+-!"],
            y=[c for c, s in enumerate(head) if s[-1] in "+-"],
            w=[s[-1] != "-" for s in head])
 
-def dist(N, i, j, cols):
-  "minkowski over shared cells; nothing shared = 1"
+def dist(V, i, j, live):
+  "minkowski over live cells; V is N (rows) or NT (cols)"
   d = n = 0
-  for c in cols:
-    a, b = N[i][c], N[j][c]
-    if a is not None and b is not None:
-      d += abs(a - b) ** the.p; n += 1
-  return (d / n) ** (1 / the.p) if n else 1
-
-def distc(N, rows, c1, c2):
-  "column-column minkowski over the live rows"
-  d = n = 0
-  for i in rows:
-    a, b = N[i][c1], N[i][c2]
+  for c in live:
+    a, b = V[i][c], V[j][c]
     if a is not None and b is not None:
       d += abs(a - b) ** the.p; n += 1
   return (d / n) ** (1 / the.p) if n else 1
@@ -102,11 +93,11 @@ def disty(m, i):
 
 def sweep(items, distf, ylab=None):
   "anchors -> weighted pair views -> marks -> cull below top/2"
-  dn = Num()
+  dn = Num()                                     # 64: enough to
   for _ in range(64): dn = add(dn, distf(any1(items), any1(items)))
-  A = []
+  eps, A = the.close * sd(dn), []                # steady the sd
   for i in anys(items, len(items)):
-    if all(distf(i, a) > the.close * sd(dn) for a in A):
+    if all(distf(i, a) > eps for a in A):
       A += [i]
       if len(A) == min(the.anchors, len(items)): break
   ys   = {a: ylab(a) for a in A} if ylab else None
@@ -138,7 +129,7 @@ def squeeze(m, labelled=True):
       R, mR = sweep(R, lambda i, j: dist(m.N, i, j, C),
                     ylab if labelled else None)
     if len(C) > 4:
-      C, mC = sweep(C, lambda a, b: distc(m.N, R, a, b))
+      C, mC = sweep(C, lambda a, b: dist(m.NT, a, b, R))
     if len(R) == r0 and len(C) == c0: break
   if mR and len(R) > the.cap:
     R = sorted(R, key=mR.get, reverse=True)[:the.cap]
