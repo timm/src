@@ -5,6 +5,8 @@
 #
 # pipeline:  x.csv --bin--> x_b.csv --run--> x.txt --report--> stdout
 
+-include $(shell git rev-parse --show-toplevel)/Makefile
+
 MOOT ?= $(HOME)/gits/timm/moot
 D    ?= .
 BINS ?= 6

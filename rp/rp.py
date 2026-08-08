@@ -26,40 +26,55 @@ SYM = dict(vl=1, l=2, n=3, h=4, vh=5, xh=6)      # ordinal words, if seen
 
 #--------------------------------------------------------------- bin ---------
 def num(v):
+  "coerce to float if you can; else keep the string"
   try: return float(v)
-  except: return None
+  except: return v
 
-def bins(path, B=10):
+def show(v):
+  return v if isinstance(v, str) else f"{v:g}"
+
+def csv(path):
   rows = [l.strip().split(",") for l in open(path) if l.strip()]
   head, body = rows[0], rows[1:]
   keep = [i for i, h in enumerate(head) if h[-1] != "X"]
-  head = [head[i] for i in keep]
-  body = [[r[i] for i in keep] for r in body]
+  return ([head[i] for i in keep],
+          [[num(r[i]) for i in keep] for r in body])
+
+def binNum(col, B):                              # knowns -> equal-freq coder
+  vals = sorted(col)
+  cuts = [vals[len(vals) * i // B] for i in range(1, B)]
+  return lambda v: 1 + sum(v > x for x in cuts)
+
+def binSym(col):                                 # knowns -> ordinal coder
+  seen = {v: i + 1 for i, v in enumerate(sorted(set(col), key=str))}
+  return lambda v: SYM.get(v, seen[v])
+
+def bins(path, B=10):
+  "bin every x column; Upper head = num, lower = sym; '?' -> 0"
+  head, body = csv(path)
   for c, h in enumerate(head):
     if h[-1] in "+-": continue                   # goals stay raw
-    col = [r[c] for r in body]
-    if all(num(v) is not None for v in col):     # numeric: equal-frequency
-      cuts = sorted(num(v) for v in col)
-      cuts = [cuts[len(cuts) * i // B] for i in range(1, B)]
-      for r in body: r[c] = str(1 + sum(num(r[c]) > x for x in cuts))
-    else:                                        # symbolic: ordinal or enum
-      seen = {v: i + 1 for i, v in enumerate(sorted(set(col)))}
-      for r in body: r[c] = str(SYM.get(r[c], seen[r[c]]))
+    col = [r[c] for r in body if r[c] != "?"]
+    f   = binNum(col, B) if h[0].isupper() else binSym(col)
+    for r in body: r[c] = 0 if r[c] == "?" else f(r[c])
   print(",".join(head))
-  for r in body: print(",".join(r))
+  for r in body: print(",".join(show(v) for v in r))
 
 #--------------------------------------------------------------- run ---------
 def read(path):
-  rows = [l.strip().split(",") for l in open(path) if l.strip()]
-  head = rows[0]
+  head, body = csv(path)                         # binned csv: all numeric
   x = [i for i, h in enumerate(head) if h[-1] not in "+-"]
   y = [(i, 1 if head[i][-1] == "+" else 0)
        for i, h in enumerate(head) if h[-1] in "+-"]
-  return head, x, y, [[float(v) for v in r] for r in rows[1:]]
+  return head, x, y, body
 
 def dist(a, b, cols, B):
-  "city block over the given columns, normalized to 0..1"
-  return sum(abs(a[c] - b[c]) for c in cols) / ((B - 1) * len(cols))
+  "city block, normalized to 0..1. bin 0 = missing: jump"
+  "that column (Gower'71); nothing shared = max distance."
+  d = n = 0
+  for c in cols:
+    if a[c] and b[c]: d += abs(a[c] - b[c]); n += 1
+  return d / ((B - 1) * n) if n else 1
 
 def far(items, cols, B, eps, f=0):
   "furthest-point cover (Gonzalez). all items end within eps of a delegate."
@@ -92,37 +107,47 @@ def run(path, N=3, eras=6, eps=.1, seed=1, check=5, f=0):
       g += (h - (r[c] - lo) / (hi - lo + 1E-32)) ** 2
     return (g / len(y)) ** .5
 
-  E, live = [], x                                # delegates, live constructs
-  for era in range(eras):
-    for row in train[era * N:(era + 1) * N]:     # one element at a time
+  def grow(E, live, batch):                      # one era's arrivals: join
+    for row in batch:                            # your delegate, or found one
       if not E or min(dist(row, e["lead"], live, B) for e in E) >= eps:
         E += [dict(lead=row, kin=[])]            # novel -> new delegate
       else:
         min(E, key=lambda e: dist(row, e["lead"], live, B))["kin"] += [row]
-    grid = [[e["lead"][c] for c in x] for e in E]     # pause: reflect on
-    cons = [[g[j] for g in grid] for j in range(len(x))]    # constructs
-    C    = (far(cons, range(len(E)), B, eps, f) if len(E) > 1
+    return E
+
+  def reflect(E):                                # pause: constructs prune/
+    grid = [[e["lead"][c] for c in x] for e in E]     # fuse over the grid
+    cons = [[g[j] for g in grid] for j in range(len(x))]
+    return (far(cons, range(len(E)), B, eps, f) if len(E) > 1
             else [dict(at=i, kin=[i]) for i in range(len(x))])
+
+  E, live = [], x                                # delegates, live constructs
+  for era in range(eras):
+    E    = grow(E, live, train[era * N:(era + 1) * N])
+    C    = reflect(E)
     live = [x[c["at"]] for c in C]
 
   E.sort(key=lambda e: d2h(e["lead"]))           # best towards the top
   guess = lambda r: d2h(min(E, key=lambda e: dist(r, e["lead"], live, B))["lead"])
   test.sort(key=guess)                           # labels=0: sorted on guess
   test[:check] = sorted(test[:check], key=d2h)   # label top Check: true d sort
-  ints = lambda r: ",".join(str(int(r[c])) for c in live)
-  raws = lambda r: ",".join(f"{r[c]:g}" for c, _ in y)
-  print(f"meta\teps={eps}\tB={B:g}\tN={N}\teras={eras}\tcheck={check}\t"
-        f"heaven={','.join(str(h) for _, h in y)}")
-  for c in C:
-    print(f"con\t{head[x[c['at']]]}\t"
-          f"{','.join(head[x[i]] for i in c['kin'][1:])}")
-  for e in E:
-    print(f"ele\td={d2h(e['lead']):.2f}\t{len(e['kin']) + 1}\t"
-          f"{ints(e['lead'])}\t{raws(e['lead'])}")
-  print()
-  for j, r in enumerate(test):
-    if j == check: print()
-    print(f"tst\tguess={guess(r):.2f}\td={d2h(r):.2f}\t{ints(r)}\t{raws(r)}")
+
+  def emit():                                    # the model, as tag lines
+    ints = lambda r: ",".join(str(int(r[c])) for c in live)
+    raws = lambda r: ",".join(f"{r[c]:g}" for c, _ in y)
+    print(f"meta\teps={eps}\tB={B:g}\tN={N}\teras={eras}\tcheck={check}\t"
+          f"heaven={','.join(str(h) for _, h in y)}")
+    for c in C:
+      print(f"con\t{head[x[c['at']]]}\t"
+            f"{','.join(head[x[i]] for i in c['kin'][1:])}")
+    for e in E:
+      print(f"ele\td={d2h(e['lead']):.2f}\t{len(e['kin']) + 1}\t"
+            f"{ints(e['lead'])}\t{raws(e['lead'])}")
+    print()
+    for j, r in enumerate(test):
+      if j == check: print()
+      print(f"tst\tguess={guess(r):.2f}\td={d2h(r):.2f}\t{ints(r)}\t{raws(r)}")
+  emit()
 
 #--------------------------------------------------------------- report ------
 def d2h1(ys, lohi, heaven):
@@ -131,23 +156,26 @@ def d2h1(ys, lohi, heaven):
   return (g / len(ys)) ** .5
 
 def report(src):
-  E, T = [], []
-  for line in src:
-    f = line.strip().split("\t")
-    if f[0] == "meta":
-      m = dict(kv.split("=") for kv in f[1:])
-      B, heaven = float(m["B"]), [int(v) for v in m["heaven"].split(",")]
-    if f[0] == "ele": E += [dict(x=[int(v) for v in f[3].split(",")],
-                                 y=[float(v) for v in f[4].split(",")])]
-    if f[0] == "tst": T += [dict(x=[int(v) for v in f[3].split(",")],
-                                 y=[float(v) for v in f[4].split(",")])]
+  def parse(src):
+    E, T, B, heaven = [], [], 0, []
+    for line in src:
+      f = line.strip().split("\t")
+      if f[0] == "meta":
+        m = dict(kv.split("=") for kv in f[1:])
+        B, heaven = float(m["B"]), [int(v) for v in m["heaven"].split(",")]
+      if f[0] == "ele": E += [dict(x=[int(v) for v in f[3].split(",")],
+                                   y=[float(v) for v in f[4].split(",")])]
+      if f[0] == "tst": T += [dict(x=[int(v) for v in f[3].split(",")],
+                                   y=[float(v) for v in f[4].split(",")])]
+    return E, T, B, heaven
+  E, T, B, heaven = parse(src)
   lohi = [(min(r["y"][i] for r in E + T), max(r["y"][i] for r in E + T))
           for i in range(len(heaven))]
   for r in E + T: r["d"] = d2h1(r["y"], lohi, heaven)
   cut = sorted(r["d"] for r in E)[len(E) // 4]
   for r in E: r["c"] = r["d"] <= cut
-  nn = lambda t: min(E, key=lambda e: sum(abs(a - b) for a, b in
-                     zip(t["x"], e["x"])) / ((B - 1) * len(t["x"])))
+  nn = lambda t: min(E, key=lambda e:
+                     dist(t["x"], e["x"], range(len(t["x"])), B))
   hits = sum((t["d"] <= cut) == nn(t)["c"] for t in T)
   mae  = sum(abs(t["d"] - nn(t)["d"]) for t in T)
   print(f"{len(E)} delegates (=labels), {len(T)} test rows")
