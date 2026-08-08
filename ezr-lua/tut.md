@@ -71,7 +71,7 @@ To replay a lecture's inputs and regenerate its trace:
 | [7](#l7)  | Active learning / acquire  | 95–108  | [ACQ](#g-acq), [AL](#g-al), [BO](#g-bo), [TS](#g-ts) |
 | [8](#l8)  | The holdout rig            | 109–124 | [HOLD](#g-hold), [WIN](#g-win), [BASELINE](#g-baseline) |
 | [9](#l9)  | Statistics                 | 125–142 | [COHEN](#g-cohen), [KS](#g-ks), [CLIFF](#g-cliff), [SAME](#g-same), [POWER](#g-power), [SK](#g-sk) |
-| [10](#l10)| Apps, then DTLZ (advanced) | 143–170 | [KNN](#g-knn), [ANOM](#g-anom), [NB](#g-nb), [KM](#g-km), [KPP](#g-kpp), [DTLZ](#g-dtlz), [SBSE](#g-sbse) |
+| [10](#l10)| Apps, then DTLZ (advanced) | 143–183 | [KNN](#g-knn), [ANOM](#g-anom), [NB](#g-nb), [KM](#g-km), [KPP](#g-kpp), [DTLZ](#g-dtlz), [SBSE](#g-sbse), [GA](#g-ga), [DE](#g-de), [SA](#g-sa), [LS](#g-ls) |
 | [quiz](#quiz)     | Revision guide (gated questions) | | |
 | [answers](#answers) | Worked answers               | | |
 | [glossary](#glossary) | Acronyms & terms           | | |
@@ -1790,20 +1790,108 @@ labels out of 1000 possible rows drive `disty` down to 0.29.
 > readable lines plus a label budget beat brute force when labels are
 > dear* — falsified only when labels are so cheap you should just
 > measure them all (Lecture 8's tie).
+>
+> A translation table, for reading that literature: what SBSE calls a
+> *fitness function* is our `disty`; its *evaluation budget* is our
+> label budget; its *search space* is just this table's x columns;
+> and its *metaheuristics* — genetic algorithms, simulated
+> annealing, differential evolution — are stochastic samplers of
+> that space (raced head-to-head in the next section). Same
+> machinery, different vocabulary.
 
 **Check.** A DTLZ row is born `"?"` and labelled only when `disty` is
 called. Why is that lazy-labelling essential when each label is a
 one-hour benchmark — and what does `acquirer` spending only 50 of
 1000 possible labels save, in that world?
 
+## 10.6 ADVANCED — the drag race: four classic optimizers
+
+The literature the last vignette pointed at runs on *optimizers*:
+samplers that hunt good rows without measuring everything. Four
+classics now live in `ezr-apps.lua`. First, their referee. Lecture
+3's `disty` squashes all goals to one number; the older, stricter
+test is domination ([PARETO](#g-pareto)): one row dominates another
+when it is no worse on every goal and better on at least one. The
+two ends of the `disty` sort settle instantly:
+
+```lua
+[171]> s = keysort(t.rows, t:Y())
+[172]> t:dominates(s[1], s[#s])
+true
+[173]> t:dominates(s[#s], s[1])
+false
+```
+
+But domination is a partial order. Sample random pairs and, often,
+*neither* side wins — which is exactly why `disty` exists:
+
+```lua
+[174]> n = 0; for _ = 1,64 do local a,b = t.rows[rand(#t.rows)], t.rows[rand(#t.rows)]; if not (t:dominates(a,b) or t:dominates(b,a)) then n = n + 1 end end
+[175]> n .. " of 64 random pairs: neither dominates"
+19 of 64 random pairs: neither dominates
+```
+
+Now the racers. Each invents mutant rows, and a mutant has no
+labels — so it is graded by its nearest real row's `disty` (the
+table is the oracle). `ga` evolves a population with domination
+tournaments; `de` blends three rows per kid; `sa` accepts some bad
+moves early; `ls` is better-or-bust. One lap each:
+
+```lua
+[176]> round(t:disty(t:ga()))
+0.15
+[177]> round(t:disty(t:de()))
+0.09
+[178]> round(t:disty(t:sa()))
+0.1
+[179]> round(t:disty(t:ls()))
+0.15
+```
+
+One lap proves nothing (Lecture 9). So race them — five laps each,
+plus `any`: just keep the best of 20 random rows. Lecture 9's
+`ranks` groups the statistical ties:
+
+```lua
+[180]> d, r = t:race()
+[181]> med = function(v) return round(sorted(v)[3]) end
+[182]> show{ga=med(d.ga), de=med(d.de), sa=med(d.sa), ls=med(d.ls), any=med(d.any)}
+{:any 0.15 :de 0.09 :ga 0.1 :ls 0.09 :sa 0.14}
+[183]> show(r.winners)
+{de}
+```
+
+Notice: the dumb baseline `any` medians 0.15 — one rank off the
+winner, for a fraction of the code and evaluations. Whether that
+gap is worth an optimizer's machinery is this course's whole
+argument, now runnable in one line.
+
+> **[GA](#g-ga) / [DE](#g-de) / [SA](#g-sa) / [LS](#g-ls) — the classic metaheuristics.**
+> Holland (1975) evolved populations by mutation, crossover and
+> selection (here, selection by domination); Storn & Price (1997)
+> sped that up by extrapolating between current members (`a +
+> F*(b-c)`); Kirkpatrick et al. (1983) escaped local optima by
+> accepting some bad moves, boldly at first, rarely near the end;
+> and greedy local search is the control they all must beat. SBSE
+> runs on these engines. Here they meet the same referee as
+> everything else in this course: `disty`, a budget, and Lecture
+> 9's statistics.
+
+**Check.** `[182]` shows `ls` and `de` share the best median, yet
+`[183]` crowns only `de`. What did `same` see in the five laps
+that split them? (Hint: Lecture 9's gate reads more than the
+middle number.)
+
 ## Recap
 
-REPL events covered: 143–170. One substrate became four tools —
+REPL events covered: 143–183. One substrate became four tools —
 prediction ([KNN](#g-knn)), anomaly ([ANOM](#g-anom)),
 classification ([NB](#g-nb)), clustering
-([KM](#g-km)/[KPP](#g-kpp)) — and then an external-model
+([KM](#g-km)/[KPP](#g-kpp)) — then an external-model
 optimizer ([DTLZ](#g-dtlz)/[SBSE](#g-sbse)) that labels only on
-demand. The course thesis, discharged: a few hundred readable lines
+demand, and a drag race where the classic metaheuristics
+([GA](#g-ga)/[DE](#g-de)/[SA](#g-sa)/[LS](#g-ls)) barely beat
+best-of-20-random. The course thesis, discharged: a few hundred readable lines
 run the experiment yourself.
 
 **Capstone exercise.** Pick one MOOT optimization dataset
@@ -1817,9 +1905,18 @@ rig, believe only what survives the statistics.
 
 **Standing homework.** Your port now has a target for every lecture.
 By the schedule in the [contents](#contents) table, reproduce every
-event 1–170; the RNG guarantees identical numbers. A green diff is a
+event 1–183; the RNG guarantees identical numbers. A green diff is a
 correct reimplementation of a data-lite AI toolkit — written by you,
 not flown over.
+
+**Where this sits in 2026.** The frontier is not "classical *or*
+LLM" but "classical *then* LLM": Srinivasan & Menzies (2026) report
+that seeding an LLM with the survivors of a cheap classical
+optimizer — the same acquire-style loop as Lecture 7 — beats the
+LLM working alone, while spending fewer tokens (see
+[refs](#refs)). That combination of sophisticated little algorithms
+and large models is the sequel to this course; what you built here
+is its first half.
 
 [contents](#contents)
 
@@ -1997,6 +2094,10 @@ the order the REPL first meets each idea.
 | <a name="g-kpp"></a>KPP | k-means++ | Seed centroids with chance ∝ distance² | [L10.4](#l10) | Arthur 2007 |
 | <a name="g-dtlz"></a>DTLZ | DTLZ benchmark suite | Scalable multi-objective problems, known fronts | [L10.5](#l10) | Deb 2005 |
 | <a name="g-sbse"></a>SBSE | Search-based SE | SE tasks as optimization problems | [L10.5](#l10) | Harman 2001 |
+| <a name="g-ga"></a>GA | Genetic algorithm | Evolve a population: mutate, cross, keep dominators | [L10.6](#l10) | Holland 1975 |
+| <a name="g-de"></a>DE | Differential evolution | Kid = a + F·(b−c); replaces its parent if better | [L10.6](#l10) | Storn 1997 |
+| <a name="g-sa"></a>SA | Simulated annealing | Accept some bad moves, boldly early, rarely late | [L10.6](#l10) | Kirkpatrick 1983 |
+| <a name="g-ls"></a>LS | Local search | Greedy (1+1): keep only improvements | [L10.6](#l10) | — |
 
 [contents](#contents)
 
@@ -2036,6 +2137,12 @@ the order the REPL first meets each idea.
 - Harman & Jones 2001, *Search-Based Software Engineering*,
   Information and Software Technology.
   https://doi.org/10.1016/S0950-5849(01)00189-6
+- Holland 1975, *Adaptation in Natural and Artificial Systems*,
+  U. Michigan Press.
+  https://doi.org/10.7551/mitpress/1090.001.0001
+- Kirkpatrick, Gelatt & Vecchi 1983, *Optimization by Simulated
+  Annealing*, Science.
+  https://doi.org/10.1126/science.220.4598.671
 - Lloyd 1982 (1957), *Least Squares Quantization in PCM*, IEEE Trans.
   Information Theory. https://doi.org/10.1109/TIT.1982.1056489
 - Nair, Menzies, Siegmund & Apel 2017, *Using Bad Learners to Find
@@ -2049,11 +2156,18 @@ the order the REPL first meets each idea.
 - Shannon 1948, *A Mathematical Theory of Communication*, Bell System
   Technical Journal.
   https://doi.org/10.1002/j.1538-7305.1948.tb01338.x
+- Srinivasan & Menzies 2026, *Better Together, in the Right Order:
+  Classical-then-LLM Optimization for SE*, arXiv.
+  https://arxiv.org/abs/2607.02583
 - Stevens 1946, *On the Theory of Scales of Measurement*, Science.
   https://doi.org/10.1126/science.103.2684.677
 - Stone 1974, *Cross-Validatory Choice and Assessment of Statistical
   Predictions*, JRSS-B.
   https://doi.org/10.1111/j.2517-6161.1974.tb00994.x
+- Storn & Price 1997, *Differential Evolution — A Simple and
+  Efficient Heuristic for Global Optimization over Continuous
+  Spaces*, J. Global Optimization.
+  https://doi.org/10.1023/A:1008202821328
 - Thompson 1933, *On the Likelihood that One Unknown Probability
   Exceeds Another*, Biometrika.
   https://doi.org/10.1093/biomet/25.3-4.285
