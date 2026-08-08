@@ -1,41 +1,43 @@
 # vim: ts=8 noexpandtab :
 SHELL := /bin/bash
 .DEFAULT_GOAL := help
+ROOT := $(shell git -C $(dir $(abspath $(lastword $(MAKEFILE_LIST)))) rev-parse --show-toplevel)
 
 help: ## show targets
-	@grep -hE '^[a-z-]+:.*## ' Makefile | \
+	@grep -hE '^[a-z-]+:.*## ' $(ROOT)/Makefile | \
 	  awk -F':.*## ' '{printf "  \033[36m%-8s\033[0m %s\n", $$1, $$2}'
 
 sh: ## bash tuned by etc/bashrc
-	@here="$(CURDIR)" bash --rcfile etc/bashrc -i
+	@here="$(ROOT)" bash --rcfile $(ROOT)/etc/bashrc -i
 
 tmux: ## tmux session running tuned bash
-	@here="$(CURDIR)" tmux -f etc/tmux.rc new-session \
-	  "here='$(CURDIR)' bash --rcfile etc/bashrc -i"
+	@here="$(ROOT)" tmux -f $(ROOT)/etc/tmux.rc new-session \
+	  "here='$(ROOT)' bash --rcfile $(ROOT)/etc/bashrc -i"
 
 push: ## add+commit+push+status
-	@git add -A
-	@printf "msg (empty=save): "; read m </dev/tty; git commit -m "$${m:-save}" || true
-	@git push
-	@git status
+	@git -C $(ROOT) add -A
+	@printf "msg (empty=save): "; read m </dev/tty; git -C $(ROOT) commit -m "$${m:-save}" || true
+	@git -C $(ROOT) push
+	@git -C $(ROOT) status
 
 eg: ## run every project's examples/tests
-	cd ezr-py     && python3 xai-eg.py all
-	cd ezr-py     && python3 xaiplus-eg.py all
-	cd ezr-lisp && sbcl --script xai-eg.lisp --all
-	cd ezr-lisp && sbcl --script xaiplus-eg.lisp --all
-	cd attic/luamine  && lua luamine-eg.lua --all
-	cd ezr-lua      && lua ezr-eg.lua --all
-	cd ezr-lua      && lua ezr-apps.lua --all
-	cd ezr-lua      && lua ezr-dtlz.lua --all
+	cd $(ROOT)/ezr-py     && python3 xai-eg.py all
+	cd $(ROOT)/ezr-py     && python3 xaiplus-eg.py all
+	cd $(ROOT)/ezr-lisp && sbcl --script xai-eg.lisp --all
+	cd $(ROOT)/ezr-lisp && sbcl --script xaiplus-eg.lisp --all
+	cd $(ROOT)/attic/luamine  && lua luamine-eg.lua --all
+	cd $(ROOT)/ezr-lua      && lua ezr-eg.lua --all
+	cd $(ROOT)/ezr-lua      && lua ezr-apps.lua --all
+	cd $(ROOT)/ezr-lua      && lua ezr-dtlz.lua --all
 
 check: ## glossary links <-> headings, then each course's frozen transcript
-	@python3 etc/join.py glossary.md $(wildcard */*-eg.py */*-eg.lua */*-eg.lisp)
-	@cd ezr-lisp && sbcl --script xai-eg.lisp --check
-	@cd ezr-lisp && sbcl --script xaiplus-eg.lisp --check
+	@python3 $(ROOT)/etc/join.py $(ROOT)/glossary.md \
+	  $(wildcard $(ROOT)/*/*-eg.py $(ROOT)/*/*-eg.lua $(ROOT)/*/*-eg.lisp)
+	@cd $(ROOT)/ezr-lisp && sbcl --script xai-eg.lisp --check
+	@cd $(ROOT)/ezr-lisp && sbcl --script xaiplus-eg.lisp --check
 
 doc: ## pycco html per source file into docs/<proj>/
-	@for p in */; do p=$${p%/}; \
+	@cd $(ROOT) && for p in */; do p=$${p%/}; \
 	   [ -f $$p/INSTALL.md ] || continue; \
 	   mkdir -p docs/$$p; \
 	   rm -f docs/$$p/*.html docs/$$p/*.part docs/$$p/.order; \
@@ -70,10 +72,10 @@ doc: ## pycco html per source file into docs/<proj>/
 Font ?= 4.5       # pdf font size
 Cols ?= 3         # pdf columns
 LPC  ?= 120       # lines per pdf column; packs sections
-ETC  := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))etc
+ETC  := $(ROOT)/etc
 
 %.pdf: ## project dir -> ~/tmp/src/NAME.pdf via a2ps (make ezr-lisp.pdf)
-	@src=$$(ls */$*.lisp */$*.py */$*.lua 2>/dev/null | head -1); \
+	@cd $(ROOT) && src=$$(ls */$*.lisp */$*.py */$*.lua 2>/dev/null | head -1); \
 	 test -n "$$src" || { echo "no */$*.(lisp|py|lua)"; exit 1; }; \
 	 case $${src##*.} in lisp) lang=clisp;; py) lang=python;; \
 	   lua) lang=lua;; esac; \
