@@ -27,6 +27,7 @@ from types import SimpleNamespace as o
 from random import choice as any1, sample as anys, seed as srand
 
 the  = o(anchors=10, close=.3, budget=50, top=.5, cap=10, p=2,
+         some=64,
          seed=1234567891,
          file=os.environ["HOME"] + "/gits/moot/optimize/misc/auto93.csv")
 TINY = 1e-32
@@ -93,9 +94,10 @@ def disty(m, i):
 
 def sweep(items, distf, ylab=None):
   "anchors -> weighted pair views -> marks -> cull below top/2"
-  dn = Num()                                     # 64: enough to
-  for _ in range(64): dn = add(dn, distf(any1(items), any1(items)))
-  eps, A = the.close * sd(dn), []                # steady the sd
+  dn = Num()                                     # the.some FREE dist
+  for _ in range(the.some):                      # samples steady the
+    dn = add(dn, distf(any1(items), any1(items)))   # sd; labels never
+  eps, A = the.close * sd(dn), []                    # spent here
   for i in anys(items, len(items)):
     if all(distf(i, a) > eps for a in A):
       A += [i]
