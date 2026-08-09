@@ -1,4 +1,5 @@
-xai	xai.lua	code
-xai-eg	xai-eg.lua	tests
-xaiplus	xaiplus.lua	code
-xaiplus-eg	xaiplus-eg.lua	tests
+ezr	ezr.lua	code
+ezr-lib	ezr-lib.lua	code
+ezr-eg	ezr-eg.lua	tests
+ezr-apps	ezr-apps.lua	code
+ezr-dtlz	ezr-dtlz.lua	code

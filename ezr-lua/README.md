@@ -12,9 +12,9 @@ Conventions: [../etc/style.md](../etc/style.md).
 <!-- badges -->
 <p align="center">
 <a href="https://timm.github.io/src/"><img alt="home" src="https://img.shields.io/badge/🏠-home-gold"></a>
-<a href="https://github.com/timm/src/tree/main/xai"><img alt="src" src="https://img.shields.io/badge/src-xai-black"></a>
+<a href="https://github.com/timm/src/tree/main/ezr-lua"><img alt="src" src="https://img.shields.io/badge/src-ezr--lua-black"></a>
 <a href="https://github.com/timm/src/actions/workflows/tests-ezr-lua.yml"><img alt="ci" src="https://github.com/timm/src/actions/workflows/tests-ezr-lua.yml/badge.svg"></a>
-<img alt="purpose" src="https://img.shields.io/badge/purpose-xai,optimization-ffb300">
+<img alt="purpose" src="https://img.shields.io/badge/purpose-ezr--lua,optimization-ffb300">
 <img alt="language" src="https://img.shields.io/badge/language-lua-9558B2">
 <a href="https://github.com/timm/src/blob/main/LICENSE.md"><img alt="license" src="https://img.shields.io/badge/license-MIT-brightgreen"></a>
 <a href="https://timm.fyi"><img alt="author" src="https://img.shields.io/badge/author-timm-blueviolet"></a>

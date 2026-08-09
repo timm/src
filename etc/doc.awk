@@ -44,6 +44,10 @@ ext == "lua" && /^\]\]/   { md = 0; next }
 ext == "lua" && md        {
   if (first && $0 == "") next
   first = 0; print "-- " $0; next }
+ext == "lua" && /^-- ?##+ ?[A-Za-z]/ {   # --## Title ---- ->
+  t = $0                                  # markdown heading,
+  gsub(/^-- ?##+ ?/, "", t); gsub(/ ?-+ *$/, "", t)  # no dashes
+  print ""; print "-- ## " t; next }
 ext == "lua"              { print; next }
 /^#\|/      { md = 1; first = 1; next }
 /^\|#/      { md = 0; next }
