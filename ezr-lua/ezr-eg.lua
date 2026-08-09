@@ -159,7 +159,7 @@ eg["--holdouts"] = function(    t,W,go,L,R,ml,mr,v) -- 20
          return sorted(u) end
   L  = go()                       -- active acquire
   R  = go(function(t2,cap)        -- random: first cap rows
-         return sub(t2.rows, 1, cap) end)
+         return slice(t2.rows, 1, cap) end)
   ml = sum(L, function(x) return x end) / 20
   mr = sum(R, function(x) return x end) / 20
   v  = same(L, R) and "tie" or (ml > mr and "land" or "rand")

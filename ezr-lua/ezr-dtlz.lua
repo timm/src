@@ -47,7 +47,7 @@ function sphere(M,g,th,    f,v) -- cos/sin product, dtlz2-6
   return f end
 
 function dtlz1(x,M,    g,f,v) -- linear front: sum f = .5
-  g, f = g1(sub(x, M)), {}
+  g, f = g1(slice(x, M)), {}
   for i = 0, M-1 do
     v = 0.5 * (1 + g)
     for j = 1, M-1-i do v = v * x[j] end
@@ -56,18 +56,18 @@ function dtlz1(x,M,    g,f,v) -- linear front: sum f = .5
   return f end
 
 function dtlz2(x,M) -- spherical front
-  return sphere(M, g2(sub(x, M)),
-           map(sub(x, 1, M-1), function(v)
+  return sphere(M, g2(slice(x, M)),
+           map(slice(x, 1, M-1), function(v)
              return v * pi/2 end)) end
 
 function dtlz3(x,M) -- spherical, multi-modal
-  return sphere(M, g1(sub(x, M)),
-           map(sub(x, 1, M-1), function(v)
+  return sphere(M, g1(slice(x, M)),
+           map(slice(x, 1, M-1), function(v)
              return v * pi/2 end)) end
 
 function dtlz4(x,M) -- spherical, biased sampling
-  return sphere(M, g2(sub(x, M)),
-           map(sub(x, 1, M-1), function(v)
+  return sphere(M, g2(slice(x, M)),
+           map(slice(x, 1, M-1), function(v)
              return v^100 * pi/2 end)) end
 
 function degen(x,M,g,    th) -- dtlz5/6: degenerate curve
@@ -76,13 +76,13 @@ function degen(x,M,g,    th) -- dtlz5/6: degenerate curve
     th[i] = pi/(4*(1+g)) * (1 + 2*g*x[i]) end
   return sphere(M, g, th) end
 
-function dtlz5(x,M) return degen(x, M, g2(sub(x, M))) end
-function dtlz6(x,M) return degen(x, M, g6(sub(x, M))) end
+function dtlz5(x,M) return degen(x, M, g2(slice(x, M))) end
+function dtlz6(x,M) return degen(x, M, g6(slice(x, M))) end
 
 function dtlz7(x,M,    k,g,f,h) -- disconnected front
   k = #x - M + 1
-  g = 1 + 9/k * sum(sub(x, M), function(v) return v end)
-  f = sub(x, 1, M-1)
+  g = 1 + 9/k * sum(slice(x, M), function(v) return v end)
+  f = slice(x, 1, M-1)
   h = M - sum(f, function(fi)
         return fi/(1+g) * (1 + sin(3*pi*fi)) end)
   push(f, (1+g) * h)
@@ -117,9 +117,9 @@ function TBL.baseline(i,    nums,f) -- mean of every goal
   return map(nums, "mid") end
 
 function instance(t,row) -- one row: x, then f, then disty
-  print("  x  " .. show(sub(row, 1, the.Nx)))
+  print("  x  " .. show(slice(row, 1, the.Nx)))
   print(("  f  %s   (disty %.3f, lower=better)"):format(
-    show(sub(row, the.Nx + 1)), t:disty(row))) end
+    show(slice(row, the.Nx + 1)), t:disty(row))) end
 
 --## demos -----------------------------------------------------
 eg = {}
@@ -136,11 +136,11 @@ eg["--fronts"] = function(    x,f,s,g) -- known geometry:
   for _ = 1, 100 do        -- dtlz1 leaves sum f = .5(1+g);
     x = {}                 -- dtlz2 leaves sum f^2 = (1+g)^2
     for j = 1, 6 do x[j] = rand() end
-    g = g1(sub(x, 2))
+    g = g1(slice(x, 2))
     f = dtlz1(x, 2)
     s = sum(f, function(v) return v end)
     assert(abs(s - 0.5*(1+g)) < 1e-9 * (1+g))
-    g = g2(sub(x, 2))
+    g = g2(slice(x, 2))
     f = dtlz2(x, 2)
     s = sum(f, function(v) return v*v end)
     assert(abs(s - (1+g)^2) < 1e-9 * (1+g)^2) end
@@ -152,7 +152,7 @@ eg["--label"] = function(    t,r) -- goals appear on demand
   assert(r[t.cols.y[1].at] == "?")     -- born blank
   t:disty(r)                           -- the seam fires
   assert(r[t.cols.y[1].at] ~= "?")     -- now labelled
-  print("labelled: " .. show(sub(r, the.Nx + 1)))
+  print("labelled: " .. show(slice(r, the.Nx + 1)))
   assert(t.cols.y[1].n == 1) end       -- and folded in
 
 eg["--models"] = function(    t,d,lo,hi,best) -- all 7
@@ -167,7 +167,7 @@ eg["--models"] = function(    t,d,lo,hi,best) -- all 7
       if d < lo then lo, best = d, t.rows[j] end
       if d > hi then hi = d end end
     print(("%-6s disty %.3f .. %.3f  best f %s  mean f %s")
-      :format(m, lo, hi, show(sub(best, the.Nx + 1)),
+      :format(m, lo, hi, show(slice(best, the.Nx + 1)),
               show(t:baseline())))
     for _,y in ipairs(t.cols.y) do          -- finite, and
       assert(best[y.at] == best[y.at]       -- not negative

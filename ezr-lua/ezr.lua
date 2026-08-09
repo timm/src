@@ -219,7 +219,7 @@ function TBL.halve(i,rows,    fun,a,b,n)
   fun, a, b = i:poles(some(rows, the.few))
   rows = keysort(rows, fun)
   n = floor(#rows / 2)
-  return a, b, sub(rows, 1, n), sub(rows, n + 1) end
+  return a, b, slice(rows, 1, n), slice(rows, n + 1) end
 
 function Node(tbl,rows,    recurse) -- tree of halves
   function recurse(rows,    node,a,b,lo,hi)
@@ -259,7 +259,7 @@ function TBL.acquire(i,rows,cap,lab,lo,hi,
         more, seen[r] = more - 1, true
         push(new, push(lab, r)) end end
     if #lab >= cap then return lab end -- budget spent
-    rows = sub(keysort(rows, (i:poles(new, lo, hi))),
+    rows = slice(keysort(rows, (i:poles(new, lo, hi))),
                1, max(1, floor(the.keepf * #rows))) end
   return lab end
 
@@ -417,12 +417,12 @@ function TBL.holdout(i,how,    rows,n,train,test,lab,t,top)
   how  = how or function(t2,cap) return t2:acquirer(cap) end
   rows = shuffle(i.rows)     -- label train via `how`, grow
   n    = floor(#rows/2)      -- tree, use it to rank the
-  train= sub(rows, 1, n)     -- unseen test half; label the
-  test = sub(rows, n+1)      -- best the.check of that rank
+  train= slice(rows, 1, n)     -- unseen test half; label the
+  test = slice(rows, n+1)      -- best the.check of that rank
   lab  = how(i:clone(train), the.budget - the.check)
   assert(#lab + the.check <= the.budget) -- spend, counted
   t    = Tree(i, lab)
-  top  = sub(keysort(test, function(r) return t:leaf(i, r) end),
+  top  = slice(keysort(test, function(r) return t:leaf(i, r) end),
            1, the.check)
   return keysort(top, i:Y())[1] end
 

@@ -468,7 +468,7 @@ detector of Lecture 10:
    cars (hint: `keysort` by `Lbs-`), re-run add/sub, and explain why
    `mu` now dips then returns.
 4. **Field trip.** Compute the centroid `[20]` of just the first 100
-   rows (`t:clone(sub(t.rows,1,100))`) and compare Mpg+ to the full
+   rows (`t:clone(slice(t.rows,1,100))`) and compare Mpg+ to the full
    table. Are early rows thirstier or leaner?
 
 [contents](#contents)
@@ -602,11 +602,11 @@ every row up best-first. The extremes tell the story.
 0.07
 [50]> show(map(t.cols.y, function(c) return c.name end))
 {Lbs- Acc+ Mpg+}
-[51]> show(sub(rows[1], 6, 8))
+[51]> show(slice(rows[1], 6, 8))
 {1985 21.5 40}
 [52]> round(d(rows[#rows]))
 0.96
-[53]> show(sub(rows[#rows], 6, 8))
+[53]> show(slice(rows[#rows], 6, 8))
 {4951 11 10}
 ```
 
@@ -675,7 +675,7 @@ halves — and it puts the pole nearer heaven first.
 function TBL.halve(i,rows,   fun,a,b,n)
   fun,a,b = i:poles(some(rows, the.few))
   rows = keysort(rows, fun); n = floor(#rows/2)
-  return a, b, sub(rows,1,n), sub(rows,n+1) end
+  return a, b, slice(rows,1,n), slice(rows,n+1) end
 ```
 
 ```lua
@@ -948,7 +948,7 @@ Lecture 6.
    `Volume`? Explain via `big` (both sides must hold ≥ `the.leaf`).
 2. Compute the information gain (parent 0.23 − `val`) for a cut you
    force on `Clndrs` instead. Is it above or below `Volume`'s 0.09?
-3. Feed `bestcut` only `sub(t.rows, 1, 50)`. Does the winning column
+3. Feed `bestcut` only `slice(t.rows, 1, 50)`. Does the winning column
    change? What does that say about cuts from small samples
    (Lecture 9's theme)?
 4. **Field trip.** Print the yes/no mean `Mpg+` (not `disty`) for the
@@ -1153,7 +1153,7 @@ best/worst seen if a pool dries early.
 while #rows >= 2*the.leaf do
   more, new = min(the.more, cap - #lab), {}
   ...
-  rows = sub(keysort(rows, (i:poles(new, lo, hi))),
+  rows = slice(keysort(rows, (i:poles(new, lo, hi))),
              1, max(1, floor(the.keepf * #rows))) end
 ```
 
@@ -1322,11 +1322,11 @@ not?
 half, and returns the best of the top `the.check`. It asserts it never
 overspends the budget.
 
-    train = sub(rows,1,n); test = sub(rows,n+1)
+    train = slice(rows,1,n); test = slice(rows,n+1)
     lab   = how(i:clone(train), the.budget - the.check)
     assert(#lab + the.check <= the.budget)
     t     = Tree(i, lab)
-    top   = sub(keysort(test, function(r) return t:leaf(i,r) end),
+    top   = slice(keysort(test, function(r) return t:leaf(i,r) end),
               1, the.check)
 
 ```lua
@@ -1358,7 +1358,7 @@ the wins; `L` uses active `acquire`, `R` uses the first `cap` rows
 ```lua
 [118]> go = function(how, u) u = {}; for j=1,20 do srand(the.seed+j); u[1+#u]=W(t:holdout(how)) end; return sorted(u) end
 [119]> L = go()
-[120]> R = go(function(t2,cap) return sub(t2.rows, 1, cap) end)
+[120]> R = go(function(t2,cap) return slice(t2.rows, 1, cap) end)
 [121]> ml = round(sum(L, function(x) return x end)/20)
 [122]> mr = round(sum(R, function(x) return x end)/20)
 [123]> show{active=ml, random=mr}

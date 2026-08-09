@@ -40,7 +40,7 @@ function TBL.around(i,row,rows) -- rows, nearest row first
 
 function TBL.knn(i,row,k,    t) -- guess row's disty from
   t = i:around(row)             -- its k nearest neighbours
-  return adds(map(sub(t, 1, k or the.k), i:Y())).mu end
+  return adds(map(slice(t, 1, k or the.k), i:Y())).mu end
 
 --## anomaly (the Bouncer) -------------------------------------
 function TBL.anomaly(i,    dn,gap) -- score rows 0..1;
@@ -218,7 +218,7 @@ local function cross(i,mum,dad,    kid,cut) -- 1-point x-over
   return kid end
 
 function TBL.ga(i,    pop,kids) -- evolve np rows, gens
-  pop = sub(shuffle(i.rows), 1, the.np) -- times: domination
+  pop = slice(shuffle(i.rows), 1, the.np) -- times: domination
   for _ = 1, the.gens do          -- tournament, cross, mutate
     kids = {}
     for _ = 1, the.np do
@@ -229,7 +229,7 @@ function TBL.ga(i,    pop,kids) -- evolve np rows, gens
                           return i:guess(r) end)[1]) end
 
 function TBL.de(i,    pop,es,t,kid,d,at) -- de/rand/1: kid
-  pop = sub(shuffle(i.rows), 1, the.np)  -- replaces parent
+  pop = slice(shuffle(i.rows), 1, the.np)  -- replaces parent
   es  = map(pop, function(r) return i:guess(r) end) -- when
   for _ = 1, the.gens do                            -- better
     for j = 1, #pop do

@@ -13,7 +13,7 @@ show{disty=round(t:disty(b)), win=round(W(b))}
 #### 8.4 the honest comparison: 20 runs, active vs random
 go = function(how, u) u = {}; for j=1,20 do srand(the.seed+j); u[1+#u]=W(t:holdout(how)) end; return sorted(u) end
 L = go()
-R = go(function(t2,cap) return sub(t2.rows, 1, cap) end)
+R = go(function(t2,cap) return slice(t2.rows, 1, cap) end)
 #### 8.5 mean win: active acquire vs random labels
 ml = round(sum(L, function(x) return x end)/20)
 mr = round(sum(R, function(x) return x end)/20)

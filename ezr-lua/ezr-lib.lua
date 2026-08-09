@@ -99,7 +99,7 @@ function kap(t,f,    u) -- f(k,v) over all pairs, any order.
   u = {}                -- nil results vanish: kap also filters
   for k,v in pairs(t) do u[1+#u] = f(k,v) end; return u end
 
-function sub(t,lo,hi,    u) -- copy t[lo..hi]; any size
+function slice(t,lo,hi,    u) -- copy t[lo..hi]; any size
   u, hi = {}, min(hi or #t, #t)
   for j = max(lo or 1, 1), hi do u[1+#u] = t[j] end
   return u end
