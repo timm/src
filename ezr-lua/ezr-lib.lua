@@ -26,21 +26,39 @@ local _ENV = setmetatable({}, {__index = _G})
 if setfenv then setfenv(1, _ENV) end
 
 --## make and feed ---------------------------------------------
-function new(kl,t) -- class table is also its metatable
+-- Four verbs the rest of the system leans on: `new` builds an
+-- object, `iter` makes lists and generators loop alike,
+-- `thing` coerces one cell of text, `csv` streams a table off
+-- disk. The signature above each is a reading aid, not a
+-- check: `list` is a table used as an array, `dict` one
+-- used as a map. Note that names after the wide gap in an
+-- argument list are LOCALS, not arguments, so they never
+-- show up in a type.
+
+-- *`new(kl:dict, t:dict) -> dict`*  
+-- Class table is also its metatable.
+function new(kl,t)
   kl.__index=kl;kl.__tostring=show; return setmetatable(t,kl) end
 
-function iter(src,    at) -- iterate a list or a function
+-- *`iter(src:list|fun) -> fun`*  
+-- Iterate a list or a function.
+function iter(src,    at)
   if type(src) == "function" then return src end
   at = 0; return function() at = at + 1; return src[at] end end
 
-function thing(s) -- string to number, bool, or string
+-- *`thing(s:str) -> num|bool|str`*  
+-- String to number, bool, or string.
+function thing(s)
   s = s:match"^%s*(.-)%s*$"
   return tonumber(s) or s=="True" or (s~="False" and s) end
 
-function pathname(s,    d,t,f) -- bare names live in
-  s = s or the.file   -- the.DATA; relative DATA hangs off
-  if not s:find"/" then -- this script's dir, then ../ up;
-    d = the.DATA        -- $VARS expand
+-- *`pathname(s?:str) -> str`*  
+-- Bare names live in `the.DATA`; a relative DATA hangs off
+-- this script's own dir, then `../` up. `$VARS` expand.
+function pathname(s,    d,t,f)
+  s = s or the.file
+  if not s:find"/" then
+    d = the.DATA
     if d:find"^[/$]" then s = d .. s else
       t = (arg and arg[0] or ""):gsub("[^/]*$","")
       f = io.open(t .. d .. s)
@@ -50,7 +68,9 @@ function pathname(s,    d,t,f) -- bare names live in
     return os.getenv(k) or k == "MOOT" and
            os.getenv"HOME" .. "/gits/moot" end)) end
 
-function csv(file,    f) -- stream rows of coerced cells
+-- *`csv(file?:str) -> fun -> row?`*  
+-- Stream rows of coerced cells; nil ends the stream.
+function csv(file,    f)
   f = io.lines(pathname(file))
   return function(    t,l)
     for line in f do
@@ -62,16 +82,24 @@ function csv(file,    f) -- stream rows of coerced cells
         return t end end end end
 
 --## settings --------------------------------------------------
+-- One flat table of options, parsed out of the help string
+-- that documents them, so the manual and the defaults cannot
+-- drift apart. Every file adds its own paragraph with `also`.
 THE = {}
 
-function The(s,    i) -- settings from "k=v" words in a string
-  i = new(THE, {_help=s}) -- only after whitespace: "--k=v"
-  for k,v in (" "..s):gmatch"%s(%a%w*)=(%S+)" do -- in usage
-    i[k] = thing(v) end                 -- examples is prose
+-- *`The(s:str) -> THE`*  
+-- Settings from the `k=v` words in a string; only the ones
+-- after whitespace, so `--k=v` in the usage stays prose.
+function The(s,    i)
+  i = new(THE, {_help=s})
+  for k,v in (" "..s):gmatch"%s(%a%w*)=(%S+)" do
+    i[k] = thing(v) end
   return i end
 
-function THE.also(i,t) -- merge new settings; string or table.
-  if type(t) == "string" then     -- same-name fields crash.
+-- *`THE:also(t:str|dict) -> THE`*  
+-- Merge in new settings. Same-name fields crash.
+function THE.also(i,t)
+  if type(t) == "string" then
     -- newest file's full text leads; older helps keep only
     -- their options paragraphs
     i._help = t.."\n"..(i._help:match"[^\n]*[Oo]ptions:.*" or "")
@@ -83,91 +111,150 @@ function THE.also(i,t) -- merge new settings; string or table.
   return i end
 
 --## list making -----------------------------------------------
+-- Small list verbs, all of them shorter than the loop they
+-- replace. `fun` is why: it lets any of them take a function,
+-- a method name, or a field index, so callers write
+-- `map(cols, "mid")` instead of a closure.
+
+-- *`push(t:list, v:any) -> any`*  
+-- Add v to the end of t, returning v so pushes chain.
 function push(t,v) t[1+#t] = v; return v end
 
-function fun(f) -- a callable: f itself; or method name
+-- *`fun(f:fun|str|int) -> fun`*  
+-- A callable: f itself; or a method name; or a field index.
+function fun(f)
   if type(f)=="string" then
     return function(v,...) return v[f](v,...) end end
   if type(f)=="number" then return function(v) return v[f]end end
   return f end
 
-function map(t,f,    u) -- f (fn or method name) over list
+-- *`map(t:list, f:fun|str|int) -> list`*  
+-- f (function, method name, or index) over a list.
+function map(t,f,    u)
   f = fun(f)
   u = {}; for _,v in ipairs(t) do u[1+#u]=f(v) end; return u end
 
-function kap(t,f,    u) -- f(k,v) over all pairs, any order.
-  u = {}                -- nil results vanish: kap also filters
+-- *`kap(t:dict, f:fun) -> list`*  
+-- f(k,v) over all pairs, any order. A nil result vanishes,
+-- so kap also filters.
+function kap(t,f,    u)
+  u = {}
   for k,v in pairs(t) do u[1+#u] = f(k,v) end; return u end
 
-function slice(t,lo,hi,    u) -- copy t[lo..hi]; any size
+-- *`slice(t:list, lo?:int, hi?:int) -> list`*  
+-- Copy t[lo..hi]; any size, any out-of-range bound.
+function slice(t,lo,hi,    u)
   u, hi = {}, min(hi or #t, #t)
   for j = max(lo or 1, 1), hi do u[1+#u] = t[j] end
   return u end
 
-function copy(t) -- shallow copy of the list part
+-- *`copy(t:list) -> list`*  
+-- Shallow copy of the list part.
+function copy(t)
   return map(t, function(v) return v end) end
 
-function sum(t,f,    n) -- add f(v) over values
+-- *`sum(t:list|dict, f:fun) -> num`*  
+-- Add f(v) over the values.
+function sum(t,f,    n)
   n = 0; for _, v in pairs(t) do n = n + f(v) end; return n end
 
 --## ordering --------------------------------------------------
-function sorted(t,f,    s) -- sorted copy; f optional
+-- Sorting, done stably: ties keep their input order, so two
+-- runs on one seed print the same lines and the frozen
+-- transcripts diff clean across Lua versions.
+
+-- *`sorted(t:list, f?:fun) -> list`*  
+-- Sorted copy; the comparator is optional.
+function sorted(t,f,    s)
   s = copy(t); table.sort(s, f); return s end
 
-function keysort(t,f,    px,ix) -- sort by f(v); stable,
-  px, ix = {}, {}               -- so ties keep input order
+-- *`keysort(t:list, f:fun) -> list`*  
+-- Sort by f(v). Stable, so ties keep their input order.
+function keysort(t,f,    px,ix)
+  px, ix = {}, {}
   for at, v in ipairs(t) do px[v], ix[v] = f(v), at end
   return sorted(t, function(u,v)
            if px[u] == px[v] then return ix[u] < ix[v] end
            return px[u] < px[v] end) end
 
-function keys(t,skip,    u) -- sorted keys; skip prefix?
+-- *`keys(t:dict, skip?:str) -> list`*  
+-- Sorted keys, dropping any that start with `skip`.
+function keys(t,skip,    u)
   u = kap(t, function(k)
         if not (skip and tostring(k):sub(1,1) == skip) then
           return k end end)
   return keysort(u, tostring) end
 
-function least(    lo) -- min-so-far reducer: call f{val,..}
-  return function(x)   -- to offer, f() to read; the champion
+-- *`least() -> fun`*  
+-- Min-so-far reducer: call f{val,..} to offer a candidate,
+-- f() to read the champion. The winner rides in the closure,
+-- so no list of candidates is ever built.
+function least(    lo)
+  return function(x)
     if x and (lo == nil or x[1] < lo[1]) then lo = x end
-    return lo end end  -- rides in the closure
+    return lo end end
 
 --## randomness ------------------------------------------------
 -- Own Park-Miller PRNG: exact doubles, so the same seed
--- yields the same stream on any Lua, any machine.
+-- yields the same stream on any Lua, any machine. Lua's own
+-- `math.random` is a different generator on 5.1, on 5.4, and
+-- on LuaJIT, so a shared seed there would still fork the
+-- stream and rot every frozen transcript.
+
+-- *`Seed:int`* -- state of the one generator in this system.
 Seed = 1234567891
 
-function srand(n) -- any integer; lands in 1..2^31-2
+-- *`srand(n?:int)`*  
+-- Reseed with any integer; lands in 1..2^31-2.
+function srand(n)
   Seed = floor(n or 1234567891) % 2147483647
   if Seed <= 0 then Seed = Seed + 2147483646 end end
 
-function rand(lo,hi,    x) -- () -> [0,1); (n) -> 1..n;
-  Seed = (16807 * Seed) % 2147483647  -- (lo,hi) -> lo..hi
+-- *`rand(lo?:num, hi?:num) -> num`*  
+-- No args: a float in [0,1). One arg n: an int in 1..n.
+-- Two args: an int in lo..hi.
+function rand(lo,hi,    x)
+  Seed = (16807 * Seed) % 2147483647
   x = Seed / 2147483647
   if not lo then return x end
   if not hi then lo, hi = 1, lo end
   return lo + floor(x * (hi - lo + 1)) end
 
-function shuffle(lst,    t,j) -- Fisher-Yates; copies first
+-- *`shuffle(lst:list) -> list`*  
+-- Fisher-Yates; copies first, so the input survives.
+function shuffle(lst,    t,j)
   t = copy(lst)
   for at = #t, 2, -1 do
     j = rand(at); t[at],t[j] = t[j],t[at] end
   return t end
 
-function some(lst,k,    t) -- k items at random (all, if k big)
+-- *`some(lst:list, k:int) -> list`*  
+-- k items at random -- or all of them, if k is too big.
+function some(lst,k,    t)
   t = shuffle(lst)
   for at = #t, min(k, #t) + 1, -1 do t[at] = nil end
   return t end
 
 --## rendering -------------------------------------------------
-function round(v,n) -- round to n (default the.round) places
-  if v % 1 == 0 then return floor(v) end -- re-floor whole
-  n = 10 ^ (n or the.round)     -- results: 5.3+ would print
-  v = floor(v * n + 0.5) / n    -- the float 15.0 as "15.0",
-  return v % 1 == 0 and floor(v) or v end -- 5.1/JIT as "15"
+-- One number format and one table format for the whole
+-- system. Both exist to keep printed output identical across
+-- Lua versions, which is what makes a transcript a test.
 
-function show(t,    u) -- render anything. tables recurse:
-  if type(t) ~= "table" then  -- lists keyless, dicts ":k v"
+-- *`round(v:num, n?:int) -> num`*  
+-- Round to n (default `the.round`) places, then re-floor a
+-- whole result: 5.3+ prints the float 15.0 as "15.0", while
+-- 5.1 and LuaJIT print it as "15".
+function round(v,n)
+  if v % 1 == 0 then return floor(v) end
+  n = 10 ^ (n or the.round)
+  v = floor(v * n + 0.5) / n
+  return v % 1 == 0 and floor(v) or v end
+
+-- *`show(x:any) -> str`*  
+-- Render anything. Tables recurse: lists print keyless,
+-- dictionaries as ":k v" pairs, sorted.
+function show(t,    u)
+  if type(t) ~= "table" then
     return tostring(type(t) == "number" and round(t) or t) end
   u = #t > 0 and map(t, show) or
       sorted(kap(t, function(k,v)
@@ -176,30 +263,44 @@ function show(t,    u) -- render anything. tables recurse:
   return "{"..table.concat(u, " ").."}" end
 
 --## start-up --------------------------------------------------
-function cli(d,    v) -- --key=val flags update settings;
-  for _, s in ipairs(arg) do            -- -h prints help
+-- Command line in, demos out. `go` is the only entry point a
+-- file needs; it stays silent unless that file is the script
+-- the user actually ran, so `require` never fires a demo.
+
+-- *`cli(d:THE) -> THE`*  
+-- `--key=val` flags update settings; `-h` prints the help.
+-- A new value must keep the old value's type.
+function cli(d,    v)
+  for _, s in ipairs(arg) do
     if s == "-h" then print(d._help) end
     for k in pairs(d) do
       v = s:match("^%-%-" .. k .. "=(.*)")
       if v then
-        v = thing(v)   -- new value must keep the old type
+        v = thing(v)
         assert(type(v) == type(d[k]),
                "bad "..s.." : want "..type(d[k]))
         d[k] = v end end end
   return d end
 
-function run(funs,w,    ok,msg) -- one seeded example
+-- *`run(funs:dict, w:str) -> bool?`*  
+-- One seeded example. Returns nil if there is no such demo,
+-- else whether it ran without crashing.
+function run(funs,w,    ok,msg)
   srand(the.seed)
   if funs[w] then
     ok, msg = xpcall(funs[w], debug.traceback)
     if not ok then print(msg) end
     return ok end end
 
-function repl(env,    s,f,ok,r) -- a tiny read-eval-print loop
-  while true do                  -- run via the `--repl` demo;
-    io.write("ezr> ")            -- load()s each line in `env`
-    s = io.read()                -- (a module _ENV), so bare
-    if not s then io.write"\n"; return end  -- names resolve
+-- *`repl(env:dict)`*  
+-- A tiny read-eval-print loop, run via the `--repl` demo. It
+-- load()s each line inside `env` (a module _ENV), so bare
+-- names like Tbl and csv resolve.
+function repl(env,    s,f,ok,r)
+  while true do
+    io.write("ezr> ")
+    s = io.read()
+    if not s then io.write"\n"; return end
     f = load("return "..s, "=repl", "t", env) or
         load(s, "=repl", "t", env)
     if not f then print("! syntax") else
@@ -207,11 +308,15 @@ function repl(env,    s,f,ok,r) -- a tiny read-eval-print loop
       if not ok then print("! "..tostring(r))
       elseif r ~= nil then print(show(r)) end end end end
 
-function go(eg,    n) -- parse flags, run the demos named on
-  if arg and arg[0] and     -- the command line, exiting with
-     debug.getinfo(2,"S").source == "@"..arg[0] then -- the
-    cli(the)                -- failure count. A no-op unless
-    n = 0                   -- the caller is the main script.
+-- *`go(eg:dict)`*  
+-- Parse the flags, run the demos named on the command line,
+-- exit with the failure count. A no-op unless the caller is
+-- the main script.
+function go(eg,    n)
+  if arg and arg[0] and
+     debug.getinfo(2,"S").source == "@"..arg[0] then
+    cli(the)
+    n = 0
     for _,w in ipairs(arg) do
       if run(eg, w) == false then n = n + 1 end end
     os.exit(n) end end

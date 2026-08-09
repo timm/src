@@ -26,18 +26,31 @@ the = the:also(help)
 --## models ----------------------------------------------------
 -- Each maps x in [0,1]^Nx to M objectives to minimize. The
 -- last Nx-M+1 x's (xm) set distance from the true front;
--- the first M-1 shape position along it.
-function g1(xm) -- multi-modal distance (dtlz1, dtlz3)
+-- the first M-1 shape position along it. The signature
+-- above each function is a reading aid, not a check: `x` is
+-- the list of decision variables, `f` the list of
+-- objectives, and names after the wide gap in an argument
+-- list are LOCALS.
+
+-- *`g1(xm:list) -> num`*  
+-- Multi-modal distance (dtlz1, dtlz3).
+function g1(xm)
   return 100 * (#xm + sum(xm, function(v)
     return (v-.5)^2 - cos(20*pi*(v-.5)) end)) end
 
-function g2(xm) -- unimodal distance (dtlz2, dtlz4, dtlz5)
+-- *`g2(xm:list) -> num`*  
+-- Unimodal distance (dtlz2, dtlz4, dtlz5).
+function g2(xm)
   return sum(xm, function(v) return (v-.5)^2 end) end
 
-function g6(xm) -- biased distance (dtlz6)
+-- *`g6(xm:list) -> num`*  
+-- Biased distance (dtlz6).
+function g6(xm)
   return sum(xm, function(v) return v^0.1 end) end
 
-function sphere(M,g,th,    f,v) -- cos/sin product, dtlz2-6
+-- *`sphere(M:int, g:num, th:list) -> list`*  
+-- The cos/sin product shared by dtlz2 through dtlz6.
+function sphere(M,g,th,    f,v)
   f = {}
   for i = 0, M-1 do
     v = 1 + g
@@ -46,7 +59,9 @@ function sphere(M,g,th,    f,v) -- cos/sin product, dtlz2-6
     push(f, v) end
   return f end
 
-function dtlz1(x,M,    g,f,v) -- linear front: sum f = .5
+-- *`dtlz1(x:list, M:int) -> list`*  
+-- Linear front: the objectives sum to .5(1+g).
+function dtlz1(x,M,    g,f,v)
   g, f = g1(slice(x, M)), {}
   for i = 0, M-1 do
     v = 0.5 * (1 + g)
@@ -55,31 +70,44 @@ function dtlz1(x,M,    g,f,v) -- linear front: sum f = .5
     push(f, v) end
   return f end
 
-function dtlz2(x,M) -- spherical front
+-- *`dtlz2(x:list, M:int) -> list`*  
+-- Spherical front.
+function dtlz2(x,M)
   return sphere(M, g2(slice(x, M)),
            map(slice(x, 1, M-1), function(v)
              return v * pi/2 end)) end
 
-function dtlz3(x,M) -- spherical, multi-modal
+-- *`dtlz3(x:list, M:int) -> list`*  
+-- Spherical, multi-modal.
+function dtlz3(x,M)
   return sphere(M, g1(slice(x, M)),
            map(slice(x, 1, M-1), function(v)
              return v * pi/2 end)) end
 
-function dtlz4(x,M) -- spherical, biased sampling
+-- *`dtlz4(x:list, M:int) -> list`*  
+-- Spherical, biased sampling.
+function dtlz4(x,M)
   return sphere(M, g2(slice(x, M)),
            map(slice(x, 1, M-1), function(v)
              return v^100 * pi/2 end)) end
 
-function degen(x,M,g,    th) -- dtlz5/6: degenerate curve
+-- *`degen(x:list, M:int, g:num) -> list`*  
+-- The degenerate curve behind dtlz5 and dtlz6.
+function degen(x,M,g,    th)
   th = {x[1] * pi/2}
   for i = 2, M-1 do
     th[i] = pi/(4*(1+g)) * (1 + 2*g*x[i]) end
   return sphere(M, g, th) end
 
+-- *`dtlz5(x:list, M:int) -> list`* -- degenerate, unimodal.
 function dtlz5(x,M) return degen(x, M, g2(slice(x, M))) end
+
+-- *`dtlz6(x:list, M:int) -> list`* -- degenerate, biased.
 function dtlz6(x,M) return degen(x, M, g6(slice(x, M))) end
 
-function dtlz7(x,M,    k,g,f,h) -- disconnected front
+-- *`dtlz7(x:list, M:int) -> list`*  
+-- Disconnected front.
+function dtlz7(x,M,    k,g,f,h)
   k = #x - M + 1
   g = 1 + 9/k * sum(slice(x, M), function(v) return v end)
   f = slice(x, 1, M-1)
@@ -91,7 +119,11 @@ function dtlz7(x,M,    k,g,f,h) -- disconnected front
 --## seam ------------------------------------------------------
 -- The lazy-label seam (t.model + TBL.label) lives in ezr3
 -- now: all this file adds is pool-making and the models.
-function Dtlz(    u,r) -- a Tbl over one fresh, blank pool
+
+-- *`Dtlz() -> TBL`*  
+-- A Tbl over one fresh, blank pool: x cells random, y cells
+-- still "?".
+function Dtlz(    u,r)
   u = {names()}
   for _ = 1, the.pool do
     r = {}
@@ -102,29 +134,41 @@ function Dtlz(    u,r) -- a Tbl over one fresh, blank pool
   u.model = _ENV[the.model]
   return u end
 
-function names(    u) -- X1..XNx, then F1-..FM- (minimize)
+-- *`names() -> list`*  
+-- The header: X1..XNx, then F1-..FM- (all minimized).
+function names(    u)
   u = {}
   for j = 1, the.Nx do push(u, "X"..j) end
   for m = 1, the.M  do push(u, "F"..m.."-") end
   return u end
 
-function TBL.baseline(i,    nums,f) -- mean of every goal
-  nums = map(i.cols.y, function() return Num() end) -- over
-  for _,r in ipairs(i.rows) do  -- the whole pool. Raw model
-    f = i.model(map(i.cols.x,   -- calls: nothing folds into
+-- *`TBL:baseline() -> row`*  
+-- Mean of every goal over the whole pool. These are raw
+-- model calls: nothing folds into the summaries, so the
+-- baseline never sharpens the ruler it is measured against.
+function TBL.baseline(i,    nums,f)
+  nums = map(i.cols.y, function() return Num() end)
+  for _,r in ipairs(i.rows) do
+    f = i.model(map(i.cols.x,
           function(c) return r[c.at] end), #i.cols.y)
     for j,v in ipairs(f) do nums[j]:add(v) end end
   return map(nums, "mid") end
 
-function instance(t,row) -- one row: x, then f, then disty
+-- *`instance(t:TBL, row:row)`*  
+-- Print one row: its x, then its f, then its disty.
+function instance(t,row)
   print("  x  " .. show(slice(row, 1, the.Nx)))
   print(("  f  %s   (disty %.3f, lower=better)"):format(
     show(slice(row, the.Nx + 1)), t:disty(row))) end
 
 --## demos -----------------------------------------------------
+-- Every demo reseeds, prints a line a tutor can point at,
+-- then asserts. No crash means pass.
 eg = {}
 
-eg["--all"] = function(    bad) -- all demos; fail if any do
+-- *`lua ezr-dtlz.lua --all`*  
+-- All the demos; fail if any of them do.
+eg["--all"] = function(    bad)
   bad = 0
   for _,k in ipairs(keys(eg)) do
     if k ~= "--all" and run(eg, k) == false then
@@ -132,9 +176,12 @@ eg["--all"] = function(    bad) -- all demos; fail if any do
   print("failures: " .. bad)
   assert(bad == 0) end
 
-eg["--fronts"] = function(    x,f,s,g) -- known geometry:
-  for _ = 1, 100 do        -- dtlz1 leaves sum f = .5(1+g);
-    x = {}                 -- dtlz2 leaves sum f^2 = (1+g)^2
+-- *`lua ezr-dtlz.lua --fronts`*  
+-- Known geometry: dtlz1 leaves sum f = .5(1+g); dtlz2
+-- leaves sum f^2 = (1+g)^2.
+eg["--fronts"] = function(    x,f,s,g)
+  for _ = 1, 100 do
+    x = {}
     for j = 1, 6 do x[j] = rand() end
     g = g1(slice(x, 2))
     f = dtlz1(x, 2)
@@ -146,7 +193,9 @@ eg["--fronts"] = function(    x,f,s,g) -- known geometry:
     assert(abs(s - (1+g)^2) < 1e-9 * (1+g)^2) end
   print"100 rounds: dtlz1 linear, dtlz2 spherical: ok" end
 
-eg["--label"] = function(    t,r) -- goals appear on demand
+-- *`lua ezr-dtlz.lua --label`*  
+-- Goals appear on demand, and only on demand.
+eg["--label"] = function(    t,r)
   t = Dtlz()
   r = t.rows[1]
   assert(r[t.cols.y[1].at] == "?")     -- born blank
@@ -155,10 +204,13 @@ eg["--label"] = function(    t,r) -- goals appear on demand
   print("labelled: " .. show(slice(r, the.Nx + 1)))
   assert(t.cols.y[1].n == 1) end       -- and folded in
 
-eg["--models"] = function(    t,d,lo,hi,best) -- all 7
-  for _,m in ipairs{"dtlz1","dtlz2","dtlz3","dtlz4", -- run;
-                    "dtlz5","dtlz6","dtlz7"} do -- 50 labels
-    the.model = m                     -- each; ruler sharpens
+-- *`lua ezr-dtlz.lua --models`*  
+-- All 7 models run; 50 labels each, and the ruler sharpens
+-- as they arrive.
+eg["--models"] = function(    t,d,lo,hi,best)
+  for _,m in ipairs{"dtlz1","dtlz2","dtlz3","dtlz4",
+                    "dtlz5","dtlz6","dtlz7"} do
+    the.model = m
     t = Dtlz()
     for j = 1, 50 do t:disty(t.rows[j]) end -- label 50, then
     lo, hi = 2, -1        -- rescore all on the warmed ruler
@@ -176,8 +228,10 @@ eg["--models"] = function(    t,d,lo,hi,best) -- all 7
     assert(t.cols.y[1].n == 50) end         -- 50 labels in
   the.model = "dtlz2" end -- restore the default
 
-eg["--pure"] = function(    t,lab) -- rank whole pool, no
-  t   = Dtlz()                     -- train/test split
+-- *`lua ezr-dtlz.lua --pure`*  
+-- Rank the whole pool, with no train/test split.
+eg["--pure"] = function(    t,lab)
+  t   = Dtlz()
   lab = t:acquirer(the.budget - the.check)
   print("mean f, all " .. #t.rows .. " rows: "
         .. show(t:baseline()))
@@ -185,25 +239,32 @@ eg["--pure"] = function(    t,lab) -- rank whole pool, no
   instance(t, lab[1])
   assert(t:disty(lab[1]) <= t:disty(lab[#lab])) end
 
-eg["--why"] = function(    t,lab) -- which x-ranges reach
-  t   = Dtlz()                    -- the good goals?
+-- *`lua ezr-dtlz.lua --why`*  
+-- Which x-ranges reach the good goals?
+eg["--why"] = function(    t,lab)
+  t   = Dtlz()
   lab = t:acquirer(the.budget - the.check)
   Tree(t, lab):show(t)
   assert(#lab <= the.budget) end
 
-eg["--generalize"] = function(    t,best) -- best pick on
-  t    = Dtlz()                           -- unseen rows
+-- *`lua ezr-dtlz.lua --generalize`*  
+-- The best pick, made on rows never seen before.
+eg["--generalize"] = function(    t,best)
+  t    = Dtlz()
   best = t:holdout()
   print("mean f, all " .. #t.rows .. " rows: "
         .. show(t:baseline()))
   instance(t, best)
   assert(t:disty(best) <= 1) end
 
-eg["--wins"] = function(    t,lab,W,w) -- grade each search
-  for _,m in ipairs{"dtlz1","dtlz2","dtlz3","dtlz4", -- vs
-                    "dtlz5","dtlz6","dtlz7"} do -- the fully
-    the.model = m           -- labelled pool: 100=true best,
-    t   = Dtlz()            -- 0=median row, negative=worse
+-- *`lua ezr-dtlz.lua --wins`*  
+-- Grade each search against the fully labelled pool:
+-- 100 = the true best, 0 = the median row, negative = worse.
+eg["--wins"] = function(    t,lab,W,w)
+  for _,m in ipairs{"dtlz1","dtlz2","dtlz3","dtlz4",
+                    "dtlz5","dtlz6","dtlz7"} do
+    the.model = m
+    t   = Dtlz()
     lab = t:acquirer(the.budget - the.check)
     W   = t:wins()          -- labels the whole pool
     w   = W(lab[1])
@@ -213,7 +274,7 @@ eg["--wins"] = function(    t,lab,W,w) -- grade each search
   the.model = "dtlz2" end -- restore the default
 
 --## start-up --------------------------------------------------
+-- Fires only when this file is the script the user ran.
 go(eg)
-
 
 return _ENV

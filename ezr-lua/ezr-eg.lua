@@ -13,10 +13,16 @@ package.path = (arg and arg[0] or ""):gsub("[^/]*$","")
 local _ENV = setmetatable({}, {__index = require"ezr"})
 if setfenv then setfenv(1, _ENV) end
 
---## demos p ---------------------------------------------------
+--## demos -----------------------------------------------------
+-- These demos are the test suite and the tutorial at once.
+-- Each one reseeds, prints a line a tutor can point at, then
+-- asserts; no crash means pass. The line above each demo is
+-- how you run it on its own.
 eg = {}
 
-eg["--tree"] = function(    t,tr,n,best) -- prune, keep best
+-- *`lua ezr-eg.lua --tree`*  
+-- Visit every pruning of a grown tree, keep the best.
+eg["--tree"] = function(    t,tr,n,best)
   t  = Tbl(csv())
   tr = Tree(t, t.rows)
   n  = 0
@@ -30,7 +36,9 @@ eg["--tree"] = function(    t,tr,n,best) -- prune, keep best
                                show(best.val)))
   assert(best.val <= tr.val and best.leafs <= tr.leafs) end
 
-eg["--all"] = function(    bad) -- all demos; fail if any do
+-- *`lua ezr-eg.lua --all`*  
+-- All the demos; fail if any of them do.
+eg["--all"] = function(    bad)
   bad = 0
   for _,k in ipairs(keys(eg)) do
     if k ~= "--all" and k ~= "--repl" and run(eg, k) == false then
@@ -38,31 +46,43 @@ eg["--all"] = function(    bad) -- all demos; fail if any do
   print("failures: " .. bad)
   assert(bad == 0) end
 
-eg["--repl"] = function() repl(_ENV) end -- interactive prompt,
-                                         -- bare names (Tbl, csv..)
+-- *`lua ezr-eg.lua --repl`*  
+-- An interactive prompt where the bare names (Tbl, csv, ..)
+-- already resolve.
+eg["--repl"] = function() repl(_ENV) end
 
+-- *`lua ezr-eg.lua --the`*  
+-- Print the settings.
 eg["--the"] = function() print(show(the)) end
 
-eg["--csv"] = function(    t) -- cells coerced, header named
+-- *`lua ezr-eg.lua --csv`*  
+-- Cells arrive coerced, and the header names the columns.
+eg["--csv"] = function(    t)
   t = Tbl(csv())
   print(#t.rows, show(t.cols.names))
   assert(#t.rows == 398 and t.rows[1][1] == 8) end
 
-eg["--col"] = function(    n,s) -- Num and Sym summaries
+-- *`lua ezr-eg.lua --col`*  
+-- Num and Sym summaries.
+eg["--col"] = function(    n,s)
   n = adds{1,2,3,4,5}
   s = adds({"a","a","b"}, Sym())
   print(show{mu=n:mid(), sd=n:div(),
              mode=s:mid(), ent=s:div()})
   assert(n:mid() == 3 and s:mid() == "a") end
 
-eg["--without"] = function(    a,b,w) -- (a+b) minus b == a
+-- *`lua ezr-eg.lua --without`*  
+-- (a+b) minus b == a.
+eg["--without"] = function(    a,b,w)
   a, b = adds{1,2,3,4,5}, adds{10,20,30}
   w = adds({10,20,30}, adds{1,2,3,4,5}) - b
   print(show{mu=w.mu, sd=w:div()})
   assert(abs(w.mu - a.mu) < 1e-9) end
 
-eg["--sub"] = function(    t,c,n1,mu1,xtra) -- add then
-  t  = Tbl(csv())            -- forget: stats round-trip
+-- *`lua ezr-eg.lua --sub`*  
+-- Add, then forget: the stats round-trip.
+eg["--sub"] = function(    t,c,n1,mu1,xtra)
+  t  = Tbl(csv())
   c  = t.cols.all[1]
   n1, mu1 = c.n, c.mu
   xtra = some(t.rows, 50)
@@ -71,7 +91,10 @@ eg["--sub"] = function(    t,c,n1,mu1,xtra) -- add then
   print(show{n=c.n, mu=c.mu, was=mu1})
   assert(c.n == n1 and abs(c.mu - mu1) < 1e-9) end
 
-eg["--distx"] = function(    t,d) -- self=0; far pair > near
+-- *`lua ezr-eg.lua --distx`*  
+-- A row is zero from itself, and the far pair beats the
+-- near one.
+eg["--distx"] = function(    t,d)
   t = Tbl(csv())
   d = function(a,b) return t:distx(a, b) end
   print(show{self=d(t.rows[1], t.rows[1]),
@@ -79,8 +102,10 @@ eg["--distx"] = function(    t,d) -- self=0; far pair > near
              far =d(t.rows[1], t.rows[398])})
   assert(d(t.rows[1], t.rows[1]) == 0) end
 
-eg["--laws"] = function(    t,a,b,c,v,x,yes,no) -- 100
-  t = Tbl(csv())          -- random probes of the invariants
+-- *`lua ezr-eg.lua --laws`*  
+-- 100 random probes of the six invariants.
+eg["--laws"] = function(    t,a,b,c,v,x,yes,no)
+  t = Tbl(csv())
   for _ = 1, 100 do
     a = t.rows[rand(#t.rows)]
     b = t.rows[rand(#t.rows)]
@@ -97,7 +122,9 @@ eg["--laws"] = function(    t,a,b,c,v,x,yes,no) -- 100
     assert(same(x, x)) end                   -- x is like x
   print"100 rounds, 6 laws: ok" end
 
-eg["--half"] = function(    t,a,b,lo,hi) -- far-pole split
+-- *`lua ezr-eg.lua --half`*  
+-- The far-pole split, and which half is the good one.
+eg["--half"] = function(    t,a,b,lo,hi)
   t = Tbl(csv())
   a, b, lo, hi = t:halve(t.rows)
   print(show{lo=#lo, hi=#hi,
@@ -105,8 +132,10 @@ eg["--half"] = function(    t,a,b,lo,hi) -- far-pole split
   assert(#lo + #hi == #t.rows)
   assert(t:disty(a) <= t:disty(b)) end
 
-eg["--node"] = function(    t,nd,n,leafs,walk) -- rows
-  t  = Tbl(csv())  -- conserved in leafs
+-- *`lua ezr-eg.lua --node`*  
+-- Rows are conserved in the leafs.
+eg["--node"] = function(    t,nd,n,leafs,walk)
+  t  = Tbl(csv())
   nd = Node(t)
   n, leafs = 0, 0
   walk = function(x)
@@ -117,7 +146,9 @@ eg["--node"] = function(    t,nd,n,leafs,walk) -- rows
              leaf1=t:disty(nd:leaf(t.rows[1]).here.rows[1])})
   assert(n == #t.rows and leafs > 1) end
 
-eg["--cuts"] = function(    t,b,c) -- champion cut, named
+-- *`lua ezr-eg.lua --cuts`*  
+-- The champion cut, named.
+eg["--cuts"] = function(    t,b,c)
   t = Tbl(csv())
   b = t:bestcut(t.rows, t:Y(), Num, least())
   c = t.cols.all[b[2]]
@@ -125,12 +156,17 @@ eg["--cuts"] = function(    t,b,c) -- champion cut, named
         :format(c.name, b[3], b[1]))
   assert(b[1] >= 0 and c) end
 
-eg["--show"] = function(    t,tr) -- tree, goal mean columns
+-- *`lua ezr-eg.lua --show`*  
+-- The tree, with one column per goal mean.
+eg["--show"] = function(    t,tr)
   t  = Tbl(csv())
   tr = Tree(t, t.rows)
   tr:show(t)
   assert(tr.leafs > 1) end
 
+-- *`lua ezr-eg.lua --acquire`*  
+-- Spend the budget, then compare the best label found
+-- against the truth.
 eg["--acquire"] = function(    t,y,lab,best,truth)
   t     = Tbl(csv())
   y     = t:Y()
@@ -140,7 +176,9 @@ eg["--acquire"] = function(    t,y,lab,best,truth)
   print(show{labels=#lab, best=best, truth=truth})
   assert(#lab <= the.budget and best < 0.35) end
 
-eg["--holdout"] = function(    t,b,w) -- train half, test half
+-- *`lua ezr-eg.lua --holdout`*  
+-- Train on one half, test on the other.
+eg["--holdout"] = function(    t,b,w)
   t = Tbl(csv())
   t.rows = some(t.rows, the.cap)
   b = t:holdout()
@@ -148,8 +186,10 @@ eg["--holdout"] = function(    t,b,w) -- train half, test half
   print(show{disty=t:disty(b), win=w(b)})
   assert(-100 <= w(b) and w(b) <= 100) end
 
-eg["--holdouts"] = function(    t,W,go,L,R,ml,mr,v) -- 20
-  t  = Tbl(csv())                 -- runs: active vs random
+-- *`lua ezr-eg.lua --holdouts`*  
+-- 20 runs: active acquire vs random labelling.
+eg["--holdouts"] = function(    t,W,go,L,R,ml,mr,v)
+  t  = Tbl(csv())
   t.rows = some(t.rows, the.cap)
   W  = t:wins()
   go = function(how,    u) u = {}
@@ -166,7 +206,9 @@ eg["--holdouts"] = function(    t,W,go,L,R,ml,mr,v) -- 20
   print(show{active=ml, random=mr, verdict=v})
   assert(#L == 20 and #R == 20) end
 
-eg["--ranks"] = function(    g,d,r) -- ties share a rank
+-- *`lua ezr-eg.lua --ranks`*  
+-- Ties share a rank.
+eg["--ranks"] = function(    g,d,r)
   g = function(mu,    u) u = {}
         for j = 1, 20 do
           u[j] = mu + rand() + rand() - 1 end
@@ -176,9 +218,12 @@ eg["--ranks"] = function(    g,d,r) -- ties share a rank
   print(show(r.ranks), show(r.winners))
   assert(r.ranks.a == 0 and r.ranks.e > r.ranks.c) end
 
-eg["--same"] = function(    g,x,y,c,k,cl,s,n) -- 3 tests
-  g = function(    u) u = {}       -- vote; same() ANDs them
-        for j = 1, 100 do           -- box-muller gaussians
+-- *`lua ezr-eg.lua --same`*  
+-- Three tests vote and same() ANDs them, so it is stricter
+-- than any one test alone.
+eg["--same"] = function(    g,x,y,c,k,cl,s,n)
+  g = function(    u) u = {}       -- box-muller gaussians
+        for j = 1, 100 do
           u[j] = sqrt(-2*log(1 - rand()))
                  * cos(2*pi*rand()) end
         return sorted(u) end
@@ -201,7 +246,9 @@ eg["--same"] = function(    g,x,y,c,k,cl,s,n) -- 3 tests
   assert(same(x, x) and not same(x, map(x,
     function(v) return v + 4 end))) end
 
-eg["--disty"] = function(    t,d,rows) -- sort rows by disty
+-- *`lua ezr-eg.lua --disty`*  
+-- Sort the rows by disty; print the top and bottom three.
+eg["--disty"] = function(    t,d,rows)
   t = Tbl(csv())
   d = t:Y()
   rows = keysort(t.rows, d)
@@ -212,6 +259,7 @@ eg["--disty"] = function(    t,d,rows) -- sort rows by disty
   assert(d(rows[1]) <= d(rows[#rows])) end
 
 --## start-up --------------------------------------------------
+-- Fires only when this file is the script the user ran.
 go(eg)
 
 return _ENV
