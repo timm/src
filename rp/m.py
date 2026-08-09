@@ -26,7 +26,7 @@ import os, re, sys
 from types import SimpleNamespace as o
 from random import choice as any1, sample as anys, seed as srand
 
-the  = o(anchors=10, close=.3, budget=50, top=.5, cap=10, p=2,
+the  = o(anchors=10, close=.3, budget=50, top=.5, cap=10, p=2, f=.15,
          some=64,
          seed=1234567891,
          file=os.environ["HOME"] + "/gits/moot/optimize/misc/auto93.csv")
@@ -60,8 +60,9 @@ def M(src):
   for c in range(len(head)):
     vals = [r[c] for r in rows if r[c] != "?"]
     if all(not isinstance(v, str) for v in vals):
-      a      = sorted(vals)
-      lo, hi = a[int(.1 * len(a))], a[int(.9 * len(a))]
+      a      = sorted(vals)                      # saturate past the
+      lo, hi = (a[int(the.f * len(a))],          # f / 1-f percentiles:
+                a[int((1 - the.f) * len(a))])    # outliers score 0, 1
       f = lambda v, lo=lo, hi=hi: max(0, min(1, (v-lo) / (hi-lo+TINY)))
     else:
       ks = {k: i for i, k in enumerate(sorted(set(vals), key=str))}
@@ -99,19 +100,19 @@ def sample(items, distf):
     dn = add(dn, distf(any1(items), any1(items)))
   return sd(dn)
 
-def anchors(items, distf):
+def findAnchors(items, distf):
   "greedy eps-net, random order: no two anchors too close"
-  eps, A = the.close * sample(items, distf), []
+  eps, out = the.close * sample(items, distf), []
   for i in anys(items, len(items)):
-    if all(distf(i, a) > eps for a in A):
-      A += [i]
-      if len(A) == min(the.anchors, len(items)): break
-  return A
+    if all(distf(i, a) > eps for a in out):
+      out += [i]
+      if len(out) == min(the.anchors, len(items)): break
+  return out
 
-def views(items, A, D, ys):
+def views(items, anchors, D, ys):
   "one view per anchor pair: weight, positions, their median"
-  for k, a in enumerate(A):
-    for b in A[k+1:]:
+  for k, a in enumerate(anchors):
+    for b in anchors[k+1:]:
       c   = D[a][b] + TINY
       w   = abs(ys[a] - ys[b]) / c if ys else c
       pos = {i: (D[a][i]**2 + c*c - D[b][i]**2) / (2*c)
@@ -120,7 +121,7 @@ def views(items, A, D, ys):
 
 def sweep(items, distf, ylab=None):
   "mark items by summed spread over views; cull below top/2"
-  A    = anchors(items, distf)
+  A    = findAnchors(items, distf)
   ys   = {a: ylab(a) for a in A} if ylab else None
   D    = {a: {i: distf(i, a) for i in items} for a in A}
   V    = list(views(items, A, D, ys))
