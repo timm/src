@@ -92,30 +92,43 @@ def disty(m, i):
       d += abs(v - (1 if m.w[c] else 0)) ** the.p; n += 1
   return (d / n) ** (1 / the.p) if n else 1
 
-def sweep(items, distf, ylab=None):
-  "anchors -> weighted pair views -> marks -> cull below top/2"
-  dn = Num()                                     # the.some FREE dist
-  for _ in range(the.some):                      # samples steady the
-    dn = add(dn, distf(any1(items), any1(items)))   # sd; labels never
-  eps, A = the.close * sd(dn), []                    # spent here
+def sample(items, distf):
+  "sd of the distances, from the.some free probes"
+  dn = Num()
+  for _ in range(the.some):
+    dn = add(dn, distf(any1(items), any1(items)))
+  return sd(dn)
+
+def anchors(items, distf):
+  "greedy eps-net, random order: no two anchors too close"
+  eps, A = the.close * sample(items, distf), []
   for i in anys(items, len(items)):
     if all(distf(i, a) > eps for a in A):
       A += [i]
       if len(A) == min(the.anchors, len(items)): break
-  ys   = {a: ylab(a) for a in A} if ylab else None
-  DA   = {a: {i: distf(i, a) for i in items} for a in A}
-  mark = {i: 0.0 for i in items}
+  return A
+
+def views(items, A, D, ys):
+  "one view per anchor pair: weight, positions, their median"
   for k, a in enumerate(A):
     for b in A[k+1:]:
-      c = DA[a][b] + TINY
-      w = abs(ys[a] - ys[b]) / c if ys else c
-      pos = {i: (DA[a][i]**2 + c*c - DA[b][i]**2) / (2*c)
+      c   = D[a][b] + TINY
+      w   = abs(ys[a] - ys[b]) / c if ys else c
+      pos = {i: (D[a][i]**2 + c*c - D[b][i]**2) / (2*c)
              for i in items}
-      med = sorted(pos.values())[len(items) // 2]
-      for i in items: mark[i] += w * abs(pos[i] - med)
-  hi, keepA = max(mark.values()) + TINY, set(A)
+      yield w, pos, sorted(pos.values())[len(items) // 2]
+
+def sweep(items, distf, ylab=None):
+  "mark items by summed spread over views; cull below top/2"
+  A    = anchors(items, distf)
+  ys   = {a: ylab(a) for a in A} if ylab else None
+  D    = {a: {i: distf(i, a) for i in items} for a in A}
+  V    = list(views(items, A, D, ys))
+  mark = {i: sum(w * abs(pos[i] - med) for w, pos, med in V)
+          for i in items}
+  hi   = max(mark.values()) + TINY
   return [i for i in items
-          if mark[i] >= the.top * hi or i in keepA], mark
+          if mark[i] >= the.top * hi or i in set(A)], mark
 
 def squeeze(m, labelled=True):
   "alternate row sweeps (maybe labeled) and col sweeps (free)"
