@@ -4,3 +4,4 @@ __pycache__/
 _site/
 report.jsonl
 report.csv
+.DS_Store

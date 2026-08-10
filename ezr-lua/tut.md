@@ -14,16 +14,127 @@ falls a toolkit that summarizes data, draws explainable trees, spots
 anomalies, sorts options by many goals at once, and optimizes under
 label budgets that would bankrupt fancier methods.
 
-Some numbers, to set the stakes. The sample table here holds 398 cars
-scored on three competing goals (lighter, quicker, thirstier-or-not).
-The active learner in Lecture 8 ranks an unseen half of the data
-after buying only ~50 labels — and beats random selection. In
-Lecture 10 the optimizer drives an external model whose rows are born
-unlabelled (`"?"`): a label is computed only when a row is actually
-examined, because in the real world one label can cost a lab run.
+## Why bother, when the machine can write it?
+
+Large models are extraordinary at generation. Nothing here disputes
+that. But big AI is a rented telescope: powerful, and pointed by
+someone else. You cannot inspect it. It changes without notice, so
+last year's result may not run this year. It is wrong in confident
+ways, so every output needs a human check. And each generation needs
+more power, money, and cooling than the last.
+
+The bill is already arriving. Baltes, Cheong and Treude read 1,154
+developer posts about "AI slop" — Merriam-Webster's 2025 Word of the
+Year — and found a tragedy of the commons: one person's productivity
+gain becomes everyone else's review burden. The curl project shut
+down its bug bounty because AI-written vulnerability reports ate
+maintainer time and produced nothing valid.
+([arXiv:2603.27249](https://arxiv.org/abs/2603.27249), local copy in
+`etc/refs/`.)
+
+Now look at what you will actually be paid to do. Fifty years of
+software engineering research — test generation, release planning,
+effort estimation, refactoring, configuration tuning, program repair,
+scheduling — is almost never generation. It is **rank, select,
+configure, schedule, estimate, prioritise**, over a table.
+
+And every one of those jobs hits the same wall.
+
+**Labels cost money.** Not tokens — money, and time.
+
+- Human experts are slow and get worse when rushed. Hours for a
+  handful of cases.
+- Historical logs are big but unreliable. In one study, 90% of
+  labelled technical-debt "false positives" were themselves wrong.
+- Automated labelling is crude (regex) or merely assistive (LLMs).
+- Even a real oracle can be ruinous. Exhaustively exploring the
+  **11** parameters of the x264 video encoder took **1,000+ hours**.
+
+So in practice you get a few dozen evaluations. Not a few million.
+
+That is the question this course answers: **how much can you learn
+from a few dozen labels?** The answer turns out to be *most of it*,
+and Lecture 0 shows you where that number comes from and then checks
+it against 17,737 real records.
+
+You will be the reviewer, not the reviewed. Tools get you hired;
+judgment gets you promoted. Someone still has to define what correct
+means, verify a generated claim, review work they did not write, and
+weigh cost against quality. That is the senior engineer's job, and it
+is the job this course trains.
+
+## The whole course in one screen
+
+Read a table. Nobody writes a schema; a `+` or `-` on a header name
+is the entire configuration:
+
+    d2h    Rank   OVR   PHY   Acceleration   Penalties+   Strength+
+    0.02   322    82    82    71             88           94
+    0.02   4      91    88    80             90           93
+
+    0.99   5902   69    68    37             10           30
+    0.99   7937   67    65    49             10           30
+
+Label 15 of 17,737 rows, and build a model you can read:
+
+        n   d2h Penalties+ Strength+
+       15  0.28    67.73     73.2
+        8  0.43    63.12    65.13  PHY <= 71
+    !   4  0.53       59    61.75  |  PHY <= 65
+        7  0.11       73    82.43  PHY >  71
+    *   4  0.06       76     86.5  |  Acceleration >  87
+
+Two attributes out of 57, one per goal. And it is *fast*, which is
+what happens when a model has almost nothing in it:
+
+| step | time |
+|---|---|
+| read 17,737 rows | 346 ms |
+| choose 15 rows worth labelling | 98 ms |
+| **build the model** | **11.9 ms** |
+| score 1,024 unseen rows with it | 0.3 ms |
+
+How many labels is enough? Somebody swept budget from 1 to 150 and
+"check" from 1 to 10, over random tasks, 100,000 times. Above a
+budget of ~40 and a check of ~5, the contours flatten at 95:
+
+<img src="etc/img/fig2-w2.png" alt="wins by budget and check">
+
+Fifty labels to build a model. Five or six to reuse someone else's.
+Lecture 0 derives both numbers from one line of algebra, then tests
+them.
+
 Moral, and course thesis: every learner is a falsifiable bet about
 the shape of your problem, and a few hundred readable lines are
 enough to run the experiment yourself.
+
+## Why Lua
+
+**It is small enough to read.** The whole toolkit is five files and
+about 1,500 lines, comments included. You can hold it in your head.
+That is the point of the course: you are not learning a library, you
+are reading a system.
+
+**It is fast, and it is tiny in memory** — which is what puts this
+class of method on an edge device, a phone, or a build agent, where a
+Python stack will not fit. Measured over 128 data models, four
+runtimes, 512 runs, on an Apple M4 (`REPORTcpu.md`):
+
+| models | runtime | total real | mean RSS | vs LuaJIT |
+|---|---|---|---|---|
+| small (<1k rows) | CPython | 37.5 s | 25.7 MB | 81x slower |
+| | LuaJIT | **0.46 s** | **3.3 MB** | 1x |
+| mid (1k–10k) | CPython | 58.1 s | 26.2 MB | 19x slower |
+| | LuaJIT | **3.0 s** | **6.3 MB** | 1x |
+
+On small and mid models the Lua runtimes hold **3–7 MB** — one tenth
+of pypy3's footprint. Be honest about the other end, though: on
+models above 10k rows the order flips, pypy3 wins, and PUC Lua comes
+last on garbage-collection load. The report says so, and so do we.
+
+**It runs everywhere.** Any Lua from 5.1 up, and LuaJIT, print
+identical output — no runtime, no wheels, no virtual environment, no
+GPU.
 
 The mechanics: numbered REPL events (`[1]>` onward), every one
 executed against the real code by a replay harness — outputs shown
@@ -42,26 +153,72 @@ Park-Miller generator (`rand` in `ezr-lib.lua`), so a correct port
 prints the SAME numbers shown here — grading is diff. Match table
 contents exactly; match floats to the printed precision.
 
+**Install.** You need `lua`. That is the whole list. No luarocks, no
+packages, no build step, no other tools.
+
+| System | Install |
+|---|---|
+| macOS | `brew install lua` |
+| Debian, Ubuntu | `sudo apt install lua5.4` |
+| Fedora | `sudo dnf install lua` |
+| Arch | `sudo pacman -S lua` |
+| Windows | `wsl --install` in an admin PowerShell, reopen the terminal, then run the Ubuntu line inside it |
+
+Debian and Ubuntu name the binary `lua5.4`. Add a link, or the
+commands below cannot find it:
+
+    sudo ln -s /usr/bin/lua5.4 /usr/local/bin/lua
+
+Native Windows also runs this code — get Lua from
+luabinaries.sourceforge.net, or run `scoop install lua` — but the
+Windows build has no line editing at the prompt. Prefer WSL.
+
+Any Lua from 5.1 up works. So does LuaJIT. The sources avoid every
+construct that differs between versions. The random numbers come from
+a Park-Miller generator in `ezr-lib.lua`, not from `math.random`.
+`math.random` is a different generator on 5.1, on 5.4, and on LuaJIT.
+One seed gives the same numbers on every interpreter, so `diff` can
+grade your homework port. Run `luajit` instead of `lua` if a lecture
+feels slow.
+
 **Setup** (Lecture 1 walks through this):
 
-    git clone http://github.com/timm/src
-    cd src/ezr-lua
-    lua ezr-eg.lua --repl    # interactive prompt, names preloaded
+    curl -fLO https://raw.githubusercontent.com/timm/src/main/ezr-lua/ezr-lua.zip
+    unzip ezr-lua.zip
+    cd ezr-lua
+    lua -i play.lua
 
-That drops you at an `ezr>` prompt with `the`, `Tbl`, `csv`, and every
-function already in scope (each line is evaluated in the module's own
-environment). Ctrl-D exits. Try:
+That last line is the one you will type a hundred times. It drops you
+at an `ezr>` prompt with `the`, `Tbl`, `csv` and every other function
+already in scope. `play.lua` exists only to do that: it lifts the
+names out of the modules and hands you Lua's own interactive prompt,
+which brings arrow keys, history and multi-line input with it.
+Ctrl-D exits. Try it now:
 
     ezr> t = Tbl(csv())
     ezr> #t.rows
     398
 
-To replay a lecture's inputs and regenerate its trace:
+On LuaJIT and Lua 5.1, put `=` in front of anything you want printed
+(`=#t.rows`). Lua 5.2 and up print bare expressions on their own.
 
-    EZR=$(pwd) lua etc/tut/repl.lua etc/tut/l1.in 1
+Two more commands, then you are set up:
+
+    make demo      # sanity check; three runs, each "failures: 0"
+    make players   # the 3.6MB table Lecture 0 uses
+
+`make` on its own lists the rest. `make data` pulls the whole
+126-table corpus, and `make all CORES=8` scores every table in it.
+
+The zip holds the five `.lua` files, `play.lua`, `tut.md`, the sample
+table, and the replay harness that checks every trace below. The
+`curl … INSTALL.md | sh` line in the README is a different thing: it
+fetches the `.lua` files alone, for embedding in your own code, and
+leaves out the data this course needs.
 
 | # | Lecture | REPL | Ideas |
 |---|---------|------|-------|
+| [0](#l0)  | A taste: 20 measurements   | —       | the arithmetic, and one worked scouting problem |
 | [1](#l1)  | Orientation & columns      | 1–16    | [NOIR](#g-noir), [WEL](#g-wel), [CDF](#g-cdf), [LOG](#g-log) |
 | [2](#l2)  | Tables, roles, forgetting  | 17–36   | [ROLE](#g-role), [STREAM](#g-stream) |
 | [3](#l3)  | Distance & gap-to-heaven   | 37–53   | [MINK](#g-mink), [D2H](#g-d2h), [PARETO](#g-pareto) |
@@ -81,6 +238,313 @@ To replay a lecture's inputs and regenerate its trace:
 All ten lectures, the appendix, glossary, references, and the public
 exam bank are complete; every trace is machine-verified against the
 code by `etc/tut/repl.lua`.
+
+---
+
+<a name="l0"></a>
+# Lecture 0: A Taste — 17,737 Players, 20 Measurements
+
+No exercises here. No check questions, and no numbered events:
+this lecture is me poking at data in front of you. Watch, then
+decide whether the next ten lectures are worth your time.
+
+## 0.1 An optimistic sum
+
+All the code in this course exists to test one piece of
+arithmetic. Here it is.
+
+Sample `n` items at random. Let `p` be the chance that any one
+item is good enough. The chance you found at least one good item
+is
+
+    C = 1 - (1-p)^n
+
+Turn that around and you get the number of samples you need:
+
+    n(p,C) = log(1-C) / log(1-p)
+
+Now put numbers in it. Cohen says a difference below 0.35
+standard deviations is negligible — two things that close are
+not worth telling apart. Suppose solutions spread over one
+dimension like a bell curve, so the range runs from -3 to +3
+standard deviations. That is a width of 6. A negligible slice of
+it is
+
+    p = 0.35 / 6 = 5.83%
+
+How many samples to be 95% sure of landing inside a slice that
+size, next to the best?
+
+    n(0.0583, 0.95) = log(0.05) / log(0.9417) = 49.8
+
+**Fifty.** Not fifty thousand. Fifty.
+
+Now the second sum. Team A spends those 50 samples and builds a
+model. Team B takes the model and uses it to rank new problems.
+Team B is no longer sampling blind — it is chopping a ranked
+list. That wraps the same count in a log:
+
+    log2(49.8) = 5.6
+
+**Six.** Team A pays 50. Team B pays 6.
+
+If that is even roughly right, the world is not a complicated
+place. It can be read for the first time in fifty measurements,
+and re-read thereafter in half a dozen. A model built from fifty
+rows also fits in milliseconds, because there is almost nothing
+there to fit.
+
+The assumptions are heroic: one dimension, a bell curve,
+independent draws. Real data has none of those. So somebody
+should check the number against real data.
+
+Somebody did, at scale. Look again at the contour plot in the
+introduction. It is Figure 2 of
+[arXiv:2606.03640](https://arxiv.org/abs/2606.03640), which
+swept budget from 1 to 150 and check from 1 to 10 over randomly
+chosen tasks, 100,000 times, and scored each run on held-out
+rows — exactly the team B case.
+
+Above a budget of about 40 and a check of about 5, everything is
+95 and flat. The paper's own summary: at
+`(budget, check) = (50, 5)` the learner "usually achieves above
+an 85% win", and "checking beyond 7 items seems not particularly
+useful".
+
+Fifty to build. Five or six to reuse. Two independent routes —
+one a line of algebra, one a hundred thousand experiments —
+arrive at the same pair of numbers.
+
+## 0.2 The data
+
+    ezr> the.file = "$MOOT/optimize/behavior_data/all_players.csv"
+    ezr> t = Tbl(csv())
+    ezr> #t.rows
+    17737
+
+17,737 football players, 57 columns of ratings. Nobody wrote a
+schema. Two column names end in `+`, and that is the entire
+configuration: `Penalties+` and `Strength+`, both to maximise.
+
+Let us look. Sort every row by `d2h` — its gap to the perfect
+player, 0 is best — and print the top four and the bottom four,
+with most of the 57 columns left out:
+
+    d2h    Rank   OVR   PHY   Acceleration   Penalties+   Strength+
+    0.02   322    82    82    71             88           94
+    0.02   4      91    88    80             90           93
+    0.02   222    83    81    42             88           93
+    0.02   1525   76    82    54             86           92
+
+    0.99   10108  65    68    29             11           30
+    0.99   10108  65    65    15             11           30
+    0.99   5902   69    68    37             10           30
+    0.99   7937   67    65    49             10           30
+
+Notice the `Rank` column, which is the catalogue's own opinion
+of these players. Our best four are ranked 322, 4, 222 and 1525.
+The catalogue is ranking something else. Your goals are not the
+vendor's goals, which is why you sort by your own.
+
+Now the problem. You are a scout. You cannot watch 17,737
+players. Each one you assess costs a trip, a day, a trial.
+**You can afford twenty.**
+
+## 0.3 What twenty buys
+
+The rig splits the pool in half, scouts 15 of the training half,
+grows a tree, ranks the unseen half with it, then assesses the
+top 5. Twenty assessments, total.
+
+    ezr> the.budget = 20
+    ezr> lab = t:acquirer(the.budget - the.check)
+    ezr> #lab
+    15
+
+Score it. `win` is the percent of the gap between a median
+player and the catalogue's best that you closed. 100 means you
+found the best of 17,737. 0 means you did no better than picking
+from the middle. Twenty repeats, on the full pool:
+
+| seed | our 20 | random 20 |
+|---|---|---|
+| 1 | 73.2 | 65.9 |
+| 99 | 82.3 | 67.0 |
+| 4242 | 72.7 | 72.0 |
+| 31337 | 77.1 | 62.8 |
+
+Three wins, one tie, no losses. Mean gap **+9.4**.
+
+## 0.4 Where the fifty went
+
+Now check the arithmetic from 0.1. Sweep the budget, eight seed
+sets of twenty repeats each:
+
+| measurements | ours | random |
+|---|---|---|
+| 12 | 65.1 | 63.9 |
+| **20** | **80.9** | 72.4 |
+| 30 | 84.2 | 77.5 |
+| **50** | 86.1 | **82.8** |
+| 80 | 92.7 | 88.2 |
+
+Read the two bold numbers. Random sampling needs **50**
+measurements to reach a win of 82.8 — which is what the
+arithmetic predicted, on data that breaks every one of its
+assumptions.
+
+Our method reaches 80.9 with **20**. Within two points of
+random's fifty, for 2.5x fewer trips.
+
+That is the whole course in one table. The arithmetic prices
+reading the world blind. Everything else in these ten lectures
+is machinery for reading it with your eyes open.
+
+## 0.5 Why, in one screen
+
+A scout who returns with a name and no reason gets sent back
+out. So print the model:
+
+    ezr> Tree(t, lab):show(t)
+
+        n   d2h Penalties+ Strength+
+       15  0.28    67.73     73.2
+        8  0.43    63.12    65.13  PHY <= 71
+    !   4  0.53       59    61.75  |  PHY <= 65
+        4  0.33    67.25     68.5  |  PHY >  65
+        7  0.11       73    82.43  PHY >  71
+        3  0.18       69       77  |  Acceleration <= 87
+    *   4  0.06       76     86.5  |  Acceleration >  87
+
+Read the starred line. **If PHY > 71 and Acceleration > 87**,
+you are in the best group: penalties 76, strength 86.5. The `!`
+line is the group to avoid.
+
+Two attributes out of 57. Short enough to put in a ticket, argue
+about in a meeting, and hand to a scout who has never heard of
+this course. Random sampling cannot do this. It returns a winner
+and no reason, and for anything audited — money, health, safety
+— an unexplainable pick is not shippable at any accuracy.
+
+Two out of 57 is not luck either. Figure 3 of that same paper
+counts the attributes these trees use across 120+ tasks offering
+anywhere from a few dozen to over a thousand. The trees stay
+**under ten, throughout**, and the win score does not fall as
+the ignored columns pile up.
+
+## 0.6 The tree is also a plan
+
+The same seven lines answer three different jobs.
+
+**Prediction.** Drop an unseen player down the tree and read the
+leaf. No assessment, no cost.
+
+    ezr> tr = Tree(t, lab)
+    ezr> tr:leaf(t, t.rows[999])
+
+**Selection.** Rank the 1,009 unseen players by their leaf, then
+pay to assess only the top five.
+
+    ezr> top = slice(keysort(rest, function(r)
+                  return tr:leaf(t, r) end), 1, the.check)
+    ezr> show(t:disty(keysort(top, t:Y())[1]))
+    0.11
+
+Best found, 0.11 from perfect. The true best in the pool is
+0.04. Five assessments.
+
+**Planning.** The tree says which knob to turn. A player at PHY
+68 is one branch away from the good group: train physical, not
+acceleration. Team A paid 15 to build this. Team B pays 5 to use
+it — the six from 0.1, near enough.
+
+## 0.7 Not one lucky table
+
+    $ make all CORES=8
+    126 tables, 8 at a time ...
+    126 rows -> results.tsv
+
+**Seven seconds.** Software configuration, hyper-parameter
+tuning, effort estimation, health, finance, sales, systems.
+
+Honesty first. Across all 126 tables and six budgets, our method
+beats random 131 times, loses 92, and ties 533. On easy
+landscapes random is fine, and we say so. The random arm is not
+a formality, it is the control — and any paper that omits it is
+selling you something.
+
+## 0.8 The scale question
+
+Assessing 17,737 players and picking a defensible best took
+**0.4 seconds** on a laptop. No GPU, no cloud account, no
+vendor, no per-token bill. The data never left the building.
+
+That number sits oddly beside the going rate for AI: trillions
+of parameters, hundreds of millions of dollars of compute. For
+generating text and images, that price is real.
+
+But look at what we actually ask AI to do. Fifty years of
+search-based software engineering, from the founding paper of
+1976 to the LLM hybrids of 2026, covers roughly this list:
+
+| era | what people wanted | how they got it |
+|---|---|---|
+| 1976–1998 | test data, module boundaries | direct search, hill climbing |
+| 1998–2011 | release planning, scheduling, test priority, program repair, effort estimation | genetic algorithms and programming, simulated annealing |
+| 2007–2024 | test-suite minimisation, module clustering, refactoring at 15 objectives, code smells, fairness, self-driving and CPS test selection, API fuzzing, microservice extraction | Pareto evolution: NSGA-II, NSGA-III, IBEA, MOEA/D, MOSA, MIO |
+| 2015–2019 | cheap configuration and model tuning | **active learning, random projection** |
+| 2024–2026 | quantum test optimisation, LLM routing, LLM-driven testing, budget-aware portfolios | hybrids |
+
+Generate a paragraph? Almost none of it. Every task on that list
+is **rank, select, configure, schedule, estimate, or
+prioritise** — over a table. That is the shape of the work, and
+it is the shape this course fits.
+
+Cluster those tools by what actually distinguishes them and four
+families appear: exact and local search; the evolutionary and
+Pareto bloc; the costly LLM and quantum newcomers; and the
+frugal model-builders. That last family is not a small flavour
+of the evolutionary one. It is its own thing, and it is what you
+are about to learn.
+
+| six myths | reality |
+|---|---|
+| heavy infra | **stdlib** |
+| each task its own algo | **same 4 classes** |
+| trees differ by type | **1-line flip** |
+| newer beats older | **SA'83 wins** |
+| need massive data | **100 labels = 85-95%** |
+| text needs big models | **30-line NB > SVM** |
+
+| by the numbers | |
+|---|---|
+| vs. SMAC3 | **500x faster** |
+| labels to optimum | **< 100** |
+| features used | **< 10** |
+| code size | **400 lines** |
+| install size | **< 1 MB** |
+| tasks tested | **120+** |
+
+If a simple model matches a complex one, the complex one is
+technical debt.
+
+## 0.9 A different shape of AI system
+
+*(To be written. Sketch: a large model handles dialogue and
+skill selection — what do you actually want, which goals, which
+columns — and the methods in this course do the low-level
+inference underneath, at 400 lines and a millisecond a call. The
+tree returns as the audit trail, and the large model narrates
+it.)*
+
+## 0.10 What is coming
+
+Ten lectures, five files. Every number above is reproducible
+from the code you already have.
+
+Lecture 1 starts where all of these results start: a column that
+knows its own kind, from its name, before it has seen a single
+value.
 
 ---
 

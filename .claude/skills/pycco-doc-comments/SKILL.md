@@ -27,10 +27,10 @@ function TBL.disty(i,row)
 ```
 
 renders as one paragraph: monospace signature, hard line
-break, prose. **The two trailing spaces are load-bearing** —
-Python-Markdown's hard break. The `\` form does NOT work
+break, prose. **The two trailing spaces are required.** They
+are Python-Markdown's hard break. The `\` form does NOT work
 (tested). A blank `--` line instead gives two paragraphs,
-which reads too airy.
+which spreads the pair too far apart.
 
 Per **section** (`--## name ----`), add 2-6 lines of prose
 directly under the marker: what this group is for and why it
