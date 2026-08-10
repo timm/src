@@ -420,7 +420,13 @@ standard deviations is negligible — two things that close are
 not worth telling apart (as we shall see this rule-of-thumb gives surpringly accurate results). 
 Suppose solutions spread over one
 dimension like a bell curve, so the range runs from -3 to +3
-standard deviations. That is a width of 6. A negligible slice of
+standard deviations. That is a width of 6. 
+
+<img width="400"   alt="image" src="https://github.com/user-attachments/assets/4b83108d-f19d-48f3-9a0b-69329bb0e40a" />
+
+
+
+That is, according to Cohen, a negligibly small slice of
 it is
 
     p = 0.35 / 6 = 5.83%
