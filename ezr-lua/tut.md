@@ -306,17 +306,30 @@ Some people prefer Python because, unlike Lua, it comes with vast
 and intricate toolkits. Other people prefer Lua for exactly that
 reason.
 
+Here is a taste: the whole random number generator, from
+`ezr-lib.lua` (Park-Miller 1988). Every "random" number in this
+course comes from these few lines:
+
 ```lua
--- Return index of first item in `t` at or after `x` (per `lt`).
--- If not found, returns #t+1. `lt` defaults to `<`.
-local function chop(t, x, lt,        lo,hi,mid)
-  lt = lt or function(a,b) return a < b end -- anon. function
-  lo, hi = 1, #t                            -- #t = len(t)
-  while lo <= hi do
-    mid = (lo + hi) // 2
-    if lt(t[mid], x) then lo = mid + 1 else hi = mid - 1 end end
-  return lo end
+Seed = 1234567891
+
+-- Reseed with any integer; lands in 1..2^31-2.
+function srand(n)
+  Seed = floor(n or 1234567891) % 2147483647
+  if Seed <= 0 then Seed = Seed + 2147483646 end end
+
+-- No args: a float in [0,1). One arg n: an int in 1..n.
+-- Two args: an int in lo..hi.
+function rand(lo,hi,    x)
+  Seed = (16807 * Seed) % 2147483647
+  x = Seed / 2147483647
+  if not lo then return x end
+  if not hi then lo, hi = 1, lo end
+  return lo + floor(x * (hi - lo + 1)) end
 ```
+
+(Note the Lua idiom: names after the wide gap in an argument
+list are locals, not arguments.)
 
 Why teach in Lua? It is a language few of you know, and it is the
 simplest to learn.
@@ -371,7 +384,7 @@ hide, how far to trust them.
 | #                     | Lecture                          | REPL    | Ideas                                                                                                                                                         |
 | --------------------- | -------------------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | [0](#l0)              | A taste: 20 measurements         | —       | the arithmetic, and one worked scouting problem                                                                                                               |
-| [1](#l1)              | Orientation & columns            | 1–16    | [NOIR](#g-noir), [WEL](#g-wel), [CDF](#g-cdf), [LOG](#g-log)                                                                                                  |
+| [1](#l1)              | Orientation & columns            | 1–16    | [SEED](#g-seed), [NOIR](#g-noir), [WEL](#g-wel), [CDF](#g-cdf), [LOG](#g-log)                                                                                 |
 | [2](#l2)              | Tables, roles, forgetting        | 17–36   | [ROLE](#g-role), [STREAM](#g-stream)                                                                                                                          |
 | [3](#l3)              | Distance & gap-to-heaven         | 37–53   | [MINK](#g-mink), [D2H](#g-d2h), [PARETO](#g-pareto)                                                                                                           |
 | [4](#l4)              | Clustering by poles              | 54–69   | [POLE](#g-pole), [FASTMAP](#g-fastmap), [HALVE](#g-halve)                                                                                                     |
@@ -457,7 +470,7 @@ The assumptions behind this math are  heroic: one dimension, a bell curve,
 independent draws. Real data has none of those. So somebody
 should check the number against real data.
 
-Somebody did, at scale. Look again at the contour plot in the
+Somebody did, at scale (yes, it was me). Look again at the contour plot in the
 introduction (it is Figure 2 of
 [arXiv:2606.03640](https://arxiv.org/abs/2606.03640)) which
 swept budget from 1 to 150 and check from 1 to 10 over randomly
@@ -684,46 +697,11 @@ Generate a paragraph? Almost none of it. Every task on that list
 is the rank-select-configure list from the introduction — work
 over a table, and the shape this course fits.
 
-Cluster those tools by what actually distinguishes them and four
-families appear: exact and local search; the evolutionary and
-Pareto bloc; the costly LLM and quantum newcomers; and the
-frugal model-builders. That last family is not a small flavour
-of the evolutionary one. It is its own thing, and it is what you
-are about to learn.
+So LLMs let us do some NEW things. What about everything elese we need to do?
+Why not combine LLM's dialog generation (whihc is impressive) with some very simple under-the-hood tools?
 
-| six myths              | reality                 |
-| ---------------------- | ----------------------- |
-| heavy infra            | **stdlib**              |
-| each task its own algo | **same 4 classes**      |
-| trees differ by type   | **1-line flip**         |
-| newer beats older      | **SA'83 wins**          |
-| need massive data      | **100 labels = 85-95%** |
-| text needs big models  | **30-line NB > SVM**    |
 
-| by the numbers    |                 |
-| ----------------- | --------------- |
-| vs. SMAC3         | **500x faster** |
-| labels to optimum | **< 100**       |
-| features used     | **< 10**        |
-| code size         | **400 lines**   |
-| install size      | **< 1 MB**      |
-| tasks tested      | **120+**        |
-
-If a simple model matches a complex one, the complex one is
-technical debt.
-
-## 0.9 A different shape of AI system
-
-*(To be written. Sketch: a large model handles dialogue and
-skill selection — what do you actually want, which goals, which
-columns — and the methods in this course do the low-level
-inference underneath, at 400 lines and a millisecond a call. The
-tree returns as the audit trail, and the large model narrates
-it.)*
-
-## 0.10 What is coming
-
-Ten lectures, five files. Every number above is reproducible
+Lets do tthat. Ten lectures, five files. Every number above is reproducible
 from the code you already have.
 
 Lecture 1 starts where all of these results start: a column that
@@ -772,6 +750,21 @@ auto93.csv
 > cut that matters for arithmetic: symbols (Nominal — a mode, a
 > count) versus numbers (Ratio — a mean, a spread). A column's role
 > is fixed before data arrives, so no symbol is ever averaged.
+
+> **[SEED](#g-seed) — the experimental method for random code.** A
+> stochastic algorithm makes random choices, so one run proves
+> nothing: rerun it and the answer moves. The fix is two rules.
+> *Fix the seed to reproduce:* the same seed gives the same random
+> stream, so any result — and any bug — can be replayed exactly, on
+> any machine. *Vary the seed to generalize:* claims come from 20+
+> runs under different seeds, reported as a distribution, never from
+> one lucky run. Every experiment in this course does both:
+> `srand(the.seed)` opens each run, and repeats derive their streams
+> from it (`the.seed + j`). The stream itself comes from the
+> ten-line Park-Miller generator you read in the introduction —
+> `Seed = (16807 * Seed) % 2147483647` — the same numbers under any
+> Lua, any OS, and any correct port. Lose the seed and you lose the
+> experiment.
 
 **Check.** After `[1]`, why does `the.seed` still print the same
 number on your machine as on mine? (What did `[1]` guarantee?)
@@ -2574,9 +2567,70 @@ is its first half.
 # Appendix: Lua-101
 
 Just enough Lua to read the sources — the constructs they actually
-use, nothing more. Numbered from 1000 so lecture edits never disturb
-these. Pure language: no project code, no data; paste into a bare
-`lua -i`.
+use, nothing more, ordered by how hard they bite a Python reader.
+Numbered from 1000 so lecture edits never disturb these. Pure
+language: no project code, no data; paste into a bare `lua -i`.
+
+## A quick tour
+
+Before the details, all of it at once. Skim this now; every line is
+explained by some section below. Save as `demo.lua`, run
+`lua demo.lua`:
+
+```lua
+-- demo.lua : most of Lua in ~30 lines
+local the = {name="demo", n=1000, seed=1}          -- config table, string+int keys
+local new, fun, sum                                -- all functions local, up front
+local Num = {}                                     -- a class
+
+function new(kl,t)                                 -- from ezr-lib: class table is
+  kl.__index = kl; return setmetatable(t,kl) end   -- also its metatable
+
+function Num.new(txt,at)                           -- default args via 'or'
+  return new(Num, {txt=txt or "x", at=at or 0, n=0, mu=0, m2=0}) end
+
+function Num.add(i,x)                              -- Welford; 'i' is self
+  i.n = i.n + 1
+  local d = x - i.mu
+  i.mu = i.mu + d/i.n; i.m2 = i.m2 + d*(x - i.mu)
+  return i end
+
+function Num.sd(i) return i.n<2 and 0 or (i.m2/(i.n-1))^0.5 end
+
+function Num.__tostring(i)
+  return ("%s{mu=%.3f sd=%.3f}"):format(i.txt, i.mu, i:sd()) end
+Num.__add = Num.add                                -- operator overload
+
+function fun(f)                                    -- nil -> identity
+  if f == nil          then return function(v) return v end end
+  if type(f) == "function" then return f end
+  return function(t) return t[f] end end           -- else key -> getter
+
+function sum(t, f,    n)                           -- trailing args = locals
+  f, n = fun(f), 0
+  for _,v in ipairs(t) do n = n + f(v) end; return n end
+
+print(Num.new("age") + 20 + 30 + 40)               --> age{mu=30.000 sd=10.000}
+print(sum{3, 4, 5})                                --> 12
+kids = {{name="aarav",age=1}, {name="sai",age=2}, {name="dev",age=3}}
+print(sum(kids, "age"))                            --> 6
+```
+
+Same output under `lua` and `luajit`. Now the details.
+
+First, the one-screen syntax map:
+
+| Python                  | Lua                                    |
+| ----------------------- | -------------------------------------- |
+| `!=`                    | `~=`                                   |
+| `"a" + "b"` (error)     | `"a" .. "b"` (concat)                  |
+| `x += 1`                | `x = x + 1` (no `+=`)                  |
+| `None`                  | `nil`                                  |
+| `d["k"]` raises KeyError| `t.k` is just `nil`, never an error    |
+| `del d[k]`              | `t[k] = nil`                           |
+| `len(t)`                | `#t`                                   |
+| `# comment`             | `-- comment`                           |
+| indentation blocks      | `do/then ... end`                      |
 
 ## A.1 Tables are the only structure
 
@@ -2597,20 +2651,72 @@ cars
 Lua indexes from 1, not 0 — why every loop in the sources reads
 `for j=1,#t`.
 
-## A.2 Metatables make objects
+## A.2 Two iterators, one warning
+
+`ipairs` walks the list part, in order, and stops at the first
+gap. `pairs` walks every key — **in no defined order**. Python
+dicts remember insertion order; Lua tables do not, and the order
+can change between Lua versions.
+
+```lua
+[1005]> u = {10, 20, jump=99}
+[1006]> #u
+2
+[1007]> out = ""; for _,v in ipairs(u) do out = out .. v .. " " end;
+[1008]> out
+10 20
+```
+
+`#u` and `ipairs` never see `jump`. When the sources iterate
+`pairs` (as in `SYM.cuts`, Lecture 5), nothing downstream may
+depend on the visit order — a fact the seed guarantee quietly
+relies on.
+
+## A.3 Only `nil` and `false` are falsy
+
+The trap that bites Pythonistas first. In Lua, `0` and `""` are
+**true**. And `and`/`or` do not return booleans — they return one
+of their operands, which is how this codebase writes its ternaries
+and defaults.
+
+```lua
+[1009]> 0 and "zero is TRUE" or "zero is false"
+zero is TRUE
+[1010]> "" and "empty is TRUE" or "empty is false"
+empty is TRUE
+[1011]> nil and 1 or 2
+2
+[1012]> true and nil or "surprise"
+surprise
+[1013]> x = nil
+[1014]> x = x or "default"
+[1015]> x
+default
+```
+
+`x and y or z` is Lua's `y if x else z` — read it everywhere in the
+sources (`sign = big and -1 or 1`; the leaf markers in `TREE.show`).
+`[1012]` is its one failure mode: when the middle value is falsy,
+you always get `z`. `x = x or default` (`[1014]`) fills in missing
+arguments — `Y = Y or tbl:Y()` in `Tree`.
+
+## A.4 Metatables make objects
 
 `setmetatable` with `__index` pointing at a table of methods gives
 you classes. `a:speak()` is sugar for `a.speak(a)`. This is exactly
 `new` in `ezr-lib.lua` — re-read it now.
 
 ```lua
-[1006]> function Animal.new(sound) return setmetatable({sound=sound}, Animal) end
-[1008]> a = Animal.new("moo")
-[1009]> a:speak()
+[1016]> Animal = {}
+[1017]> Animal.__index = Animal
+[1018]> function Animal.new(sound) return setmetatable({sound=sound}, Animal) end
+[1019]> function Animal.speak(self) return self.sound .. "!" end
+[1020]> a = Animal.new("moo")
+[1021]> a:speak()
 moo!
 ```
 
-## A.3 Closures capture locals
+## A.5 Closures capture locals
 
 A function remembers the locals in scope when it was made. `counter`
 returns a function with its own private `n` — the pattern behind
@@ -2618,69 +2724,133 @@ returns a function with its own private `n` — the pattern behind
 closure instead of a field.
 
 ```lua
-[1011]> c = counter()
-[1012]> c()
+[1022]> function counter(  n) n = 0; return function() n = n + 1; return n end end
+[1023]> c = counter()
+[1024]> c()
 1
-[1013]> c()
+[1025]> c()
 2
-[1014]> c()
+[1026]> c()
 3
 ```
 
-## A.4 Hidden locals after the comma
+## A.6 A `for` loop can drive any function
+
+Where Python has generators, Lua has plain closures: `for x in f do`
+calls `f()` each lap and stops at `nil`. This is `csv` in Lecture 1
+— a closure over an open file, one row per call.
+
+```lua
+[1027]> function upto(n,  j) j = 0; return function() j = j + 1; if j <= n then return j end end end
+[1028]> out = ""; for j in upto(3) do out = out .. j .. " " end;
+[1029]> out
+1 2 3
+```
+
+## A.7 Hidden locals after the comma
 
 The sources declare scratch locals as extra parameters after a big
 gap of spaces — `function f(x,    tmp)`. They are never passed; the
 gap just flags "these are locals, not arguments." A house style, not
-a language feature.
+a language feature. (`counter` and `upto` above already used it.)
 
 ```lua
-[1015]> adder = function(x,   sofar) sofar = (sofar or 0) + x; return sofar end
-[1016]> adder(5)
+[1030]> adder = function(x,   sofar) sofar = (sofar or 0) + x; return sofar end
+[1031]> adder(5)
 5
 ```
 
-## A.5 Varargs and multiple returns
+## A.8 Varargs and multiple returns
 
 `...` collects extra arguments; a function may return several values.
 `lo, hi = minmax(...)` is how `poles` (Lecture 4) and `halve` hand
 back two things at once.
 
 ```lua
-[1018]> lo, hi = minmax(3, 1, 4, 1, 5, 9, 2)
-[1019]> lo
+[1032]> function minmax(...) local t = {...}; table.sort(t); return t[1], t[#t] end
+[1033]> lo, hi = minmax(3, 1, 4, 1, 5, 9, 2)
+[1034]> lo
 1
-[1020]> hi
+[1035]> hi
 9
 ```
 
-## A.6 String patterns coerce cells
+## A.9 Parens are optional, twice
+
+A call whose only argument is one string literal or one table
+literal may drop its parens. Not a typo — a rule. The sources use
+both forms constantly: `match"^%s*(.-)%s*$"`, `the:also"help"`,
+`show{lo=lo, hi=hi}`.
+
+```lua
+[1036]> f = function(x) return x end
+[1037]> f"hello"
+hello
+[1038]> #f{1, 2}
+2
+```
+
+One asymmetry: a *method* on a string literal needs parens around
+the literal — `("x"):sub(1)` works, `"x":sub(1)` is a syntax error.
+
+## A.10 String patterns coerce cells
 
 Lua patterns (not full regexes) trim and classify CSV cells. `%s` is
 whitespace; `(.-)` is a lazy capture; `$` anchors the end. These four
 calls ARE the column-role logic of Lecture 1.
 
 ```lua
-[1021]> ("  42 "):match"^%s*(.-)%s*$"
+[1039]> ("  42 "):match"^%s*(.-)%s*$"
 42
-[1022]> tonumber("3.14")
+[1040]> tonumber("3.14")
 3.14
-[1023]> ("Mpg+"):find"[+-]$"
+[1041]> ("Mpg+"):find"[+-]$"
 4	4
-[1024]> ("HpX"):sub(-1)
+[1042]> ("HpX"):sub(-1)
 X
 ```
 
 `find` returns the start and end positions of the match (4, 4 for the
 single trailing char) — truthy, which is all the role code needs.
 
-## A.7 Re-read the source
+## A.11 Globals by default, and `_ENV`
+
+Python's rule: assignment inside a function makes a *local*. Lua's
+rule is the reverse — assignment makes a **global**, unless you say
+`local`. One missing keyword and a function leaks state:
+
+```lua
+[1043]> function leaky() leak = 1 end
+[1044]> leaky()
+[1045]> leak
+1
+```
+
+That leak went into the *environment*: an ordinary Lua table where
+every global name lives. Which table that is can be swapped. Now,
+and only now, the strangest line in the sources — near the top of
+every file — is readable:
+
+    local _ENV = setmetatable({}, {__index = require"ezr-lib"})
+
+It replaces the environment with a fresh table whose missing names
+fall through (`__index`) to the library, and through it to Lua's
+own globals. After that line, every `function name(...)` in the
+file "leaks" into that fresh table on purpose — defining a function
+and exporting it in one stroke. The file's last line, `return _ENV`,
+hands the table to `require`, and that is the whole module system:
+no `class`, no `import`, no `self.__dict__` — one table, one
+metatable, one return. (It is also why `lua -i ezr.lua` shows you
+nothing, and `lua -i play.lua` exists: the names live in that
+private table, and `play.lua` copies them out.)
+
+## A.12 Re-read the source
 
 You now have every construct. `("Lbs-"):find"-$"` is the exact test
 inside `Num` that sets a column's heaven to 0 (minimize):
 
 ```lua
-[1025]> ("Lbs-"):find"-$"
+[1046]> ("Lbs-"):find"-$"
 4	4
 ```
 
@@ -2693,6 +2863,7 @@ them. Reference: Lua 5.1 short reference (see [refs](#refs)).
 
 ---
 
+
 <a name="glossary"></a>
 # Glossary
 
@@ -2702,6 +2873,7 @@ the order the REPL first meets each idea.
 
 | Acro                              | Expansion                        | One line                                                   | First use     | Ref              |
 | --------------------------------- | -------------------------------- | ---------------------------------------------------------- | ------------- | ---------------- |
+| <a name="g-seed"></a>SEED         | Reproducible randomness          | Fix the seed to replay a run; vary it to trust a claim     | [L1.1](#l1)   | Park-Miller 1988 |
 | <a name="g-noir"></a>NOIR         | Nominal/Ordinal/Interval/Ratio   | Scales of measurement; symbol vs number here               | [L1.1](#l1)   | Stevens 1946     |
 | <a name="g-wel"></a>WEL           | Welford's online variance        | Mean and variance in one pass, no stored data              | [L1.4](#l1)   | Welford 1962     |
 | <a name="g-ent"></a>ENT           | Shannon entropy                  | A symbol column's spread, in bits                          | [L1.5](#l1)   | Shannon 1948     |
@@ -2795,6 +2967,8 @@ the order the REPL first meets each idea.
   Information Theory. https://doi.org/10.1109/TIT.1982.1056489
 - Nair, Menzies, Siegmund & Apel 2017, *Using Bad Learners to Find
   Good Configurations*, FSE. https://doi.org/10.1145/3106237.3106238
+- Park & Miller 1988, *Random Number Generators: Good Ones Are Hard
+  to Find*, CACM. https://doi.org/10.1145/63039.63042
 - Quinlan 1986, *Induction of Decision Trees*, Machine Learning.
   https://doi.org/10.1007/BF00116251
 - Scott & Knott 1974, *A Cluster Analysis Method for Grouping Means*,
