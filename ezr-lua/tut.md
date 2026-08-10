@@ -3,25 +3,79 @@
 
 (c) 2026 Tim Menzies <timm@ieee.org>, MIT license.
 
-*Build: 2026-08-07 — trace numbers below come from this build.*
+# Writing Reusable Skills
 
-Ryan Dahl says the era of human-written code is ending. Jensen
-Huang advises the young against learning to code. The new orthodoxy:
-nobody reads programs anymore — fly over the details, let the machine
-drive. This course disagrees by demonstration. We read five short Lua
-files, a few hundred lines each, carefully, at the REPL — and out
-falls a toolkit that summarizes data, draws explainable trees, spots
-anomalies, sorts options by many goals at once, and optimizes under
-label budgets that would bankrupt fancier methods.
+This subject makes you a domain-engineering wizard. Imagine a
+world where you talk to an LLM and it builds you a skill. You name
+the task. The dialog layer — neural, chatty, forgiving — turns your
+words into a spec.
 
-## Why bother, when the machine can write it?
+Under the hood, something else runs. Solvers, trees, samplers,
+statistics. A wide variety of tools, most of them not neural at
+all. That under-the-hood layer is what this book writes.
 
-Large models are extraordinary at generation. Nothing here disputes
-that. But big AI is a rented telescope: powerful, and pointed by
-someone else. You cannot inspect it. It changes without notice, so
-last year's result may not run this year. It is wrong in confident
-ways, so every output needs a human check. And each generation needs
-more power, money, and cooling than the last.
+Make it concrete. You want to buy a car. A good car accelerates
+fast, drinks little fuel, and weighs little — a lighter car is
+cheaper to build, so cheaper to buy. Someone offers you this one:
+
+    Clndrs, Volume, HpX, Model, origin, Lbs-, Acc+, Mpg+
+         4,    140,  92,    76,      1, 2572, 14.9,   30
+
+What should an AI know about it? Whether the car is unusual. Whether
+it is worth buying. Whether a better one exists. And if you must
+buy this one, which single change helps most.
+
+Here are ten ways an AI could help. Ask an LLM to code that second
+column and you get 10K lines of glue around 1000K lines of
+scikit-learn and pandas — a system you could not possibly understand.
+
+| task                                            | skill                     |     %LOC | new LOC |
+| ----------------------------------------------- | ------------------------- | -------: | ------: |
+| Put 400 cars in one table; measure any gap      | remember (representation) |      45% |     150 |
+| Guess the fuel use before we see the sticker    | guess (prediction)        |      17% |      57 |
+| Say when "better" is real, and when it is noise | certify (certification)   |      12% |      40 |
+| Decide on the spot as cars arrive one at a time | flow (streaming)          |       8% |      27 |
+| Say why the bad cars are slow, or thirsty       | blame (diagnosis)         |       6% |      20 |
+| Justify any verdict to a skeptical buyer        | justify (explanation)     |       4% |      13 |
+| Find the best car, test-driving very few        | choose (optimization)     |       3% |      10 |
+| Find the cheapest change that fixes this car    | fix (repair)              |       3% |      10 |
+| Spot a strange car: a typo, or a scam           | spot (anomaly detection)  |       2% |       6 |
+| Race our skills against the field's best        | race (baselining)         |       0% |       0 |
+| **Totals**                                      |                           | **100%** | **333** |
+
+Using the methods of this subject, those tasks cost the lines shown
+on the right. That shape is what good domain engineering buys.
+Skill i+1 reuses machinery already built for skills 1 through i.
+The first skill pays for the data structure everything shares.
+Certification comes early, before the experiments that need a
+referee. By the end, a new skill rewires old parts; it does not add
+new ones.
+
+Do the domain engineering right and everything gets simple,
+understandable, verifiable.
+
+## Why look under the hood?
+
+That plan runs against the current orthodoxy. Ryan Dahl (creator of
+Node.js) says the era of human-written code is ending. Jensen Huang
+(Nvidia CEO) advises the young against learning to code. Nobody
+reads programs anymore — fly over the details, let the machine
+drive.
+
+This course disagrees, by demonstration. We read EZR: five short
+Lua files, a few hundred lines each. They define a state-of-the-art
+optimization and explanation tool that runs in milliseconds. EZR
+summarizes data, draws explainable trees, spots anomalies, sorts
+options by many goals at once, and optimizes under label budgets
+that would bankrupt fancier methods.
+
+Why read code, when a large model can write it? Large models are
+extraordinary at generation. Nothing here disputes that. But big AI
+is a rented telescope: powerful, and pointed by someone else. You
+cannot inspect it. It changes without notice, so last year's result
+may not run this year. It is wrong in confident ways, so every
+output needs a human check. And each generation needs more power,
+money, and cooling than the last.
 
 The bill is already arriving. Baltes, Cheong and Treude read 1,154
 developer posts about "AI slop" — Merriam-Webster's 2025 Word of the
@@ -32,71 +86,104 @@ maintainer time and produced nothing valid.
 ([arXiv:2603.27249](https://arxiv.org/abs/2603.27249), local copy in
 `etc/refs/`.)
 
-Now look at what you will actually be paid to do. Fifty years of
+There is an older warning. In 1983, Bainbridge cautioned [^bain83]
+that if we automate the parts that are easy to automate, we leave
+humans the residue: the hard cases, plus a monitoring role that
+humans are cognitively terrible at, plus skill atrophy from not
+doing the easy cases anymore. In 2024, CrowdStrike shipped a
+malformed configuration file that crashed 8.5 million machines. The
+file was live for 78 minutes; the bill came to $5.4 billion in
+direct losses at Fortune 500 companies alone. It was skilled
+programmers, reading crash dumps and boot loaders, who handled that
+emergency.
+
+So ask yourself: who do you want to be? The person we rely on in a
+crisis, or the programmer sacked in the next reorganization? Tools
+expertise gets you hired; judgment gets you promoted — and judgment
+is only ever built by reading the details someone else was willing
+to skip. That is the difference between the engineer who is called
+at 3am and the one who is merely notified. Fly over the details and
+you are qualified for exactly the job the machine already has. So
+we go the other way: down, into a few hundred lines, until you can
+say what the program does and why it is right. We train the
+reviewers, not the reviewed.
+
+[^bain83]: Bainbridge, Lisanne. "Ironies of Automation." *Automatica*, vol. 19, no. 6, 1983, pp. 775-79, https://doi.org/10.1016/0005-1098(83)90046-8.
+
+## The work, and its wall
+
+Look at what you will actually be paid to do. Fifty years of
 software engineering research — test generation, release planning,
-effort estimation, refactoring, configuration tuning, program repair,
-scheduling — is almost never generation. It is **rank, select,
-configure, schedule, estimate, prioritise**, over a table.
+effort estimation, refactoring, configuration tuning, program
+repair, scheduling — is almost never generation. It is **rank,
+select, configure, schedule, estimate, prioritise**, over a table.
 
-And every one of those jobs hits the same wall.
+Every one of those jobs hits the same wall: **labels cost money.**
+Unlabelled data is cheap. Accurate labels ("this is good", "this is
+bad") are so slow and expensive that we often face a label famine:
 
-**Labels cost money.** Not tokens — money, and time.
-
-- Human experts are slow and get worse when rushed. Hours for a
-  handful of cases.
+- Human experts are slow at labelling, and get worse when rushed.
+  Hours for a handful of cases.
 - Historical logs are big but unreliable. In one study, 90% of
   labelled technical-debt "false positives" were themselves wrong.
 - Automated labelling is crude (regex) or merely assistive (LLMs).
 - Even a real oracle can be ruinous. Exhaustively exploring the
-  **11** parameters of the x264 video encoder took **1,000+ hours**.
+  **11** parameters of the x264 video encoder (compile each one,
+  then run a large test suite) took **1,000+ hours**.
 
-So in practice you get a few dozen evaluations. Not a few million.
-
-That is the question this course answers: **how much can you learn
-from a few dozen labels?** The answer turns out to be *most of it*,
-and Lecture 0 shows you where that number comes from and then checks
-it against 17,737 real records.
-
-You will be the reviewer, not the reviewed. Tools get you hired;
-judgment gets you promoted. Someone still has to define what correct
-means, verify a generated claim, review work they did not write, and
-weigh cost against quality. That is the senior engineer's job, and it
-is the job this course trains.
+So we ask: what can you do with a few dozen evaluations, not a few
+million? That is the question this course answers: **how much can
+you learn from a few dozen labels?** The answer turns out to be
+*most of it*. Lecture 0 shows where that number comes from, then
+checks it against 17,737 real records.
 
 ## The whole course in one screen
 
-Read a table. Nobody writes a schema; a `+` or `-` on a header name
-is the entire configuration:
+Read a table. Name each column. Add `+` or `-` to the goals you
+want to maximize or minimize. Here is a sample of such data. In
+practice the goals are mostly "?", since labels are the thing we
+cannot afford:
 
-    d2h    Rank   OVR   PHY   Acceleration   Penalties+   Strength+
-    0.02   322    82    82    71             88           94
-    0.02   4      91    88    80             90           93
+       x = controllables, observables               y = goals
+    --------------------------------------      -----------------------
+    d2h    Rank   OVR   PHY   Acceleration      Penalties+   Strength+
+    0.02   322    82    82    71                88           94
+    0.02   4      91    88    80                90           93
+    ...
+    0.99   5902   69    68    37                10           30
+    0.99   7937   67    65    49                10           30
 
-    0.99   5902   69    68    37             10           30
-    0.99   7937   67    65    49             10           30
+Pass EZR 17,737 such rows. It finds 15 rows worth labelling and
+builds a model you can read:
 
-Label 15 of 17,737 rows, and build a model you can read:
+         n   d2h Penalties+ Strength+
+        15  0.34        59    75.07
+         8  0.11     77.25    79.75  Rank <= 222
+     ▲   5  0.07      81.6       83  |  Crossing >  79
+         3  0.18        70    74.33  |  Crossing <= 79
+         7  0.60     38.14    69.71  Rank >  222
+         4  0.54     37.25    79.25  |  DEF >  60
+     ▼   3  0.68     39.33       57  |  DEF <= 60
 
-        n   d2h Penalties+ Strength+
-       15  0.28    67.73     73.2
-        8  0.43    63.12    65.13  PHY <= 71
-    !   4  0.53       59    61.75  |  PHY <= 65
-        7  0.11       73    82.43  PHY >  71
-    *   4  0.06       76     86.5  |  Acceleration >  87
+Three attributes matter, out of 57. And it is *fast*, which is what
+happens when a model has almost nothing in it:
 
-Two attributes out of 57, one per goal. And it is *fast*, which is
-what happens when a model has almost nothing in it:
+| step                            | time        |
+| ------------------------------- | ----------- |
+| read 17,737 rows                | 346 ms      |
+| choose 15 rows worth labelling  | 98 ms       |
+| **build the model**             | **11.9 ms** |
+| score 1,024 unseen rows with it | 0.3 ms      |
 
-| step | time |
-|---|---|
-| read 17,737 rows | 346 ms |
-| choose 15 rows worth labelling | 98 ms |
-| **build the model** | **11.9 ms** |
-| score 1,024 unseen rows with it | 0.3 ms |
+How many labels is enough? For this and 127 other such problems
+(from the MOOT repository [^moot]) we swept budgets from 1 to 150
+and "checks" from 1 to 10, 100,000 times. One team builds a model
+using some budget; another team uses that model to check related
+data. Runs are scored by how much they improve things (100 = max
+improvement). Above a budget of ~50 and a check of ~5, the contours
+flatten at 95:
 
-How many labels is enough? Somebody swept budget from 1 to 150 and
-"check" from 1 to 10, over random tasks, 100,000 times. Above a
-budget of ~40 and a check of ~5, the contours flatten at 95:
+[^moot]: Menzies, T., Chen, T., Ye, Y., Ganguly, K. K., Rayegan, A., Srinivasan, S., & Lustosa, A. (2026, April). MOOT: a repository of many multi-objective optimization tasks. In Proceedings of the 23rd International Conference on Mining Software Repositories (pp. 584-589).
 
 <img src="etc/img/fig2-w2.png" alt="wins by budget and check">
 
@@ -104,37 +191,173 @@ Fifty labels to build a model. Five or six to reuse someone else's.
 Lecture 0 derives both numbers from one line of algebra, then tests
 them.
 
-Moral, and course thesis: every learner is a falsifiable bet about
-the shape of your problem, and a few hundred readable lines are
-enough to run the experiment yourself.
+The course thesis: every learner is a falsifiable bet about the
+shape of your problem, and a few hundred readable lines are enough
+to run the experiment yourself.
 
-## Why Lua
+## Setup
+
+Four steps: Lua, the code, the data, the prompt.
+
+**1. Lua** (get the latest, 5.4):
+
+    sudo apt install lua5.4 luajit rlwrap   # Debian, Ubuntu
+    brew install lua luajit                 # macOS
+
+Debian and Ubuntu name the binary `lua5.4`. Add a link, or the
+commands below cannot find it:
+
+    sudo ln -sf /usr/bin/lua5.4 /usr/local/bin/lua
+
+Windows: use WSL. In PowerShell, as administrator:
+
+    wsl --install
+
+Reboot, set a username and password when Ubuntu first starts, then
+run the Debian lines above inside it. From here on, everything in
+this course happens inside that Ubuntu shell. Lua does run natively
+on Windows (`scoop install lua`, or binaries from
+luabinaries.sourceforge.net), but that build has no line editing at
+the prompt.
+
+**2. The code:**
+
+    curl -fLO https://raw.githubusercontent.com/timm/src/main/ezr-lua/ezr-lua.zip
+    unzip ezr-lua.zip
+    cd ezr-lua
+    make demo      # sanity check; three runs, each "failures: 0"
+
+The zip holds the five `.lua` files, `play.lua`, `tut.md`, the
+sample table, and the replay harness that checks every trace below.
+The `curl … INSTALL.md | sh` line in the README is a different
+thing: it fetches the `.lua` files alone, for embedding in your own
+code, and leaves out the data this course needs.
+
+**3. The data:**
+
+    make players   # the 3.6MB table Lecture 0 uses
+    git clone https://github.com/timm/moot ~/gits/moot
+    export MOOT=$HOME/gits/moot
+
+`make` on its own lists the rest. `make data` pulls the whole
+126-table corpus, and `make all CORES=8` scores every table in it.
+
+**4. The prompt:**
+
+    lua -i play.lua
+
+That last line is the one you will type a hundred times. It drops
+you at an `ezr>` prompt with `the`, `Tbl`, `csv` and every other
+function already in scope. `play.lua` exists only to do that: it
+lifts the names out of the modules and hands you Lua's own
+interactive prompt, which brings arrow keys, history and multi-line
+input with it. Ctrl-D exits. Try it now:
+
+    ezr> t = Tbl(csv())
+    ezr> #t.rows          -- '#' means "length"
+    398
+
+On LuaJIT and Lua 5.1, put `=` in front of anything you want printed
+(`=#t.rows`). Lua 5.2 and up print bare expressions on their own.
+
+**If you want raw speed:** `luajit` runs this code ten to fifty
+times faster than `lua`, and is worth having installed. But LuaJIT
+implements Lua 5.1, so speed costs you the newer syntax. Write to
+5.1 and your code runs under both:
+
+| Avoid            | 5.4 only          | Write instead            |
+|------------------|-------------------|--------------------------|
+| `a // b`         | integer divide    | `math.floor(a/b)`        |
+| `& \| ~ << >>`   | bitwise operators | `bit.band` etc, or avoid |
+| `<const> <close>`| attributes        | plain `local`            |
+| `math.type`      | integer subtype   | 5.1 has no integers      |
+| `table.move`     | 5.3               | a `for` loop             |
+| `string.pack`    | 5.3               | —                        |
+| `utf8.*`         | 5.3               | —                        |
+
+Two names moved, so shim them once at the top of the file:
+
+    local unpack     = table.unpack or unpack
+    local loadstring = loadstring or load
+
+One gotcha will bite you before any of the above. In 5.4,
+`print(6/2)` shows `3.0`; in LuaJIT it shows `3`. Every test that
+compares printed output will differ between the two. So never print a
+raw number — round it first:
+
+    local function o(x)
+      if type(x)=="number" then
+        return x==math.floor(x) and string.format("%.0f",x)
+                                or  string.format("%.3g",x) end
+      ...
+
+Then check both, every time:
+
+    for lua in luajit lua5.4; do $lua l5.lua -e all; done
+
+## Lua, and the port
+
+Learning needs a little challenge — not a simple slide-and-forget
+into your brain, but something that gives you pause to reflect. So
+in this subject, you will port EZR from one language (Lua) to
+another (Python), around 50 lines of code per week. Lua is a small,
+Python-like language — a standard library of 9 modules, not 200.
+Some people prefer Python because, unlike Lua, it comes with vast
+and intricate toolkits. Other people prefer Lua for exactly that
+reason.
+
+```lua
+-- Return index of first item in `t` at or after `x` (per `lt`).
+-- If not found, returns #t+1. `lt` defaults to `<`.
+local function chop(t, x, lt,        lo,hi,mid)
+  lt = lt or function(a,b) return a < b end -- anon. function
+  lo, hi = 1, #t                            -- #t = len(t)
+  while lo <= hi do
+    mid = (lo + hi) // 2
+    if lt(t[mid], x) then lo = mid + 1 else hi = mid - 1 end end
+  return lo end
+```
+
+Why teach in Lua? It is a language few of you know, and it is the
+simplest to learn.
 
 **It is small enough to read.** The whole toolkit is five files and
-about 1,500 lines, comments included. You can hold it in your head.
-That is the point of the course: you are not learning a library, you
-are reading a system.
+under 500 lines of code (without comments). You can hold it in your
+head. That is the point of the course: you are not learning a
+library, you are reading a system.
 
-**It is fast, and it is tiny in memory** — which is what puts this
-class of method on an edge device, a phone, or a build agent, where a
-Python stack will not fit. Measured over 128 data models, four
-runtimes, 512 runs, on an Apple M4 (`REPORTcpu.md`):
+**It is fast, and it is tiny in memory** — useful when a Python
+stack will not fit (an edge device, a phone, a build agent).
+Measured over 128 data models, four runtimes, 512 runs, on an Apple
+M4 (`REPORTcpu.md`):
 
-| models | runtime | total real | mean RSS | vs LuaJIT |
-|---|---|---|---|---|
-| small (<1k rows) | CPython | 37.5 s | 25.7 MB | 81x slower |
-| | LuaJIT | **0.46 s** | **3.3 MB** | 1x |
-| mid (1k–10k) | CPython | 58.1 s | 26.2 MB | 19x slower |
-| | LuaJIT | **3.0 s** | **6.3 MB** | 1x |
-
-On small and mid models the Lua runtimes hold **3–7 MB** — one tenth
-of pypy3's footprint. Be honest about the other end, though: on
-models above 10k rows the order flips, pypy3 wins, and PUC Lua comes
-last on garbage-collection load. The report says so, and so do we.
+| models           | runtime | total time | mean mem   | vs LuaJIT  |
+| ---------------- | ------- | ---------- | ---------- | ---------- |
+| small (<1k rows) | CPython | 37.5 s     | 25.7 MB    | 81x slower |
+|                  | LuaJIT  | **0.46 s** | **3.3 MB** | 1x         |
+| mid (1k–10k)     | CPython | 58.1 s     | 26.2 MB    | 19x slower |
+|                  | LuaJIT  | **3.0 s**  | **6.3 MB** | 1x         |
 
 **It runs everywhere.** Any Lua from 5.1 up, and LuaJIT, print
 identical output — no runtime, no wheels, no virtual environment, no
 GPU.
+
+For the mid-term and final, you will debug tiny bugs in tiny Lua
+scripts (and each week you will get zero-mark practice exercises in
+that task). You will not be asked to WRITE Lua, but you will be
+required to read it. (Aside: sure, you could use an LLM to automate
+the port. But then would you learn anything? And how would you
+perform in the exams?)
+
+**Homework, standing assignment.** Reimplement this system in a
+language of your choice (Python recommended), paced by the lectures:
+by the end of week *k*, your program reproduces every REPL event
+through that lecture's range. The RNG is a portable 10-line
+Park-Miller generator (`rand` in `ezr-lib.lua`), so a correct port
+prints the SAME numbers shown here — grading is diff. Match table
+contents exactly; match floats to the printed precision.
+
+## The map
 
 The mechanics: numbered REPL events (`[1]>` onward), every one
 executed against the real code by a replay harness — outputs shown
@@ -145,95 +368,24 @@ exercises that reuse its prompts by number. One thread runs through
 all ten: reasoning from small samples — what they show, what they
 hide, how far to trust them.
 
-**Homework, standing assignment.** Reimplement this system in a
-language of your choice (Python recommended), paced by the lectures:
-by the end of week *k*, your program reproduces every REPL event
-through that lecture's range. The RNG is a portable 10-line
-Park-Miller generator (`rand` in `ezr-lib.lua`), so a correct port
-prints the SAME numbers shown here — grading is diff. Match table
-contents exactly; match floats to the printed precision.
-
-**Install.** You need `lua`. That is the whole list. No luarocks, no
-packages, no build step, no other tools.
-
-| System | Install |
-|---|---|
-| macOS | `brew install lua` |
-| Debian, Ubuntu | `sudo apt install lua5.4` |
-| Fedora | `sudo dnf install lua` |
-| Arch | `sudo pacman -S lua` |
-| Windows | `wsl --install` in an admin PowerShell, reopen the terminal, then run the Ubuntu line inside it |
-
-Debian and Ubuntu name the binary `lua5.4`. Add a link, or the
-commands below cannot find it:
-
-    sudo ln -s /usr/bin/lua5.4 /usr/local/bin/lua
-
-Native Windows also runs this code — get Lua from
-luabinaries.sourceforge.net, or run `scoop install lua` — but the
-Windows build has no line editing at the prompt. Prefer WSL.
-
-Any Lua from 5.1 up works. So does LuaJIT. The sources avoid every
-construct that differs between versions. The random numbers come from
-a Park-Miller generator in `ezr-lib.lua`, not from `math.random`.
-`math.random` is a different generator on 5.1, on 5.4, and on LuaJIT.
-One seed gives the same numbers on every interpreter, so `diff` can
-grade your homework port. Run `luajit` instead of `lua` if a lecture
-feels slow.
-
-**Setup** (Lecture 1 walks through this):
-
-    curl -fLO https://raw.githubusercontent.com/timm/src/main/ezr-lua/ezr-lua.zip
-    unzip ezr-lua.zip
-    cd ezr-lua
-    lua -i play.lua
-
-That last line is the one you will type a hundred times. It drops you
-at an `ezr>` prompt with `the`, `Tbl`, `csv` and every other function
-already in scope. `play.lua` exists only to do that: it lifts the
-names out of the modules and hands you Lua's own interactive prompt,
-which brings arrow keys, history and multi-line input with it.
-Ctrl-D exits. Try it now:
-
-    ezr> t = Tbl(csv())
-    ezr> #t.rows
-    398
-
-On LuaJIT and Lua 5.1, put `=` in front of anything you want printed
-(`=#t.rows`). Lua 5.2 and up print bare expressions on their own.
-
-Two more commands, then you are set up:
-
-    make demo      # sanity check; three runs, each "failures: 0"
-    make players   # the 3.6MB table Lecture 0 uses
-
-`make` on its own lists the rest. `make data` pulls the whole
-126-table corpus, and `make all CORES=8` scores every table in it.
-
-The zip holds the five `.lua` files, `play.lua`, `tut.md`, the sample
-table, and the replay harness that checks every trace below. The
-`curl … INSTALL.md | sh` line in the README is a different thing: it
-fetches the `.lua` files alone, for embedding in your own code, and
-leaves out the data this course needs.
-
-| # | Lecture | REPL | Ideas |
-|---|---------|------|-------|
-| [0](#l0)  | A taste: 20 measurements   | —       | the arithmetic, and one worked scouting problem |
-| [1](#l1)  | Orientation & columns      | 1–16    | [NOIR](#g-noir), [WEL](#g-wel), [CDF](#g-cdf), [LOG](#g-log) |
-| [2](#l2)  | Tables, roles, forgetting  | 17–36   | [ROLE](#g-role), [STREAM](#g-stream) |
-| [3](#l3)  | Distance & gap-to-heaven   | 37–53   | [MINK](#g-mink), [D2H](#g-d2h), [PARETO](#g-pareto) |
-| [4](#l4)  | Clustering by poles        | 54–69   | [POLE](#g-pole), [FASTMAP](#g-fastmap), [HALVE](#g-halve) |
-| [5](#l5)  | Discretization & cuts      | 70–84   | [CUT](#g-cut), [IG](#g-ig), [VAL](#g-val) |
-| [6](#l6)  | Trees & XAI                | 85–94   | [CART](#g-cart), [XAI](#g-xai), [PRUNE](#g-prune) |
-| [7](#l7)  | Active learning / acquire  | 95–108  | [ACQ](#g-acq), [AL](#g-al), [BO](#g-bo), [TS](#g-ts) |
-| [8](#l8)  | The holdout rig            | 109–124 | [HOLD](#g-hold), [WIN](#g-win), [BASELINE](#g-baseline) |
-| [9](#l9)  | Statistics                 | 125–142 | [COHEN](#g-cohen), [KS](#g-ks), [CLIFF](#g-cliff), [SAME](#g-same), [POWER](#g-power), [SK](#g-sk) |
-| [10](#l10)| Apps, then DTLZ (advanced) | 143–183 | [KNN](#g-knn), [ANOM](#g-anom), [NB](#g-nb), [KM](#g-km), [KPP](#g-kpp), [DTLZ](#g-dtlz), [SBSE](#g-sbse), [GA](#g-ga), [DE](#g-de), [SA](#g-sa), [LS](#g-ls) |
-| [quiz](#quiz)     | Revision guide (gated questions) | | |
-| [answers](#answers) | Worked answers               | | |
-| [glossary](#glossary) | Acronyms & terms           | | |
-| [appendix](#appendix) | Lua-101                    | 1000–  | |
-| [refs](#refs)     | References                       | | |
+| #                     | Lecture                          | REPL    | Ideas                                                                                                                                                         |
+| --------------------- | -------------------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [0](#l0)              | A taste: 20 measurements         | —       | the arithmetic, and one worked scouting problem                                                                                                               |
+| [1](#l1)              | Orientation & columns            | 1–16    | [NOIR](#g-noir), [WEL](#g-wel), [CDF](#g-cdf), [LOG](#g-log)                                                                                                  |
+| [2](#l2)              | Tables, roles, forgetting        | 17–36   | [ROLE](#g-role), [STREAM](#g-stream)                                                                                                                          |
+| [3](#l3)              | Distance & gap-to-heaven         | 37–53   | [MINK](#g-mink), [D2H](#g-d2h), [PARETO](#g-pareto)                                                                                                           |
+| [4](#l4)              | Clustering by poles              | 54–69   | [POLE](#g-pole), [FASTMAP](#g-fastmap), [HALVE](#g-halve)                                                                                                     |
+| [5](#l5)              | Discretization & cuts            | 70–84   | [CUT](#g-cut), [IG](#g-ig), [VAL](#g-val)                                                                                                                     |
+| [6](#l6)              | Trees & XAI                      | 85–94   | [CART](#g-cart), [XAI](#g-xai), [PRUNE](#g-prune)                                                                                                             |
+| [7](#l7)              | Active learning / acquire        | 95–108  | [ACQ](#g-acq), [AL](#g-al), [BO](#g-bo), [TS](#g-ts)                                                                                                          |
+| [8](#l8)              | The holdout rig                  | 109–124 | [HOLD](#g-hold), [WIN](#g-win), [BASELINE](#g-baseline)                                                                                                       |
+| [9](#l9)              | Statistics                       | 125–142 | [COHEN](#g-cohen), [KS](#g-ks), [CLIFF](#g-cliff), [SAME](#g-same), [POWER](#g-power), [SK](#g-sk)                                                            |
+| [10](#l10)            | Apps, then DTLZ (advanced)       | 143–183 | [KNN](#g-knn), [ANOM](#g-anom), [NB](#g-nb), [KM](#g-km), [KPP](#g-kpp), [DTLZ](#g-dtlz), [SBSE](#g-sbse), [GA](#g-ga), [DE](#g-de), [SA](#g-sa), [LS](#g-ls) |
+| [quiz](#quiz)         | Revision guide (gated questions) |         |                                                                                                                                                               |
+| [answers](#answers)   | Worked answers                   |         |                                                                                                                                                               |
+| [glossary](#glossary) | Acronyms & terms                 |         |                                                                                                                                                               |
+| [appendix](#appendix) | Lua-101                          | 1000–   |                                                                                                                                                               |
+| [refs](#refs)         | References                       |         |                                                                                                                                                               |
 
 All ten lectures, the appendix, glossary, references, and the public
 exam bank are complete; every trace is machine-verified against the
@@ -242,7 +394,7 @@ code by `etc/tut/repl.lua`.
 ---
 
 <a name="l0"></a>
-# Lecture 0: A Taste — 17,737 Players, 20 Measurements
+# Lecture 0: Why can "Less AI" work?
 
 No exercises here. No check questions, and no numbered events:
 this lecture is me poking at data in front of you. Watch, then
@@ -263,9 +415,10 @@ Turn that around and you get the number of samples you need:
 
     n(p,C) = log(1-C) / log(1-p)
 
-Now put numbers in it. Cohen says a difference below 0.35
+Now put numbers in it. Cohen says a difference below .35 times a
 standard deviations is negligible — two things that close are
-not worth telling apart. Suppose solutions spread over one
+not worth telling apart (as we shall see this rule-of-thumb gives surpringly accurate results). 
+Suppose solutions spread over one
 dimension like a bell curve, so the range runs from -3 to +3
 standard deviations. That is a width of 6. A negligible slice of
 it is
@@ -280,7 +433,7 @@ size, next to the best?
 **Fifty.** Not fifty thousand. Fifty.
 
 Now the second sum. Team A spends those 50 samples and builds a
-model. Team B takes the model and uses it to rank new problems.
+model. Team B takes the model and uses it to rank new candidate solutions.
 Team B is no longer sampling blind — it is chopping a ranked
 list. That wraps the same count in a log:
 
@@ -294,7 +447,7 @@ and re-read thereafter in half a dozen. A model built from fifty
 rows also fits in milliseconds, because there is almost nothing
 there to fit.
 
-The assumptions are heroic: one dimension, a bell curve,
+The assumptions behind this math are  heroic: one dimension, a bell curve,
 independent draws. Real data has none of those. So somebody
 should check the number against real data.
 
@@ -305,9 +458,9 @@ swept budget from 1 to 150 and check from 1 to 10 over randomly
 chosen tasks, 100,000 times, and scored each run on held-out
 rows — exactly the team B case.
 
-Above a budget of about 40 and a check of about 5, everything is
+Above a budget of about 50 and a check of about 5, everything is
 95 and flat. The paper's own summary: at
-`(budget, check) = (50, 5)` the learner "usually achieves above
+`(budget, check) = (50, 6)` the learner "usually achieves above
 an 85% win", and "checking beyond 7 items seems not particularly
 useful".
 
@@ -316,6 +469,11 @@ one a line of algebra, one a hundred thousand experiments —
 arrive at the same pair of numbers.
 
 ## 0.2 The data
+
+You cloned `moot` and exported `$MOOT` in the Setup section. Point
+EZR at it:
+
+    lua -i play.lua
 
     ezr> the.file = "$MOOT/optimize/behavior_data/all_players.csv"
     ezr> t = Tbl(csv())
@@ -341,6 +499,10 @@ with most of the 57 columns left out:
     0.99   5902   69    68    37             10           30
     0.99   7937   67    65    49             10           30
 
+(Aside: _d2h_ is "distance to heaven"; the goals are normalized
+0..1 for min..max, "heaven" here is the vector (1,1), and our
+first row is very, very close to heaven.)
+
 Notice the `Rank` column, which is the catalogue's own opinion
 of these players. Our best four are ranked 322, 4, 222 and 1525.
 The catalogue is ranking something else. Your goals are not the
@@ -364,37 +526,46 @@ top 5. Twenty assessments, total.
 Score it. `win` is the percent of the gap between a median
 player and the catalogue's best that you closed. 100 means you
 found the best of 17,737. 0 means you did no better than picking
-from the middle. Twenty repeats, on the full pool:
+from the middle. Twenty repeats, on the full pool; every random
+stream derives from the default seed (`the.seed + j`, j = 1..20,
+the same idiom as event `[118]`):
 
-| seed | our 20 | random 20 |
-|---|---|---|
-| 1 | 73.2 | 65.9 |
-| 99 | 82.3 | 67.0 |
-| 4242 | 72.7 | 72.0 |
-| 31337 | 77.1 | 62.8 |
+|          | our 20   | random 20 |
+| -------- | -------- | --------- |
+| worst    | 36.8     | 35.0      |
+| 25th     | 71.3     | 67.4      |
+| median   | 84.8     | 72.4      |
+| 75th     | 93.0     | 78.9      |
+| **mean** | **80.0** | **70.4**  |
 
-Three wins, one tie, no losses. Mean gap **+9.4**.
+Mean gap **+9.6**, and the three-test referee of Lecture 9 calls
+that gap real, not noise. Read the worst row too: some single
+runs lose to random. The averages favour us; no single run is
+guaranteed.
 
 ## 0.4 Where the fifty went
 
-Now check the arithmetic from 0.1. Sweep the budget, eight seed
-sets of twenty repeats each:
+Now check the arithmetic from 0.1. Sweep the budget, twenty
+repeats per cell, all streams from the default seed:
 
-| measurements | ours | random |
-|---|---|---|
-| 12 | 65.1 | 63.9 |
-| **20** | **80.9** | 72.4 |
-| 30 | 84.2 | 77.5 |
-| **50** | 86.1 | **82.8** |
-| 80 | 92.7 | 88.2 |
+| measurements | ours     | random   |
+| ------------ | -------- | -------- |
+| 12           | 68.0     | 56.5     |
+| **20**       | **80.0** | 70.4     |
+| 30           | 91.1     | 68.3     |
+| **50**       | 83.6     | **79.6** |
+| 80           | 94.6     | 87.9     |
 
 Read the two bold numbers. Random sampling needs **50**
-measurements to reach a win of 82.8 — which is what the
+measurements to reach a win of 79.6 — close to what the
 arithmetic predicted, on data that breaks every one of its
 assumptions.
 
-Our method reaches 80.9 with **20**. Within two points of
-random's fifty, for 2.5x fewer trips.
+Our method reaches 80.0 with **20**. That matches random's
+fifty, for 2.5x fewer trips. So not _log2(50)=6_ as we might
+have hoped, but still much less than 50. (Twenty repeats per
+cell leaves visible noise — see the wobble at 30 and 50. The
+trend, not any one cell, is the claim.)
 
 That is the whole course in one table. The arithmetic prices
 reading the world blind. Everything else in these ten lectures
@@ -402,31 +573,35 @@ is machinery for reading it with your eyes open.
 
 ## 0.5 Why, in one screen
 
+> "If you cannot — in the long run — tell everyone what you have been doing, your doing has been worthless."   
+-- Erwin Schrödinger
+
 A scout who returns with a name and no reason gets sent back
 out. So print the model:
 
     ezr> Tree(t, lab):show(t)
+       
+          n   d2hPenalties+Strength+
+          15  0.34       59    75.07
+           8  0.11    77.25    79.75  Rank <= 222
+       ▲   5  0.07     81.6       83  |  Crossing >  79
+           3  0.18       70    74.33  |  Crossing <= 79
+           7  0.60    38.14    69.71  Rank >  222
+           4  0.54    37.25    79.25  |  DEF >  60
+       ▼   3  0.68    39.33       57  |  DEF <= 60
 
-        n   d2h Penalties+ Strength+
-       15  0.28    67.73     73.2
-        8  0.43    63.12    65.13  PHY <= 71
-    !   4  0.53       59    61.75  |  PHY <= 65
-        4  0.33    67.25     68.5  |  PHY >  65
-        7  0.11       73    82.43  PHY >  71
-        3  0.18       69       77  |  Acceleration <= 87
-    *   4  0.06       76     86.5  |  Acceleration >  87
+This is the tree from the introduction. Now you have seen it
+earned. Read the best line (marked with ▲):
+**if Rank <= 222 and Crossing > 79**, you are in the best group:
+penalties 81.6, strength 83. The ▼ line is the group to avoid.
 
-Read the starred line. **If PHY > 71 and Acceleration > 87**,
-you are in the best group: penalties 76, strength 86.5. The `!`
-line is the group to avoid.
+Three attributes out of 57. Short enough to put in a ticket,
+argue about in a meeting, and hand to a scout who has never heard
+of this course. Random sampling cannot do this. It returns a
+winner and no reason, and for anything audited — money, health,
+safety — an unexplainable pick is not shippable at any accuracy.
 
-Two attributes out of 57. Short enough to put in a ticket, argue
-about in a meeting, and hand to a scout who has never heard of
-this course. Random sampling cannot do this. It returns a winner
-and no reason, and for anything audited — money, health, safety
-— an unexplainable pick is not shippable at any accuracy.
-
-Two out of 57 is not luck either. Figure 3 of that same paper
+Three out of 57 is not luck either. Figure 3 of that same paper
 counts the attributes these trees use across 120+ tasks offering
 anywhere from a few dozen to over a thousand. The trees stay
 **under ten, throughout**, and the win score does not fall as
@@ -453,10 +628,10 @@ pay to assess only the top five.
 Best found, 0.11 from perfect. The true best in the pool is
 0.04. Five assessments.
 
-**Planning.** The tree says which knob to turn. A player at PHY
-68 is one branch away from the good group: train physical, not
-acceleration. Team A paid 15 to build this. Team B pays 5 to use
-it — the six from 0.1, near enough.
+**Planning.** The tree says which knob to turn. A high-ranked
+player with Crossing 75 is one branch away from the best group:
+train crossing, not defence. Team A paid 15 to build this. Team
+B pays 5 to use it — the six from 0.1, near enough.
 
 ## 0.7 Not one lucky table
 
@@ -487,18 +662,17 @@ But look at what we actually ask AI to do. Fifty years of
 search-based software engineering, from the founding paper of
 1976 to the LLM hybrids of 2026, covers roughly this list:
 
-| era | what people wanted | how they got it |
-|---|---|---|
-| 1976–1998 | test data, module boundaries | direct search, hill climbing |
-| 1998–2011 | release planning, scheduling, test priority, program repair, effort estimation | genetic algorithms and programming, simulated annealing |
+| era       | what people wanted                                                                                                                                                         | how they got it                                              |
+| --------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------ |
+| 1976–1998 | test data, module boundaries                                                                                                                                               | direct search, hill climbing                                 |
+| 1998–2011 | release planning, scheduling, test priority, program repair, effort estimation                                                                                             | genetic algorithms and programming, simulated annealing      |
 | 2007–2024 | test-suite minimisation, module clustering, refactoring at 15 objectives, code smells, fairness, self-driving and CPS test selection, API fuzzing, microservice extraction | Pareto evolution: NSGA-II, NSGA-III, IBEA, MOEA/D, MOSA, MIO |
-| 2015–2019 | cheap configuration and model tuning | **active learning, random projection** |
-| 2024–2026 | quantum test optimisation, LLM routing, LLM-driven testing, budget-aware portfolios | hybrids |
+| 2015–2019 | cheap configuration and model tuning                                                                                                                                       | **active learning, random projection**                       |
+| 2024–2026 | quantum test optimisation, LLM routing, LLM-driven testing, budget-aware portfolios                                                                                        | hybrids                                                      |
 
 Generate a paragraph? Almost none of it. Every task on that list
-is **rank, select, configure, schedule, estimate, or
-prioritise** — over a table. That is the shape of the work, and
-it is the shape this course fits.
+is the rank-select-configure list from the introduction — work
+over a table, and the shape this course fits.
 
 Cluster those tools by what actually distinguishes them and four
 families appear: exact and local search; the evolutionary and
@@ -507,23 +681,23 @@ frugal model-builders. That last family is not a small flavour
 of the evolutionary one. It is its own thing, and it is what you
 are about to learn.
 
-| six myths | reality |
-|---|---|
-| heavy infra | **stdlib** |
-| each task its own algo | **same 4 classes** |
-| trees differ by type | **1-line flip** |
-| newer beats older | **SA'83 wins** |
-| need massive data | **100 labels = 85-95%** |
-| text needs big models | **30-line NB > SVM** |
+| six myths              | reality                 |
+| ---------------------- | ----------------------- |
+| heavy infra            | **stdlib**              |
+| each task its own algo | **same 4 classes**      |
+| trees differ by type   | **1-line flip**         |
+| newer beats older      | **SA'83 wins**          |
+| need massive data      | **100 labels = 85-95%** |
+| text needs big models  | **30-line NB > SVM**    |
 
-| by the numbers | |
-|---|---|
-| vs. SMAC3 | **500x faster** |
-| labels to optimum | **< 100** |
-| features used | **< 10** |
-| code size | **400 lines** |
-| install size | **< 1 MB** |
-| tasks tested | **120+** |
+| by the numbers    |                 |
+| ----------------- | --------------- |
+| vs. SMAC3         | **500x faster** |
+| labels to optimum | **< 100**       |
+| features used     | **< 10**        |
+| code size         | **400 lines**   |
+| install size      | **< 1 MB**      |
+| tasks tested      | **120+**        |
 
 If a simple model matches a complex one, the complex one is
 technical debt.
@@ -2516,52 +2690,52 @@ Each acronym appears in exactly one vignette, at its first executable
 use; every later mention links here. Listed in discovery order:
 the order the REPL first meets each idea.
 
-| Acro | Expansion | One line | First use | Ref |
-|------|-----------|----------|-----------|-----|
-| <a name="g-noir"></a>NOIR | Nominal/Ordinal/Interval/Ratio | Scales of measurement; symbol vs number here | [L1.1](#l1) | Stevens 1946 |
-| <a name="g-wel"></a>WEL | Welford's online variance | Mean and variance in one pass, no stored data | [L1.4](#l1) | Welford 1962 |
-| <a name="g-ent"></a>ENT | Shannon entropy | A symbol column's spread, in bits | [L1.5](#l1) | Shannon 1948 |
-| <a name="g-cdf"></a>CDF | Cumulative distribution | Fraction of a population at or below a value | [L1.6](#l1) | — |
-| <a name="g-log"></a>LOG | Logistic squashing | Logistic approximates the normal CDF (±1%) | [L1.6](#l1) | — |
-| <a name="g-role"></a>ROLE | Feature vs goal | x-inputs and y-goals, split from the header | [L2.2](#l2) | — |
-| <a name="g-stream"></a>STREAM | Subtractable summary | Removing a datum costs the same as adding it | [L2.4](#l2) | Welford 1962 |
-| <a name="g-mink"></a>MINK | Minkowski distance | p-norm family: p=1 Manhattan, p=2 Euclidean | [L3.2](#l3) | — |
-| <a name="g-d2h"></a>D2H | Distance to heaven | One 0..1 score: gap to the ideal on every goal | [L3.3](#l3) | — |
-| <a name="g-pareto"></a>PARETO | Pareto optimality | No other solution beats it on every goal | [L3.3](#l3) | — |
-| <a name="g-pole"></a>POLE | Far-pair poles | Project rows onto the line between two extremes | [L4.1](#l4) | Faloutsos 1995 |
-| <a name="g-fastmap"></a>FASTMAP | FastMap projection | Place points by distance to two pivots | [L4.1](#l4) | Faloutsos 1995 |
-| <a name="g-halve"></a>HALVE | Recursive bisection | Split on the principal axis, recurse | [L4.3](#l4) | — |
-| <a name="g-cut"></a>CUT | Supervised discretization | The threshold that most purifies an outcome | [L5.1](#l5) | Fayyad 1993 |
-| <a name="g-ig"></a>IG | Information gain | Parent impurity − weighted child impurity | [L5.4](#l5) | Quinlan 1986 |
-| <a name="g-val"></a>VAL | Split purity | Size-weighted mean diversity of a cut's two sides | [L5.4](#l5) | Quinlan 1986 |
-| <a name="g-cart"></a>CART | Classification & regression tree | A tree whose every split is a named threshold | [L6.2](#l6) | Breiman 1984 |
-| <a name="g-xai"></a>XAI | Explainable AI | Models whose reasoning a human can audit | [L6.2](#l6) | Breiman 1984 |
-| <a name="g-prune"></a>PRUNE | Tree pruning | Occam: smallest tree that still fits | [L6.4](#l6) | Breiman 1984 |
-| <a name="g-acq"></a>ACQ | Acquisition function | Rule for which unlabelled row to score next | [L7.2](#l7) | Settles 2009 |
-| <a name="g-al"></a>AL | Active learning | Model chooses its own next label | [L7.2](#l7) | Settles 2009 |
-| <a name="g-bo"></a>BO | Bayesian optimization | Fit a surrogate, sample where it promises most | [L7.2](#l7) | Settles 2009 |
-| <a name="g-ts"></a>TS | Thompson sampling | Choose in proportion to chance-of-being-best | [L7.3](#l7) | Thompson 1933 |
-| <a name="g-win"></a>WIN | Win score | % of the way from median to best; capped [-100,100] | [L8.1](#l8) | — |
-| <a name="g-hold"></a>HOLD | Holdout / cross-validation | Never grade a model on rows it trained on | [L8.2](#l8) | Stone 1974 |
-| <a name="g-baseline"></a>BASELINE | Dumb baseline | Beat random, or admit you didn't | [L8.3](#l8) | Dacrema 2019 |
-| <a name="g-cohen"></a>COHEN | Cohen's d | Mean gap in pooled-sd units; size, not p-value | [L9.1](#l9) | Cohen 1969 |
-| <a name="g-clt"></a>CLT | Central limit theorem | Sample means scatter as σ/√n — the noise floor | [L9.2](#l9) | — |
-| <a name="g-ks"></a>KS | Kolmogorov–Smirnov | Largest gap between two CDFs | [L9.3](#l9) | — |
-| <a name="g-cliff"></a>CLIFF | Cliff's delta | Rank-imbalance effect size, 0..1 | [L9.3](#l9) | Cliff 1993 |
-| <a name="g-same"></a>SAME | Conservative sameness | AND three effect-size tests before crying "different" | [L9.3](#l9) | — |
-| <a name="g-power"></a>POWER | Statistical power | Chance of catching a real effect; climbs with n | [L9.4](#l9) | — |
-| <a name="g-sk"></a>SK | Scott-Knott ranking | Group statistical ties into one rank | [L9.5](#l9) | Scott 1974 |
-| <a name="g-knn"></a>KNN | k nearest neighbors | The data is the model; ≤2× best error (1-NN) | [L10.1](#l10) | Cover 1967 |
-| <a name="g-anom"></a>ANOM | Anomaly by distance | Loneliest row = farthest from its nearest neighbor | [L10.2](#l10) | Breunig 2000 |
-| <a name="g-nb"></a>NB | Naive Bayes | Argmax of per-feature likelihoods; right despite bad probs | [L10.3](#l10) | Domingos 1997 |
-| <a name="g-km"></a>KM | k-means | Assign to nearest centroid, recenter, repeat | [L10.4](#l10) | Lloyd 1957 |
-| <a name="g-kpp"></a>KPP | k-means++ | Seed centroids with chance ∝ distance² | [L10.4](#l10) | Arthur 2007 |
-| <a name="g-dtlz"></a>DTLZ | DTLZ benchmark suite | Scalable multi-objective problems, known fronts | [L10.5](#l10) | Deb 2005 |
-| <a name="g-sbse"></a>SBSE | Search-based SE | SE tasks as optimization problems | [L10.5](#l10) | Harman 2001 |
-| <a name="g-ga"></a>GA | Genetic algorithm | Evolve a population: mutate, cross, keep dominators | [L10.6](#l10) | Holland 1975 |
-| <a name="g-de"></a>DE | Differential evolution | Kid = a + F·(b−c); replaces its parent if better | [L10.6](#l10) | Storn 1997 |
-| <a name="g-sa"></a>SA | Simulated annealing | Accept some bad moves, boldly early, rarely late | [L10.6](#l10) | Kirkpatrick 1983 |
-| <a name="g-ls"></a>LS | Local search | Greedy (1+1): keep only improvements | [L10.6](#l10) | — |
+| Acro                              | Expansion                        | One line                                                   | First use     | Ref              |
+| --------------------------------- | -------------------------------- | ---------------------------------------------------------- | ------------- | ---------------- |
+| <a name="g-noir"></a>NOIR         | Nominal/Ordinal/Interval/Ratio   | Scales of measurement; symbol vs number here               | [L1.1](#l1)   | Stevens 1946     |
+| <a name="g-wel"></a>WEL           | Welford's online variance        | Mean and variance in one pass, no stored data              | [L1.4](#l1)   | Welford 1962     |
+| <a name="g-ent"></a>ENT           | Shannon entropy                  | A symbol column's spread, in bits                          | [L1.5](#l1)   | Shannon 1948     |
+| <a name="g-cdf"></a>CDF           | Cumulative distribution          | Fraction of a population at or below a value               | [L1.6](#l1)   | —                |
+| <a name="g-log"></a>LOG           | Logistic squashing               | Logistic approximates the normal CDF (±1%)                 | [L1.6](#l1)   | —                |
+| <a name="g-role"></a>ROLE         | Feature vs goal                  | x-inputs and y-goals, split from the header                | [L2.2](#l2)   | —                |
+| <a name="g-stream"></a>STREAM     | Subtractable summary             | Removing a datum costs the same as adding it               | [L2.4](#l2)   | Welford 1962     |
+| <a name="g-mink"></a>MINK         | Minkowski distance               | p-norm family: p=1 Manhattan, p=2 Euclidean                | [L3.2](#l3)   | —                |
+| <a name="g-d2h"></a>D2H           | Distance to heaven               | One 0..1 score: gap to the ideal on every goal             | [L3.3](#l3)   | —                |
+| <a name="g-pareto"></a>PARETO     | Pareto optimality                | No other solution beats it on every goal                   | [L3.3](#l3)   | —                |
+| <a name="g-pole"></a>POLE         | Far-pair poles                   | Project rows onto the line between two extremes            | [L4.1](#l4)   | Faloutsos 1995   |
+| <a name="g-fastmap"></a>FASTMAP   | FastMap projection               | Place points by distance to two pivots                     | [L4.1](#l4)   | Faloutsos 1995   |
+| <a name="g-halve"></a>HALVE       | Recursive bisection              | Split on the principal axis, recurse                       | [L4.3](#l4)   | —                |
+| <a name="g-cut"></a>CUT           | Supervised discretization        | The threshold that most purifies an outcome                | [L5.1](#l5)   | Fayyad 1993      |
+| <a name="g-ig"></a>IG             | Information gain                 | Parent impurity − weighted child impurity                  | [L5.4](#l5)   | Quinlan 1986     |
+| <a name="g-val"></a>VAL           | Split purity                     | Size-weighted mean diversity of a cut's two sides          | [L5.4](#l5)   | Quinlan 1986     |
+| <a name="g-cart"></a>CART         | Classification & regression tree | A tree whose every split is a named threshold              | [L6.2](#l6)   | Breiman 1984     |
+| <a name="g-xai"></a>XAI           | Explainable AI                   | Models whose reasoning a human can audit                   | [L6.2](#l6)   | Breiman 1984     |
+| <a name="g-prune"></a>PRUNE       | Tree pruning                     | Occam: smallest tree that still fits                       | [L6.4](#l6)   | Breiman 1984     |
+| <a name="g-acq"></a>ACQ           | Acquisition function             | Rule for which unlabelled row to score next                | [L7.2](#l7)   | Settles 2009     |
+| <a name="g-al"></a>AL             | Active learning                  | Model chooses its own next label                           | [L7.2](#l7)   | Settles 2009     |
+| <a name="g-bo"></a>BO             | Bayesian optimization            | Fit a surrogate, sample where it promises most             | [L7.2](#l7)   | Settles 2009     |
+| <a name="g-ts"></a>TS             | Thompson sampling                | Choose in proportion to chance-of-being-best               | [L7.3](#l7)   | Thompson 1933    |
+| <a name="g-win"></a>WIN           | Win score                        | % of the way from median to best; capped [-100,100]        | [L8.1](#l8)   | —                |
+| <a name="g-hold"></a>HOLD         | Holdout / cross-validation       | Never grade a model on rows it trained on                  | [L8.2](#l8)   | Stone 1974       |
+| <a name="g-baseline"></a>BASELINE | Dumb baseline                    | Beat random, or admit you didn't                           | [L8.3](#l8)   | Dacrema 2019     |
+| <a name="g-cohen"></a>COHEN       | Cohen's d                        | Mean gap in pooled-sd units; size, not p-value             | [L9.1](#l9)   | Cohen 1969       |
+| <a name="g-clt"></a>CLT           | Central limit theorem            | Sample means scatter as σ/√n — the noise floor             | [L9.2](#l9)   | —                |
+| <a name="g-ks"></a>KS             | Kolmogorov–Smirnov               | Largest gap between two CDFs                               | [L9.3](#l9)   | —                |
+| <a name="g-cliff"></a>CLIFF       | Cliff's delta                    | Rank-imbalance effect size, 0..1                           | [L9.3](#l9)   | Cliff 1993       |
+| <a name="g-same"></a>SAME         | Conservative sameness            | AND three effect-size tests before crying "different"      | [L9.3](#l9)   | —                |
+| <a name="g-power"></a>POWER       | Statistical power                | Chance of catching a real effect; climbs with n            | [L9.4](#l9)   | —                |
+| <a name="g-sk"></a>SK             | Scott-Knott ranking              | Group statistical ties into one rank                       | [L9.5](#l9)   | Scott 1974       |
+| <a name="g-knn"></a>KNN           | k nearest neighbors              | The data is the model; ≤2× best error (1-NN)               | [L10.1](#l10) | Cover 1967       |
+| <a name="g-anom"></a>ANOM         | Anomaly by distance              | Loneliest row = farthest from its nearest neighbor         | [L10.2](#l10) | Breunig 2000     |
+| <a name="g-nb"></a>NB             | Naive Bayes                      | Argmax of per-feature likelihoods; right despite bad probs | [L10.3](#l10) | Domingos 1997    |
+| <a name="g-km"></a>KM             | k-means                          | Assign to nearest centroid, recenter, repeat               | [L10.4](#l10) | Lloyd 1957       |
+| <a name="g-kpp"></a>KPP           | k-means++                        | Seed centroids with chance ∝ distance²                     | [L10.4](#l10) | Arthur 2007      |
+| <a name="g-dtlz"></a>DTLZ         | DTLZ benchmark suite             | Scalable multi-objective problems, known fronts            | [L10.5](#l10) | Deb 2005         |
+| <a name="g-sbse"></a>SBSE         | Search-based SE                  | SE tasks as optimization problems                          | [L10.5](#l10) | Harman 2001      |
+| <a name="g-ga"></a>GA             | Genetic algorithm                | Evolve a population: mutate, cross, keep dominators        | [L10.6](#l10) | Holland 1975     |
+| <a name="g-de"></a>DE             | Differential evolution           | Kid = a + F·(b−c); replaces its parent if better           | [L10.6](#l10) | Storn 1997       |
+| <a name="g-sa"></a>SA             | Simulated annealing              | Accept some bad moves, boldly early, rarely late           | [L10.6](#l10) | Kirkpatrick 1983 |
+| <a name="g-ls"></a>LS             | Local search                     | Greedy (1+1): keep only improvements                       | [L10.6](#l10) | —                |
 
 [contents](#contents)
 

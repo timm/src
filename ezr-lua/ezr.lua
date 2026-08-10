@@ -31,6 +31,9 @@ local abs,exp,log,sqrt = math.abs,math.exp,math.log,math.sqrt
 local max,min,floor    = math.max,math.min,math.floor
 local huge             = math.huge
 local TINY             = 1e-32
+-- utf8 by byte, so no wide glyph sits in this source
+local UP               = string.char(0xE2,0x96,0xB2) -- U+25B2
+local DOWN             = string.char(0xE2,0x96,0xBC) -- U+25BC
 
 -- find lib.lua beside this file, whatever the cwd
 package.path = (arg and arg[0] or ""):gsub("[^/]*$","")
@@ -545,13 +548,14 @@ function TREE.gstr(t)
   return table.concat(map(t.here.cols.y, function(g)
     return ("%9s"):format(show(g:mid())) end)) end
 
--- *`TREE:show(tbl:TBL)`*  
+-- *`TREE:show(tbl:TBL)`*
 -- Print the whole tree. The best and worst leaves are marked
--- "*" and "!".
+-- UP and DOWN. Siblings print lower `mu` first, so the best
+-- branch is always the one above.
 function TREE.show(t,tbl,    lo,hi,recurse)
-  function recurse(t,pre,txt,    c,say,m)
-    m = (t.at == nil and t.mu == lo and "*") or -- best leaf
-        (t.at == nil and t.mu == hi and "!") or " " -- worst
+  function recurse(t,pre,txt,    c,say,m,a,b)
+    m = (t.at == nil and t.mu == lo and UP) or -- best leaf
+        (t.at == nil and t.mu == hi and DOWN) or " " -- worst
     print(("%s%4d %5.2f%s  %s"):format(
       m, #t.here.rows, t.mu, t:gstr(), pre .. txt))
     if t.at then                     -- structure right
@@ -559,8 +563,11 @@ function TREE.show(t,tbl,    lo,hi,recurse)
       say = function(op)
               return c.name .. op .. show(t.v) end
       pre = pre .. (txt == "" and "" or "|  ")
-      recurse(t.yes, pre, say(c.has and " == " or " <= "))
-      recurse(t.no,  pre, say(c.has and " ~= " or " >  "))
+      a = {t.yes, c.has and " == " or " <= "}
+      b = {t.no,  c.has and " ~= " or " >  "}
+      if b[1].mu < a[1].mu then a, b = b, a end -- best first
+      recurse(a[1], pre, say(a[2]))
+      recurse(b[1], pre, say(b[2]))
     end
   end -- recurse
   lo, hi = huge, -huge     -- leaf extremes,
