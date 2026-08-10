@@ -452,8 +452,8 @@ independent draws. Real data has none of those. So somebody
 should check the number against real data.
 
 Somebody did, at scale. Look again at the contour plot in the
-introduction. It is Figure 2 of
-[arXiv:2606.03640](https://arxiv.org/abs/2606.03640), which
+introduction (it is Figure 2 of
+[arXiv:2606.03640](https://arxiv.org/abs/2606.03640)) which
 swept budget from 1 to 150 and check from 1 to 10 over randomly
 chosen tasks, 100,000 times, and scored each run on held-out
 rows — exactly the team B case.
@@ -601,7 +601,8 @@ of this course. Random sampling cannot do this. It returns a
 winner and no reason, and for anything audited — money, health,
 safety — an unexplainable pick is not shippable at any accuracy.
 
-Three out of 57 is not luck either. Figure 3 of that same paper
+Three out of 57 is not luck either. Here we are working 127 data sets from MOOT.
+The "win" number if how well Figure 3 of that same paper
 counts the attributes these trees use across 120+ tasks offering
 anywhere from a few dozen to over a thousand. The trees stay
 **under ten, throughout**, and the win score does not fall as
@@ -642,11 +643,14 @@ B pays 5 to use it — the six from 0.1, near enough.
 **Seven seconds.** Software configuration, hyper-parameter
 tuning, effort estimation, health, finance, sales, systems.
 
-Honesty first. Across all 126 tables and six budgets, our method
-beats random 131 times, loses 92, and ties 533. On easy
-landscapes random is fine, and we say so. The random arm is not
-a formality, it is the control — and any paper that omits it is
-selling you something.
+In support of the above maths,
+across all 126 tables and six budgets, a simple
+random search does
+surprisingly well (ties 26% of the time). We
+can do better than than (see the "active elarning" described below
+that wins 53% (over half) the time.  But our message here is not "active elarning is great"
+but "surprisingly simple methods can be surprisingly effective" and
+"why don't we routinely try them"?
 
 ## 0.8 The scale question
 
