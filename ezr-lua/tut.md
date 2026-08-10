@@ -394,7 +394,7 @@ code by `etc/tut/repl.lua`.
 ---
 
 <a name="l0"></a>
-# Lecture 0: Why can "Less AI" work?
+# Lecture 0: A little maths to get started
 
 No exercises here. No check questions, and no numbered events:
 this lecture is me poking at data in front of you. Watch, then
