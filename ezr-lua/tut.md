@@ -165,6 +165,8 @@ builds a model you can read:
          4  0.54     37.25    79.25  |  DEF >  60
      ▼   3  0.68     39.33       57  |  DEF <= 60
 
+(Fyi: d2h is a measure of success. lower values are better.)
+
 Three attributes matter, out of 57. And it is *fast*, which is what
 happens when a model has almost nothing in it:
 
@@ -394,8 +396,6 @@ hide, how far to trust them.
 | [8](#l8)              | The holdout rig                  | 109–124 | [HOLD](#g-hold), [WIN](#g-win), [BASELINE](#g-baseline)                                                                                                       |
 | [9](#l9)              | Statistics                       | 125–142 | [COHEN](#g-cohen), [KS](#g-ks), [CLIFF](#g-cliff), [SAME](#g-same), [POWER](#g-power), [SK](#g-sk)                                                            |
 | [10](#l10)            | Apps, then DTLZ (advanced)       | 143–183 | [KNN](#g-knn), [ANOM](#g-anom), [NB](#g-nb), [KM](#g-km), [KPP](#g-kpp), [DTLZ](#g-dtlz), [SBSE](#g-sbse), [GA](#g-ga), [DE](#g-de), [SA](#g-sa), [LS](#g-ls) |
-| [quiz](#quiz)         | Revision guide (gated questions) |         |                                                                                                                                                               |
-| [answers](#answers)   | Worked answers                   |         |                                                                                                                                                               |
 | [glossary](#glossary) | Acronyms & terms                 |         |                                                                                                                                                               |
 | [appendix](#appendix) | Lua-101                          | 1000–   |                                                                                                                                                               |
 | [refs](#refs)         | References                       |         |                                                                                                                                                               |
@@ -404,8 +404,18 @@ All ten lectures, the appendix, glossary, references, and the public
 exam bank are complete; every trace is machine-verified against the
 code by `etc/tut/repl.lua`.
 
----
+## Exams
 
+Questions sit at the end of each lecture. Migrated questions keep a
+"(gate N)" tag: once you understand REPL prompt [N], you can answer
+every question gated at or below N. Attempt (a) parts from memory
+*before* opening the glossary — retrieval practice beats re-reading.
+(b) parts plant exactly ONE mistake: name it, its consequence, and
+the fix, in English, not code. Answers live in `tut/ans/`, released
+one week behind their questions. A secret set (higher gates, no
+public answers) is held outside the repo.
+
+---
 <a name="l0"></a>
 # Lecture 0: A little maths to get started
 
@@ -518,9 +528,21 @@ with most of the 57 columns left out:
     0.99   5902   69    68    37             10           30
     0.99   7937   67    65    49             10           30
 
-(Aside: _d2h_ is "distance to heaven"; the goals are normalized
-0..1 for min..max, "heaven" here is the vector (1,1), and our
-first row is very, very close to heaven.)
+**d2h, worked once.** _d2h_ is "distance to heaven". First,
+normalization: each goal value maps to its position 0..1 inside
+its own column (a bell-curve cdf; that code is `norm`, Lecture
+1.6). "Heaven" is the best
+position on every goal at once — here the vector (1,1), since
+both goals maximize. A row's d2h is the Euclidaen distance to that
+corner. Our top row, `Penalties+ 88, Strength+ 94`:
+
+    88 -> position 0.99, gap to heaven 0.01
+    94 -> position 0.98, gap to heaven 0.02
+    d2h = sqrt((0.01^2 + 0.02^2) / 2) ≈ 0.02
+
+That is, the top row is very close to heaven. 
+The worst rows score 0.99: near the floor
+of both columns, maximal gap on both.
 
 Notice the `Rank` column, which is the catalogue's own opinion
 of these players. Our best four are ranked 322, 4, 222 and 1525.
@@ -542,12 +564,35 @@ top 5. Twenty assessments, total.
     ezr> #lab
     15
 
-Score it. `win` is the percent of the gap between a median
-player and the catalogue's best that you closed. 100 means you
+`acquirer` is an **active learner**. A passive learner takes the
+data as it comes — all of it, or a blind random sample — and
+never asks a question. An active learner reflects on the labels
+it has seen so far to decide what to label next: label a few,
+cull the pool away from the bad pole, label a few more. The
+payoff is what it gets to *skip*. Most of any pool is irrelevant
+to the search, and some of it is noise; a passive learner pays
+to look at all of it, an active learner steers around it. That
+is the whole bet of this course: reflection lets you reach a
+solution on far less data than passive learning needs.
+
+Score it. `win` is the percent of the gap between the median
+and best known results that you
+close. 100 means you
 found the best of 17,737. 0 means you did no better than picking
-from the middle. Twenty repeats, on the full pool; every random
-stream derives from the default seed (`the.seed + j`, j = 1..20,
-the same idiom as event `[118]`):
+from the middle.
+
+**Worked once:** in this pool the best d2h is 0.02 and the
+median is 0.54. Suppose a scouting run returns a player at
+d2h = 0.07:
+
+    win = 100 * (1 - (0.07 - 0.02) / (0.54 - 0.02)) ≈ 90
+
+Ninety percent of the median-to-best gap, closed. A returned
+median player scores 0; worse than median goes negative.
+
+Twenty repeats, on the full pool; every random stream derives
+from the default seed (`the.seed + j`, j = 1..20, the same idiom
+as event `[118]`):
 
 |          | our 20   | random 20 |
 | -------- | -------- | --------- |
@@ -575,10 +620,11 @@ repeats per cell, all streams from the default seed:
 | **50**       | 83.6     | **79.6** |
 | 80           | 94.6     | 87.9     |
 
-Read the two bold numbers. Random sampling needs **50**
-measurements to reach a win of 79.6 — close to what the
-arithmetic predicted, on data that breaks every one of its
-assumptions.
+Read the two bold numbers. According to the (albeit optimistic)
+assumptions shown at the start of this lecture, blind sampling
+should need about fifty measurements to land near the best. And
+here random sampling needs **50** measurements to reach a win of
+79.6 — on data that honours none of those assumptions.
 
 Our method reaches 80.0 with **20**. That matches random's
 fifty, for 2.5x fewer trips. So not _log2(50)=6_ as we might
@@ -709,9 +755,10 @@ knows its own kind, from its name, before it has seen a single
 value.
 
 ---
-
 <a name="l1"></a>
 # Lecture 1: Orientation & columns
+
+**Words to watch for:** [SEED](#g-seed), [NOIR](#g-noir), [WEL](#g-wel), [ENT](#g-ent), [CDF](#g-cdf), [LOG](#g-log).
 
 You cannot reason about data you have not summarized. This lecture
 opens the toolkit's front door: read a CSV into a table, let each
@@ -901,6 +948,30 @@ function NUM.norm(i,v,   z)
 
 The mean (5) lands at 0.5, low values near 0, high near 1.
 
+**PDF versus CDF.** Two pictures of one distribution. The *pdf*
+(probability density) says how often each value occurs: for a
+bell curve, common in the middle, rare in the tails. The *cdf*
+(cumulative distribution) is the running sum of the pdf: the
+**fraction of the population at or below x**. A pdf's y-axis is
+relative frequency (peak ≈ 0.4 for a unit bell curve); a cdf's
+y-axis always runs 0 to 1, and always passes through 0.5 at the
+median. `norm` returns the cdf, not the pdf — a *position*, not
+a frequency:
+
+    pdf: how often is x?             cdf: what fraction is <= x?
+
+    0.4|      .-"-.               1.0|            _.----
+       |     /     \                 |          .'
+    0.2|   _/       \_            0.5|         /
+       |  /           \              |       .'
+    0.0|_/             \_         0.0|__..-'
+       +---+---+---+---+--           +---+---+---+---+--
+        -2  -1   0   1   2            -2  -1   0   1   2
+                z                             z
+
+Same curve twice: the cdf at x is the area under the pdf to the
+left of x. Steep cdf = dense pdf. Flat cdf tails = rare values.
+
 > **[CDF](#g-cdf) / [LOG](#g-log) — cumulative position via a logistic.** A cumulative
 > distribution function reports the fraction of a population at or
 > below a value. This code approximates the normal CDF with a
@@ -939,12 +1010,122 @@ explainable tree you can print at the shell:
    `t.cols.x[1]` — read its `mu` and `n`. How many cylinders does the
    average car in this file have?
 
+## Exam questions
+
+The words to watch for are listed at the top of this lecture.
+
+**Q0.** Define any three of the terms above, each with one sentence
+and one limit case.
+
+**Q1 — SEED.**
+**1a.** What mistakes can a novice experimenter make with stochastic
+algorithms?
+**1b.** `rand()` returns a number 0..1; "set random seed" (`srand`)
+restarts its stream. This code counts, twenty times, how many of 100
+`rand()` calls exceed .75:
+
+```lua
+count = function(    n) n = 0
+  for j = 1, 100 do if rand() > .75 then n = n + 1 end end
+  return n end
+
+u = {}
+for j = 1, 20 do
+  srand(the.seed)              -- set random seed; was: srand(the.seed + j)
+  u[1+#u] = count() end
+```
+
+What do the 20 numbers in `u` have in common? Is that a bug? How
+would you find it, and fix it?
+
+**Q2 — Roles from names.**
+**2a.** Give the column-name grammar: what do a trailing `+`, `-`,
+`!`, `X`, and a leading uppercase letter each declare?
+**2b.** `Cols` is refactored "for readability":
+
+```lua
+if     s:find"!$"     then klass = all[at]
+elseif not s:find"X$" then x[#x+1] = all[at]
+elseif s:find"[+-]$"  then y[#y+1] = all[at] end
+```
+
+Nothing crashes on `auto93.csv`. Where do `Lbs-`, `Acc+`, `Mpg+`
+land now? What does `t.cols.y` hold, and what does the search
+optimize from then on?
+
+**Q3 — WEL.**
+**3a.** The textbook standard deviation is
+`sqrt(sum((x - mean(x))^2) / (n-1))` — it sums up how much the
+numbers differ from their mean. Why is computing it that way slower
+than Welford's method?
+**3b.** A port copies Welford correctly — except one line:
+
+```lua
+function NUM.add(i,v,inc,   d)
+  d = v - i.mu                       -- forgot: i.n = i.n + inc
+  i.mu = i.mu + inc * d / i.n
+  i.m2 = i.m2 + inc * d * (v - i.mu); return v end
+```
+
+What happens on the very first `add`? What do `mid` and `div` print
+afterwards, and why does nothing ever crash?
+
+**Q4 — ENT.**
+**4a.** Write the entropy formula. It has two parts: `log2(1/p)` is
+the search effort needed to find a thing. Why multiply that effort
+by `p`?
+**4b.** A port reasons "spread = how many kinds of symbol" and
+writes:
+
+```lua
+function SYM.div(i,    k)
+  k = 0; for _ in pairs(i.has) do k = k + 1 end
+  return log(k, 2) end
+```
+
+For `{a,a,a,b,b,c}` this prints 1.58; the true entropy is 1.46.
+Why?
+
+**Q5 — NOIR.**
+**5a.** Why does `SYM.norm` return its value untouched while
+`NUM.norm` maps through a cdf? Answer with NOIR: which arithmetic
+is legal on symbols?
+**5b.** A port "completes the symmetry":
+
+```lua
+function SYM.norm(i,v) return v / 2 end     -- was: return v
+```
+
+One symbolic column holds `"1"`, `"2"`, `"3"`; another holds
+`"usa"`, `"japan"`, `"europe"`. Which column fails loudly, which
+fails *silently* (in Lua, `"1"/2` does a silent coercion of `"1"`
+to 1, so this returns 0.5) — and what meaningless quantity does the
+silent one feed into every distance of Lecture 3?
+
+**Q6 — CDF.**
+**6a.** What is the difference between a PDF and a CDF?
+**6b.** Here are eight numbers, unsorted: `9, 4, 2, 5, 4, 7, 4, 5`.
+Draw their CDF. Take special care labelling the y-axis.
+
+
+**Q7 (gate 16).**
+(a) `NUM.norm` sends a column's mean to 0.5. State, from the shape of
+a cumulative-position score, why the mean of a symmetric column *must*
+map there.
+(b) A colleague normalizes a skewed "income" column with min-max
+scaling instead of the logistic z-score, and a single billionaire
+squashes everyone else into 0.0–0.02. What is the mistake, its
+consequence, and the fix (name the property `NUM.norm` has that
+min-max lacks)?
+
+
 [contents](#contents)
 
 ---
-
 <a name="l2"></a>
 # Lecture 2: Tables, roles, forgetting
+
+**Words to watch for:** [ROLE](#g-role), [STREAM](#g-stream).
 
 Lecture 1 summarized single columns. Now we fold columns into a whole
 table that keeps its rows, reports a centroid, and — the surprising
@@ -1112,12 +1293,39 @@ detector of Lecture 10:
    rows (`t:clone(slice(t.rows,1,100))`) and compare Mpg+ to the full
    table. Are early rows thirstier or leaner?
 
+## Exam questions
+
+The words to watch for are listed at the top of this lecture.
+
+**Q0.** Define any three of them, each with one sentence and one
+limit case.
+
+**Q1 (gate 29).**
+(a) `NUM.__sub` recovers a sub-summary's mean and spread without the
+original data. Which two stored fields make that possible, and why
+would a stored median block it?
+(b) A streaming dashboard keeps a 30-day rolling mean by re-summing
+all 30 days of stored points every night. What is the inefficiency,
+its consequence at scale, and the fix this course teaches?
+
+
+**Q2 (gate 36).**
+(a) After adding then subtracting 50 rows, `n` returned to 398 but
+`mu` never visibly moved. Why is `n`, not `mu`, the trustworthy
+witness that `sub` inverted `add`?
+(b) A test asserts a forgetting routine works by checking only that
+the mean is unchanged after add-then-remove. It passes even when
+`sub` silently drops the row from the list but forgets to decrement
+`n`. What is the mistake, its consequence, and the fix?
+
+
 [contents](#contents)
 
 ---
-
 <a name="l3"></a>
 # Lecture 3: Distance & gap-to-heaven
+
+**Words to watch for:** [MINK](#g-mink), [D2H](#g-d2h), [PARETO](#g-pareto).
 
 Two rows, eight columns of mixed types — how far apart are they? And
 the harder question this whole course turns on: given three goals
@@ -1286,12 +1494,39 @@ optimization story.
    top 5's `Mpg+`. Do the best-overall cars also top mpg alone, or
    does the multi-goal score reward a compromise?
 
+## Exam questions
+
+The words to watch for are listed at the top of this lecture.
+
+**Q0.** Define any three of them, each with one sentence and one
+limit case.
+
+**Q1 (gate 45).**
+(a) `distx` Minkowski-folds per-column gaps and stays in 0..1
+whatever the column count. What does dividing by the column count
+(inside `minkowski`) buy you when comparing tables of different
+widths?
+(b) A team computes row distance by summing raw feature differences
+with no per-column normalization, so a "salary" column in dollars
+drowns out an "age" column in years. What is the mistake, its
+consequence, and the fix?
+
+
+**Q2 (gate 53).**
+(a) `disty` uses only the y-columns. Why is that correct for ranking
+cars by overall goodness, and what does it deliberately ignore?
+(b) An engineer builds `disty` over the *input* columns by mistake,
+then reports that the "best" configurations are simply the most
+average ones. What is the mistake, its consequence, and the fix?
+
+
 [contents](#contents)
 
 ---
-
 <a name="l4"></a>
 # Lecture 4: Clustering by poles
+
+**Words to watch for:** [POLE](#g-pole), [FASTMAP](#g-fastmap), [HALVE](#g-halve).
 
 Distance (Lecture 3) lets us group rows that resemble each other —
 without labels, without a grid search. The trick here is cheap: don't
@@ -1442,12 +1677,30 @@ instead of geometry, prints as an explainable tree:
    `disty`. Is there a single "best cluster," and how big is it
    relative to the 50-row leaf in `[68]`?
 
+## Exam questions
+
+The words to watch for are listed at the top of this lecture.
+
+**Q0.** Define any three of them, each with one sentence and one
+limit case.
+
+**Q1 (gate 61).**
+(a) `halve` split purely on inputs, yet the two halves differed in
+mean `disty` (0.36 vs 0.69). What assumption about the data makes
+that free lunch possible?
+(b) A colleague concludes from one 0.36-vs-0.69 split that "input
+clustering always finds good rows," and applies it to a dataset where
+inputs and goals are unrelated. What is the mistake, its consequence,
+and the fix (name the check that would have warned them)?
+
+
 [contents](#contents)
 
 ---
-
 <a name="l5"></a>
 # Lecture 5: Discretization & cuts
+
+**Words to watch for:** [CUT](#g-cut), [IG](#g-ig), [VAL](#g-val).
 
 Lecture 4 split rows by geometry. Now we split by *purpose*: find the
 one place, in one input column, where cutting the data most separates
@@ -1596,12 +1849,39 @@ Lecture 6.
    `Volume ≤ 262` split. By how many miles per gallon do small
    engines lead?
 
+## Exam questions
+
+The words to watch for are listed at the top of this lecture.
+
+**Q0.** Define any three of them, each with one sentence and one
+limit case.
+
+**Q1 (gate 76).**
+(a) `bestcut` streams every candidate threshold through one `least`
+reducer instead of building a list. On a column with 10,000 distinct
+values, what does that save?
+(b) A rule-mining script collects all candidate cuts into an array,
+sorts it, and takes the top one — and runs out of memory on a
+wide, high-cardinality table. What is the mistake, its consequence,
+and the fix?
+
+
+**Q2 (gate 84).**
+(a) The winning cut's `val` (0.14) sits below the parent's diversity
+(0.23); the gap (~0.09) is the information gain. Why does a positive
+gain mean the cut removed real disorder?
+(b) A modeler keeps splitting until every leaf is pure, reporting
+zero training impurity as success. What is the mistake, its
+consequence on unseen data, and the fix (name the course principle)?
+
+
 [contents](#contents)
 
 ---
-
 <a name="l6"></a>
 # Lecture 6: Trees & XAI
+
+**Words to watch for:** [CART](#g-cart), [XAI](#g-xai), [PRUNE](#g-prune).
 
 Stack Lecture 5's cut, recursively, and you get a decision tree: a
 model you can *read*. This lecture grows one over the gap-to-heaven
@@ -1747,12 +2027,28 @@ start *choosing which rows to label* — active learning.
    a real car in `auto93.csv` that satisfies it. Does its mpg beat
    the fleet mean (23.8) from `[20]`?
 
+## Exam questions
+
+The words to watch for are listed at the top of this lecture.
+
+**Q0.** Define any three of them, each with one sentence and one
+limit case.
+
+**Q1 (gate 94).**
+(a) Given two prunings with equal `val`, the code keeps the one with
+fewer leaves. State the principle that tie-break encodes.
+(b) A team selects its final tree by lowest *training* error and
+ships the full 14-leaf version. On new cars it does worse than the
+5-leaf pruning. What is the mistake, its consequence, and the fix?
+
+
 [contents](#contents)
 
 ---
-
 <a name="l7"></a>
 # Lecture 7: Active learning — spend labels wisely
+
+**Words to watch for:** [ACQ](#g-acq), [AL](#g-al), [BO](#g-bo), [TS](#g-ts).
 
 Until now every row arrived pre-scored. Reality is stingier: scoring
 a row can mean a wet-lab assay, a week-long benchmark, a human
@@ -1907,12 +2203,29 @@ rig — Lecture 8.
    tree's `*` leaf rule from `[89]`. Did active learning rediscover
    the small-four-cylinder winner?
 
+## Exam questions
+
+The words to watch for are listed at the top of this lecture.
+
+**Q0.** Define any three of them, each with one sentence and one
+limit case.
+
+**Q1 (gate 108).**
+(a) `acquire` guards against scoring a row twice with a `seen` set.
+Why is that guard essential to counting the label budget honestly?
+(b) A hyperparameter search re-evaluates some configs it already
+measured because its "seen" check compares configs by object
+identity, not value, so equal-but-rebuilt configs slip through. What
+is the mistake, its consequence on the budget, and the fix?
+
+
 [contents](#contents)
 
 ---
-
 <a name="l8"></a>
 # Lecture 8: The holdout rig
+
+**Words to watch for:** [WIN](#g-win), [HOLD](#g-hold), [BASELINE](#g-baseline).
 
 A model that scores well on the data it trained on has proven
 nothing. This lecture builds the rig that keeps everyone honest: train
@@ -2068,12 +2381,28 @@ made the call.
    (e.g. `csv"$MOOT/optimize/misc/auto93.csv"` vs a config dataset).
    Does active ever break the tie? Note which datasets it wins on.
 
+## Exam questions
+
+The words to watch for are listed at the top of this lecture.
+
+**Q0.** Define any three of them, each with one sentence and one
+limit case.
+
+**Q1 (gate 124).**
+(a) Active scored 84.68, random 86.93, and `same` returned "tie."
+Explain how a 2-point gap can be a tie.
+(b) A blog post reports "our method beats random, 86.9 vs 84.7" from
+a single 20-run holdout, with no significance test. What is the
+mistake, its consequence, and the fix?
+
+
 [contents](#contents)
 
 ---
-
 <a name="l9"></a>
 # Lecture 9: Statistics — the noise floor and the eps gate
+
+**Words to watch for:** [COHEN](#g-cohen), [CLT](#g-clt), [KS](#g-ks), [CLIFF](#g-cliff), [SAME](#g-same), [POWER](#g-power), [SK](#g-sk).
 
 This is the deepest lab, because it is where most published results
 go wrong. Lecture 8 asked "is 84.68 different from 86.93?" and a
@@ -2264,12 +2593,37 @@ optimizer where labels genuinely cost.
    separately. Which of the three came closest to calling active vs
    random "different"?
 
+## Exam questions
+
+The words to watch for are listed at the top of this lecture.
+
+**Q0.** Define any three of them, each with one sentence and one
+limit case.
+
+**Q1 (gate 131).**
+(a) Two samples from the *same* Gaussian scored Cohen's d = 0.11, not
+0. Name the theorem that explains why same-source samples always
+differ a little.
+(b) A paper claims a real effect from d = 0.11 between its method and
+a baseline, each measured once. What must you demand before believing
+it, and why (use the phrase *noise floor*)?
+
+
+**Q2 (gate 138).**
+(a) A fixed 0.2 shift was detected 15/30 times at n=10 but 30/30 at
+n=2000. Did the effect change? What did?
+(b) A team runs an A/B test once on 12 users, sees "no significant
+difference," and ships the change as "proven harmless." State their
+error using the word *power*, and the one-line fix.
+
+
 [contents](#contents)
 
 ---
-
 <a name="l10"></a>
 # Lecture 10: Apps, then DTLZ (advanced)
+
+**Words to watch for:** [KNN](#g-knn), [ANOM](#g-anom), [NB](#g-nb), [KM](#g-km), [KPP](#g-kpp), [DTLZ](#g-dtlz), [SBSE](#g-sbse), [GA](#g-ga), [DE](#g-de), [SA](#g-sa), [LS](#g-ls).
 
 Everything so far was substrate. This lecture cashes it in. Four small
 functions — one per classic task — ride the columns, distances, and
@@ -2559,10 +2913,25 @@ LLM working alone, while spending fewer tokens (see
 and large models is the sequel to this course; what you built here
 is its first half.
 
+## Exam questions
+
+The words to watch for are listed at the top of this lecture.
+
+**Q0.** Define any three of them, each with one sentence and one
+limit case.
+
+**Q1 (gate 170).**
+(a) A DTLZ row is born `"?"` and labelled only when `disty` is
+called. Why is that laziness essential when a label is a one-hour
+benchmark?
+(b) A researcher benchmarks an optimizer by pre-computing all 1000
+labels up front "to save time," then reports it needed only 50. What
+is the mistake, its consequence for the claim, and the fix?
+
+
 [contents](#contents)
 
 ---
-
 <a name="appendix"></a>
 # Appendix: Lua-101
 
@@ -2600,6 +2969,12 @@ function Num.sd(i) return i.n<2 and 0 or (i.m2/(i.n-1))^0.5 end
 function Num.__tostring(i)
   return ("%s{mu=%.3f sd=%.3f}"):format(i.txt, i.mu, i:sd()) end
 Num.__add = Num.add                                -- operator overload
+function Num.__sub(i,j,    k,n,d)                  -- Welford backwards:
+  n, d = i.n - j.n, j.mu - i.mu                    -- "all minus part"
+  k = Num.new(i.txt, i.at)
+  k.n, k.mu = n, (i.n*i.mu - j.n*j.mu)/n
+  k.m2 = i.m2 - j.m2 - d*d*i.n*j.n/n
+  return k end
 
 function fun(f)                                    -- nil -> identity
   if f == nil          then return function(v) return v end end
@@ -2610,7 +2985,9 @@ function sum(t, f,    n)                           -- trailing args = locals
   f, n = fun(f), 0
   for _,v in ipairs(t) do n = n + f(v) end; return n end
 
-print(Num.new("age") + 20 + 30 + 40)               --> age{mu=30.000 sd=10.000}
+all = Num.new("age") + 20 + 30 + 40
+print(all)                                         --> age{mu=30.000 sd=10.000}
+print(all - (Num.new("age") + 30))                 --> age{mu=30.000 sd=14.142}
 print(sum{3, 4, 5})                                --> 12
 kids = {{name="aarav",age=1}, {name="sai",age=2}, {name="dev",age=3}}
 print(sum(kids, "age"))                            --> 6
@@ -2854,6 +3231,26 @@ inside `Num` that sets a column's heaven to 0 (minimize):
 4	4
 ```
 
+## Check yourself
+
+Five questions, one per trap. Answer before running.
+
+1. What does `0 and "a" or "b"` return, and why is the answer
+   different from Python's `"a" if 0 else "b"`? Name the one
+   value besides `false` that Lua treats as false.
+2. Given `u = {10, 20, jump=99}`: what is `#u`? Which of
+   `ipairs(u)` / `pairs(u)` visits `jump`? Why must no code in
+   this course depend on the order `pairs` visits keys — and
+   which guarantee of Lecture 1 would break if it did?
+3. `f"hello"` and `show{lo=1, hi=9}` compile. `"x":sub(1)` does
+   not, but `("x"):sub(1)` does. State the two rules at work.
+4. After `c = counter(); d = counter()`, the calls `c()`, `c()`,
+   `d()` return 1, 2, 1. Where does each counter keep its count,
+   and why can no caller read or reset it directly?
+5. `minmax` returns two values. What does `lo = minmax(3, 1, 4)`
+   leave in `lo`, and what happened to the second value? What
+   does `print(minmax(3, 1, 4))` print?
+
 **Deliberately skipped:** coroutines, `goto`, integer/float split
 (5.3+), the `os`/`io` libraries beyond `io.lines`, and metamethods
 other than `__index`/`__tostring`/`__sub`. The sources use none of
@@ -2862,8 +3259,6 @@ them. Reference: Lua 5.1 short reference (see [refs](#refs)).
 [contents](#contents)
 
 ---
-
-
 <a name="glossary"></a>
 # Glossary
 
@@ -2922,7 +3317,6 @@ the order the REPL first meets each idea.
 [contents](#contents)
 
 ---
-
 <a name="refs"></a>
 # References
 
@@ -3002,276 +3396,3 @@ the order the REPL first meets each idea.
 [contents](#contents)
 
 ---
-
-<a name="quiz"></a>
-# Revision guide (gated questions)
-
-Each question is numbered by its **REPL gate**: after you understand
-prompt [N], you can answer every question gated at ≤ N. So the gates
-double as a map of the course — work them in order and a "can't
-answer yet" tells you exactly which prompt to revisit.
-
-Every question has two parts, at opposite ends of Bloom's ladder:
-**(a) recall** — attempt from memory *before* opening the glossary
-(retrieval practice beats re-reading); **(b) diagnosis** — a short
-scenario with exactly ONE planted mistake; name the mistake, its
-consequence, and the fix, *in English, not code*. Answers are in the
-[next section](#answers). This is the public set; a secret set (higher
-gates) is held for the exam.
-
-**Q1 (gate 3).**
-(a) `the` holds every knob, and `srand(the.seed)` opens each run.
-What does re-seeding from a *fixed* `the.seed` guarantee about two
-runs on two machines, and why does the homework depend on it?
-(b) A team ports the course to Python and uses Python's own
-`random.seed(1234)` instead of the tutorial's Park-Miller `rand`.
-Their traces diverge from ours by event 10. What is the mistake, its
-consequence, and the fix?
-
-**Q2 (gate 8).**
-(a) A column with a `-` suffix is a goal to minimize; one with `X` is
-ignored. Which list — `x` or `y` — does each land in (or neither),
-and where is that decided?
-(b) A new analyst renames the target column from `Mpg+` to `Mpg` to
-"keep it clean," then wonders why the optimizer ignores fuel economy
-entirely. What is the mistake, its consequence, and the fix?
-
-**Q3 (gate 16).**
-(a) `NUM.norm` sends a column's mean to 0.5. State, from the shape of
-a cumulative-position score, why the mean of a symmetric column *must*
-map there.
-(b) A colleague normalizes a skewed "income" column with min-max
-scaling instead of the logistic z-score, and a single billionaire
-squashes everyone else into 0.0–0.02. What is the mistake, its
-consequence, and the fix (name the property `NUM.norm` has that
-min-max lacks)?
-
-**Q4 (gate 29).**
-(a) `NUM.__sub` recovers a sub-summary's mean and spread without the
-original data. Which two stored fields make that possible, and why
-would a stored median block it?
-(b) A streaming dashboard keeps a 30-day rolling mean by re-summing
-all 30 days of stored points every night. What is the inefficiency,
-its consequence at scale, and the fix this course teaches?
-
-**Q5 (gate 36).**
-(a) After adding then subtracting 50 rows, `n` returned to 398 but
-`mu` never visibly moved. Why is `n`, not `mu`, the trustworthy
-witness that `sub` inverted `add`?
-(b) A test asserts a forgetting routine works by checking only that
-the mean is unchanged after add-then-remove. It passes even when
-`sub` silently drops the row from the list but forgets to decrement
-`n`. What is the mistake, its consequence, and the fix?
-
-**Q6 (gate 45).**
-(a) `distx` Minkowski-folds per-column gaps and stays in 0..1
-whatever the column count. What does dividing by the column count
-(inside `minkowski`) buy you when comparing tables of different
-widths?
-(b) A team computes row distance by summing raw feature differences
-with no per-column normalization, so a "salary" column in dollars
-drowns out an "age" column in years. What is the mistake, its
-consequence, and the fix?
-
-**Q7 (gate 53).**
-(a) `disty` uses only the y-columns. Why is that correct for ranking
-cars by overall goodness, and what does it deliberately ignore?
-(b) An engineer builds `disty` over the *input* columns by mistake,
-then reports that the "best" configurations are simply the most
-average ones. What is the mistake, its consequence, and the fix?
-
-**Q8 (gate 61).**
-(a) `halve` split purely on inputs, yet the two halves differed in
-mean `disty` (0.36 vs 0.69). What assumption about the data makes
-that free lunch possible?
-(b) A colleague concludes from one 0.36-vs-0.69 split that "input
-clustering always finds good rows," and applies it to a dataset where
-inputs and goals are unrelated. What is the mistake, its consequence,
-and the fix (name the check that would have warned them)?
-
-**Q9 (gate 76).**
-(a) `bestcut` streams every candidate threshold through one `least`
-reducer instead of building a list. On a column with 10,000 distinct
-values, what does that save?
-(b) A rule-mining script collects all candidate cuts into an array,
-sorts it, and takes the top one — and runs out of memory on a
-wide, high-cardinality table. What is the mistake, its consequence,
-and the fix?
-
-**Q10 (gate 84).**
-(a) The winning cut's `val` (0.14) sits below the parent's diversity
-(0.23); the gap (~0.09) is the information gain. Why does a positive
-gain mean the cut removed real disorder?
-(b) A modeler keeps splitting until every leaf is pure, reporting
-zero training impurity as success. What is the mistake, its
-consequence on unseen data, and the fix (name the course principle)?
-
-**Q11 (gate 94).**
-(a) Given two prunings with equal `val`, the code keeps the one with
-fewer leaves. State the principle that tie-break encodes.
-(b) A team selects its final tree by lowest *training* error and
-ships the full 14-leaf version. On new cars it does worse than the
-5-leaf pruning. What is the mistake, its consequence, and the fix?
-
-**Q12 (gate 108).**
-(a) `acquire` guards against scoring a row twice with a `seen` set.
-Why is that guard essential to counting the label budget honestly?
-(b) A hyperparameter search re-evaluates some configs it already
-measured because its "seen" check compares configs by object
-identity, not value, so equal-but-rebuilt configs slip through. What
-is the mistake, its consequence on the budget, and the fix?
-
-**Q13 (gate 124).**
-(a) Active scored 84.68, random 86.93, and `same` returned "tie."
-Explain how a 2-point gap can be a tie.
-(b) A blog post reports "our method beats random, 86.9 vs 84.7" from
-a single 20-run holdout, with no significance test. What is the
-mistake, its consequence, and the fix?
-
-**Q14 (gate 131).**
-(a) Two samples from the *same* Gaussian scored Cohen's d = 0.11, not
-0. Name the theorem that explains why same-source samples always
-differ a little.
-(b) A paper claims a real effect from d = 0.11 between its method and
-a baseline, each measured once. What must you demand before believing
-it, and why (use the phrase *noise floor*)?
-
-**Q15 (gate 138).**
-(a) A fixed 0.2 shift was detected 15/30 times at n=10 but 30/30 at
-n=2000. Did the effect change? What did?
-(b) A team runs an A/B test once on 12 users, sees "no significant
-difference," and ships the change as "proven harmless." State their
-error using the word *power*, and the one-line fix.
-
-**Q16 (gate 170).**
-(a) A DTLZ row is born `"?"` and labelled only when `disty` is
-called. Why is that laziness essential when a label is a one-hour
-benchmark?
-(b) A researcher benchmarks an optimizer by pre-computing all 1000
-labels up front "to save time," then reports it needed only 50. What
-is the mistake, its consequence for the claim, and the fix?
-
-[contents](#contents)
-
----
-
-<a name="answers"></a>
-# Worked answers
-
-**A1.** (a) Same seed + same PRNG ⇒ identical random streams, so every
-stochastic trace matches bit-for-bit; the homework is graded by
-diffing your numbers against these. (b) Mistake: swapping the
-portable Park-Miller `rand` for a language-specific RNG. Consequence:
-different random stream ⇒ every seeded trace diverges, diff fails
-even for a correct port. Fix: port the tutorial's 10-line `rand`
-verbatim; never use the host RNG.
-
-**A2.** (a) `-` → `y` (minimize), `X` → neither (ignored); decided
-once in `Cols`, from the name suffix. (b) Mistake: dropping the `+`
-suffix. Consequence: `Mpg` now parses as an ordinary input `x`, not a
-goal, so `disty` never optimizes it. Fix: restore the suffix — roles
-live in the name, not a config file.
-
-**A3.** (a) The mean is the balance point of a symmetric
-distribution, so exactly half the mass sits below it; any
-cumulative-position score reports that as 0.5. (b) Mistake: min-max
-scaling on a heavy-tailed column. Consequence: one outlier sets the
-max, crushing all real variation into a hair above 0. Fix: use the
-logistic z-score, which is spread-aware and clamps outliers (±3) so
-the bulk keeps its resolution.
-
-**A4.** (a) `mu` and `m2`; Welford's recurrence runs backward on
-them. A stored median has no inverse update — you cannot un-see a
-value without the list. (b) Inefficiency: O(30) re-sum nightly
-instead of O(1) add-new/forget-oldest. Consequence: cost grows with
-the window; a year-long window is 12× worse. Fix: subtractable
-summaries (`__sub`) — forget the expiring day, add the new one.
-
-**A5.** (a) We re-added rows already like the population, so `mu`
-barely moves; `n` (398→448→398) is the only field that visibly proves
-add and subtract are true inverses. (b) Mistake: asserting only on
-the mean. Consequence: a bug that drops the row but leaves `n` too
-high passes the test, and every later mean is silently wrong. Fix:
-assert on `n` (and ideally `m2`) too, not just `mu`.
-
-**A6.** (a) Dividing by the count makes the distance a per-column
-*average*, so a 4-column and a 40-column table both yield 0..1 —
-comparable widths. (b) Mistake: unnormalized raw differences.
-Consequence: large-unit columns dominate; distance ≈ salary-distance,
-age ignored. Fix: normalize each column to 0..1 (`norm`) before
-folding — exactly what `dist` does.
-
-**A7.** (a) Overall goodness is defined by outcomes (goals), so
-ranking must use only y; it ignores which inputs produced them, which
-is correct — two cars with identical goals are equally good. (b)
-Mistake: folding x-columns into `disty`. Consequence: "best" rows are
-the ones nearest the input centroid — the most average, not the best.
-Fix: `disty` over `cols.y` only.
-
-**A8.** (a) That input structure tracks goal quality — near rows in x
-tend to be near in y. (b) Mistake: treating a lucky single split as a
-law and transferring it to unrelated x/y. Consequence: halves come
-out ~0.5 vs 0.5, the method finds nothing. Fix: check the halves'
-mean `disty` differ before trusting the clustering (the warning sign
-named in L4.2).
-
-**A9.** (a) Streaming avoids ever holding 10,000 candidates in
-memory; it keeps only the running best. (b) Mistake: collect-then-
-sort all cuts. Consequence: O(distinct-values) memory per column ⇒
-OOM on wide high-cardinality data. Fix: feed candidates through a
-`least` reducer; never materialize the list.
-
-**A10.** (a) `val` is the children's weighted impurity; below the
-parent's means the split concentrated the disorder onto one side —
-information gained. (b) Mistake: splitting to pure leaves. Consequence:
-the tree memorizes noise (overfits) and generalizes worse. Fix: stop
-early (`the.leaf`, `the.maxd`) or prune — the PRUNE principle of L6.
-
-**A11.** (a) Occam's razor: among models that fit equally, prefer the
-simplest. (b) Mistake: selecting by training error, which always
-favors the bigger tree. Consequence: overfit model, worse on unseen
-cars. Fix: prefer the smallest tree that ties the best score
-(evaluated out-of-sample) — the `[93]` tie-break.
-
-**A12.** (a) Double-scoring would spend budget it doesn't count,
-breaking the "50 labels" guarantee. (b) Mistake: identity-based seen
-check on value-equal configs. Consequence: hidden re-evaluations
-overspend the true budget while the counter reads 50. Fix: key
-"seen" by config *value*, not object identity.
-
-**A13.** (a) Over 20 noisy runs, a 2-point mean gap is within the
-scatter; `same` ANDs three effect-size tests and none clears its
-threshold. (b) Mistake: reporting raw means with no significance
-test. Consequence: a noise difference paraded as a result — and here
-it even points the *wrong* way. Fix: run `same` (or any effect-size
-test); report "tie" when it says tie.
-
-**A14.** (a) The central limit theorem (means scatter as σ/√n). (b)
-Demand repetition and a significance test: a single d = 0.11 is
-indistinguishable from the noise floor two same-source samples
-produce, so one measurement each proves nothing.
-
-**A15.** (a) The effect did not change; the *power* to detect it did
-— larger n narrows the sampling scatter until the fixed shift clears
-the threshold. (b) Mistake: reading an underpowered "no difference"
-as "no effect." Consequence: a real regression ships as harmless.
-Fix: raise n (or replicate) until the test has power to see an effect
-that size.
-
-**A16.** (a) Because labelling is the expensive step; computing a
-goal only when a row is actually examined means you pay for 50
-benchmarks, not 1000. (b) Mistake: pre-computing all labels, then
-claiming a 50-label budget. Consequence: the "only 50 labels" claim
-is false — 1000 were spent; the whole point (cheap search under
-costly labels) is unmeasured. Fix: keep labels lazy; count a label
-only when `disty` actually fires.
-
-[contents](#contents)
-
----
-
-*Secret exam questions (higher gates, no public answers) are held
-outside the repo, per the course's assessment design.*
-
-[contents](#contents)
-

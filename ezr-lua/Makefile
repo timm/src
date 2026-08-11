@@ -30,8 +30,49 @@ demo: ## run every demo; each must end "failures: 0"
 	@$(LUA) ezr-apps.lua --all
 	@$(LUA) ezr-dtlz.lua --all
 
+apps: ## higher-level demos only: knn, nb, kmeans, ga/de/sa/ls, race, dtlz
+	@$(LUA) ezr-apps.lua --all
+	@$(LUA) ezr-dtlz.lua --all
+
+csv: ## e.g. read a table; row 1 is the header
+	lua ezr-eg.lua --file=data/auto93.csv --csv
+
+col: ## e.g. one Num and one Sym summary
+	lua ezr-eg.lua --file=data/auto93.csv --col
+
+disty: ## e.g. sort all rows by distance to heaven; show ends
+	lua ezr-eg.lua --file=data/auto93.csv --disty
+
+half: ## e.g. split rows on two far poles, best half first
+	lua ezr-eg.lua --file=data/auto93.csv --half
+
+node: ## e.g. cluster: recursive tree of halves
+	lua ezr-eg.lua --file=data/auto93.csv --node
+
+show: ## e.g. grow a best-cut tree and print it
+	lua ezr-eg.lua --file=data/auto93.csv --show
+
+acquire: ## e.g. spend the label budget; best found vs truth
+	lua ezr-eg.lua --file=data/auto93.csv --acquire
+
+holdout: ## e.g. train on half, test on the unseen half
+	lua ezr-eg.lua --file=data/auto93.csv --holdout
+
 lecture: ## replay one lecture's trace (make lecture L=3)
 	@EZR=$$PWD $(LUA) etc/tut/repl.lua etc/tut/l$(L).in
+
+TUT := tut/front.md tut/l0.md tut/l1.md tut/l2.md tut/l3.md \
+       tut/l4.md tut/l5.md tut/l6.md tut/l7.md tut/l8.md \
+       tut/l9.md tut/l10.md tut/lua101.md
+RELEASED ?=
+tut.md: $(TUT) tut/glossary.md tut/refs.md ## weave tut/ parts into tut.md (RELEASED=k adds answers 1..k)
+	@{ cat $(TUT); \
+	   if [ -n "$(RELEASED)" ]; then \
+	     printf '<a name="answers"></a>\n# Exam answers\n\n'; \
+	     for i in $$(seq 1 $(RELEASED)); do cat tut/ans/a$$i.md; echo; done; \
+	     printf '[contents](#contents)\n\n---\n\n'; fi; \
+	   cat tut/glossary.md tut/refs.md; } > $@
+	@wc -l $@
 
 PLAYERS := moot/optimize/behavior_data/all_players.csv
 RAW := https://raw.githubusercontent.com/timm/moot/master
