@@ -16,6 +16,32 @@ TINY = 1e-32
 Sym = dict
 Num = lambda n=0, mu=0, m2=0: (n, mu, m2)
 
+
+[
+["names","a","n","c","d"]
+["happp",  1,  2,  3,  4]
+]
+def shuffle(lst): random.shuffle(lst); return lst
+
+oef squeeze(m):
+  names,rows= m[0],shuffle(m[1:])
+  for c,name in enumerate(names):
+    col = (Num if name[0].isupper() then Sym)()
+    for n,(element,*row) in enumerate(rows):
+       col = add(col, row[c])
+    if b4
+def add(it, v):
+  if type(it) is dict:                         # Sym
+    if v != "?": it[v] = it.get(v, 0) + 1
+  else:
+    if v == "?": return it
+    n, mu, m2 = it
+    n  += 1
+    d   = v - mu                                 # gap to OLD mean
+    mu += d / n
+    it  = (n, mu, m2 + d * (v - mu))             # times gap to NEW
+  return it
+
 def Tbl(src):
   src = iter(src)
   return adds(src, o(rows=[], cols=Cols(next(src))))
@@ -30,22 +56,6 @@ def Cols(names):
 def adds(src, it=None):
   it = Num() if it is None else it     # not `or`: Sym() is falsy
   for v in src: it = add(it, v)
-  return it
-
-def add(it, v):
-  if type(it) is tuple:                          # Num
-    if v == "?": return it
-    n, mu, m2 = it
-    n  += 1
-    d   = v - mu                                 # gap to OLD mean
-    mu += d / n
-    it  = (n, mu, m2 + d * (v - mu))             # times gap to NEW
-  elif type(it) is dict:                         # Sym
-    if v != "?": it[v] = it.get(v, 0) + 1
-  else:                                          # Tbl
-    it.rows += [v]
-    for i, v1 in enumerate(v):
-      it.cols.all[i] = add(it.cols.all[i], v1)
   return it
 
 def mid(it):
