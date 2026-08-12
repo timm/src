@@ -23,28 +23,30 @@ Num = lambda n=0, mu=0, m2=0: (n, mu, m2)
 ]
 def shuffle(lst): random.shuffle(lst); return lst
 
-oef squeeze(m):
-  names,rows= m[0],shuffle(m[1:])
-  for c,name in enumerate(names):
-    col = (Num if name[0].isupper() then Sym)()
-    for n,(element,*row) in enumerate(rows):
-       col = add(col, row[c])
-    if b4
+def squeeze(m):
+  cols, rows, dists = Cols(m[0]), shuffle(m[1:]), Num()
+  b4 = None
+  for r,(txt,*row) in enumerate(rows):
+    add(cols.row)
+    if b4: 
+      d = distx(cols,b4,row)
+      dists = add(dists,d)
+      if r > 20 
+
+
+      
 def add(it, v):
-  if type(it) is dict:                         # Sym
-    if v != "?": it[v] = it.get(v, 0) + 1
-  else:
-    if v == "?": return it
+  if v=="?": return it
+  if type(it) is Sym: it[v] = it.get(v, 0) + 1
+  elif type(it) is Num
     n, mu, m2 = it
     n  += 1
-    d   = v - mu                                 # gap to OLD mean
+    d   = v - mu                                 
     mu += d / n
-    it  = (n, mu, m2 + d * (v - mu))             # times gap to NEW
+    it  = (n, mu, m2 + d * (v - mu))            
+  else:
+    it = [add(col,v1) for col,v1 in zip(it,v)]
   return it
-
-def Tbl(src):
-  src = iter(src)
-  return adds(src, o(rows=[], cols=Cols(next(src))))
 
 def Cols(names):
   ys = {i for i, s in enumerate(names) if s[-1] in "+-!"}
