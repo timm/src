@@ -35,7 +35,7 @@
                 (/ (* d d (:n i) (:n j)) m))}))
     (merge-with + i j)))
 
-;;; 2. data ---------------------------------------------
+;;; 2. tbl ---------------------------------------------
 (defn add [i v]
   (cond (= v "?") i
         (:mu i)   (welford i v)
@@ -56,7 +56,7 @@
           (not= z \X) (update i :x conj at)
           :else i)))
 
-(defn data [[names & rows]]
+(defn tbl [[names & rows]]
   (reduce
     (fn [i row]
       (update i :cols
@@ -139,7 +139,7 @@
   ([i y root d]
    (or (when (< d (:depth @my))
          (seq (for [[bit nd no] (splits i y root)
-                    :let [kid (data (cons (:names i) no))]
+                    :let [kid (tbl (cons (:names i) no))]
                     [bias r] (grows kid y root (inc d))]
                 [(str bit bias) (assoc nd :right r)])))
        [["" (adds (map y (:rows i)))]])))
@@ -213,13 +213,13 @@
 
 ;;; 7. demos, start -------------------------------------
 (defn eg-main []
-  (let [i (data (csv (:file @my)))
+  (let [i (tbl (csv (:file @my)))
         y #(disty i %)]
     (show i (tune (map second (grows i y i))
                   (:rows i) y))))
 
 (defn eg-trees []
-  (let [i (data (csv (:file @my)))
+  (let [i (tbl (csv (:file @my)))
         y #(disty i %)]
     (doseq [[k [bias tr]]
             (map-indexed vector (grows i y i))]
@@ -233,7 +233,7 @@
         t0  (System/nanoTime)
         m   (last (doall
                     (for [_ (range reps)]
-                      (let [i (data (cons (first all)
+                      (let [i (tbl (cons (first all)
                                           (few (rest all) k)))]
                         (count (grows i #(disty i %) i))))))
         s   (/ (- (System/nanoTime) t0) 1e9)]
