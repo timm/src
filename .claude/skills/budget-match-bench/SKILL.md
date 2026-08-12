@@ -49,3 +49,15 @@ has lower d2h? 20 seeds each, report sorted d list + median.
 - zsh: `echo ===X===` fails (= triggers path expansion); quote it.
 - rp delegates saturate at eps=.1 on auto93 (~18); raising eras
   alone will not raise cost past that.
+
+## CORRECTION (2026-08-07, supersedes "Known results" above)
+
+The auto93 numbers above compared rp's train-normalized d against
+ezr's full-file disty — invalid. Rescored on ezr's yardstick
+(full-file mu/sd logistic norm): rp never beats ezr; ezr@50 beats
+rp@~30 on 85/118 moot datasets (ties 21). rp's losses cluster where
+delegate cover collapses (wide data -> cost 6). 1000-config tuning
+under a <=50-label cap does not fix it (best: rp 2, tie 2, ezr 6 of
+10). Full tables: rp/etc/RESULTS.md. Always score both sides with
+one fixed yardstick; ezr's same() (cohen+cliffs+ks, 20v20) decides
+winners, not median gaps.
