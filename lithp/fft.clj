@@ -12,6 +12,8 @@
 ;;; 1. columns ------------------------------------------
 (defn num [] {:n 0 :mu 0.0 :m2 0.0})
 
+(defn sym [] {})
+
 (defn sd [{:keys [n m2]}]
   (if (< n 2) 0 (Math/sqrt (/ (max 0.0 m2) (dec n)))))
 
@@ -47,7 +49,7 @@
   (let [z (last s)
         i (assoc-in i [:cols at]
             (if (Character/isLowerCase (first s))
-              {} (num)))]
+              (sym) (num)))]
     (cond (#{\- \+ \!} z)
             (-> i (assoc-in [:goal at] (if (= z \+) 1 0))
                   (update :y conj at))
