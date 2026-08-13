@@ -33,27 +33,28 @@ def squeeze(m):
       dists = add(dists,d)
       if r > 20 
 
-
+def Num(txt="",at=0): return o(it=Num,txt=txt,at=at,n=0,mu=0,m2=0)
+def Sym(txt="",at=0): return o(it=Sym,txt=txt,at=at,n=0,has={})
       
-def add(it, v):
-  if v=="?": return it
-  if type(it) is Sym: it[v] = it.get(v, 0) + 1
-  elif type(it) is Num
-    n, mu, m2 = it
-    n  += 1
-    d   = v - mu                                 
-    mu += d / n
-    it  = (n, mu, m2 + d * (v - mu))            
-  else:
-    it = [add(col,v1) for col,v1 in zip(it,v)]
-  return it
+def add(i, v):
+  if v=="?": return v
+  if   i.it is Sym: i.has[v] = i.has.get(v, 0) + 1
+  elif i.it is Num:
+    i.n  += 1
+    d     = v - i.mu                                 
+    i.mu += d / i.n
+    i.m2 += d * (v - i.mu)            
+  elif: i.it is Cols:
+    for col in i.all: add(col, v[col.at])
+  return v
 
 def Cols(names):
   ys = {i for i, s in enumerate(names) if s[-1] in "+-!"}
-  return o(names = names, ys = ys,
+  return o(it=Cols, names=names, ys=ys,
            xs  = set(range(len(names))) - ys,
            w   = [s[-1] != "-" for s in names],
-           all = [(Num if s[0].isupper() else Sym)() for s in names])
+           all = [(Num if s[0].isupper() else Sym)(n,s) 
+                  for n,s in enumerate(names)])
 
 def adds(src, it=None):
   it = Num() if it is None else it     # not `or`: Sym() is falsy
