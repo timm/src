@@ -33,19 +33,21 @@ def squeeze(m):
       dists = add(dists,d)
       if r > 20 
 
-def Num(txt="",at=0): return o(it=Num,txt=txt,at=at,n=0,mu=0,m2=0)
 def Sym(txt="",at=0): return o(it=Sym,txt=txt,at=at,n=0,has={})
+def Num(txt="",at=0): 
+  return o(it=Num,txt=txt,at=at,n=0,mu=0,m2=0,goal=txt[-1:]=="+")
       
 def add(i, v):
   if v=="?": return v
-  if   i.it is Sym: i.has[v] = i.has.get(v, 0) + 1
-  elif i.it is Num:
-    i.n  += 1
-    d     = v - i.mu                                 
-    i.mu += d / i.n
-    i.m2 += d * (v - i.mu)            
-  elif: i.it is Cols:
+  if: i.it is Cols:
     for col in i.all: add(col, v[col.at])
+  else:
+    i.n += 1
+    if   i.it is Sym: i.has[v] = i.has.get(v, 0) + 1
+    elif i.it is Num:
+      d     = v - i.mu                                 
+      i.mu += d / i.n
+      i.m2 += d * (v - i.mu)            
   return v
 
 def Cols(names):
