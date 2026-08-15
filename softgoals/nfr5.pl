@@ -3,6 +3,13 @@
 :- dynamic (<--)/2.
 :- discontiguous (<--)/2.
 
+% The fuzz lives in exactly these two constants: a soft link
+% labels its target by drawing from a bag. Majority rules the
+% direction; bag shape IS the calibrated link strength (a 0.9
+% helps would be nine t and one f; crisp logic is [t] / [f]).
+bag(helps, [t,t,f]).
+bag(hurts, [f,f,t]).
+
 any(Xs,X) :- length(Xs,N), I is random(N), nth0(I,Xs,X).
 
 many([],[]).
@@ -19,8 +26,8 @@ todo([H|T],    [H|T],    _).
 todo(X,        [],       L) :- memberchk(replay=on,L), believed(L,X).
 todo(makes(X), [X=t],    _).
 todo(breaks(X),[X=f],    _).
-todo(helps(X), [X=V],    _) :- any([t,t,f],V).
-todo(hurts(X), [X=V],    _) :- any([f,f,t],V).
+todo(helps(X), [X=V],    _) :- bag(helps,B), any(B,V).
+todo(hurts(X), [X=V],    _) :- bag(hurts,B), any(B,V).
 todo(X,        [],       L) :- memberchk(X=_,L).
 todo(X,        (X <-- [B|Bs]),_) :- findall(B0, (X <-- B0),[B|Bs]).
 todo(X,        add(X=t), _) :- atom(X).

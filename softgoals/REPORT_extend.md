@@ -164,10 +164,11 @@ Zadeh's extension principle (Zadeh, "Fuzzy Sets", Information
 and Control 8(3) 1965, DOI 10.1016/S0019-9958(65)90241-X;
 elaborated 1975) requires that any fuzzy extension of a crisp
 operation reproduce the crisp operation on crisp inputs. Here
-the fuzz lives in exactly two tokens -- the draw bags:
+the fuzz lives in exactly two constants -- the draw bags,
+now named facts at the top of nfr5.pl:
 
-    todo(helps(X), [X=V], _) :- any([t,t,f],V).
-    todo(hurts(X), [X=V], _) :- any([f,f,t],V).
+    bag(helps, [t,t,f]).
+    bag(hurts, [f,f,t]).
 
 Fuzz=0 means shrinking each bag to its majority ([t,t,f] -> [t],
 [f,f,t] -> [f]). Measured, 3000 worlds per condition, model
