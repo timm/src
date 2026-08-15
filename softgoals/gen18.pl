@@ -16,6 +16,12 @@ reps(30).    % replays per quality estimate, in ddmin tests and the
 tol(0.05).   % quality slack ddmin may spend buying seed reductions;
              % final mu sits at best+tol by construction
 rseed(1).    % RNG pin: the table is reproducible, and draw-fragile
+z0(2).       % zeller: start (and minimum) granularity -- how many
+             % chunks ddmin first splits a candidate set into
+zup(2).      % zeller: granularity multiplier when neither a chunk
+             % nor a complement passes (search goes finer)
+zdn(1).      % zeller: granularity step-down after a complement cut
+             % (set shrank, so fewer chunks suffice)
 
 % These two predicates define ddmin's candidate pool, and the pool
 % decides whether the whole pipeline works: seeds must hold only
@@ -57,13 +63,15 @@ passes(Gs,P,MM,Tol,Seed) :-
 ddmin(_, C, _, C) :- length(C,1), !.
 ddmin(T, C, N, Min) :-
   chunks(C, N, Cs),
-  ( member(Ci, Cs), call(T, Ci)                    % IF   a chunk passes alone
-    -> ddmin(T, Ci, 2, Min)                        % THEN recurse into it
+  ( member(Ci, Cs), call(T, Ci)                   % IF   a chunk passes alone
+    -> z0(Z), ddmin(T, Ci, Z, Min)                 % THEN recurse into it
   ; member(Cj, Cs), subtract(C, Cj, Rest),         % ELIF dropping a chunk
     call(T, Rest)                                  %      still passes
-    -> N1 is max(N-1,2), ddmin(T, Rest, N1, Min)   % THEN recurse without it
+    -> z0(Z), zdn(Dn), N1 is max(N-Dn,Z),          % THEN recurse without it
+       ddmin(T, Rest, N1, Min)
   ; length(C, LC), N < LC                          % ELIF chunks not yet singletons
-    -> N2 is min(LC, 2*N), ddmin(T, C, N2, Min)    % THEN split finer
+    -> zup(Up), N2 is min(LC, Up*N),               % THEN split finer
+       ddmin(T, C, N2, Min)
   ; Min = C ).                                     % ELSE 1-minimal: done
 
 run(File) :-
@@ -93,7 +101,7 @@ run(File) :-
   tol(TT), Tol is DBest + TT,
   nb_setval(tests, 0),
   statistics(walltime,[T0,_]),
-  ddmin(passes(Gs,P,MM,Tol), Full, 2, Seed),
+  z0(Z0), ddmin(passes(Gs,P,MM,Tol), Full, Z0, Seed),
   statistics(walltime,[T1,_]),
   length(Seed, NS), nb_getval(tests, NT),
   reps(R2),
