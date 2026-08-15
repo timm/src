@@ -10,12 +10,12 @@
 % The rig's constants, all of them:
 n1(1000).    % worlds sampled: sets the target (best-of-n1) and the
              % unanimity counts; 256 usually finds the same optima
-reps(30).    % replays per quality estimate, in ddmin tests and the
+n2(30).      % replays per quality estimate, in ddmin tests and the
              % final assessment alike; below ~30 ddmin misjudges
              % (winner's-curse seeds, bloat) -- measured at 10
 tol(0.05).   % quality slack ddmin may spend buying seed reductions;
              % final mu sits at best+tol by construction
-rseed(1).    % RNG pin: the table is reproducible, and draw-fragile
+seed(1).     % RNG pin: the table is reproducible, and draw-fragile
 z0(2).       % zeller: start (and minimum) granularity -- how many
              % chunks ddmin first splits a candidate set into
 zup(2).      % zeller: granularity multiplier when neither a chunk
@@ -54,7 +54,7 @@ chunks(L, _, [L]).
 
 passes(Gs,P,MM,Tol,Seed) :-
   nb_getval(tests,T), T1 is T+1, nb_setval(tests,T1),
-  reps(R),
+  n2(R),
   findall(D, (between(1,R,_), isamp(Gs,[replay=on|Seed],W),
               score(P,W,S), d2h(MM,S,D)), Ds),
   length(Ds,N), N > 0, sumlist(Ds,Su), Mu is Su/N,
@@ -76,7 +76,7 @@ ddmin(T, C, N, Min) :-
 
 run(File) :-
   consult(File),
-  rseed(RS), set_random(seed(RS)),
+  seed(RS), set_random(seed(RS)),
   ( (goals(hard) <-- Hs) -> true ; Hs = [] ),
   ( (goals(soft) <-- [or|Ss]) -> true ; Ss = [] ),
   foldl([H,A0,A1]>>(A1=[H,H=t|A0]), Hs, [[and|Ss]], Gs),
@@ -104,7 +104,7 @@ run(File) :-
   z0(Z0), ddmin(passes(Gs,P,MM,Tol), Full, Z0, Seed),
   statistics(walltime,[T1,_]),
   length(Seed, NS), nb_getval(tests, NT),
-  reps(R2),
+  n2(R2),
   findall(D2, (between(1,R2,_), isamp(Gs,[replay=on|Seed],W3),
                score(P,W3,S3), d2h(MM,S3,D2)), Ds),
   statistics(walltime,[TA1,_]),
