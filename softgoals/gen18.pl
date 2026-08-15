@@ -1,11 +1,21 @@
 % gen18.pl : keys-from-sampling pipeline over one goal model.
-% Generate N1=1000 worlds (hard goals gated: [h,h=t,...,and(softs)]),
-% take the best by d2h, Zeller-ddmin its controllable labels down to
-% a minimal seed (test = 30 replays with replay=on within
-% best+0.05), then assess the seed with N2=100 replays.
+% Generate n1 worlds (hard goals gated: [h,h=t,...,[and|softs]]),
+% take the best by d2h, filter its controllable labels to the
+% non-unanimous, Zeller-ddmin those to a minimal seed, assess with
+% reps more replays. All constants named just below.
 % Run: swipl -g "run('models/CSServices.pl')" -g halt gen18.pl
-% Out: dataset,mu1000,sd1000,best,mu100,sd100,n_full,|seed|,#tests,%seed,ddmin_s
+% Out: dataset,mu,sd,best,muSeed,sdSeed,n_filt,|seed|,#tests,%seed,gen_ms,ddmin_ms,assess_ms
 :- ['nfr5.pl'].
+
+% The rig's constants, all of them:
+n1(1000).    % worlds sampled: sets the target (best-of-n1) and the
+             % unanimity counts; 256 usually finds the same optima
+reps(30).    % replays per quality estimate, in ddmin tests and the
+             % final assessment alike; below ~30 ddmin misjudges
+             % (winner's-curse seeds, bloat) -- measured at 10
+tol(0.05).   % quality slack ddmin may spend buying seed reductions;
+             % final mu sits at best+tol by construction
+rseed(1).    % RNG pin: the table is reproducible, and draw-fragile
 
 % These two predicates define ddmin's candidate pool, and the pool
 % decides whether the whole pipeline works: seeds must hold only
@@ -38,7 +48,8 @@ chunks(L, _, [L]).
 
 passes(Gs,P,MM,Tol,Seed) :-
   nb_getval(tests,T), T1 is T+1, nb_setval(tests,T1),
-  findall(D, (between(1,30,_), isamp(Gs,[replay=on|Seed],W),
+  reps(R),
+  findall(D, (between(1,R,_), isamp(Gs,[replay=on|Seed],W),
               score(P,W,S), d2h(MM,S,D)), Ds),
   length(Ds,N), N > 0, sumlist(Ds,Su), Mu is Su/N,
   Mu =< Tol.
@@ -57,13 +68,14 @@ ddmin(T, C, N, Min) :-
 
 run(File) :-
   consult(File),
-  set_random(seed(1)),
+  rseed(RS), set_random(seed(RS)),
   ( (goals(hard) <-- Hs) -> true ; Hs = [] ),
   ( (goals(soft) <-- [or|Ss]) -> true ; Ss = [] ),
   foldl([H,A0,A1]>>(A1=[H,H=t|A0]), Hs, [[and|Ss]], Gs),
   prep(P),
   statistics(walltime,[TG0,_]),
-  findall(W-S, (between(1,1000,_), isamp(Gs,[],W), score(P,W,S)), WSs),
+  n1(NN),
+  findall(W-S, (between(1,NN,_), isamp(Gs,[],W), score(P,W,S)), WSs),
   mm0(M0), foldl([_-S,A,B]>>mmadd(S,A,B), WSs, M0, MM),
   findall(D-W, (member(W-S,WSs), d2h(MM,S,D)), DWs),
   msort(DWs, [DBest-WBest|_]),
@@ -78,13 +90,14 @@ run(File) :-
                 \+ forall(member(W1,AllWs), memberchk(PV,W1)) ),
           Full),
   length(Full, NF),
-  Tol is DBest + 0.05,
+  tol(TT), Tol is DBest + TT,
   nb_setval(tests, 0),
   statistics(walltime,[T0,_]),
   ddmin(passes(Gs,P,MM,Tol), Full, 2, Seed),
   statistics(walltime,[T1,_]),
   length(Seed, NS), nb_getval(tests, NT),
-  findall(D2, (between(1,100,_), isamp(Gs,[replay=on|Seed],W3),
+  reps(R2),
+  findall(D2, (between(1,R2,_), isamp(Gs,[replay=on|Seed],W3),
                score(P,W3,S3), d2h(MM,S3,D2)), Ds),
   statistics(walltime,[TA1,_]),
   length(Ds,NR), sumlist(Ds,Su), MuR is Su/NR,
