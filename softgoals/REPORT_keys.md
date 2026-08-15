@@ -45,13 +45,27 @@ The pipeline:
     SEED0     controllable labels of W*: atoms that are leaves
               (not rule heads) or listed in an [or|Alts] body
     FILTER    drop from SEED0 every label present in ALL 1000
-              worlds (unanimous = the model derives it anyway;
-              anything short of unanimity stays). Free, and it
-              roughly halves ddmin's search space.
+              worlds. Unanimity, not a percentage: a label the
+              model forces everywhere carries zero information
+              and replay re-derives it free. (A 90% threshold
+              was tried and retired: a label at 95% is NOT
+              guaranteed, and dropping it left replay re-winning
+              it against a 1/3 coin -- measurable error.)
     DDMIN     Zeller ddmin over the filtered candidates
               test(S) = mean d2h of 30 x isamp(Q,[replay=on|S])
                         =< d2h* + 0.05
     ASSESS    N2=100 x isamp(Q, [replay=on|Seed]) -> mu, sd
+
+Feature extraction here is three cuts, each removing a
+different redundancy. SEED0 removes the UNACTIONABLE (labels a
+stakeholder cannot set; seeding a consequence fakes benefit and
+blocks its subtree -- measured, such seeds score worse than
+random). FILTER removes what the MODEL makes redundant
+(topology-forced labels; cheap, pure counting). DDMIN removes
+what the OBJECTIVE makes redundant (settable, non-forced labels
+that still do not move d2h; expensive, needs replays). None of
+the three subsumes another, and running the cheap cuts first is
+why the corpus takes 51s rather than 139s.
 
 Sanity anchor (run before trusting anything): seeding the WHOLE
 best world replays it term-identically, 100/100, on the vanilla
