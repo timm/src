@@ -1,6 +1,6 @@
 # REPORT_extend.md : nfr5.pl and iStar 2.0
 
-nfr5.pl is a 32-line world sampler for goal models. This note
+nfr5.pl is a 30-line world sampler for goal models. This note
 records (a) the rules of iStar 2.0, (b) the semantics of this
 interpreter, (c) the argument that the interpreter extends to
 iStar 2.0 at near-zero cost, and (d) a demonstration that the
@@ -62,13 +62,21 @@ Surface forms, via `todo`:
     makes(X)    X=t          breaks(X)   X=f
     helps(X)    X=V, V drawn from [t,t,f]
     hurts(X)    X=V, V drawn from [f,f,t]
-    must(X)     [X, X=t]: derive X, then insist on it
     atom        if believed: done. else if it has clauses:
                 derive. else: abduce to t.
 
+One belief is special: `replay=on`. With it in the belief list,
+two extra todo rows fire (added 2026-08-15, see
+REPORT_keys.md): a goal whose atoms are ALL believed is done
+without work, and an or prefers a fully-believed branch. This
+turns the same interpreter into a prudent replayer of decision
+seeds; without the belief, both rows are inert and sampling is
+untouched. Seeding the WHOLE best world needs neither row --
+memoization alone replays it term-identically.
+
 Doctrine ("B" in the lab notebook): a bare atom is a *label*,
-never a demand. Only an explicit `X=V` (and hence `must`,
-`makes`, `breaks`) can kill a world. Failed derivations are
+never a demand. Only an explicit `X=V` (and hence `makes`,
+`breaks`) can kill a world. Failed derivations are
 denials (`X=f`), recorded and lived with. Leaves are
 abducibles: no clauses means "you told me no other way, so
 assume true". A shared subgoal or a cyclic one is computed
@@ -82,12 +90,30 @@ the committed path). Denied and unseen are different facts;
 label-propagation schemes that share one "unknown" value
 conflate them.
 
+There is no hard-goal form. An earlier draft had one --
+`must(X)`, expanding to `[X, X=t]` (derive, then insist) -- and
+a corpus experiment killed it (2026-08-14): over
+models/CSServices.pl with all 186 softgoals engaged,
+must-wrapped hard goals survived 0 of 1000 worlds, while bare
+atoms survived 1000/1000 carrying ~40 denials each. The corpus
+holds contradictory hard pairs (anonymous AND non-anonymous
+technology), so denial-is-fatal starves the sampler; denial-as-
+data keeps it alive and lets the score sort worlds instead.
+Where gating is really wanted, write the expansion directly --
+a bare `X` to derive, then `X=t` to insist -- and put it in the
+QUERY, not a clause body: inside a body the deny branch catches
+the failed demand and labels the head f instead (checked live:
+`isamp([start,start=t], [x=f], W)` dies; `isamp(start, ...)`
+survives as `start=f`).
+
 Model shape convention:
 
-    start <-- [and([must(hard1), must(hard2)]),
+    start <-- [and([hard1, hard2]),
                and([soft1, soft2, soft3])].
 
-Hard goals gate (query `isamp(must(start), Inits, W)`); the
+    ?- isamp([start, start=t, hard1=t, hard2=t], Inits, W).
+
+Hard goals gate by demands in the query; the
 soft list guarantees every quality is labeled in every world,
 so worlds are comparable column-for-column and the "unseen"
 count drops to zero for the qualities that matter.
@@ -108,26 +134,27 @@ derives, and every iStar notion is a characterization on top.
 | make / help / hurt / break   | the four link rows            | have       |
 | quality                      | atom labeled by links         | have       |
 | satisfied / denied / unlabeled | t / f / unseen              | have       |
-| neededBy                     | `must(resource)` in task body | idiom      |
+| neededBy                     | `resource, resource=t` in body | idiom     |
 | qualification                | bare quality atom in body     | idiom      |
 | actor boundary               | name prefix (`buyer/pay`)     | convention |
-| dependency                   | cross-actor `must` edge       | convention |
+| dependency                   | cross-actor edge (see below)  | convention |
 
 The dependency row was checked live: with `:- op(200,xfx,/)`,
-`buyer/shop <-- [must(buyer/pay), must(seller/deliver)]` gates
-end-to-end across two actors. A wrinkle worth knowing:
-slash-named heads are compounds, so the `atom(X)` guard on the
-deny branch skips them and a failed dependum fails *hard*
-rather than labeling f. For dependencies this is accidentally
-correct -- it is exactly iStar's vulnerability reading -- but it
-is implicit; widen the guard if soft dependencies are wanted.
+`buyer/shop <-- [buyer/pay, seller/deliver]` gates end-to-end
+across two actors, no demand needed. The reason is a wrinkle
+worth knowing: slash-named heads are compounds, so the
+`atom(X)` guards (deny branch, fiat leaf) skip them and a
+failed dependum fails *hard* rather than labeling f. For
+dependencies this is accidentally correct -- it is exactly
+iStar's vulnerability reading -- but it is implicit; widen the
+guards if soft dependencies are wanted.
 
 What iStar 2.0 leaves open (evaluation), sampling supplies:
 run N worlds, histogram each quality as t / f / unseen. On the
 "shipped" toy model in the lab notebook, 2000 worlds take about
 0.26s and reproduce the link weights to two digits.
 
-Precedent for the two `must`-vs-`makes` readings: nfr2 already
+Precedent for the two demand-vs-`makes` readings: nfr2 already
 distinguished derived hard demands from assumed ones ("a hard
 demand on an edge node is assumed, not derived").
 

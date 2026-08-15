@@ -13,13 +13,13 @@ todo(X=V,      add(X=V), _).
 todo([],       [],       _).
 todo([H|T],    [H|T],    _).
 todo(and(Xs),  Ys,       _) :- many(Xs,Ys).
-todo(or(Xs),   [X],      L) :- member(X,Xs), pick(X,A), memberchk(A=t,L).
+todo(X,        [],       L) :- memberchk(replay=on,L), believed(L,X).
+todo(or(Xs),   [X],      L) :- memberchk(replay=on,L), member(X,Xs), believed(L,X).
 todo(or(Xs),   [X],      _) :- any(Xs,X).
 todo(makes(X), [X=t],    _).
 todo(breaks(X),[X=f],    _).
 todo(helps(X), [X=V],    _) :- any([t,t,f],V).
 todo(hurts(X), [X=V],    _) :- any([f,f,t],V).
-todo(must(X),  [X, X=t], _).   % hard goal: derive it, then insist
 todo(X,        [],       L) :- memberchk(X=_,L).
 todo(X,        (X <-- [B|Bs]),_) :- findall(B0, (X <-- B0),[B|Bs]).
 todo(X,        add(X=t), _) :- atom(X).
@@ -31,6 +31,8 @@ do([H|T],      L0,L) :- isamp(H,L0,L1), isamp(T,L1,L).
 do((X <-- Bs), L0,L) :-
   ( isamp(or(Bs),[X=t|L0],L) -> true ; atom(X), L = [X=f|L0] ).
 
+believed(L,X) :- \+ (sym(X,A), \+ memberchk(A=_,L)).
+
 isamp(X,L0,L) :- todo(X,W,L0), !, do(W,L0,L).
 
 % ---- static sorts, derived from clause shape (never run by isamp)
@@ -41,14 +43,7 @@ head(X)     :- (X <-- _).
 target(X)   :- (_ <-- B), member(E,B),
                member(E,[makes(X),breaks(X),helps(X),hurts(X)]).
 quality(X)  :- target(X), \+ head(X).
-goal(X)     :- head(X).
 
-pick(X,X)       :- atom(X).      % or-branch atoms a seed can steer
-pick(must(X),X) :- atom(X).
-
-subor(or(L),L).
-subor(T,L)  :- compound(T), T =.. [_|As], member(A,As), subor(A,L).
-choice(A)   :- (_ <-- B), subor(B,L), member(E,L), pick(E,A).
 eq(X=_,  X).
 eq(T,    X) :- compound(T), T =.. [_|As], member(A,As), eq(A,X).
 demanded(X) :- (_ <-- B), eq(B,X).
@@ -70,12 +65,11 @@ prep(prep(Qs,Ls,N)) :-
   findall(F, (member(F,Xs), \+ head(F), \+ memberchk(F,Qs)), Ls).
 
 score(prep(Qs,Ls,N), World, score(B,F,S)) :-
-  count(Qs, memberchk_v(t,World), B),
-  count(Ls, memberchk_v(t,World), F),
+  count(Qs,World,B), count(Ls,World,F),
   length(World,W), S is N - W.
 
-memberchk_v(V,World,X) :- memberchk(X=V,World).
-count(Xs,P,N) :- aggregate_all(count, (member(X,Xs), call(P,X)), N).
+count(Xs,World,N) :-
+  aggregate_all(count, (member(X,Xs), memberchk(X=t,World)), N).
 
 % running min/max of scores, and distance to heaven (B up, F down)
 mm0(mm(inf,-inf, inf,-inf, inf,-inf)).
@@ -84,7 +78,7 @@ mmadd(score(B,F,S), mm(B0,B1,F0,F1,S0,S1), mm(B2,B3,F2,F3,S2,S3)) :-
   S2 is min(S0,S), S3 is max(S1,S).
 
 norm(Lo,Hi,_,0.5) :- Hi =< Lo, !.
-norm(Lo,Hi,X,N)   :- N is (X-Lo)/(Hi-Lo).
+norm(Lo,Hi,X,N)   :- N is (X-Lo)/(Hi-Lo+1e-32).
 
 d2h(mm(B0,B1,F0,F1,_,_), score(B,F,_), D) :-
   norm(B0,B1,B,NB), norm(F0,F1,F,NF),
