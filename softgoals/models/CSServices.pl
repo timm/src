@@ -26,7 +26,7 @@ goals(hard) <--
     telephonyBeImplementedAndManaged,
     serviceLevelsBeMet ].
 goals(soft) <--
-  [ or([ decreaseResponseTIme1,
+  [ or, decreaseResponseTIme1,
          increasedWebServices3,
          increaseWebResources2,
          friendlyWebSite1,
@@ -211,7 +211,7 @@ goals(soft) <--
          avoidPresenceOfPedofiles2,
          easyAccessToPostReply1,
          sufficientlyModeratedWebServices4,
-         efficientServices ]) ].
+         efficientServices ].
 acquireFeedback <--
   [ feedback1,
     feedback,

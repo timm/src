@@ -31,7 +31,7 @@ seven models then optimize not at all).
 
 The pipeline:
 
-    Q  = [h1, h1=t, ..., hn, hn=t, and(Softs)]
+    Q  = [h1, h1=t, ..., hn, hn=t, [and|Softs]]
          -- hard goals gated: derive each, insist on it, THEN
             engage every softgoal. Order matters: gating after
             soft engagement is infeasible (0/1000 worlds).
@@ -43,7 +43,7 @@ The pipeline:
                     normalized over these 1000
     BEST      W* = argmin d2h; d2h* is the reference optimum
     SEED0     controllable labels of W*: atoms that are leaves
-              (not rule heads) or sit in a multi-clause or
+              (not rule heads) or sit in an or (multi-clause or [or|..])
     FILTER    drop from SEED0 every label present in ALL 1000
               worlds (unanimous = the model derives it anyway;
               anything short of unanimity stays). Free, and it

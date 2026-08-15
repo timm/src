@@ -8,7 +8,7 @@ goals(hard) <--
     servicesBeFree1,
     beInformedOfServiceAnonymity ].
 goals(soft) <--
-  [ or([ getEffectiveHelp,
+  [ or, getEffectiveHelp,
          safetyOfServiceUsage,
          highQualityService,
          ownershipOfServiceKids,
@@ -42,7 +42,7 @@ goals(soft) <--
          patientCounselor1,
          easyAccessToPostReply1,
          comfortablenessWithService,
-         connectWithOtherKids ]) ].
+         connectWithOtherKids ].
 anonymityService <-- [anonymityServices].
 availabilityService <-- [availabilityServices].
 confidentialityService <-- [confidentialityServices].

@@ -32,7 +32,7 @@ goals(hard) <--
     resourcesBeProvided,
     trainingBeReceived1 ].
 goals(soft) <--
-  [ or([ considerationOfFeedbackManagers,
+  [ or, considerationOfFeedbackManagers,
          increaseNumberOfCounsellors1,
          enthusiasticWorkAtmosphere,
          reduceMonitoringOfActivities,
@@ -212,7 +212,7 @@ goals(soft) <--
          avoidRelationshipsWithSpecificCounsellor,
          rememberLocationsOfResouces,
          patientCounselor1,
-         webResponsesBeGeneric2 ]) ].
+         webResponsesBeGeneric2 ].
 accessibleResourcesForCounselors <--
   [ accessibleResourcesForCounselors2 ].
 accessibleResourcesForCounselors1 <--

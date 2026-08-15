@@ -8,6 +8,8 @@
 :- ['nfr5.pl'].
 
 choicy(X) :- (H <-- B), member(X,B), findall(1,(H <-- _),[_,_|_]), !.
+choicy(X) :- (H <-- [or|Xs]), H \= goals(_), member(X,Xs), !.
+choicy(X) :- (H <-- B), H \= goals(_), member([or|Xs],B), member(X,Xs), !.
 controllable(X) :- ( \+ head(X) ; choicy(X) ), !.
 
 chunks([], _, []) :- !.
@@ -39,8 +41,8 @@ run(File) :-
   consult(File),
   set_random(seed(1)),
   ( (goals(hard) <-- Hs) -> true ; Hs = [] ),
-  ( (goals(soft) <-- [or(Ss)]) -> true ; Ss = [] ),
-  foldl([H,A0,A1]>>(A1=[H,H=t|A0]), Hs, [and(Ss)], Gs),
+  ( (goals(soft) <-- [or|Ss]) -> true ; Ss = [] ),
+  foldl([H,A0,A1]>>(A1=[H,H=t|A0]), Hs, [[and|Ss]], Gs),
   prep(P),
   findall(W-S, (between(1,1000,_), isamp(Gs,[],W), score(P,W,S)), WSs),
   mm0(M0), foldl([_-S,A,B]>>mmadd(S,A,B), WSs, M0, MM),

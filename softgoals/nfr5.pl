@@ -11,11 +11,12 @@ many(Xs,[Y|Ys]) :-any(Xs,Y), selectchk(Y,Xs,Zs), many(Zs,Ys).
 todo(X=V,      chk(V,W), L) :- memberchk(X=W,L).
 todo(X=V,      add(X=V), _).
 todo([],       [],       _).
+todo([and|Xs], Ys,       _) :- many(Xs,Ys).
+todo([or|Xs],  [X],      L) :- memberchk(replay=on,L), member(X,Xs),
+                               believed(L,X).
+todo([or|Xs],  [X],      _) :- any(Xs,X).
 todo([H|T],    [H|T],    _).
-todo(and(Xs),  Ys,       _) :- many(Xs,Ys).
 todo(X,        [],       L) :- memberchk(replay=on,L), believed(L,X).
-todo(or(Xs),   [X],      L) :- memberchk(replay=on,L), member(X,Xs), believed(L,X).
-todo(or(Xs),   [X],      _) :- any(Xs,X).
 todo(makes(X), [X=t],    _).
 todo(breaks(X),[X=f],    _).
 todo(helps(X), [X=V],    _) :- any([t,t,f],V).
@@ -29,14 +30,14 @@ do(chk(V,V),   L, L).
 do(add(B),     L, [B|L]).
 do([H|T],      L0,L) :- isamp(H,L0,L1), isamp(T,L1,L).
 do((X <-- Bs), L0,L) :-
-  ( isamp(or(Bs),[X=t|L0],L) -> true ; atom(X), L = [X=f|L0] ).
+  ( isamp([or|Bs],[X=t|L0],L) -> true ; atom(X), L = [X=f|L0] ).
 
 believed(L,X) :- \+ (sym(X,A), \+ memberchk(A=_,L)).
 
 isamp(X,L0,L) :- todo(X,W,L0), !, do(W,L0,L).
 
 % ---- static sorts, derived from clause shape (never run by isamp)
-sym(X,X) :- atom(X), \+ memberchk(X,[t,f]).
+sym(X,X) :- atom(X), \+ memberchk(X,[t,f,and,or]).
 sym(T,X) :- compound(T), T =.. [_|As], member(A,As), sym(A,X).
 
 head(X)     :- (X <-- _).

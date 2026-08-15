@@ -35,7 +35,7 @@ goals(hard) <--
     servicesBeProvidedForKidsBullyingLine,
     donorInformationBeRecorded ].
 goals(soft) <--
-  [ or([ sponsorshipBeBeneficial,
+  [ or, sponsorshipBeBeneficial,
          marketFundraisingEvents2,
          acquireNCSStories,
          upToDateCorporatePartnerInformation,
@@ -188,7 +188,7 @@ goals(soft) <--
          positiveReputationOfCS2,
          inspiredStaff,
          increasedCorporateSponsorFunds,
-         avoidOverMarketingServices1 ]) ].
+         avoidOverMarketingServices1 ].
 accountabilityOfServices <-- [accountabilityOfServices1].
 accountabilityOfServices2 <-- [accountabilityOfServices1].
 acquireFreeServices <-- [provideFreeServices1].

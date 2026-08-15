@@ -4,7 +4,7 @@
 :- ['nfr5.pl'].
 :- initialization(main, main).
 
-top <-- [ or([anonymity, feedback]), anonTech ].
+top <-- [ [or, anonymity, feedback], anonTech ].
 
 anonymity <-- [ makes(anonTech), breaks(namedTech),
                 helps(phone),    hurts(video) ].

@@ -26,7 +26,7 @@ goals(hard) <--
     aTrainingComputerBePresent,
     providePeerToPeerAccessRegionalOffices ].
 goals(soft) <--
-  [ or([ easilyAccessableTechnologyInstructions1,
+  [ or, easilyAccessableTechnologyInstructions1,
          properlyAndSuitablyEquippedInITToAccomplishCSNeeds1,
          increaseAccessSpeedRegionalOfficesToDL,
          improveQualityAssuranceTechnology,
@@ -63,7 +63,7 @@ goals(soft) <--
          increaseITTrainingForCounsellors,
          supportAnalysisCounsellorsTime,
          increaseITTrainingResources,
-         increaseITMethodsToAcquireFeedback1 ]) ].
+         increaseITMethodsToAcquireFeedback1 ].
 aTrainingComputerBePresent <-- [aTrainingComputerBePresent1].
 acquireAndImplementEmployeeSoftware <--
   [ implementDirectorEnterpriseThroughBluePumpkin ].

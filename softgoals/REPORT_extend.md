@@ -57,8 +57,8 @@ Kernel forms:
 Surface forms, via `todo`:
 
     X=V         demand: chk if believed, add if fresh
-    and(Xs)     shuffled conjunction; bare lists run in order
-    or(Xs)      commit to one random element
+    [and|Xs]    shuffled conjunction; bare lists run in order
+    [or|Xs]     commit to one random element
     makes(X)    X=t          breaks(X)   X=f
     helps(X)    X=V, V drawn from [t,t,f]
     hurts(X)    X=V, V drawn from [f,f,t]
@@ -108,8 +108,8 @@ survives as `start=f`).
 
 Model shape convention:
 
-    start <-- [and([hard1, hard2]),
-               and([soft1, soft2, soft3])].
+    start <-- [[and, hard1, hard2],
+               [and, soft1, soft2, soft3]].
 
     ?- isamp([start, start=t, hard1=t, hard2=t], Inits, W).
 
@@ -129,8 +129,8 @@ derives, and every iStar notion is a characterization on top.
 | iStar 2.0                    | nfr5                          | cost       |
 |------------------------------|-------------------------------|------------|
 | goal / task / resource       | atom                          | have       |
-| AND-refinement               | body list, `and()`            | have       |
-| OR-refinement                | multiple clauses, `or()`      | have       |
+| AND-refinement               | body list, `[and|..]`         | have       |
+| OR-refinement                | multiple clauses, `[or|..]`   | have       |
 | make / help / hurt / break   | the four link rows            | have       |
 | quality                      | atom labeled by links         | have       |
 | satisfied / denied / unlabeled | t / f / unseen              | have       |

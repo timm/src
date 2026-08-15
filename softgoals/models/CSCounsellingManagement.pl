@@ -39,7 +39,7 @@ goals(hard) <--
     employeeLearningAndTrainingBeManaged,
     counsellingPoliciesBeFollowed1 ].
 goals(soft) <--
-  [ or([ considerationOfFeedbackManagers,
+  [ or, considerationOfFeedbackManagers,
          highQualityCounselling1,
          accommodateSchedulesCounsellingManagers1,
          reduceTurnoverCounsellors,
@@ -159,7 +159,7 @@ goals(soft) <--
          improvedWritingSkillsCounsellors1,
          increaseITMethodsToAcquireFeedback1,
          easierJob,
-         increaseNumberOfCounsellors ]) ].
+         increaseNumberOfCounsellors ].
 aTrainingComputerBePresent <-- [aTrainingComputerBePresent1].
 accommodateSchedulesCounsellingManagers1 <--
   [ accommodateSchedulesCounsellingManagers ].

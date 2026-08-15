@@ -9,7 +9,7 @@ goals(hard) <--
     presenationBeInitiated,
     communityServiceHoursCompleted1 ].
 goals(soft) <--
-  [ or([ acquireVolunteerOutreachSkills1,
+  [ or, acquireVolunteerOutreachSkills1,
          experienceForResume,
          improveImageToKids1,
          acquirePublicSpeakingSkills1,
@@ -69,7 +69,7 @@ goals(soft) <--
          positiveReputationCS1,
          makeNewFriends2,
          reduceMisconceptions1,
-         saSAreEnthusiastic ]) ].
+         saSAreEnthusiastic ].
 acquireFundraisingSkills <-- [acquireFundraisingSkills1].
 acquireFundraisingSkills1 <-- [acquireFundraisingSkills2].
 acquirePublicSpeakingSkills <-- [acquirePublicSpeakingSkills1].
