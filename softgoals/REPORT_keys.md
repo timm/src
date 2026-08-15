@@ -156,7 +156,7 @@ is what a stochastic simulator can honestly provide.
 - Single RNG seed for the headline table; seed-loop intervals
   not yet run (ddmin is path-dependent, |seed| wobbles a few
   labels across seeds).
-- Tol=0.05 slack is spent in full by ddmin; muSeed-best gaps sit
+- eps=0.05 slack is spent in full by ddmin; muSeed-best gaps sit
   near it by construction. All constants are named facts atop
   gen18.pl (n1, reps, tol, rseed). Anchoring Tol to the replayable
   floor (full-controllable-seed mu) would tighten FD-like rows.

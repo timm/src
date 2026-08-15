@@ -13,8 +13,11 @@ n1(1000).    % worlds sampled: sets the target (best-of-n1) and the
 n2(30).      % replays per quality estimate, in ddmin tests and the
              % final assessment alike; below ~30 ddmin misjudges
              % (winner's-curse seeds, bloat) -- measured at 10
-tol(0.05).   % quality slack ddmin may spend buying seed reductions;
-             % final mu sits at best+tol by construction
+eps(0.05).   % ablation damage threshold: a subset survives only if
+             % its mean d2h stays within eps of the best world.
+             % Part noise floor (a 30-replay mean wobbles ~0.02),
+             % part price: ddmin spends whatever noise leaves, so
+             % muSeed sits near best+eps by construction
 seed(1).     % RNG pin: the table is reproducible, and draw-fragile
 z0(2).       % zeller: start (and minimum) granularity -- how many
              % chunks ddmin first splits a candidate set into
@@ -98,7 +101,7 @@ run(File) :-
                 \+ forall(member(W1,AllWs), memberchk(PV,W1)) ),
           Full),
   length(Full, NF),
-  tol(TT), Tol is DBest + TT,
+  eps(E), Tol is DBest + E,
   nb_setval(tests, 0),
   statistics(walltime,[T0,_]),
   z0(Z0), ddmin(passes(Gs,P,MM,Tol), Full, Z0, Seed),
