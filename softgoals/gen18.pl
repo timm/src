@@ -77,46 +77,64 @@ ddmin(T, C, N, Min) :-
        ddmin(T, C, N2, Min)
   ; Min = C ).                                     % ELSE 1-minimal: done
 
-run(File) :-
-  consult(File),
-  seed(RS), set_random(seed(RS)),
+% the query: derive-and-demand every hard goal, then all softs
+query(Gs) :-
   ( (goals(hard) <-- Hs) -> true ; Hs = [] ),
   ( (goals(soft) <-- [or|Ss]) -> true ; Ss = [] ),
-  foldl([H,A0,A1]>>(A1=[H,H=t|A0]), Hs, [[and|Ss]], Gs),
-  prep(P),
-  statistics(walltime,[TG0,_]),
-  n1(NN),
-  findall(W-S, (between(1,NN,_), isamp(Gs,[],W), score(P,W,S)), WSs),
+  foldl([H,A0,A1]>>(A1=[H,H=t|A0]), Hs, [[and|Ss]], Gs).
+
+% n1 worlds, each scored and d2h-normalized over the batch
+generate(Gs, P, MM, DWs) :-
+  n1(N),
+  findall(W-S, (between(1,N,_), isamp(Gs,[],W), score(P,W,S)), WSs),
   mm0(M0), foldl([_-S,A,B]>>mmadd(S,A,B), WSs, M0, MM),
-  findall(D-W, (member(W-S,WSs), d2h(MM,S,D)), DWs),
-  msort(DWs, [DBest-WBest|_]),
-  length(DWs,N1), aggregate_all(sum(DX), member(DX-_,DWs), SumD),
-  Mu0 is SumD/N1,
-  foldl([DY-_,A0,B0]>>(B0 is A0+(DY-Mu0)**2), DWs, 0, SS0),
-  Sd0 is sqrt(SS0/N1),
-  statistics(walltime,[TG1,_]),
-  findall(X=V, (member(X=V,WBest), controllable(X)), Full0),
-  findall(W0, member(_-W0,DWs), AllWs),
-  findall(PV, ( member(PV,Full0),
-                \+ forall(member(W1,AllWs), memberchk(PV,W1)) ),
-          Full),
-  length(Full, NF),
+  findall(D-W, (member(W-S,WSs), d2h(MM,S,D)), DWs).
+
+musd(Ds, Mu, Sd) :-
+  length(Ds,N), sumlist(Ds,Su), Mu is Su/N,
+  foldl([D,A,B]>>(B is A+(D-Mu)**2), Ds, 0, SS), Sd is sqrt(SS/N).
+
+% best world's controllables, minus labels every world shares
+candidates(DWs, WBest, Cands) :-
+  findall(X=V, (member(X=V,WBest), controllable(X)), Full),
+  findall(W, member(_-W,DWs), Ws),
+  findall(PV, ( member(PV,Full),
+                \+ forall(member(W,Ws), memberchk(PV,W)) ),
+          Cands).
+
+minimize(Gs, P, MM, DBest, Cands, Seed, NTests) :-
   eps(E), Tol is DBest + E,
   nb_setval(tests, 0),
+  z0(Z), ddmin(passes(Gs,P,MM,Tol), Cands, Z, Seed),
+  nb_getval(tests, NTests).
+
+% n2 fresh replays under the minimized seed
+assess(Gs, P, MM, Seed, Mu, Sd) :-
+  n2(N),
+  findall(D, (between(1,N,_), isamp(Gs,[replay=on|Seed],W),
+              score(P,W,S), d2h(MM,S,D)), Ds),
+  musd(Ds, Mu, Sd).
+
+shortname(File, Base) :-
+  file_base_name(File,B0), atom_concat(B1,'.pl',B0),
+  ( atom_concat('CS',Base,B1) -> true ; Base = B1 ).
+
+run(File) :-
+  consult(File), seed(RS), set_random(seed(RS)),
+  query(Gs), prep(P),
   statistics(walltime,[T0,_]),
-  z0(Z0), ddmin(passes(Gs,P,MM,Tol), Full, Z0, Seed),
+  generate(Gs, P, MM, DWs),
   statistics(walltime,[T1,_]),
-  length(Seed, NS), nb_getval(tests, NT),
-  n2(R2),
-  findall(D2, (between(1,R2,_), isamp(Gs,[replay=on|Seed],W3),
-               score(P,W3,S3), d2h(MM,S3,D2)), Ds),
-  statistics(walltime,[TA1,_]),
-  length(Ds,NR), sumlist(Ds,Su), MuR is Su/NR,
-  foldl([D3,A,B]>>(B is A+(D3-MuR)**2), Ds, 0, SS), SdR is sqrt(SS/NR),
-  DD is (T1-T0)/1000,
-  mentions(Xs), length(Xs,NM), Pct is 100*NS/NM,
-  file_base_name(File,B0a), atom_concat(B0b,'.pl',B0a),
-  ( atom_concat('CS',Base,B0b) -> true ; Base = B0b ),
-  GenMs is TG1-TG0, DdMs is T1-T0, AsMs is TA1-T1,
+  findall(D, member(D-_,DWs), Ds), musd(Ds, Mu0, Sd0),
+  msort(DWs, [DBest-WBest|_]),
+  candidates(DWs, WBest, Cands), length(Cands, NC),
+  statistics(walltime,[T2,_]),
+  minimize(Gs, P, MM, DBest, Cands, Seed, NTests),
+  statistics(walltime,[T3,_]),
+  assess(Gs, P, MM, Seed, MuS, SdS),
+  statistics(walltime,[T4,_]),
+  length(Seed, NS), mentions(Xs), length(Xs, NM), Pct is 100*NS/NM,
+  shortname(File, Base),
+  Gen is T1-T0, Dd is T3-T2, As is T4-T3,
   format("~w,~4f,~4f,~4f,~4f,~4f,~w,~w,~w,~1f,~w,~w,~w~n",
-         [Base,Mu0,Sd0,DBest,MuR,SdR,NF,NS,NT,Pct,GenMs,DdMs,AsMs]).
+         [Base,Mu0,Sd0,DBest,MuS,SdS,NC,NS,NTests,Pct,Gen,Dd,As]).
