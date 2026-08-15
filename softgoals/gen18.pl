@@ -7,9 +7,26 @@
 % Out: dataset,mu1000,sd1000,best,mu100,sd100,n_full,|seed|,#tests,%seed,ddmin_s
 :- ['nfr5.pl'].
 
-choicy(X) :- (H <-- B), member(X,B), findall(1,(H <-- _),[_,_|_]), !.
-choicy(X) :- (H <-- [or|Xs]), H \= goals(_), member(X,Xs), !.
-choicy(X) :- (H <-- B), H \= goals(_), member([or|Xs],B), member(X,Xs), !.
+% These two predicates define ddmin's candidate pool, and the pool
+% decides whether the whole pipeline works: seeds must hold only
+% labels a stakeholder could actually SET. Seeding a consequence
+% (a quality, a derived head) fakes benefit for free, blocks the
+% subtree behind it from ever running, and taught the sampler
+% nothing -- measured, such seeds scored WORSE than random.
+% The dialect has ONE or-form (a body [or|Alts]), so one clause:
+choicy(X) :- (H <-- [or|Alts]),  % X names an alternative: its label is
+             H \= goals(_),      % the world's only trace of which branch
+             member(X,Alts), !.  % won -- pin it, replay the choice.
+                                 % goals(_) excluded: that or is the
+                                 % query's quality list, and qualities
+                                 % are outcomes, not decisions
+
+% What can a stakeholder set? A leaf (nothing derives it, so its
+% label can only come from fiat or assumption -- these are the
+% assumptions the footprint score charges for) or an or-branch
+% atom. Everything else is derived by necessity: asserting it
+% restates what the model already forces, and every redundant
+% candidate costs ddmin a round of 30-replay tests.
 controllable(X) :- ( \+ head(X) ; choicy(X) ), !.
 
 chunks([], _, []) :- !.
@@ -29,13 +46,14 @@ passes(Gs,P,MM,Tol,Seed) :-
 ddmin(_, C, _, C) :- length(C,1), !.
 ddmin(T, C, N, Min) :-
   chunks(C, N, Cs),
-  ( member(Ci, Cs), call(T, Ci)
-    -> ddmin(T, Ci, 2, Min)
-  ; member(Cj, Cs), subtract(C, Cj, Rest), call(T, Rest)
-    -> N1 is max(N-1,2), ddmin(T, Rest, N1, Min)
-  ; length(C, LC), N < LC
-    -> N2 is min(LC, 2*N), ddmin(T, C, N2, Min)
-  ; Min = C ).
+  ( member(Ci, Cs), call(T, Ci)                    % IF   a chunk passes alone
+    -> ddmin(T, Ci, 2, Min)                        % THEN recurse into it
+  ; member(Cj, Cs), subtract(C, Cj, Rest),         % ELIF dropping a chunk
+    call(T, Rest)                                  %      still passes
+    -> N1 is max(N-1,2), ddmin(T, Rest, N1, Min)   % THEN recurse without it
+  ; length(C, LC), N < LC                          % ELIF chunks not yet singletons
+    -> N2 is min(LC, 2*N), ddmin(T, C, N2, Min)    % THEN split finer
+  ; Min = C ).                                     % ELSE 1-minimal: done
 
 run(File) :-
   consult(File),

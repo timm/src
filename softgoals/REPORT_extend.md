@@ -130,7 +130,7 @@ derives, and every iStar notion is a characterization on top.
 |------------------------------|-------------------------------|------------|
 | goal / task / resource       | atom                          | have       |
 | AND-refinement               | body list, `[and|..]`         | have       |
-| OR-refinement                | multiple clauses, `[or|..]`   | have       |
+| OR-refinement                | body `[or|Alts]`              | have       |
 | make / help / hurt / break   | the four link rows            | have       |
 | quality                      | atom labeled by links         | have       |
 | satisfied / denied / unlabeled | t / f / unseen              | have       |

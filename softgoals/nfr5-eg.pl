@@ -9,8 +9,7 @@ top <-- [ [or, anonymity, feedback], anonTech ].
 anonymity <-- [ makes(anonTech), breaks(namedTech),
                 helps(phone),    hurts(video) ].
 
-anonTech <-- [bboard].
-anonTech <-- [voice].
+anonTech <-- [or, bboard, voice].
 
 main :- forall(between(1,5,_),
                (isamp(top,[],W), format("~w~n",[W]))),

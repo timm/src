@@ -43,7 +43,7 @@ The pipeline:
                     normalized over these 1000
     BEST      W* = argmin d2h; d2h* is the reference optimum
     SEED0     controllable labels of W*: atoms that are leaves
-              (not rule heads) or sit in an or (multi-clause or [or|..])
+              (not rule heads) or listed in an [or|Alts] body
     FILTER    drop from SEED0 every label present in ALL 1000
               worlds (unanimous = the model derives it anyway;
               anything short of unanimity stays). Free, and it
