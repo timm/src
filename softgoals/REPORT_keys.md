@@ -5,7 +5,7 @@ Silicon, `set_random(seed(1))`). One 90-line interpreter both
 generates worlds and replays decisions; a unanimity filter then
 Zeller's ddmin shrink the best world's labels to a minimal
 seed. On Horkoff's seven Kids Help Phone goal models, seeds of
-1-16 labels (1-8% of a model's atoms) steer fresh samples to
+1-10 labels (0.3-8% of a model's atoms) steer fresh samples to
 near the best world found in 1000 unguided runs, with every
 hard goal satisfied in every world. Reproduce: `swipl -g "run('models/CSServices.pl')" -g
 halt gen18.pl`.
@@ -61,15 +61,16 @@ prudence questions only arise for partial seeds.
 ## 2. The table
 
     dataset          mu1000 sd1000 best   mu100  sd100  |seed| %seed
-    Counselling      0.519  0.184  0.000  0.060  0.059  16     4.5
-    CounsellingMgmt  0.430  0.215  0.000  0.071  0.078   9     4.3
-    FDandMarketing   0.502  0.132  0.118  0.179  0.093  10     3.1
+    Counselling      0.422  0.130  0.079  0.174  0.114   7     2.0
+    CounsellingMgmt  0.397  0.128  0.000  0.063  0.078  10     4.8
+    FDandMarketing   0.470  0.124  0.079  0.178  0.092  10     3.1
     ITDepartment     0.576  0.235  0.000  0.040  0.067  10     7.8
     SAProgram        0.451  0.171  0.000  0.057  0.059   9     7.8
-    Services         0.481  0.117  0.140  0.205  0.097   5     1.4
+    Services         0.533  0.129  0.174  0.230  0.141   1     0.3
     KidsandYouth     0.706  0.173  0.354  0.354  0.000   1     1.2
+    small            0.510  0.315  0.000  0.000  0.000   2    13.3
 
-Whole corpus: 74 seconds, of which ddmin is ~60 (ddmin cost =
+Whole corpus: 51 seconds, most of it ddmin (cost =
 #tests x 30 replays; the unanimity FILTER halved #tests and,
 before it, the corpus took 139s for equal-or-worse rows --
 filter-first is strictly better on time, seed size, AND mu).
@@ -78,7 +79,8 @@ worlds; mu100 beats the random mean by 2-3.5 baseline standard
 deviations. KidsandYouth: one label reaches its structural
 floor exactly, sd zero.
 
-FDandMarketing's gap (0.188 vs 0.118) is not pipeline error:
+FDandMarketing's gap (0.178 vs 0.079; Counselling shows the
+same signature this draw) is not pipeline error:
 its best worlds are partly luck. The model has 177 helps edges
 against 1 hurt -- the corpus's most coin-driven -- and even
 seeding ALL its controllable labels fails to reproduce its best
@@ -90,7 +92,7 @@ world's d2h. Fortune is not replayable; only choices are. The
 Same corpus (largest model 351 nodes there, 353 atoms here),
 same three conclusions: keys exist; keys are easy to find; keys
 set the rest of the model. SHORT reports "often, just 12%";
-this pipeline lands at 1-8% (median ~4%). Differences:
+this pipeline lands at 0.3-8% (median ~3%). Differences:
 
 - Machinery: SHORT is a bespoke polynomial-time ranker built to
   summarize the whole trade space. Here the finder is 1000
