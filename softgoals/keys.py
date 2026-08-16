@@ -36,6 +36,7 @@ def cli(d):
       if a == '-'+k: d[k] = coerce(sys.argv[i+1])
 
 def load(path):
+  RULES.clear()          # one theory per Rig, even in-process
   ns = {}
   exec(open(path).read(), ns)
   return ns['HARD'], ns['SOFT']
