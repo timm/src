@@ -10,7 +10,10 @@ help: ## show targets
 sh: ## bash tuned by ../etc/bashrc
 	@here="$(CURDIR)" bash --rcfile $(ETC)/bashrc -i
 
-keys: ## REPORT_keys table; e.g. make keys FLAGS="-seed 3 -n1 256"
+S ?= 1
+
+keys: ## REPORT_keys table; make keys S=3 FLAGS="-n1 256"
 	@( echo "dataset,mu,sd,best,muSeed,sdSeed,n_filt,seed,tests,pct"; \
-	   for m in models/*.py small.py; do ./keys.py $(FLAGS) $$m; done \
+	   for m in models/*.py small.py; do \
+	     ./keys.py -seed $(S) $(FLAGS) $$m; done \
 	 ) | column -s, -t
