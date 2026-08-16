@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-"""keys.py : keys-from-sampling pipeline; port of gen18.pl.
-Usage: python3 keys.py [OPTIONS] models/small.py
+"""run.py : keys-from-sampling pipeline; port of gen18.pl.
+Usage: python3 run.py [OPTIONS] models/small.py
 
 Options:
   -n1   worlds sampled (target + unanimity)  = 1000
@@ -14,8 +14,7 @@ Options:
 import sys; sys.dont_write_bytecode = True   # no __pycache__
 import re, math, random
 from itertools import islice
-import nfr5
-from nfr5 import *
+from infer import *
 
 class o:
   def __init__(i,**d): i.__dict__.update(d)
@@ -44,8 +43,8 @@ def load(path):
 
 def walk(g):
   yield g
-  if isinstance(g,(Or,And)):
-    for x in g.xs: yield from walk(x)
+  if isinstance(g,tuple) and g and g[0] in ('and','or'):
+    for x in g[1:]: yield from walk(x)
 
 # the candidate pool: what a stakeholder can SET -- leaves
 # (nothing derives them) and or-alternatives (branch picks).
@@ -53,16 +52,18 @@ def walk(g):
 # is structural here, not legislated.
 def statics(hard, soft):
   heads   = set(RULES)
-  targets = {g.x for bs in RULES.values() for b in bs
-                 for g in walk(b) if isinstance(g,Link)}
+  targets = {g[2] for bs in RULES.values() for b in bs
+                  for g in walk(b)
+                  if isinstance(g,tuple) and g[0]=='link'}
   mention = ({a for bs in RULES.values() for b in bs
                 for a in syms(b)}
              | heads | set(hard) | set(syms(soft)))
   quals   = targets - heads
   leaves  = mention - heads - quals
   choicy  = {a for bs in RULES.values() for b in bs
-               for g in walk(b) if isinstance(g,Or)
-               for a in g.xs if isinstance(a,Atom)}
+               for g in walk(b)
+               if isinstance(g,tuple) and g[0]=='or'
+               for a in g[1:] if isinstance(a,Atom)}
   return mention, quals, leaves, (mention-heads)|choicy
 
 def norm(lo,hi,x):
@@ -101,18 +102,18 @@ class Rig:
   def gen(s, n, seed=(), replay=False):
     return list(islice(sample(s.q, dict(seed), replay), n))
 
+  def bf(s, w):
+    "benefit = qualities won; footprint = leaves bought"
+    return (sum(1 for q in s.quals  if w.get(q)=='t'),
+            sum(1 for l in s.leaves if w.get(l)=='t'))
+
   def d2h(s, w):
-    nb = norm(s.mm[0], s.mm[1],
-              sum(1 for q in s.quals  if w.get(q)=='t'))
-    nf = norm(s.mm[2], s.mm[3],
-              sum(1 for l in s.leaves if w.get(l)=='t'))
+    b, f = s.bf(w)
+    nb, nf = norm(s.mm[0],s.mm[1],b), norm(s.mm[2],s.mm[3],f)
     return math.sqrt(((1-nb)**2 + nf**2)/2)
 
   def yardstick(s, ws):
-    Bs = [sum(1 for q in s.quals  if w.get(q)=='t')
-          for w in ws]
-    Fs = [sum(1 for l in s.leaves if w.get(l)=='t')
-          for w in ws]
+    Bs, Fs = zip(*[s.bf(w) for w in ws])
     s.mm = (min(Bs),max(Bs),min(Fs),max(Fs))
 
   def candidates(s, wbest, ws):
@@ -120,14 +121,15 @@ class Rig:
             if x in s.settable
             and not all(w.get(x)==v for w in ws)]
 
+  def replays(s, seed):
+    return [s.d2h(w) for w in s.gen(the.n2, seed, replay=True)]
+
   def passes(s, seed):
-    s.tests += 1
-    ds = [s.d2h(w) for w in s.gen(the.n2, seed, replay=True)]
+    s.tests += 1; ds = s.replays(seed)
     return bool(ds) and musd(ds)[0] <= s.dbest+the.eps
 
   def assess(s, seed):
-    return musd([s.d2h(w)
-                 for w in s.gen(the.n2, seed, replay=True)])
+    return musd(s.replays(seed))
 
 def shortname(path):
   return (path.split('/')[-1].replace('.py','')
@@ -162,6 +164,6 @@ def main():
 if __name__ == '__main__':
   cli(the.__dict__)
   if len(sys.argv) < 2 or sys.argv[-1].endswith('.py') is False \
-     or sys.argv[-1].endswith('keys.py'):
+     or sys.argv[-1].endswith('run.py'):
     sys.exit(__doc__)
   run(sys.argv[-1])

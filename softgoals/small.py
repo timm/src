@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # small.py : buy-vs-build, in the algebra dialect.
 import sys; sys.dont_write_bytecode = True
-from keys import *
+from run import *
 
 (built,deployed,buy,diy,vendor,coders,tested,usable,
  cheap,fast,private,cloud,onprem) = atoms(
