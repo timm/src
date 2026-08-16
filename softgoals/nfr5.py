@@ -77,19 +77,16 @@ def isamp(g: Body | Demand, w: World,
     return True                # replay: settled goal
   match g:            # order matters twice: list before (x,v);
                       # memo before derive, fiat last
-    case list():
-      return all(isamp(x,w,replay) for x in g)
+    case list():               return all(isamp(x,w,replay) for x in g)
     case (x, v):               return believe(w,x,v)  # demand
     case Atom() if g in w:     return True            # memo
     case Atom() if g in RULES: return derive(g,w,replay)
     case Atom():               w[g]='t'; return True  # fiat
     case Link(bag=b, x=x):     return believe(w,x,choice(b))
-    case And(xs=xs):
-      return all(isamp(x,w,replay) for x in shuffled(xs))
-    case Or(xs=xs):            # settled first, else dice
-      if replay:
-        for x in xs:
-          if believed(w,x): return isamp(x,w,replay)
+    case And(xs=xs):           return all(isamp(x,w,replay) for x in shuffled(xs))
+    case Or(xs=xs):            # settled branch = done, else dice
+      if replay and any(believed(w,x) for x in xs):
+        return True
       return isamp(choice(xs), w, replay)
   return False
 
