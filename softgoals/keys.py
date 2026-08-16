@@ -1,12 +1,38 @@
-# keys.py : keys-from-sampling pipeline; port of gen18.pl.
-# Usage: python3 keys.py models/small.py
-import sys, math, random
+"""keys.py : keys-from-sampling pipeline; port of gen18.pl.
+Usage: python3 keys.py [OPTIONS] models/small.py
+
+Options:
+  -n1   worlds sampled (target + unanimity)  = 1000
+  -n2   replays per quality estimate         = 30
+  -eps  ablation damage threshold            = 0.05
+  -seed random seed                          = 1
+  -z0   zeller start/min granularity         = 2
+  -zup  zeller growth when stuck             = 2
+  -zdn  zeller step-down after cut           = 1
+"""
+import re, sys, math, random
 from itertools import islice
 import nfr5
 from nfr5 import RULES, Or, Link, sample, syms
 
-N1, N2, EPS, SEED = 1000, 30, 0.05, 1
-Z0, ZUP, ZDN      = 2, 2, 1
+class o:
+  def __init__(i,**d): i.__dict__.update(d)
+  def __repr__(i):     return 'o'+str(i.__dict__)
+
+def coerce(s):
+  for f in (int, float):
+    try: return f(s)
+    except ValueError: pass
+  return s
+
+the = o(**{m[1]: coerce(m[2]) for m in
+           re.finditer(r"\n\s+-(\w+)[^=\n]*= (\S+)", __doc__)})
+
+def cli(d):
+  "update(d) from -flag value pairs on the command line"
+  for k in d:
+    for i,a in enumerate(sys.argv):
+      if a == '-'+k: d[k] = coerce(sys.argv[i+1])
 
 def load(path):
   ns = {}
@@ -48,13 +74,13 @@ def ddmin(test, c, n):
   sz = max(1,(len(c)+n-1)//n)
   chunks = [c[i:i+sz] for i in range(0,len(c),sz)]
   for ch in chunks:               # a chunk passes alone?
-    if test(ch): return ddmin(test, ch, Z0)
+    if test(ch): return ddmin(test, ch, the.z0)
   for ch in chunks:               # dropping a chunk passes?
     rest = [x for x in c if x not in ch]
     if rest and test(rest):
-      return ddmin(test, rest, max(n-ZDN,Z0))
+      return ddmin(test, rest, max(n-the.zdn,the.z0))
   if n < len(c):                  # split finer
-    return ddmin(test, c, min(len(c),ZUP*n))
+    return ddmin(test, c, min(len(c),the.zup*n))
   return c                        # 1-minimal
 
 class Rig:
@@ -93,23 +119,23 @@ class Rig:
 
   def passes(s, seed):
     s.tests += 1
-    ds = [s.d2h(w) for w in s.gen(N2, seed, replay=True)]
-    return bool(ds) and musd(ds)[0] <= s.dbest+EPS
+    ds = [s.d2h(w) for w in s.gen(the.n2, seed, replay=True)]
+    return bool(ds) and musd(ds)[0] <= s.dbest+the.eps
 
   def assess(s, seed):
     return musd([s.d2h(w)
-                 for w in s.gen(N2, seed, replay=True)])
+                 for w in s.gen(the.n2, seed, replay=True)])
 
 def run(path):
-  random.seed(SEED)
+  random.seed(the.seed)
   r  = Rig(path)
-  ws = r.gen(N1)
+  ws = r.gen(the.n1)
   r.yardstick(ws)
   ds = [r.d2h(w) for w in ws]
   mu0, sd0 = musd(ds)
   r.dbest, wbest = min(zip(ds,ws), key=lambda p:p[0])
   cands = r.candidates(wbest, ws)
-  seed  = ddmin(r.passes, cands, Z0) if cands else []
+  seed  = ddmin(r.passes, cands, the.z0) if cands else []
   mus, sds = r.assess(seed)
   name = (path.split('/')[-1].replace('.py','')
           .replace('CS','',1))
@@ -117,4 +143,6 @@ def run(path):
         f"{mus:.4f},{sds:.4f},{len(cands)},{len(seed)},"
         f"{r.tests},{100*len(seed)/len(r.mention):.1f}")
 
-if __name__ == '__main__': run(sys.argv[1])
+if __name__ == '__main__':
+  cli(the.__dict__)
+  run(sys.argv[-1])
