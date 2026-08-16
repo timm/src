@@ -16,5 +16,5 @@ PY ?= python3
 keys: ## REPORT_keys table; make keys S=3 FLAGS="-n1 256"
 	@( echo "dataset,mu,sd,best,muSeed,sdSeed,n_filt,seed,tests,pct"; \
 	   for m in models/*.py small.py; do \
-	     ./keys.py -seed $(S) $(FLAGS) $$m; done \
+	     $(PY) keys.py -seed $(S) $(FLAGS) $$m; done \
 	 ) | column -s, -t
