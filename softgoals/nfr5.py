@@ -36,14 +36,17 @@ Rules  = dict[Atom, list[Body]] # head -> alternative bodies
 World  = dict[Atom, Val]        # beliefs in, labels out
 Demand = tuple[Atom, Val]       # (x,'t'): chk or add
 
-def alts(x: Body)     -> list[Body]: return x.xs if of(x,Or) else [x]
-def parts(x: Body)    -> list[Body]: return x.xs if of(x,And) else [x]
-def atoms(names: str) -> list[Atom]: return [Atom(n) for n in names.split()]
+def alts(x: Body) -> list[Body]:
+  return x.xs if of(x,Or) else [x]
+def parts(x: Body) -> list[Body]:
+  return x.xs if of(x,And) else [x]
+def atoms(names: str) -> list[Atom]:
+  return [Atom(n) for n in names.split()]
 
-def makes(x: Atom)    -> Link:       return Link('t',  x)
-def breaks(x: Atom)   -> Link:       return Link('f',  x)
-def helps(x: Atom)    -> Link:       return Link('ttf',x)
-def hurts(x: Atom)    -> Link:       return Link('fft',x)
+def makes(x: Atom)    -> Link: return Link('t',  x)
+def breaks(x: Atom)   -> Link: return Link('f',  x)
+def helps(x: Atom)    -> Link: return Link('ttf',x)
+def hurts(x: Atom)    -> Link: return Link('fft',x)
 
 def syms(g: Body | Demand) -> list[Atom]:
   if of(g,Atom):     return [g]
@@ -60,36 +63,39 @@ def believe(w: World, x: Atom, v: Val) -> bool:
   "add x=v if x is fresh; else check it; refuse contradiction."
   return w[x]==v if x in w else not w.update({x:v})
 
-def derive(g: Atom, w: World, rp: bool) -> bool:
+def derive(g: Atom, w: World, replay: bool) -> bool:
   "try one body under g=t; on failure deny: g=f, no death."
   w2 = dict(w); w[g]='t'          # snapshot, attempt in place
-  if isamp(choice(RULES[g]), w, rp): return True
+  if isamp(choice(RULES[g]), w, replay): return True
   w.clear(); w.update(w2)         # undo the failed attempt
   w[g]='f'
   return True
 
-def isamp(g: Body | Demand, w: World, rp: bool=False) -> bool:
-  if rp and not of(g,(tuple,list)) and believed(w,g): 
+def isamp(g: Body | Demand, w: World,
+          replay: bool=False) -> bool:
+  if replay and not of(g,(tuple,list)) and believed(w,g):
     return True                # replay: settled goal
-  match g:                     # order matters twice: list before
-                               # (x,v); memo before derive, fiat last
-    case list():               return all(isamp(x,w,rp) for x in g)
+  match g:            # order matters twice: list before (x,v);
+                      # memo before derive, fiat last
+    case list():
+      return all(isamp(x,w,replay) for x in g)
     case (x, v):               return believe(w,x,v)  # demand
     case Atom() if g in w:     return True            # memo
-    case Atom() if g in RULES: return derive(g,w,rp)
-    case Atom():  w[g]='t';    return True            # fiat leaf
-    case Link(bag=b, x=x):     return believe(w, x, choice(b))
-    case And(xs=xs):           return all(isamp(x,w,rp) for x in shuffled(xs))
+    case Atom() if g in RULES: return derive(g,w,replay)
+    case Atom():               w[g]='t'; return True  # fiat
+    case Link(bag=b, x=x):     return believe(w,x,choice(b))
+    case And(xs=xs):
+      return all(isamp(x,w,replay) for x in shuffled(xs))
     case Or(xs=xs):            # settled first, else dice
-      if rp:
+      if replay:
         for x in xs:
-          if believed(w,x): return isamp(x,w,rp)
-      return isamp(choice(xs), w, rp)
+          if believed(w,x): return isamp(x,w,replay)
+      return isamp(choice(xs), w, replay)
   return False
 
-def sample(query: list, beliefs=(), rp: bool=False,
+def sample(query: list, beliefs=(), replay: bool=False,
            tries: int=1000) -> World | None:
   for _ in range(tries):
     w = dict(beliefs)
-    if isamp(query, w, rp): return w
+    if isamp(query, w, replay): return w
   return None

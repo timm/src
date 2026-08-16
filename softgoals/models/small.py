@@ -22,4 +22,4 @@ if __name__ == '__main__':
     random.seed(1)
     Q = [g for h in HARD for g in (h,(h,'t'))] + [SOFT]
     for _ in range(4): print(sample(Q))
-    print('seeded diy:', sample(Q, {diy:'t'}, rp=True))
+    print('seeded diy:', sample(Q, {diy:'t'}, replay=True))

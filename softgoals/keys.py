@@ -68,8 +68,8 @@ class Rig:
     s.mm    = (0,0,0,0)   # set by yardstick
     s.dbest = 0.0         # set by run
 
-  def gen(s, n, seed=(), rp=False):
-    ws = (sample(s.q, dict(seed), rp) for _ in range(n))
+  def gen(s, n, seed=(), replay=False):
+    ws = (sample(s.q, dict(seed), replay) for _ in range(n))
     return [w for w in ws if w is not None]
 
   def d2h(s, w):
@@ -93,12 +93,12 @@ class Rig:
 
   def passes(s, seed):
     s.tests += 1
-    ds = [s.d2h(w) for w in s.gen(N2, seed, rp=True)]
+    ds = [s.d2h(w) for w in s.gen(N2, seed, replay=True)]
     return bool(ds) and musd(ds)[0] <= s.dbest+EPS
 
   def assess(s, seed):
     return musd([s.d2h(w)
-                 for w in s.gen(N2, seed, rp=True)])
+                 for w in s.gen(N2, seed, replay=True)])
 
 def run(path):
   random.seed(SEED)
