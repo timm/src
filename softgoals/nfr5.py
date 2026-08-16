@@ -1,50 +1,49 @@
 # nfr5.py : world sampler for goal models; port of nfr5.pl.
 # Bodies are algebra: * is and (shuffled conjunction), + is
 # or (commit to one alternative). h <= body records a clause.
-import random
+from random import choice, sample as resample
 of = isinstance
+
+def shuffled(l: list) -> list:   # shuffled COPY, l untouched
+  return resample(l, len(l))
 
 Val = str                       # 't' | 'f'
 # A rule is head <= body; the head is the KEY, so the table
 # stores each head's alternative bodies (a rule type
 # tuple[Atom,Body] would duplicate the head in its entry).
 RULES: "Rules" = {}
-BAG: dict[str, str] = dict(
-  makes='t', breaks='f', helps='ttf', hurts='fft')
 
 class Term:                     # the __add__/__radd__ trick:
-  def __add__(s,o):  return Or(alts(s)+alts(o))   # b+c -> Or
-  def __radd__(s,o): return Or(alts(o)+alts(s))
-  def __mul__(s,o):  return And(parts(s)+parts(o))# b*c -> And
-  def __rmul__(s,o): return And(parts(o)+parts(s))
+  def __add__(i,o):  return Or(alts(i)+alts(o))   # b+c -> Or
+  def __radd__(i,o): return Or(alts(o)+alts(i))
+  def __mul__(i,o):  return And(parts(i)+parts(o))# b*c -> And
+  def __rmul__(i,o): return And(parts(o)+parts(i))
 
 class Or(Term):
-  def __init__(s, xs: list["Body"]): s.xs = xs
+  def __init__(i, xs: list["Body"]): i.xs = xs
 class And(Term):
-  def __init__(s, xs: list["Body"]): s.xs = xs
+  def __init__(i, xs: list["Body"]): i.xs = xs
 class Link(Term):
-  def __init__(s, bag: str, x: "Atom"): s.bag, s.x = bag, x
+  def __init__(i, bag: str, x: "Atom"): i.bag, i.x = bag, x
 class Atom(Term):
-  def __init__(s, name: str): s.name = name
-  def __repr__(s) -> str:     return s.name
-  def __le__(s, body: "Body") -> bool:
-    RULES.setdefault(s,[]).append(body); return True
+  def __init__(i, name: str): i.name = name
+  def __repr__(i) -> str:     return i.name
+  def __le__(i, body: "Body") -> bool:
+    RULES.setdefault(i,[]).append(body); return True
 
 Body   = Term | list            # a goal, or a query list
 Rules  = dict[Atom, list[Body]] # head -> alternative bodies
 World  = dict[Atom, Val]        # beliefs in, labels out
 Demand = tuple[Atom, Val]       # (x,'t'): chk or add
 
-def alts(x: Body) -> list[Body]:
-  return x.xs if of(x,Or) else [x]
-def parts(x: Body) -> list[Body]:
-  return x.xs if of(x,And) else [x]
-def atoms(names: str) -> list[Atom]:
-  return [Atom(n) for n in names.split()]
-def makes(x: Atom)  -> Link: return Link('makes',x)
-def breaks(x: Atom) -> Link: return Link('breaks',x)
-def helps(x: Atom)  -> Link: return Link('helps',x)
-def hurts(x: Atom)  -> Link: return Link('hurts',x)
+def alts(x: Body)     -> list[Body]: return x.xs if of(x,Or) else [x]
+def parts(x: Body)    -> list[Body]: return x.xs if of(x,And) else [x]
+def atoms(names: str) -> list[Atom]: return [Atom(n) for n in names.split()]
+
+def makes(x: Atom)    -> Link:       return Link('t',  x)
+def breaks(x: Atom)   -> Link:       return Link('f',  x)
+def helps(x: Atom)    -> Link:       return Link('ttf',x)
+def hurts(x: Atom)    -> Link:       return Link('fft',x)
 
 def syms(g: Body | Demand) -> list[Atom]:
   if of(g,Atom):     return [g]
@@ -57,41 +56,35 @@ def syms(g: Body | Demand) -> list[Atom]:
 def believed(w: World, g: Body) -> bool:
   return all(a in w for a in syms(g))
 
-def label(w: World, x: Atom, v: Val) -> bool:
-  "chk a believed atom, or add a fresh label."
+def believe(w: World, x: Atom, v: Val) -> bool:
+  "add x=v if x is fresh; else check it; refuse contradiction."
   return w[x]==v if x in w else not w.update({x:v})
 
 def derive(g: Atom, w: World, rp: bool) -> bool:
   "try one body under g=t; on failure deny: g=f, no death."
-  w2 = dict(w); w2[g]='t'
-  if isamp(random.choice(RULES[g]), w2, rp):
-    w.clear(); w.update(w2); return True
-  w[g]='f'; return True
+  w2 = dict(w); w[g]='t'          # snapshot, attempt in place
+  if isamp(choice(RULES[g]), w, rp): return True
+  w.clear(); w.update(w2)         # undo the failed attempt
+  w[g]='f'
+  return True
 
 def isamp(g: Body | Demand, w: World, rp: bool=False) -> bool:
-  if rp and not of(g,(tuple,list)) and believed(w,g):
-    return True                        # replay: settled goal
-  match g:
-    case list():                       # query: in order
-      return all(isamp(x,w,rp) for x in g)
-    case (x, v):                       # demand: chk or add
-      return label(w,x,v)
-    case And(xs=xs):                   # shuffled conjunction
-      xs = xs[:]; random.shuffle(xs)
-      return all(isamp(x,w,rp) for x in xs)
-    case Or(xs=xs):                    # settled first, else dice
+  if rp and not of(g,(tuple,list)) and believed(w,g): 
+    return True                # replay: settled goal
+  match g:                     # order matters twice: list before
+                               # (x,v); memo before derive, fiat last
+    case list():               return all(isamp(x,w,rp) for x in g)
+    case (x, v):               return believe(w,x,v)  # demand
+    case Atom() if g in w:     return True            # memo
+    case Atom() if g in RULES: return derive(g,w,rp)
+    case Atom():  w[g]='t';    return True            # fiat leaf
+    case Link(bag=b, x=x):     return believe(w, x, choice(b))
+    case And(xs=xs):           return all(isamp(x,w,rp) for x in shuffled(xs))
+    case Or(xs=xs):            # settled first, else dice
       if rp:
         for x in xs:
           if believed(w,x): return isamp(x,w,rp)
-      return isamp(random.choice(xs), w, rp)
-    case Link(bag=b, x=x):             # draw from the bag
-      return label(w, x, random.choice(BAG[b]))
-    case Atom() if g in w:             # memo
-      return True
-    case Atom() if g in RULES:         # derive or deny
-      return derive(g,w,rp)
-    case Atom():                       # fiat leaf
-      w[g]='t'; return True
+      return isamp(choice(xs), w, rp)
   return False
 
 def sample(query: list, beliefs=(), rp: bool=False,
