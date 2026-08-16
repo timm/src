@@ -3,8 +3,12 @@
 nfr5 experiments of 2026-08-14/15 (Apple Silicon, seed 1).
 Since 2026-08-15 the engine is nfr5.py + keys.py (python); the
 prolog originals (nfr5.pl, gen18.pl, the .pl models) that this
-note's prose quotes live on branch `prolog1`. Semantics carry
-over except one open divergence, noted in Threats. One 90-line interpreter both
+note's prose quotes live on branch `prolog1`. Port equivalence
+was verified the hard way: an early python table diverged on
+KidsandYouth (a best it could not replay) and the whole-world
+prudence check traced it to the query engaging ONE softgoal
+(SOFT is an or) instead of all of them; one And() fixed it and
+every row fell into the prolog regime. One 90-line interpreter both
 generates worlds and replays decisions; a unanimity filter then
 Zeller's ddmin shrink the best world's labels to a minimal
 seed. On Horkoff's seven Kids Help Phone goal models, seeds of
@@ -156,10 +160,6 @@ is what a stochastic simulator can honestly provide.
 
 ## 5. Threats
 
-- KidsandYouth: the python engine finds a best (0.000) it then
-  cannot replay (0.589) where the prolog engine had a structural
-  floor (0.354) it replayed exactly. Unresolved port divergence;
-  that row is not quotable until it is.
 - Single RNG seed for the headline table; seed-loop intervals
   not yet run (ddmin is path-dependent, |seed| wobbles a few
   labels across seeds).

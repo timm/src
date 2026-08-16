@@ -93,7 +93,7 @@ class Rig:
     _, s.quals, s.leaves, s.settable = statics(s.hard, s.soft)
     s.mention = _
     s.q = ([g for h in s.hard for g in (h,(h,'t'))]
-           + [s.soft])
+           + [And(alts(s.soft))])   # engage EVERY softgoal
     s.tests = 0
     s.mm    = (0,0,0,0)   # set by yardstick
     s.dbest = 0.0         # set by run
