@@ -11,6 +11,7 @@ sh: ## bash tuned by ../etc/bashrc
 	@here="$(CURDIR)" bash --rcfile $(ETC)/bashrc -i
 
 S ?= 1
+PY ?= python3
 
 keys: ## REPORT_keys table; make keys S=3 FLAGS="-n1 256"
 	@( echo "dataset,mu,sd,best,muSeed,sdSeed,n_filt,seed,tests,pct"; \
