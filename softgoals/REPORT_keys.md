@@ -1,14 +1,17 @@
 # REPORT_keys.md : keys via sampling + delta debugging
 
-nfr5.pl experiments of 2026-08-14/15 (SWI-Prolog, Apple
-Silicon, `set_random(seed(1))`). One 90-line interpreter both
+nfr5 experiments of 2026-08-14/15 (Apple Silicon, seed 1).
+Since 2026-08-15 the engine is nfr5.py + keys.py (python); the
+prolog originals (nfr5.pl, gen18.pl, the .pl models) that this
+note's prose quotes live on branch `prolog1`. Semantics carry
+over except one open divergence, noted in Threats. One 90-line interpreter both
 generates worlds and replays decisions; a unanimity filter then
 Zeller's ddmin shrink the best world's labels to a minimal
 seed. On Horkoff's seven Kids Help Phone goal models, seeds of
 1-10 labels (0.3-8% of a model's atoms) steer fresh samples to
 near the best world found in 1000 unguided runs, with every
-hard goal satisfied in every world. Reproduce: `swipl -g "run('models/CSServices.pl')" -g
-halt gen18.pl`.
+hard goal satisfied in every world. Reproduce: `make keys`, or
+`./keys.py models/CSServices.py`.
 
 ## 1. The algorithm
 
@@ -153,6 +156,10 @@ is what a stochastic simulator can honestly provide.
 
 ## 5. Threats
 
+- KidsandYouth: the python engine finds a best (0.000) it then
+  cannot replay (0.589) where the prolog engine had a structural
+  floor (0.354) it replayed exactly. Unresolved port divergence;
+  that row is not quotable until it is.
 - Single RNG seed for the headline table; seed-loop intervals
   not yet run (ddmin is path-dependent, |seed| wobbles a few
   labels across seeds).

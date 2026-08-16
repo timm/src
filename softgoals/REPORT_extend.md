@@ -1,5 +1,10 @@
 # REPORT_extend.md : nfr5.pl and iStar 2.0
 
+(2026-08-15: the prolog engine this note analyses moved to
+branch `prolog1`; main now carries the python port nfr5.py,
+same semantics, algebra surface syntax. The analysis below
+still holds of the design.)
+
 nfr5.pl is a 30-line world sampler for goal models. This note
 records (a) the rules of iStar 2.0, (b) the semantics of this
 interpreter, (c) the argument that the interpreter extends to
