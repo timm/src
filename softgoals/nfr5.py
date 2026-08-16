@@ -1,7 +1,6 @@
 # nfr5.py : world sampler for goal models; port of nfr5.pl.
 # Bodies are algebra: * is and (shuffled conjunction), + is
 # or (commit to one alternative). h <= body records a clause.
-import sys; sys.dont_write_bytecode = True   # no __pycache__
 from typing import Iterator
 from random import choice, sample as resample
 of = isinstance

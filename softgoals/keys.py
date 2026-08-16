@@ -11,7 +11,8 @@ Options:
   -zup  zeller growth when stuck             = 2
   -zdn  zeller step-down after cut           = 1
 """
-import re, sys, math, random
+import sys; sys.dont_write_bytecode = True   # no __pycache__
+import re, math, random
 from itertools import islice
 import nfr5
 from nfr5 import *
