@@ -144,9 +144,9 @@ def rig(name, hard, soft):
   cands = r.candidates(wbest, ws)
   seed  = ddmin(r.passes, cands, the.z0) if cands else []
   mus, sds = r.assess(seed)
-  print(f"{name},{mu0:.4f},{sd0:.4f},{r.dbest:.4f},"
-        f"{mus:.4f},{sds:.4f},{len(cands)},{len(seed)},"
-        f"{r.tests},{100*len(seed)/len(r.mention):.1f}")
+  print(f"{name},{100*mu0:.0f},{100*sd0:.0f},{100*r.dbest:.0f},"
+        f"{100*mus:.0f},{100*sds:.0f},{len(cands)},{len(seed)},"
+        f"{r.tests},{100*len(seed)/len(r.mention):.0f}")
 
 def run(path):
   "cli entry: theory from a file path"
