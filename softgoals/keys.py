@@ -14,7 +14,7 @@ Options:
 import re, sys, math, random
 from itertools import islice
 import nfr5
-from nfr5 import RULES, Or, Link, sample, syms
+from nfr5 import *
 
 class o:
   def __init__(i,**d): i.__dict__.update(d)
@@ -37,13 +37,13 @@ def cli(d):
 
 def load(path):
   RULES.clear()          # one theory per Rig, even in-process
-  ns = {}
+  ns = {'__name__': 'theory'}
   exec(open(path).read(), ns)
   return ns['HARD'], ns['SOFT']
 
 def walk(g):
   yield g
-  if isinstance(g,(Or,nfr5.And)):
+  if isinstance(g,(Or,And)):
     for x in g.xs: yield from walk(x)
 
 # the candidate pool: what a stakeholder can SET -- leaves
@@ -61,7 +61,7 @@ def statics(hard, soft):
   leaves  = mention - heads - quals
   choicy  = {a for bs in RULES.values() for b in bs
                for g in walk(b) if isinstance(g,Or)
-               for a in g.xs if isinstance(a,nfr5.Atom)}
+               for a in g.xs if isinstance(a,Atom)}
   return mention, quals, leaves, (mention-heads)|choicy
 
 def norm(lo,hi,x):
@@ -87,8 +87,8 @@ def ddmin(test, c, n):
 
 class Rig:
   "one model's pipeline: generate, reduce, assess."
-  def __init__(s, path):
-    s.hard, s.soft = load(path)
+  def __init__(s, hard, soft):
+    s.hard, s.soft = hard, soft
     _, s.quals, s.leaves, s.settable = statics(s.hard, s.soft)
     s.mention = _
     s.q = ([g for h in s.hard for g in (h,(h,'t'))]
@@ -128,9 +128,13 @@ class Rig:
     return musd([s.d2h(w)
                  for w in s.gen(the.n2, seed, replay=True)])
 
-def run(path):
+def shortname(path):
+  return (path.split('/')[-1].replace('.py','')
+          .replace('CS','',1))
+
+def rig(name, hard, soft):
   random.seed(the.seed)
-  r  = Rig(path)
+  r  = Rig(hard, soft)
   ws = r.gen(the.n1)
   r.yardstick(ws)
   ds = [r.d2h(w) for w in ws]
@@ -139,11 +143,20 @@ def run(path):
   cands = r.candidates(wbest, ws)
   seed  = ddmin(r.passes, cands, the.z0) if cands else []
   mus, sds = r.assess(seed)
-  name = (path.split('/')[-1].replace('.py','')
-          .replace('CS','',1))
   print(f"{name},{mu0:.4f},{sd0:.4f},{r.dbest:.4f},"
         f"{mus:.4f},{sds:.4f},{len(cands)},{len(seed)},"
         f"{r.tests},{100*len(seed)/len(r.mention):.1f}")
+
+def run(path):
+  "cli entry: theory from a file path"
+  hard, soft = load(path)
+  rig(shortname(path), hard, soft)
+
+def main():
+  "theory-file entry: the __main__ module IS the theory"
+  import __main__ as m
+  cli(the.__dict__)
+  rig(shortname(m.__file__), m.HARD, m.SOFT)
 
 if __name__ == '__main__':
   cli(the.__dict__)

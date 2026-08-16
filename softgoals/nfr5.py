@@ -1,6 +1,8 @@
 # nfr5.py : world sampler for goal models; port of nfr5.pl.
 # Bodies are algebra: * is and (shuffled conjunction), + is
 # or (commit to one alternative). h <= body records a clause.
+import sys; sys.dont_write_bytecode = True   # no __pycache__
+from typing import Iterator
 from random import choice, sample as resample
 of = isinstance
 
@@ -75,8 +77,7 @@ def isamp(g: Body | Demand, w: World,
           replay: bool=False) -> bool:
   if replay and not of(g,(tuple,list)) and believed(w,g):
     return True                # replay: settled goal
-  match g:                     # order matters twice: list before (x,v);
-                               # memo before derive, fiat last
+  match g: # order matters twice: list before (x,v), memo before derive, fiat last
     case list():               return all(isamp(x,w,replay) for x in g)
     case (x, v):               return believe(w,x,v)  # demand
     case Atom() if g in w:     return True            # memo
@@ -88,8 +89,6 @@ def isamp(g: Body | Demand, w: World,
       if replay and any(believed(w,x) for x in xs): return True
       return isamp(choice(xs), w, replay)
   return False
-
-from typing import Iterator
 
 def sample(query: list, beliefs=(), replay: bool=False,
            patience: int=1000) -> Iterator[World]:

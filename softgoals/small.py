@@ -1,5 +1,6 @@
+#!/usr/bin/env python3
 # small.py : buy-vs-build, in the algebra dialect.
-from nfr5 import *
+from keys import *
 
 (built,deployed,buy,diy,vendor,coders,tested,usable,
  cheap,fast,private,cloud,onprem) = atoms(
@@ -16,3 +17,5 @@ usable   <= tested * helps(fast)
 
 HARD = [built, deployed]
 SOFT = cheap + fast + private
+
+if __name__ == "__main__": main()
