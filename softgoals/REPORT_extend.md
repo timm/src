@@ -16,14 +16,18 @@ Apple Silicon).
 
 ## 1. The rules of iStar 2.0
 
-iStar 2.0 (Dalpiaz, Franch, Horkoff 2016, arXiv:1605.07767) is
-the community-standard cleanup of Yu's i* goal-modeling
-language. Its vocabulary:
+iStar 2.0 (Dalpiaz, Franch, Horkoff 2016, arXiv:1605.07767;
+restated with a fuller example as a chapter of the Yu
+festschrift, doi:10.1007/978-3-031-72107-6_5, cross-checked
+against this note 2026-08-16) is the community-standard cleanup
+of Yu's i* goal-modeling language. Its vocabulary:
 
 - **Intentional elements**: goal, task, quality (nee softgoal),
   resource -- things an actor wants, does, values, or uses.
 - **Refinement**: AND (all children) and OR (any child), goals
-  and tasks only. Refinement targets hard elements.
+  and tasks only; a parent is AND- or OR-refined, never both,
+  and is parent in at most one refinement -- exactly the
+  one-rule-per-head, one-or-form discipline of this dialect.
 - **Contribution links**: make, help, hurt, break -- from any
   element onto a *quality*. Contributions argue about a
   quality's label; they never derive it the way refinement does.
