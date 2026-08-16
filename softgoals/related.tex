@@ -104,12 +104,20 @@ Inference over these notations is thinner. The main families:
 Horkoff and Yu's comparison of satisfaction analysis
 techniques~\cite{horkoff12} documents the asymmetry directly:
 many notations, few analysis procedures, little tooling, and
-results that rarely travel between notations.
+results that rarely travel between notations. The extended
+systematic mapping of the field~\cite{horkoff19}---246
+top-cited GORE papers---quantifies it: proposals and
+formalizations dominate, while papers that \emph{evaluate}
+analyses remain scarce. That imbalance is an argument for
+cheap, executable baselines: an analysis that runs in seconds
+on the standard corpus lowers the price of the missing
+evaluations.
 
 Our niche in that map is \emph{simulation plus test-driven
 minimization}. The minimization side imports a lineage RE has
-barely used: ddmin~\cite{zeller02} and its modern
-descendants~\cite{probdd24}, and---closest in spirit---%
+barely used: ddmin~\cite{zeller02} and its modern probabilistic and
+weighted descendants~\cite{probdd24,wdd25}, and---closest in
+spirit---%
 prediction-preserving input minimization, which delta-debugs an
 input to the fragment that keeps an ML model's
 answer~\cite{suneja20}. We delta-debug an \emph{assumption set}
@@ -187,12 +195,21 @@ The extraction question is already an active subfield:
 comparative studies of LLMs for goal model
 extraction~\cite{chen24}, extraction from user
 stories~\cite{gunes24}, end-to-end generative goal
-modeling~\cite{gengoal25}, and sobering evaluations of
-prompting limits~\cite{llmgoal26}. Extraction is plausible;
-extraction \emph{alone} is of limited value---it produces
-diagrams that humans must then read, and a 300-node
-hallucination-prone diagram is not obviously better than the
-document it summarizes.
+modeling~\cite{gengoal25}, sobering evaluations of prompting
+limits~\cite{llmgoal26}, and extraction of requirements from
+upstream sources such as online user feedback~\cite{feedback25}.
+The 2025 systematic review of LLMs in RE~\cite{llm4re25}
+(74 studies, 2023--24) finds the field GPT-centric, zero- and
+few-shot, evaluated in controlled settings, and---most relevant
+here---rarely \emph{integrated into downstream workflows}: the
+models extract artifacts that nothing then consumes. The
+formal-methods community has begun sketching the missing loop,
+a two-way roadmap where LLMs draft formal artifacts and formal
+tools check them~\cite{roadmap25,formalsurvey25}. Extraction
+\emph{alone} is of limited value---it produces diagrams that
+humans must then read, and a 300-node hallucination-prone
+diagram is not obviously better than the document it
+summarizes.
 
 The added value appears when extraction feeds an inference
 engine like this one:
@@ -234,7 +251,7 @@ comparison against exact solvers, a sequence-extended dialect
 evaluated against derived use cases, and an
 extract-lint-sample-key pipeline over real documents.
 
-\begin{thebibliography}{29}
+\begin{thebibliography}{35}
 
 \bibitem{jackson95} M.~Jackson. The world and the machine.
 \emph{ICSE 1995}. \url{https://doi.org/10.1145/225014.225041}
@@ -354,6 +371,34 @@ using large language models. Springer LNCS, 2024.
 \bibitem{llmgoal26} Evaluating LLM-based goal extraction in
 requirements engineering: prompting strategies and their
 limitations, 2026. \url{https://arxiv.org/abs/2604.22207}
+
+\bibitem{horkoff19} J.~Horkoff, F.~Aydemir, E.~Cardoso,
+T.~Li, A.~Mat\'e, E.~Paja, M.~Salnitri, L.~Piras,
+J.~Mylopoulos, P.~Giorgini. Goal-oriented requirements
+engineering: an extended systematic mapping study.
+\emph{Requirements Engineering} 24, 2019.
+\url{https://doi.org/10.1007/s00766-017-0280-z}
+
+\bibitem{wdd25} R.~Wang et al. WDD: weighted delta debugging.
+\emph{ICSE 2025}.
+\url{https://doi.org/10.1109/ICSE55347.2025.00071}
+
+\bibitem{llm4re25} Large language models (LLMs) for
+requirements engineering (RE): a systematic literature review,
+2025. \url{https://arxiv.org/abs/2509.11446}
+
+\bibitem{roadmap25} Formal requirements engineering and large
+language models: a two-way roadmap. \emph{Information and
+Software Technology} 181, 2025.
+\url{https://doi.org/10.1016/j.infsof.2025.107697}
+
+\bibitem{formalsurvey25} A short survey on formalising
+software requirements using large language models, 2025.
+\url{https://arxiv.org/abs/2506.11874}
+
+\bibitem{feedback25} From online user feedback to
+requirements: evaluating large language models, 2025.
+\url{https://arxiv.org/abs/2510.23055}
 
 \bibitem{zadeh65} L.~Zadeh. Fuzzy sets. \emph{Information and
 Control} 8(3), 1965.
