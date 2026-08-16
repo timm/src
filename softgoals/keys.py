@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 """keys.py : keys-from-sampling pipeline; port of gen18.pl.
 Usage: python3 keys.py [OPTIONS] models/small.py
 
@@ -145,4 +146,7 @@ def run(path):
 
 if __name__ == '__main__':
   cli(the.__dict__)
+  if len(sys.argv) < 2 or sys.argv[-1].endswith('.py') is False \
+     or sys.argv[-1].endswith('keys.py'):
+    sys.exit(__doc__)
   run(sys.argv[-1])
