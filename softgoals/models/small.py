@@ -16,12 +16,3 @@ usable   <= tested * helps(fast)
 
 HARD = [built, deployed]
 SOFT = cheap + fast + private
-
-if __name__ == '__main__':
-    import random; from nfr5 import sample
-    random.seed(1)
-    Q = [g for h in HARD for g in (h,(h,'t'))] + [SOFT]
-    ws = sample(Q)
-    for _ in range(4): print(next(ws))
-    print('seeded diy:',
-          next(sample(Q, {diy:'t'}, replay=True)))
