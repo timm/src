@@ -75,8 +75,8 @@ def isamp(g: Body | Demand, w: World,
           replay: bool=False) -> bool:
   if replay and not of(g,(tuple,list)) and believed(w,g):
     return True                # replay: settled goal
-  match g:            # order matters twice: list before (x,v);
-                      # memo before derive, fiat last
+  match g:                     # order matters twice: list before (x,v);
+                               # memo before derive, fiat last
     case list():               return all(isamp(x,w,replay) for x in g)
     case (x, v):               return believe(w,x,v)  # demand
     case Atom() if g in w:     return True            # memo
@@ -85,14 +85,17 @@ def isamp(g: Body | Demand, w: World,
     case Link(bag=b, x=x):     return believe(w,x,choice(b))
     case And(xs=xs):           return all(isamp(x,w,replay) for x in shuffled(xs))
     case Or(xs=xs):            # settled branch = done, else dice
-      if replay and any(believed(w,x) for x in xs):
-        return True
+      if replay and any(believed(w,x) for x in xs): return True
       return isamp(choice(xs), w, replay)
   return False
 
+from typing import Iterator
+
 def sample(query: list, beliefs=(), replay: bool=False,
-           tries: int=1000) -> World | None:
-  for _ in range(tries):
+           patience: int=1000) -> Iterator[World]:
+  "yield worlds, skipping dead tries; stop after patience misses"
+  miss = 0
+  while miss < patience:
     w = dict(beliefs)
-    if isamp(query, w, replay): return w
-  return None
+    if isamp(query, w, replay): miss = 0; yield w
+    else:                       miss += 1

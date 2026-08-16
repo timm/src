@@ -1,6 +1,7 @@
 # keys.py : keys-from-sampling pipeline; port of gen18.pl.
 # Usage: python3 keys.py models/small.py
 import sys, math, random
+from itertools import islice
 import nfr5
 from nfr5 import RULES, Or, Link, sample, syms
 
@@ -69,8 +70,7 @@ class Rig:
     s.dbest = 0.0         # set by run
 
   def gen(s, n, seed=(), replay=False):
-    ws = (sample(s.q, dict(seed), replay) for _ in range(n))
-    return [w for w in ws if w is not None]
+    return list(islice(sample(s.q, dict(seed), replay), n))
 
   def d2h(s, w):
     nb = norm(s.mm[0], s.mm[1],
