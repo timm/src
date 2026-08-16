@@ -24,8 +24,9 @@ Models: the paper's 7 i* case studies (Horkoff) plus small.py,
 a hand-written buy-vs-build exemplar. Theory files are plain
 python: atoms declared, rules stated with `<=`, then
 `HARD = [...]` (gated in the query) and `SOFT = q1 + q2 + ...`
-(engaged and labeled in every world). About 0.2ms per random
-world on the largest (351 node) model; the corpus runs in ~2s.
+(engaged and labeled in every world). About 0.4ms per random
+world on the largest (351 node) model; make keys runs the
+corpus in ~8s (the prolog original took ~50s).
 
 History: this dir was grown in Prolog (nfr2..nfr5.pl, gen18.pl
 and friends); that lineage, the .pl models, and the converters
