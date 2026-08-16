@@ -1,33 +1,33 @@
-# re : staggered abductive reasoning over i* goal models
+# re : keys for i* goal models, by sampling + delta debugging
 
-SHORT (Mathew, Menzies, Ernst, Klein; arXiv:1702.05568) redone in
-a few pages of Prolog. nfr3.pl is the reference engine: `<--`
-clauses stay in the database as data, preprocess/0 compiles each
-head, and one belief list threads DCG-style through hard abduction
-(choice-or, commit, minimal assumptions) and soft label propagation
-(label all, 5-valued combine). Worlds are ISAMP-style: goals walked
-in random order; greedy mode commits each or-choice and restarts on
-contradiction instead of backtracking. nfr2.pl (+ nfr2-eg.pl) is the
-older meta-interpreter, kept as a read-only reference; parity quirks
-are documented in nfr3.pl's header.
+SHORT (Mathew, Menzies, Ernst, Klein; arXiv:1702.05568) redone
+in ~100 lines of Python. nfr5.py is the engine: a theory is
+operator algebra (`h <= b + c` for or, `b * c` for and,
+makes/breaks/helps/hurts contribution links), worlds are
+ISAMP-style samples (goals walked in random order, one guess
+per choice point, denial not death), and the same interpreter
+replays decision seeds prudently (`replay=True`: believed goals
+are settled, ors prefer settled branches). keys.py is the
+pipeline: sample n1 worlds with hard goals gated, take the best
+by distance-to-heaven, shrink its settable labels by unanimity
+filter then Zeller ddmin, assess the seed with n2 fresh
+replays. REPORT_keys.md has the algorithm, the table, and the
+comparison to SHORT; REPORT_extend.md argues the design covers
+iStar 2.0.
 
-    swipl runner3.pl models/CSServices.pl # coverage, 1000 random worlds
-    swipl sweep.pl   models/CSServices.pl # baseline: best-of-100, x20
-    swipl rank.pl    models/CSServices.pl # key decisions + plateau k*
+    make keys                     # the whole table, all models
+    ./keys.py models/CSServices.py
+    ./keys.py -n1 256 -seed 3 models/CSServices.py
+    ./small.py                    # a theory file runs itself
 
-Models: the paper's 7 i* case studies (Horkoff), compiled from
-ai-se/softgoals JSON by j2pl.py into the nfr3 dialect: one `<--`
-arrow for rules and contribution edges alike (hard vs soft read off
-the body shapes), no type declarations. What is not derivable from
-structure ships as two goal clauses per model: goals(hard) lists
-the type-goal nodes, goals(soft) wraps the type-softgoal nodes in
-or([...]). Leaves are derived (referenced, no clauses). About 10ms
-per random world on the largest (351 node) model.
+Models: the paper's 7 i* case studies (Horkoff) plus small.py,
+a hand-written buy-vs-build exemplar. Theory files are plain
+python: atoms declared, rules stated with `<=`, then
+`HARD = [...]` (gated in the query) and `SOFT = q1 + q2 + ...`
+(engaged and labeled in every world). About 0.2ms per random
+world on the largest (351 node) model; the corpus runs in ~2s.
 
-A 110-model corpus in the same dialect lives in $MOOT/re (see its
-README for sizes, domains, provenance): p2pl.py compiles piStar
-(iStar 2.0) JSON, i2pl.py compiles istarml XML, j2pl.py the
-ai-se/softgoals JSON. nfr3.py is the engine said in python (Nodes
-are logic Vars with clauses attached; unify with an abductive
-guess; ISAMP restarts instead of backtracking); pl2py.py reads the
-nfr3 dialect into it, so the corpus runs on either engine.
+History: this dir was grown in Prolog (nfr2..nfr5.pl, gen18.pl
+and friends); that lineage, the .pl models, and the converters
+from piStar/istarml/ai-se JSON (also feeding the 110-model
+corpus in $MOOT/re, nfr3 dialect) live on branch `prolog1`.
