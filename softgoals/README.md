@@ -16,6 +16,7 @@ comparison to SHORT; REPORT_extend.md argues the design covers
 iStar 2.0.
 
     make keys                     # the whole table, all models
+    make keys-lisp                # same table via rig.lisp, ~1.3s
     ./run.py models/CSServices.py
     ./run.py -n1 256 -seed 3 models/CSServices.py
     ./small.py                    # a theory file runs itself
@@ -33,11 +34,17 @@ and friends); that lineage, the .pl models, and the converters
 from piStar/istarml/ai-se JSON (also feeding the 110-model
 corpus in $MOOT/re, nfr3 dialect) live on branch `prolog1`.
 
-nfr5.lisp is the same interpreter in Common Lisp (75 lines vs
-99: the reader replaces syntax.py's operator-algebra classes, and
-alist worlds make derive's snapshot/undo free). Interpreter
-only -- run.py still drives the python engine. One port
-lesson, load-bearing in BOTH ports: an ordered body form (`seq`
-in lisp, a plain list in python) is required for the
-derive-then-insist idiom `[x, (x,'t')]`; a shuffled And runs
-the demand first and fiats the goal without deriving it.
+nfr5.lisp + rig.lisp are the same engine and pipeline in Common
+Lisp (81 + 113 lines; the reader replaces syntax.py's
+operator-algebra classes). Worlds are hash tables with a trail
+-- an alist world was tried and retired: free snapshots, but
+O(n) reads made the replay-heavy pipeline 6x slower. RNG is the
+house park-miller 16807, so lisp rows are stream-different but
+statistically twin to python's (Mersenne) rows; the lisp corpus
+runs in ~1.3s vs python's ~5s. Two port lessons, load-bearing
+in BOTH directions: an ordered body form (`seq` in lisp, a
+plain list in python) is required for the derive-then-insist
+idiom `[x, (x,'t')]` -- a shuffled And runs the demand first
+and fiats the goal without deriving it; and each language ended
+up teaching the other its world structure (python took the
+trail, lisp took the hash).

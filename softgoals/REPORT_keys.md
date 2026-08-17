@@ -4,9 +4,10 @@ nfr5 experiments of 2026-08-14/15 (Apple Silicon, seed 1).
 Since 2026-08-15 the engine is syntax.py + infer.py, driven by run.py (python); the
 prolog originals (nfr5.pl, gen18.pl, the .pl models) that this
 note's prose quotes live on branch `prolog1`. A Common Lisp
-port of the interpreter alone (nfr5.lisp, 2026-08-16) checks
-the same behaviors -- contradictions always die, helps lands t
-at 2008/3000, cycles terminate -- in 75 lines; see README. Port equivalence
+port of engine AND pipeline (nfr5.lisp + rig.lisp, 2026-08-16,
+park-miller rng) reproduces this table statistically -- same
+mu/best/seed-size story every row, stream-luck differences only
+-- with the corpus at ~1.3s vs python's ~5s; see README. Port equivalence
 was verified the hard way: an early python table diverged on
 KidsandYouth (a best it could not replay) and the whole-world
 prudence check traced it to the query engaging ONE softgoal
