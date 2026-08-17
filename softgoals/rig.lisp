@@ -55,11 +55,12 @@
   (values (count-if (lambda (q) (tp q w)) *quals*)
           (count-if (lambda (l) (tp l w)) *leaves*)))
 
-(defun yardstick (ws &aux bs fs)
-  (loop for w in ws do (multiple-value-bind (b f) (bf w)
-                         (push b bs) (push f fs)))
-  (setf *mm* (list (reduce #'min bs) (reduce #'max bs)
-                   (reduce #'min fs) (reduce #'max fs))))
+(defun yardstick (ws)
+  (loop for w in ws
+        for (b f) = (multiple-value-list (bf w))
+        minimize b into b0 maximize b into b1
+        minimize f into f0 maximize f into f1
+        finally (setf *mm* (list b0 b1 f0 f1))))
 
 (defun d2h (w)
   (multiple-value-bind (b f) (bf w)

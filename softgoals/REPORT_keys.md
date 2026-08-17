@@ -16,7 +16,7 @@ every row fell into the prolog regime. One 90-line interpreter both
 generates worlds and replays decisions; a unanimity filter then
 Zeller's ddmin shrink the best world's labels to a minimal
 seed. On Horkoff's seven Kids Help Phone goal models, seeds of
-1-10 labels (0.3-8% of a model's atoms) steer fresh samples to
+1-13 labels (1-5% of a model's atoms) steer fresh samples to
 near the best world found in 1000 unguided runs, with every
 hard goal satisfied in every world. Reproduce: `make keys`, or
 `./run.py models/CSServices.py`.
@@ -78,7 +78,7 @@ random). FILTER removes what the MODEL makes redundant
 what the OBJECTIVE makes redundant (settable, non-forced labels
 that still do not move d2h; expensive, needs replays). None of
 the three subsumes another, and running the cheap cuts first is
-why the corpus takes 51s rather than 139s.
+why the corpus runs in seconds, not minutes (prolog-era: 51s filtered vs 139s; the python port does the whole table in ~5s, the lisp port in ~1.2s).
 
 Sanity anchor (run before trusting anything): seeding the WHOLE
 best world replays it term-identically, 100/100, on the vanilla
@@ -87,26 +87,30 @@ prudence questions only arise for partial seeds.
 
 ## 2. The table
 
-    dataset          mu     sd     best   muSeed sdSeed |seed| %seed
-    Counselling      0.422  0.130  0.079  0.160  0.115   7     2.0
-    CounsellingMgmt  0.397  0.128  0.000  0.065  0.078  10     4.8
-    FDandMarketing   0.470  0.124  0.079  0.160  0.079  10     3.1
-    ITDepartment     0.576  0.235  0.000  0.051  0.073  10     7.8
-    SAProgram        0.451  0.171  0.000  0.055  0.061   9     7.8
-    Services         0.533  0.129  0.174  0.228  0.152   1     0.3
-    KidsandYouth     0.706  0.173  0.354  0.354  0.000   1     1.2
-    small            0.510  0.315  0.000  0.000  0.000   2    13.3
+d2h x100; seed 1; python engine (`make keys S=1`, 2026-08-17):
 
-Whole corpus: 50 seconds, most of it ddmin (cost =
-#tests x 30 replays; the unanimity FILTER halved #tests and,
-before it, the corpus took 139s for equal-or-worse rows --
+    dataset          mu  sd  best muSeed sdSeed cands |seed| tests %seed
+    Counselling      56  16   6    11      6     34    13    194    4
+    CounsellingMgmt  43  20   0     7      5     22    10     89    5
+    FDandMarketing   50  13   7    13      8     38    10    118    3
+    ITDepartment     58  23   0     6      9     22     5     72    4
+    SAProgram        47  16   8    19      9     15     6     63    5
+    Services         49  12  10    17      8     35     8     42    2
+    KidsandYouth     70  18  35    35      0      5     1      4    1
+    small            49  10  35    40      3      6     2      8   15
+
+Whole corpus: 4.7s python, 1.2s in the lisp port (`make
+keys-lisp`, park-miller rng: stream-different, statistically
+twin rows), most of it ddmin (cost = #tests x 30 replays; the
+unanimity FILTER roughly halved #tests -- prolog-era
+measurement of the same pipeline: 139s unfiltered vs 51s --
 filter-first is strictly better on time, seed size, AND mu).
 Every row: hard goals hold in 100% of sampled and replayed
-worlds; muSeed beats the random mean by 2-3.5 baseline standard
-deviations. KidsandYouth: one label reaches its structural
-floor exactly, sd zero.
+worlds; on the seven case studies muSeed sits 1.8-2.8 baseline
+standard deviations below the random mean. KidsandYouth: one
+label reaches its structural floor exactly, sd zero.
 
-FDandMarketing's gap (0.160 vs 0.079; Counselling shows the
+FDandMarketing's gap (13 vs 7; Counselling shows the
 same signature this draw) is not pipeline error:
 its best worlds are partly luck. The model has 177 helps edges
 against 1 hurt -- the corpus's most coin-driven -- and even
@@ -119,7 +123,7 @@ world's d2h. Fortune is not replayable; only choices are. The
 Same corpus (largest model 351 nodes there, 353 atoms here),
 same three conclusions: keys exist; keys are easy to find; keys
 set the rest of the model. SHORT reports "often, just 12%";
-this pipeline lands at 0.3-8% (median ~3%). Differences:
+this pipeline lands at 1-5% on the case studies (median ~4%). Differences:
 
 - Machinery: SHORT is a bespoke polynomial-time ranker built to
   summarize the whole trade space. Here the finder is 1000

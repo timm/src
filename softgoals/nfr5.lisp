@@ -14,15 +14,13 @@
 (defvar *replay* nil)
 (defvar *heads* nil)
 (defvar *seed*  1)
-(defvar *trail* nil)
 
 (defmacro <- (head body)
   `(progn (pushnew ',head *heads*)
           (setf (get ',head 'rules)
                 (append (get ',head 'rules) (list ',body)))))
 
-(defun prand ()
-  (/ (setf *seed* (mod (* 16807 *seed*) 2147483647)) 2147483647d0))
+(defun prand () (/ (setf *seed* (mod (* 16807 *seed*) 2147483647)) 2147483647d0))
 (defun rint (n) (floor (* n (prand))))
 (defun pick (xs) (nth (rint (length xs)) xs))
 
@@ -32,39 +30,46 @@
   (coerce v 'list))
 
 (defun syms (g)
-  (cond ((symbolp g)                (list g))
+  (cond ((symbolp g)                    (list g))
         ((member (car g) '(and or seq)) (mapcan #'syms (copy-list (cdr g))))
-        (t                          (list (second g)))))
+        (t                              (list (second g)))))
 
-(defun believed (g w) (every (lambda (a) (nth-value 1 (gethash a w))) (syms g)))
+(defun known (x w)    (nth-value 1 (gethash x w)))
+(defun believed (g w) (every (lambda (a) (known a w)) (syms g)))
+
+(let (trail)   ; the undo trail, reachable ONLY via these verbs
+  (defun add (x v w)
+    "record x=v on the world and the trail; always true"
+    (setf (gethash x w) v) (push x trail) t)
+  (defun mark ()      trail)
+  (defun undo (mark w)
+    (loop until (eq trail mark) do (remhash (pop trail) w)))
+  (defun wipe ()      (setf trail nil)))
 
 (defun believe (x v w)
-  (multiple-value-bind (old got) (gethash x w)
-    (if got (eq old v)
-        (progn (setf (gethash x w) v) (push x *trail*) t))))
+  (if (known x w) (eq (gethash x w) v) (add x v w)))
 
 (defun derive (g w)
-  (let ((mark *trail*))
-    (setf (gethash g w) 't) (push g *trail*)
-    (or (isamp (pick (get g 'rules)) w)
-        (progn (loop until (eq *trail* mark)
-                     do (remhash (pop *trail*) w))
-               (setf (gethash g w) 'f) (push g *trail*)
-               t))))
+  "try one body under g=t; on failure undo and deny: g=f"
+  (let ((mark (mark)))
+    (add g 't w)
+    (unless (isamp (pick (get g 'rules)) w)
+      (undo mark w)
+      (add g 'f w))
+    t))
 
 (defun isamp (g w)
   (cond
     ((and *replay* (or (symbolp g) (not (eq (car g) '=))) (believed g w)) t)
     ((symbolp g)
-     (cond ((nth-value 1 (gethash g w)) t)
-           ((get g 'rules) (derive g w))
-           (t (setf (gethash g w) 't) (push g *trail*) t)))
+     (cond ((known g w)     t)                   ; memo
+           ((get g 'rules)  (derive g w))
+           (t               (add g 't w))))      ; fiat: abduce to t
     ((eq (car g) '=)   (believe (second g) (third g) w))
     ((eq (car g) 'seq) (every (lambda (x) (isamp x w)) (cdr g)))
     ((eq (car g) 'and) (every (lambda (x) (isamp x w)) (shuffled (cdr g))))
-    ((eq (car g) 'or)  (if (and *replay*
+    ((eq (car g) 'or)  (or (and *replay*         ; a settled branch = done
                                 (some (lambda (x) (believed x w)) (cdr g)))
-                           t
                            (isamp (pick (cdr g)) w)))
     ((assoc (car g) *links*)
      (believe (second g) (pick (cdr (assoc (car g) *links*))) w))
@@ -73,9 +78,10 @@
 (defun sample (query &key beliefs replay (n 20) (patience 1000))
   (let ((*replay* replay) worlds (got 0) (miss 0))
     (loop while (and (< got n) (< miss patience))
-          do (let ((w (make-hash-table :test 'eq)) (*trail* nil))
+          do (let ((w (make-hash-table :test 'eq)))
+               (wipe)
                (loop for (x . v) in beliefs do (setf (gethash x w) v))
-               (if (every (lambda (g) (isamp g w)) query)
-                   (progn (setf miss 0) (incf got) (push w worlds))
-                   (incf miss))))
+               (cond ((every (lambda (g) (isamp g w)) query)
+                      (setf miss 0) (incf got) (push w worlds))
+                     (t (incf miss)))))
     (nreverse worlds)))
