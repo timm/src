@@ -26,3 +26,9 @@ keys-lisp: ## same table via nfr5.lisp + rig.lisp (park-miller rng)
 	     n=$$(basename $$m .lisp | sed 's/^CS//'); \
 	     sbcl --script rig.lisp $$m $$n 2>/dev/null | tail -1; done \
 	 ) | column -s, -t
+
+M ?= small.lisp
+
+paint: ## make paint M=models/CSServices.lisp S=3 : model colored by one world
+	@$(PY) to-lisp.py >/dev/null
+	@sbcl --script paint.lisp $(M) $(S) 2>/dev/null

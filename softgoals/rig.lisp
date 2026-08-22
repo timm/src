@@ -40,7 +40,7 @@
                     (set-difference *mention* *heads*) *quals*)
         *settable* (union (set-difference *mention* *heads*)
                           (loop for g in gs when (orp g)
-                                append (remove-if-not #'atom (cdr g))))))
+                                append (loop for x in (cdr g) collect (if (atom x) x (car (syms x))))))))
 
 ;;; ---- scoring ------------------------------------------------
 (defun tp (x w)  (eq (gethash x w) 't))

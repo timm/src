@@ -63,7 +63,8 @@ def statics(hard, soft):
   choicy  = {a for bs in RULES.values() for b in bs
                for g in walk(b)
                if isinstance(g,tuple) and g[0]=='or'
-               for a in g[1:] if isinstance(a,Atom)}
+               for x in g[1:]
+               for a in ([x] if isinstance(x,Atom) else syms(x)[:1])}
   return mention, quals, leaves, (mention-heads)|choicy
 
 def norm(lo,hi,x):

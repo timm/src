@@ -9,6 +9,8 @@ BAG = {'t':'makes','f':'breaks','ttf':'helps','fft':'hurts'}
 
 def sx(g):
   if isinstance(g,Atom): return g.name
+  if isinstance(g,list):
+    return "(seq "+" ".join(sx(x) for x in g)+")"
   if isinstance(g,tuple):
     if g[0]=='link': return f"({BAG[g[1]]} {g[2].name})"
     if g[0]=='=':    return f"(= {g[1].name} {g[2]})"
