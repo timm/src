@@ -40,6 +40,7 @@ def parts(x: Body) -> list[Body]:
 def atoms(names: str) -> list[Atom]:
   return [Atom(n) for n in names.split()]
 
+def must(x: Atom)     -> list: return [x, (x,'t')]  # earn, then insist
 def makes(x: Atom)    -> Link: return Link('t',  x)
 def breaks(x: Atom)   -> Link: return Link('f',  x)
 def helps(x: Atom)    -> Link: return Link('ttf',x)

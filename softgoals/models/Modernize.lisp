@@ -1,5 +1,5 @@
 ;;;; models/Modernize.lisp : GENERATED from models/Modernize.py by to-lisp.py
-(<- modernize (or (seq incrementalRewrite (= incrementalRewrite t)) (seq bigBangRewrite (= bigBangRewrite t))))
+(<- modernize (or incrementalRewrite bigBangRewrite))
 (<- bigBangRewrite (and layerSequence (hurts trackFeatureDelivery)))
 (<- layerSequence (and portInternalClients portExternalClients))
 (<- incrementalRewrite (and support existingApps dataService dataModel appFramework monitor (helps trackFeatureDelivery) (helps goodExampleAgileGov)))
@@ -19,6 +19,7 @@
 (<- extensibleDataModel (and defineExtMandatoryData externalDataModelExtendable (helps easyShareDataPartners) (helps easyShareDataInternally)))
 (<- specificDataModel (and (or externalClientsGetExactRequest internalClientCoordinates externalClientCoordinates) (hurts easyShareDataPartners)))
 (<- appFramework (and j2eeSpecification (helps goodExampleAgileGov)))
+(<- appFramework (and dotNetFramework customFramework))
 (<- monitor (or accessControlAssessed accessControlPilot monitoringPilot))
 (defparameter *hard* '(modernize))
 (defparameter *soft* '(trackFeatureDelivery goodExampleAgileGov easyShareDataPartners easyShareDataInternally))

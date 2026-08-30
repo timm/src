@@ -29,6 +29,16 @@ keys-lisp: ## same table via nfr5.lisp + rig.lisp (park-miller rng)
 
 M ?= small.lisp
 
+repl: ## lisp repl over the zoo: (play 'shop), (replay 'shop how)
+	@rlwrap sbcl --noinform --load nfr5.lisp || \
+	  sbcl --noinform --load nfr5.lisp
+
+eg: ## paint one world for every model; make eg S=3
+	@$(PY) to-lisp.py >/dev/null
+	@sbcl --noinform --non-interactive --load nfr5.lisp \
+	  --eval '(eg $(S))' 2>/dev/null
+
 paint: ## make paint M=models/CSServices.lisp S=3 : model colored by one world
 	@$(PY) to-lisp.py >/dev/null
-	@sbcl --script paint.lisp $(M) $(S) 2>/dev/null
+	@sbcl --noinform --non-interactive --load nfr5.lisp \
+	  --eval '(painted "$(M)" $(S))' 2>/dev/null

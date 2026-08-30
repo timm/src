@@ -28,11 +28,9 @@ trackFeatureDelivery goodExampleAgileGov
 easyShareDataPartners easyShareDataInternally""".split():
   globals()[_n] = Atom(_n)
 
-# a rewrite must actually HAPPEN: each branch derive-then-insist,
-# else the or is satisfied by a denied branch and the best world
-# is "cancel the project, assume the benefits".
-modernize          <= Or([[incrementalRewrite, (incrementalRewrite,'t')],
-                          [bigBangRewrite,     (bigBangRewrite,'t')]])
+# or is a bet: the picked rewrite must deliver, else modernize
+# is denied (no more "cancel the project, assume the benefits").
+modernize          <= incrementalRewrite + bigBangRewrite
 
 # right side: big bang. No connection to the softgoals (as in
 # the paper: "the right-hand-side has no connection to the top
