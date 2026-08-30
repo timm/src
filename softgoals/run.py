@@ -145,6 +145,9 @@ def rig(name, hard, soft):
   mu0, sd0 = musd(ds)
   r.dbest, wbest = min(zip(ds,ws), key=lambda p:p[0])
   cands = r.candidates(wbest, ws)
+  if cands:   # rebaseline: ddmin's target is what the FULL candidate
+    rb = r.replays(cands)   # set scores under replay semantics
+    if rb: r.dbest = musd(rb)[0]
   seed  = ddmin(r.passes, cands, the.z0) if cands else []
   mus, sds = r.assess(seed)
   print(f"{name},{100*mu0:.0f},{100*sd0:.0f},{100*r.dbest:.0f},"

@@ -23,19 +23,29 @@ paper draft -- every number reproduces from make.
 ## Semantics (doctrine B) -- do not forget
 
 - Bare atom = LABEL, never a demand. Only `X=V` demands kill a
-  world. Derive-then-insist is `[x, (x,'t')]` (lisp: `(seq x
-  (= x t))`) and NEEDS the ordered form: a shuffled and() runs
-  the demand first and fiats the goal without deriving.
+  world. Derive-then-insist is `(must x)` (= `(seq x (= x t))`,
+  python `must(x)`); ordered form is load-bearing -- a shuffled
+  and() runs the demand first and fiats the goal.
 - Failed derivation = denial (X=f), not death. Leaves abduce t.
-- replay=True: believed goals settled, ors prefer settled
-  branches, links onto believed atoms skipped. Without this a
-  partial seed is shredded by re-rolled link coins.
+  Denial is SAMPLED failure (one body tried), weaker than NAF;
+  sound because bodies are negation-free (f never a premise,
+  only consumed by demands and or-delivery).
+- or is a BET (since 2026-08-30): picked branch must be
+  `delivered` (no denied task inside) or the or fails. Killed
+  the vacuous-or bug; models no longer need must-gating.
+- replay mechanisms, commented in both engines: intake ADOPT
+  (abducible + f labels preload) / RE-EARN (believed-t defined
+  atom -> internal (must x); can't re-earn = dead world); walk
+  STEER (or takes settled+delivered branch) / CITE (won subtree
+  not rederived) / YIELD (links defer to labels; = never yields).
 - Seed ONLY settable labels (leaves + or-alternatives): seeding
   heads assumes the conclusion, seeding qualities assumes the
   happiness.
-- In isamp's or-row, `(or (and replay settled) dice)` is NOT
-  `(if replay settled dice)` -- replay-with-no-settled-branch
-  must fall through to dice.
+- In isamp's or-row, `(or (and replay settled) bet)` is NOT
+  `(if replay settled bet)` -- replay-with-no-settled-branch
+  must fall through to the bet.
+- PM rng needs `reseed` (3 warmup draws): small seeds' first
+  draw ~ seed/2^31, so ors always pick branch 0 without it.
 
 ## Hard-won engine facts
 

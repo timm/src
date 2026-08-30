@@ -13,7 +13,14 @@
 ;;;; was tried and retired: free snapshots, but O(n) reads made
 ;;;; the replay-heavy keys pipeline 6x slower.) RNG is the
 ;;;; house park-miller 16807, seedable via *seed*.
-#+sbcl (declaim (sb-ext:muffle-conditions style-warning))
+		     #+sbcl
+(progn
+  (declaim (sb-ext:muffle-conditions style-warning))
+  (setf sb-ext:*invoke-debugger-hook*
+        (lambda (condition hook)
+          (declare (ignore hook))
+          (format *error-output* "~&Error: ~A~%" condition)
+          (sb-ext:exit :code 1))))
 
 (defvar *links* '((makes t) (breaks f) (helps t t f) (hurts f f t)))
 (defvar *replay* nil)
@@ -213,6 +220,11 @@
   (let ((w (car (sample (query) :beliefs how :replay t :n 1))))
     (if w (paint w) (format t ";; that how kills every world~%"))))
 
+(defun parade (&optional (seed 1))
+  "play every model in the zoo"
+  (loop for (name) in (reverse *models*)
+        do (terpri) (play name seed)))
+
 ;;; every model under five lines
 (defmodel diy :doc "one clause, must assume a negation" :hard (diy)
   :rules ((<- diy (and coders (helps cheap) (hurts fast)))))
@@ -238,6 +250,32 @@
 (defmodel cycle :doc "memo also breaks loops" :hard (chicken)
   :rules ((<- chicken (and egg))
           (<- egg (and chicken))))
+
+(defmodel deny :doc "a denied subgoal is a label, not a death" :hard (plan)
+  :rules ((<- plan (and (= flood f) picnic))
+          (<- picnic (and outdoors (= flood t)))))
+
+(defmodel stubborn :doc "two hard goals; only worlds rolling the link f live"
+  :hard (party cake)
+  :rules ((<- party (seq (= diet f) cake))
+          (<- cake (and bake (helps diet)))))
+
+(defmodel twoface :doc "two clauses, one doomed: win flips across worlds"
+  :rules ((<- win (and talent))
+          (<- win (and (= jinx t) (= jinx f)))))
+
+(defmodel liar :doc "(replay 'liar '((hero . t))) kills every world"
+  :rules ((<- hero (and (= brave t) (= brave f)))))
+
+(defmodel cheapdear :doc "same benefit, one branch buys 3 leaves, one buys 1"
+  :hard (fed) :soft (happy)
+  :rules ((<- fed (or feast snack))
+          (<- feast (and shop cook wash (helps happy)))
+          (<- snack (and grab (helps happy)))))
+
+(defmodel linkbet :doc "or over links: no task inside, the bet always delivers"
+  :hard (spin)
+  :rules ((<- spin (or (helps mood) (hurts mood)))))
 
 #|
 
@@ -265,7 +303,6 @@ Steer: at each disjunction, take a branch that has already run and paid off, wit
 Cite: a subgoal whose atoms are all already true is cited, not rederived.
 Yield: contribution links defer to existing labels, whatever their value; demands never yield.
 Everything the explanation leaves unlabelled is still sampled, so replaying many times measures how much of the outcome the explanation pins down: a good set of keys shows small variance around a good score.
-
 
 One departure from classical ALP: we do not search for a minimal explanation, we sample explanations and select by score; minimality returns at the end, when ddmin shrinks the best world's assumptions to the few keys that recreate it.
 
@@ -352,3 +389,5 @@ Underneath (rarely called direct)
 (paint w)                       ; color one world onto clauses
 (clear)                         ; forget loaded model
 |#
+
+(defun main () (load "nfr5.lisp"))

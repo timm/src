@@ -109,7 +109,11 @@
          (ds    (progn (yardstick ws) (mapcar #'d2h ws)))
          (wbest (nth (position (setf *dbest* (reduce #'min ds)) ds) ws))
          (cands (candidates wbest ws))
-         (seed  (if cands (ddmin #'passes cands 2) '()))
+         (seed  (cond (cands   ; rebaseline: ddmin's target is what the
+                       (let ((rb (replays cands)))   ; FULL candidate set
+                         (when rb (setf *dbest* (mu rb))))   ; replays to
+                       (ddmin #'passes cands 2))
+                      (t '())))
          (ds2   (replays seed)))
     (format t "~a,~d,~d,~d,~d,~d,~d,~d,~d,~d~%"
             name (pc (mu ds)) (pc (sd ds)) (pc *dbest*)
