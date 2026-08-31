@@ -273,6 +273,16 @@
           (<- feast (and shop cook wash (helps happy)))
           (<- snack (and grab (helps happy)))))
 
+(defmodel small :doc "the paper's running example: build, deploy, use"
+  :hard (built deployed) :soft (cheap fast private)
+  :rules ((<- built (or buy diy))
+          (<- buy (and vendor (breaks cheap) (helps fast)))
+          (<- diy (and coders (helps cheap) (hurts fast)))
+          (<- deployed (or cloud onprem))
+          (<- cloud (and (helps fast) (hurts private)))
+          (<- onprem (and (makes private) (hurts fast)))
+          (<- usable (and tested (helps fast)))))
+
 (defmodel linkbet :doc "or over links: no task inside, the bet always delivers"
   :hard (spin)
   :rules ((<- spin (or (helps mood) (hurts mood)))))

@@ -50,6 +50,12 @@
 (defun nrm (lo hi x) (if (<= hi lo) .5 (/ (- x lo) (- hi lo))))
 (defun pc (x)    (round (* 100 x)))
 
+(defun lomu (ds)   ; one group of the report: lo, mu (sd)
+  (if ds
+      (format nil "~d,~d (~d)"
+              (pc (reduce #'min ds)) (pc (mu ds)) (pc (sd ds)))
+      "-,-"))
+
 (defun bf (w)
   "benefit = qualities won; footprint = leaves bought"
   (values (count-if (lambda (q) (tp q w)) *quals*)
@@ -76,11 +82,15 @@
   (incf *tests*)
   (and ds (<= (mu ds) (+ *dbest* *eps*))))
 
-(defun candidates (wbest ws)
-  "settable, non-unanimous labels of the best world"
+(defun pool (wbest)
+  "settable labels of the best world"
   (loop for x being the hash-keys of wbest using (hash-value v)
-        when (and (member x *settable*)
-                  (notevery (lambda (w) (eq (gethash x w) v)) ws))
+        when (member x *settable*) collect (cons x v)))
+
+(defun shared (pool ws)
+  "the unanimous subset: every world agrees, so forced not chosen"
+  (loop for (x . v) in pool
+        when (every (lambda (w) (eq (gethash x w) v)) ws)
         collect (cons x v)))
 
 (defun ddmin (test c n)   ; Zeller; z0 2, zup x2, zdn -1
@@ -108,17 +118,17 @@
   (let* ((ws    (sample *query* :n *n1*))
          (ds    (progn (yardstick ws) (mapcar #'d2h ws)))
          (wbest (nth (position (setf *dbest* (reduce #'min ds)) ds) ws))
-         (cands (candidates wbest ws))
-         (seed  (cond (cands   ; rebaseline: ddmin's target is what the
-                       (let ((rb (replays cands)))   ; FULL candidate set
-                         (when rb (setf *dbest* (mu rb))))   ; replays to
+         (pool  (pool wbest))
+         (same  (shared pool ws))
+         (cands (set-difference pool same :test #'equal))
+         (rb    (replays cands))   ; rebaseline: ddmin's target is what
+         (seed  (cond (cands       ; the FULL set scores under replay
+                       (when rb (setf *dbest* (mu rb)))
                        (ddmin #'passes cands 2))
-                      (t '())))
-         (ds2   (replays seed)))
-    (format t "~a,~d,~d,~d,~d,~d,~d,~d,~d,~d~%"
-            name (pc (mu ds)) (pc (sd ds)) (pc *dbest*)
-            (pc (mu ds2)) (pc (sd ds2))
-            (length cands) (length seed) *tests*
+                      (t '()))))
+    (format t "~a,~a,~a,~a,~d,~d,~d,~d,~d~%"
+            name (lomu ds) (lomu rb) (lomu (replays seed))
+            (length pool) (length same) (length seed) *tests*
             (pc (/ (length seed) (length *mention*))))))
 
 (let ((args sb-ext:*posix-argv*))
