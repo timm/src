@@ -6,10 +6,12 @@ where it needs an evaluator, the SAME python engine (infer.py).
 Scripts: softgoals/rivals_asp.py, rivals_nsga2.py, rivals_optuna.py
 (in this directory; shortr1_table.py drives the SHORT repo).
 
-Versions: clingo 5.8.2 (brew), pymoo 0.6.2, optuna 4.9.0.
-SMAC3 itself would not install (pynisher native build fails on this
-mac); Optuna TPE stands in -- same paradigm: model-based,
-single-objective, returns one incumbent configuration.
+Versions: clingo 5.8.2 (brew), pymoo 0.6.2, optuna 4.9.0, smac
+2.4.0.  SMAC3 refused the brew python (pynisher build) but runs in
+a dedicated venv (~/tmp/smacenv: fresh setuptools +
+scikit-learn==1.6.1 pin -- SMAC imports symbols sklearn 1.7
+removed).  Optuna TPE numbers are kept alongside: same paradigm
+(model-based, single incumbent), cheaper surrogate.
 
 ## The common language
 
@@ -70,6 +72,33 @@ objective = mean d2h of replayed worlds):
     small         35      52 (11)  38         1500      493
     * 200 = the dead-world sentinel: EVERY one of 1500 worlds died.
 
+SMAC3 (HyperparameterOptimizationFacade = random-forest surrogate,
+500 trials x 3 worlds, same space and objective as Optuna):
+
+    model         lo(b4)  mu(b4)   incumbent  worlds  ms
+    Counselling   6       56 (16)  35         1500    413587
+    CnslMgmt      0       43 (20)  200*       1500    376757
+    FDandMkting   7       50 (13)  18         1500    406156
+    ITDepartment  0       58 (23)  27         1500    262092
+    SAProgram     -       -        ERR        -       -
+    Services      10      49 (12)  20         1500    338977
+    KidsandYouth  35      70 (18)  79         1500    275479
+    Modernize     0       37 (28)  6          1500    281287
+    small         -       -        ERR        -       -
+    * dead-world sentinel.  ERR = ConfigurationSpaceExhausted:
+      SMAC refuses 500 trials on spaces of 32 (2^5) and 8 (2^3)
+      configurations; Optuna just repeats.
+
+SMAC vs TPE, same budget: SMAC wins exactly once -- Counselling 35
+where TPE died at 200 (the random forest found the feasible
+region).  TPE wins everywhere else (FDM 12 vs 18, ITDept 12 vs 27,
+Services 7 vs 20, Modernize 0 vs 6, Kids 35 vs 79 -- SMAC's Kids
+incumbent replays WORSE than the random mean).  And SMAC pays
+~280-410 SECONDS per model vs TPE's 1-18s: the RF surrogate costs
+~0.2s per trial against a 42us evaluation.  Both agree on the
+paradigm verdict: CnslMgmt stays 100% dead worlds under total
+assignments.
+
 NSGA-II (pymoo, pop 50 x 40 gen, binary leaves, 3 worlds/eval,
 dead worlds = worst objectives; off-the-shelf config, not tuned):
 
@@ -114,9 +143,12 @@ is then evaluated for real.  NSGA-II has no model at all.
   one t/f categorical per leaf; 3 worlds averaged per trial
   (1500 worlds/model); all-dead trial scored d2h=2.0 (the "200"
   sentinel in the table).
-- SMAC3: pip install fails building pynisher (native) on this
-  machine; not run.  Optuna TPE is the paradigm stand-in
-  (surrogate differs: TPE vs random forest).
+- SMAC3 2.4.0: HyperparameterOptimizationFacade (random-forest
+  surrogate), Scenario(deterministic=True, n_trials=500, seed=1),
+  facade defaults otherwise; one t/f categorical per leaf; 3 worlds
+  averaged per trial; dead-trial sentinel d2h=2.0.  Runs under
+  ~/tmp/smacenv (python 3.14 venv, scikit-learn==1.6.1 pinned;
+  brew-python pip cannot build its pynisher dependency).
 
 ## Minimization and ASP
 
@@ -167,7 +199,92 @@ optimum still reachable?") with no variance to argue about.  The
 natural hybrid: nfr6 generates and filters, clingo certifies the
 ddmin steps.  Untried; all raw numbers above are measured.
 
-Code size, for the locals: the nfr6.lisp engine -- rng, trail,
+### asp-min: the hybrid, built and run
+
+rivals_aspmin.py runs ASP inside the SAME minimization loop as the
+nfr6 pipeline: 1000 randomized-sign clingo draws (10-way parallel;
+only proven "OPTIMUM FOUND" draws kept), pool = the first optimum's
+full leaf labelling, shared = leaves unanimous across all draws,
+ddmin the rest with clingo itself as the pass/fail oracle (assert
+candidate labels as facts / prohibitions; pass iff the certified
+optimum vector is unchanged).  Results:
+
+    model         distinct  pool  shared  cands  keys  tries  sample-ms  ddmin-ms
+    Counselling      48      74    63      11     1     6       2942       57
+    CnslMgmt          4      53    49       4     1     4       1894       28
+    FDandMkting     412      83    64      19     1     7     773322       71
+    ITDepartment      8      22    16       6     1     5       1586       31
+    SAProgram         1       5     5       0     0     -       1481        -
+    Services          3      55    50       5     1     5       2467       56
+    KidsandYouth     24      25    14      11     1     6       1438       32
+    Modernize        36      26    16      10     1     6       1426       31
+    small             1       3     3       0     0     -       1427        -
+
+Reading: ONE leaf label suffices to force the certified optimum on
+every full-size model; on SAProgram and small the unanimity filter
+alone finishes the job (all leaves forced, zero candidates).  The
+oracle is exact, so tries collapse to 4-7 (vs 5-213 replay batches
+in the sampling pipeline) and ddmin costs ~30-70ms.  The bill is
+all in sampling: FDandMarketing's rand-freq draws took 13 minutes
+(everything else 1.4-3.2s).  Two catches, both discovered the hard
+way: draws must be checked for "OPTIMUM FOUND" (a timed-out draw
+poisons the unanimity filter), and clingo OMITS a priority level
+from its cost vector when grounding leaves it empty (facts that
+force every hard goal erase the hmiss level), so optimum vectors
+must be left-padded before comparing.
+
+Then the sampling was deleted entirely (rivals_aspmin.py --exact):
+clingo computes the unanimity filter NATIVELY.  Cautious
+enumeration (--opt-mode=optN --enum-mode=cautious) returns the
+atoms true in EVERY optimum = the forced-t leaves; the complement
+of brave enumeration (union) = the forced-f leaves; only the
+brave-minus-cautious gap goes to ddmin.  Identical
+shared/cands/keys on every model, and the clock collapses:
+
+    model         ms(sampled)  ms(exact)
+    Counselling      2999         97
+    CnslMgmt         1922         53
+    FDandMkting    773393        139     (5500x)
+    ITDepartment     1617         49
+    SAProgram        1481         20
+    Services         2523         78
+    KidsandYouth     1470         48
+    Modernize        1457         53
+    small            1427         16
+
+Whole corpus: 0.55s -- faster than the nfr6 sampling pipeline
+itself.  Moral: our unanimity filter is a sampled approximation of
+cautious consequences; when the generator is a solver, ask the
+solver.  Caveat as everywhere in this section: these are keys to
+the DETERMINISTIC idealization's optimum -- dice-and-loop worlds
+that beat it (Modernize 4/4@2) are invisible to asp-min.
+
+### Do asp-min keys transfer?  (same/cliffs/ks/cohen)
+
+rivals_stats.py replays BOTH key sets 30x through the same engine
+(infer.py) and runs the xai.py battery -- cliffs 0.195, ks at 1.36,
+cohen's threshold set to 0.35 * sd(b4) per house rules:
+
+    model         ours mu(sd)  asp mu(sd)  cliffs  ks    cohen  verdict
+    Counselling   43 (11)      50 (10)     0.41    0.33  n      DIFF
+    CnslMgmt      57 (22)      62 (33)     0.01    0.13  y      SAME
+    FDandMkting   16 (9)       45 (13)     0.96    0.83  n      DIFF
+    ITDepartment  24 (11)      47 (28)     0.42    0.43  n      DIFF
+    SAProgram     33 (13)      36 (15)     0.00    0.13  y      SAME
+    Services      26 (11)      30 (11)     0.18    0.20  y      SAME
+    KidsandYouth  35 (0)       67 (19)     0.73    0.73  n      DIFF
+    Modernize     0 (0)        37 (29)     0.80    0.80  n      DIFF
+    small         41 (3)       52 (14)     0.44    0.47  n      DIFF
+
+Statistically different on six of nine, and every DIFF favors our
+keys.  The reason is semantic, not statistical: asp-min's one key
+pins the deterministic idealization, but replayed under the dice
+engine it leaves every link roll and or-bet to chance -- its replay
+means sit at the random mean (asp 45 vs b4 50 on FDandMkting, 67
+vs 70 on Kids).  Keys do not transfer across semantics; each
+idealization keeps its own.  (The three SAME rows are the known
+rubber-stamp models where OUR keys are also near-random --
+agreement in weakness, not strength.) -- rng, trail,
 walk, sampler -- is 125 lines of lisp (286 with the pretty-printer
 and the model zoo).  The ASP route needs clingo (16MB installed,
 4MB solver library, on the order of 1e5 lines of upstream C++)

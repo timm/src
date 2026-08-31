@@ -21,8 +21,8 @@ os.chdir('/Users/timm/gits/timm/src/softgoals')
 from run import load, Rig
 from syntax import Atom
 
-OUT = os.path.dirname(os.path.abspath(__file__)) + '/asp'
-os.makedirs(OUT, exist_ok=True)
+OUT = os.path.join(os.environ.get('TMPDIR', '/tmp'), 'softgoals_asp')
+os.makedirs(OUT, exist_ok=True)   # generated .lp live outside the repo
 
 def nm(a): return 'a_' + re.sub(r'\W', '_', str(a)).lower()
 
