@@ -1,17 +1,11 @@
 ; vim: set lispwords+=loop :
-;;;; rig.lisp : the keys pipeline over nfr5.lisp; port of run.py.
-;;;;   sbcl --script rig.lisp MODEL.lisp NAME
-;;;; MODEL.lisp holds (<- h body) clauses plus *hard* and *soft*.
-;;;; Sample n1 worlds with hard goals gated, take the best by
-;;;; distance-to-heaven, shrink its settable labels by unanimity
-;;;; filter then Zeller ddmin, assess with n2 replays.
-;;;; Constants match run.py: n1 1000, n2 30, eps .05, z0 2.
-;;;; Per-run state lives in specials so every function stays small.
+;;;; rig6.lisp : the keys pipeline over nfr6.lisp (unified walk,
+;;;; play == replay, no replay flag). Otherwise rig.lisp verbatim.
+;;;;   sbcl --script rig6.lisp MODEL.lisp NAME
 
-(load (merge-pathnames "nfr5.lisp" *load-truename*))
+(load (merge-pathnames "nfr6.lisp" *load-truename*))
 
 (defvar *n1* 1000)   (defvar *n2* 30)     (defvar *eps* .05)
-(defvar *hard* nil)  (defvar *soft* nil)  ; set by the model file
 (defvar *mention* nil) (defvar *quals* nil) (defvar *leaves* nil)
 (defvar *settable* nil)                   ; set by statics
 (defvar *query* nil) (defvar *mm* nil)    ; set by rig
@@ -76,7 +70,7 @@
 
 ;;; ---- reduce and assess a seed -------------------------------
 (defun replays (seed)
-  (mapcar #'d2h (sample *query* :beliefs seed :replay t :n *n2*)))
+  (mapcar #'d2h (sample *query* :beliefs seed :n *n2*)))
 
 (defun passes (seed &aux (ds (replays seed)))
   (incf *tests*)
@@ -111,7 +105,7 @@
 ;;; ---- the pipeline -------------------------------------------
 (defun gated () (loop for h in *hard* append (list h `(= ,h t))))
 
-(defun rig (name)
+(defun rig (name &aux (t0 (get-internal-real-time)))
   (statics)
   (setf *query* (append (gated) (list (cons 'and *soft*)))
         *tests* 0)
@@ -126,10 +120,12 @@
                        (when rb (setf *dbest* (mu rb)))
                        (ddmin #'passes cands 2))
                       (t '()))))
-    (format t "~a,~a,~a,~a,~d,~d,~d,~d,~d~%"
+    (format t "~a,~a,~a,~a,~d,~d,~d,~d,~d,~d~%"
             name (lomu ds) (lomu rb) (lomu (replays seed))
             (length pool) (length same) (length seed) *tests*
-            (pc (/ (length seed) (length *mention*))))))
+            (pc (/ (length seed) (length *mention*)))
+            (round (- (get-internal-real-time) t0)
+                   (/ internal-time-units-per-second 1000)))))
 
 (let ((args sb-ext:*posix-argv*))
   (load (first (last args 2)))

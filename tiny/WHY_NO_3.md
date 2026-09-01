@@ -99,6 +99,76 @@ all 127 datasets:
 
 Not one dataset where `same()` can tell them apart.
 
+## 8. Depth can grow too: 6+ wins on config landscapes
+
+Section 5 swept d DOWN from 4; section 6 showed no-3 makes
+d > 4 affordable. Does anything up there win? Same rig
+(whole corpus, now 128 files; 20 paired repeats, B=50,
+same sway3 labels per repeat feeding every arm), arms =
+maxd 4, 6, 8, race as usual (depth6.py):
+
+    maxd=6 vs 4:  18W  1L  109T   max +7.6  min -7.8
+    maxd=8 vs 4:  18W  0L  110T   max +10.8
+
+Median mu(win) 86.3 / 87.3 / 87.3; mean pool 8 -> 11
+trees; the whole 128 x 20 x 3 sweep runs in 80s.
+
+Actual depth of the 2560 raced winners per arm:
+
+    maxd=4:  1:6%  2:13%  3:22%  4:59%
+    maxd=6:  1:6%  2:12%  3:21%  4:26%  5:22%  6:13%
+    maxd=8:  1:6%  2:12%  3:20%  4:26%  5:21%  6:10%  7:4%  8:1%
+
+Given room, 35% of winners pass depth 4 -- the 59% mass at
+4 was partly ceiling -- though 7-8 stays rare (5%) even
+when free. The 18 winning datasets are configuration
+landscapes: SS-A/D/E/F/G/I/K/P, javagc, X264, FM-500-SAT,
+HSMGP, Scrum1k, plus all_players, socks, Health-*. Largest
+gains SS-G +10.8 and SS-F +9.9 at maxd=8. The one maxd=6
+loss (Health-ClosedIssues0001, -7.8) vanishes at maxd=8.
+So no-3's cheap deep trees are not just a speed trick:
+maxd=8 costs nothing anywhere and buys real wins on ~14%
+of the corpus.
+
+## 9. Winner shapes at maxd=6: still a few conditions
+
+Policy strings of the 2560 maxd=6 winners (winners.py;
+digit per level, trailing 0 = the fallback cut, so
+`1110` = 3 conditions then fall back):
+
+    600 1110      492 110       465 11110     304 10
+    262 111110    154 0          33 1210       28 11210
+     26 1120       25 12110      20 11120      20 120
+     17 111210     16 112110     16 20         14 210
+     13 2110       12 111120     10 121110      8 21110
+      5 12210      4 1220         4 211110      3 112210
+      2 121210     2 12120     + 5 seen once
+
+Worst-exit spines still rule: pure `1..10` plus `0` = 89%
+(93% at maxd=4); policy 2 in 11% of trees, almost always
+once. `1110` stays modal but drops 55% -> 23%; its mass
+moves up to `11110` (18%) and `111110` (10%).
+
+Conditions asked before fallback, maxd=4 (from the 1270
+winners of section 4) vs maxd=6, both sum to 100%:
+
+    levels:            distinct attributes:
+    n   maxd4  maxd6   n   maxd4  maxd6
+    0     6%     6%    0     6%     6%
+    1    13%    13%    1    17%    16%
+    2    21%    21%    2    36%    29%
+    3    60%    26%    3    41%    30%
+    4     -     22%    4     -     15%
+    5     -     13%    5     -      5%
+
+At maxd=4, 60% of winners sat at the depth ceiling; freed
+to 6, that mass spreads (only 13% now pin at the new
+ceiling) and levels split from attributes: 5-6 cut spines
+reuse attributes, so the median winner still interrogates
+just 3 distinct attributes, 80% need <= 3, 95% <= 4. The
+"few conditions usually do" claim survives depth 6; the
+floor just moves from "2-3 attributes" to "3, rarely 4+".
+
 ## Moral
 
 Policy 3 never wins and is the sole reason the pruning pool

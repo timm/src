@@ -63,7 +63,8 @@ def statics(hard, soft):
   choicy  = {a for bs in RULES.values() for b in bs
                for g in walk(b)
                if isinstance(g,tuple) and g[0]=='or'
-               for a in g[1:] if isinstance(a,Atom)}
+               for x in g[1:]
+               for a in ([x] if isinstance(x,Atom) else syms(x)[:1])}
   return mention, quals, leaves, (mention-heads)|choicy
 
 def norm(lo,hi,x):
@@ -72,6 +73,12 @@ def norm(lo,hi,x):
 def musd(ds):
   mu = sum(ds)/len(ds)
   return mu, math.sqrt(sum((d-mu)**2 for d in ds)/len(ds))
+
+def lomu(ds):
+  "one group of the report: lo, mu (sd), as d2h x100"
+  if not ds: return "-,-"
+  mu, sd = musd(ds)
+  return f"{100*min(ds):.0f},{100*mu:.0f} ({100*sd:.0f})"
 
 def ddmin(test, c, n):
   if len(c)==1: return c
@@ -117,9 +124,13 @@ class Rig:
     s.mm = (min(Bs),max(Bs),min(Fs),max(Fs))
 
   def candidates(s, wbest, ws):
-    return [(x,v) for x,v in wbest.items()
-            if x in s.settable
-            and not all(w.get(x)==v for w in ws)]
+    # pool = settable labels of the best world; shared = unanimous
+    # across all worlds (forced, not chosen); rest are candidates
+
+    pool   = [(x,v) for x,v in wbest.items() if x in s.settable]
+    shared = [(x,v) for x,v in pool
+              if all(w.get(x)==v for w in ws)]
+    return pool, shared, [p for p in pool if p not in shared]
 
   def replays(s, seed):
     return [s.d2h(w) for w in s.gen(the.n2, seed, replay=True)]
@@ -127,9 +138,6 @@ class Rig:
   def passes(s, seed):
     s.tests += 1; ds = s.replays(seed)
     return bool(ds) and musd(ds)[0] <= s.dbest+the.eps
-
-  def assess(s, seed):
-    return musd(s.replays(seed))
 
 def shortname(path):
   return (path.split('/')[-1].replace('.py','')
@@ -141,13 +149,14 @@ def rig(name, hard, soft):
   ws = r.gen(the.n1)
   r.yardstick(ws)
   ds = [r.d2h(w) for w in ws]
-  mu0, sd0 = musd(ds)
   r.dbest, wbest = min(zip(ds,ws), key=lambda p:p[0])
-  cands = r.candidates(wbest, ws)
-  seed  = ddmin(r.passes, cands, the.z0) if cands else []
-  mus, sds = r.assess(seed)
-  print(f"{name},{100*mu0:.0f},{100*sd0:.0f},{100*r.dbest:.0f},"
-        f"{100*mus:.0f},{100*sds:.0f},{len(cands)},{len(seed)},"
+  pool, shared, cands = r.candidates(wbest, ws)
+  rb = r.replays(cands)   # rebaseline: ddmin's target is what the
+  if cands and rb:        # FULL candidate set scores under replay
+    r.dbest = musd(rb)[0]
+  seed = ddmin(r.passes, cands, the.z0) if cands else []
+  print(f"{name},{lomu(ds)},{lomu(rb)},{lomu(r.replays(seed))},"
+        f"{len(pool)},{len(shared)},{len(seed)},"
         f"{r.tests},{100*len(seed)/len(r.mention):.0f}")
 
 def run(path):
