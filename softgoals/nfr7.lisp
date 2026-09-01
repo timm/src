@@ -1,20 +1,19 @@
 					; vim: set lispwords+=loop :
-;;;; nfr6.lisp : nfr5 with ONE walk: play == replay.
-;;;; The replay flag is gone. Knowledge drives every step, in
-;;;; both modes; replay is just play that starts with labels
-;;;; already in the world:
-;;;;   atom known        -> stop, never descend (memo==cite)
-;;;;   and               -> knowns first (free checks), then
-;;;;                        the unknowns, shuffled
-;;;;   or                -> any true, eager order: knowns
-;;;;                        first, then shuffled unknowns;
-;;;;                        a failed try rolls back
+;;;; nfr7.lisp : nfr6 made honest: isamp returns TRUTH.
+;;;; (isamp g w) = "is g achieved in this world?"; a denied
+;;;; child fails its parent, classically. One walk, play ==
+;;;; replay; replay is play started with labels preloaded:
+;;;;   atom known        -> report its label, never descend
+;;;;   and, seq          -> all true (and: knowns first, rest
+;;;;                        shuffled; seq: given order)
+;;;;   or                -> any true, eager order; a failed
+;;;;                        branch rolls back, next is tried
+;;;;   try               -> walk, never judge: softs score,
+;;;;                        they do not filter
 ;;;;   link, target known-> evidence stands, whatever it says
-;;;;   (= x v)           -> binding, always, the only killer
-;;;; One asymmetry survives, at intake not in the walk: a
-;;;; supplied t on a defined atom is a claim, rewritten as
-;;;; (seq x (= x t)) so it must re-earn (RE-EARN), else
-;;;; diy/t-with-no-coders sails through.
+;;;;   (= x v)           -> binding: agree or die
+;;;; No gates, no sugar: a hard goal or a believed claim is
+;;;; just a goal that must come out t.
 		     #+sbcl
 (progn
   (declaim (sb-ext:muffle-conditions style-warning))
@@ -48,16 +47,10 @@
 
 (defun syms (g)
   (cond ((symbolp g)                    (list g))
-        ((member (car g) '(and or seq)) (mapcan #'syms (copy-list (cdr g))))
+        ((member (car g) '(and or seq try)) (mapcan #'syms (copy-list (cdr g))))
         (t                              (list (second g)))))
 
 (defun known (x w) (nth-value 1 (gethash x w)))
-
-(defun delivered (g w)   ; no denied task inside: an or-try paid off
-  (cond ((symbolp g) (eq (gethash g w) 't))
-        ((member (car g) '(and seq))
-         (every (lambda (x) (delivered x w)) (cdr g)))
-        (t t)))          ; =, links, inner or: isamp already ruled
 
 (let (trail)   ; the undo trail, reachable ONLY via these verbs
   (defun add (x v w)
@@ -72,10 +65,6 @@
 (defun believe (x v w)
   (if (known x w) (eq (gethash x w) v) (add x v w)))
 
-(defun won (g w)
-  "walked, and no denied task inside"
-  (and (isamp g w) (delivered g w)))
-
 (defun many (goals patience try w &optional (mark (mark)))
   "walk goals via TRY; PATIENCE failures tolerated (each rolled
    back alone), one more undoes the lot; win early once no
@@ -89,13 +78,11 @@
                    try w mark)))))
 
 (defun derive (g w)
-  "try one body under g=t; on failure undo and deny: g=f"
+  "argue one body under g=t; win keeps g=t, loss denies: g=f, nil"
   (let ((mark (mark)))
     (add g 't w)
-    (unless (isamp (pick (get g 'rules)) w)
-      (undo mark w)
-      (add g 'f w))
-    t))
+    (or (isamp (pick (get g 'rules)) w)
+        (progn (undo mark w) (add g 'f w) nil))))
 
 (defun eager (xs w &optional yes no)
   "knowns to the front (free checks); dice only for the rest"
@@ -106,16 +93,17 @@
           (eager (cdr xs) w yes (cons (car xs) no)))))
 
 (defun isamp (g w)
-  "t = walk FINISHED, not g true; wanting victory, read labels after: (= g t) dies, won shops"
+  "t = g achieved in this world; a denied child fails its parent"
   (cond
     ((symbolp g)
-     (cond ((known g w)     t)                   ; known: never descend
+     (cond ((known g w)     (eq (gethash g w) 't))  ; memo: report the label
            ((get g 'rules)  (derive g w))
            (t               (add g 't w))))      ; fiat: abduce to t
     ((eq (car g) '=)   (believe (second g) (third g) w))
+    ((eq (car g) 'try) (mapc (lambda (x) (isamp x w)) (cdr g)) t)
     ((eq (car g) 'seq) (many (cdr g) 0 #'isamp w))
     ((eq (car g) 'and) (many (eager (cdr g) w) 0 #'isamp w))
-    ((eq (car g) 'or)  (many (eager (cdr g) w) (1- (length (cdr g))) #'won w))
+    ((eq (car g) 'or)  (many (eager (cdr g) w) (1- (length (cdr g))) #'isamp w))
     ((assoc (car g) *links*)
      (or (known (second g) w)                    ; evidence stands
          (believe (second g) (pick (cdr (assoc (car g) *links*))) w)))
@@ -125,7 +113,7 @@
   (let (pre goals worlds (got 0) (miss 0))
     (loop for (x . v) in beliefs
           do (if (and (eq v 't) (get x 'rules))
-                 (push `(seq ,x (= ,x t)) goals)   ; RE-EARN: claims re-prove
+                 (push x goals)            ; RE-EARN: a claim is a goal
                  (push (cons x v) pre)))   ; ADOPT: assumptions, denials
     (setf goals (append goals query))
     (loop while (and (< got n) (< miss patience))
@@ -150,7 +138,7 @@
 
 (defun pp (g w)
   (cond ((symbolp g) (tag g w))
-        ((member (car g) '(and or seq))
+        ((member (car g) '(and or seq try))
          (format nil "(~(~a~)~{ ~a~})" (car g)
                  (mapcar (lambda (x) (pp x w)) (cdr g))))
         ((eq (car g) '=)
@@ -169,10 +157,11 @@
   (dolist (h *heads*) (setf (get h 'rules) nil))
   (setf *heads* nil *hard* nil *soft* nil *model* nil *doc* nil))
 
-(defun query ()   ; gate the hards, engage every soft
-  (append (loop for h in *hard* append (list h `(= ,h t)))
-          (when *soft* (list (cons 'and (copy-list *soft*))))
-          (unless (or *hard* *soft*) (reverse *heads*))))
+(defun query ()   ; hards must hold; softs and bare heads just walk
+  (append (copy-list *hard*)
+          (when *soft* (list (cons 'try (copy-list *soft*))))
+          (unless (or *hard* *soft*)
+            (list (cons 'try (reverse *heads*))))))
 
 (defun painted (model &optional (seed 1) beliefs)
   "load a model, sample one world (with any beliefs), paint it"
@@ -262,7 +251,7 @@
   :rules ((<- chicken (and egg))
           (<- egg (and chicken))))
 
-(defmodel deny :doc "a denied subgoal is a label, not a death" :hard (plan)
+(defmodel deny :doc "contradiction: plan wants flood f AND t; no world" :hard (plan)
   :rules ((<- plan (and (= flood f) picnic))
           (<- picnic (and outdoors (= flood t)))))
 

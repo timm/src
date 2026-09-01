@@ -30,9 +30,11 @@ The walk is one policy, in both modes, and knowledge drives every
 step.  A known atom is never descended into: the memo that breaks
 loops is the same rule that spares proven subtrees.  A conjunction
 runs its already-known parts first (free checks), then shuffles only
-the unknowns.  A disjunction is a bet — the picked branch must
-deliver, no denied task inside — but a branch that already ran and
-paid off wins outright, without dice.  A contribution link onto a
+the unknowns.  A disjunction wants any branch that delivers — no
+denied task inside — and tries them in the same eager order, knowns
+first, unknowns shuffled; a failed try rolls back its labels and the
+next branch is tried, so a disjunction dies only when every branch
+fails.  A contribution link onto a
 labelled atom stands aside, whatever the label says: evidence does
 not argue with evidence.  Only a demand (= x v) is binding; demands
 are the one thing that can kill a world.  Entering a defined subgoal
