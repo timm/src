@@ -84,7 +84,7 @@
 (defun eager (xs w &optional yes no)
   "knowns to the front (free checks); dice only for the rest"
   (if (null xs)
-      (append yes (shuffled (reverse no)))   ; known order: no dice, no labels
+      (append yes (shuffled no))
       (if (every (lambda (a) (known a w)) (syms (car xs)))
           (eager (cdr xs) w (cons (car xs) yes) no)
           (eager (cdr xs) w yes (cons (car xs) no)))))
