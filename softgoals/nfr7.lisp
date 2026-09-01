@@ -102,7 +102,7 @@
     ((eq (car g) 'or)  (many (eager (cdr g) w) (1- (length (cdr g))) w))
     ((assoc (car g) *links*)
      (or (known (second g) w)                    ; evidence stands
-         (believe (second g) (pick (cdr (assoc (car g) *links*))) w)))
+         (add (second g) (pick (cdr (assoc (car g) *links*))) w)))
     (t nil)))
 
 (defun sample (query &key beliefs try (n 20) (patience 1000))
