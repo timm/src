@@ -8,8 +8,6 @@
 ;;;;                        shuffled; seq: given order)
 ;;;;   or                -> any true, eager order; a failed
 ;;;;                        branch rolls back, next is tried
-;;;;   try               -> walk, never judge: softs score,
-;;;;                        they do not filter
 ;;;;   link, target known-> evidence stands, whatever it says
 ;;;;   (= x v)           -> binding: agree or die
 ;;;; No gates, no sugar: a hard goal or a believed claim is
@@ -25,7 +23,7 @@
 
 (defvar *links* '((makes t) (breaks f) (helps t t f) (hurts f f t)))
 (defvar *heads* nil)
-(defvar *seed*  1)
+(defvar *seed*  1234567891)
 
 (defmacro <- (head body)
   `(progn (pushnew ',head *heads*)
@@ -33,9 +31,8 @@
                 (append (get ',head 'rules) (list ',body)))))
 
 (defun prand () (/ (setf *seed* (mod (* 16807 *seed*) 2147483647)) 2147483647d0))
-(defun reseed (n)   ; park-miller warmup: small seeds' first
-  (setf *seed* n)   ; draws are tiny, so burn a few
-  (dotimes (i 3) (prand))
+(defun reseed (n)   ; park-miller crawls on small seeds:
+  (setf *seed* (mod (* n 1234567891) 2147483647))   ; scramble once
   n)
 (defun rint (n) (floor (* n (prand))))
 (defun pick (xs) (nth (rint (length xs)) xs))
@@ -47,7 +44,7 @@
 
 (defun syms (g)
   (cond ((symbolp g)                    (list g))
-        ((member (car g) '(and or seq try)) (mapcan #'syms (copy-list (cdr g))))
+        ((member (car g) '(and or seq)) (mapcan #'syms (copy-list (cdr g))))
         (t                              (list (second g)))))
 
 (defun known (x w) (nth-value 1 (gethash x w)))
@@ -100,7 +97,6 @@
            ((get g 'rules)  (derive g w))
            (t               (add g 't w))))      ; fiat: abduce to t
     ((eq (car g) '=)   (believe (second g) (third g) w))
-    ((eq (car g) 'try) (mapc (lambda (x) (isamp x w)) (cdr g)) t)
     ((eq (car g) 'seq) (many (cdr g) 0 #'isamp w))
     ((eq (car g) 'and) (many (eager (cdr g) w) 0 #'isamp w))
     ((eq (car g) 'or)  (many (eager (cdr g) w) (1- (length (cdr g))) #'isamp w))
@@ -109,7 +105,8 @@
          (believe (second g) (pick (cdr (assoc (car g) *links*))) w)))
     (t nil)))
 
-(defun sample (query &key beliefs (n 20) (patience 1000))
+(defun sample (query &key beliefs try (n 20) (patience 1000))
+  "worlds where QUERY holds; TRY goals are walked, never judged"
   (let (pre goals worlds (got 0) (miss 0))
     (loop for (x . v) in beliefs
           do (if (and (eq v 't) (get x 'rules))
@@ -121,6 +118,7 @@
                (wipe)
                (loop for (x . v) in pre do (setf (gethash x w) v))
                (cond ((every (lambda (g) (isamp g w)) goals)
+                      (mapc (lambda (g) (isamp g w)) try)
                       (setf miss 0) (incf got) (push w worlds))
                      (t (incf miss)))))
     (nreverse worlds)))
@@ -138,7 +136,7 @@
 
 (defun pp (g w)
   (cond ((symbolp g) (tag g w))
-        ((member (car g) '(and or seq try))
+        ((member (car g) '(and or seq))
          (format nil "(~(~a~)~{ ~a~})" (car g)
                  (mapcar (lambda (x) (pp x w)) (cdr g))))
         ((eq (car g) '=)
@@ -158,10 +156,9 @@
   (setf *heads* nil *hard* nil *soft* nil *model* nil *doc* nil))
 
 (defun query ()   ; hards must hold; softs and bare heads just walk
-  (append (copy-list *hard*)
-          (when *soft* (list (cons 'try (copy-list *soft*))))
-          (unless (or *hard* *soft*)
-            (list (cons 'try (reverse *heads*))))))
+  (values (copy-list *hard*)
+          (or (copy-list *soft*)
+              (unless *hard* (reverse *heads*)))))
 
 (defun painted (model &optional (seed 1) beliefs)
   "load a model, sample one world (with any beliefs), paint it"
@@ -169,7 +166,8 @@
   (load model)
   (setf *model* (pathname-name model))
   (reseed seed)
-  (paint (car (sample (query) :beliefs beliefs :n 1))))
+  (multiple-value-bind (gs ts) (query)
+    (paint (car (sample gs :try ts :beliefs beliefs :n 1)))))
 
 (defvar *egs*   ; the example suite: every model beside this file
   (let ((here (or *load-truename* *default-pathname-defaults*)))
@@ -208,7 +206,8 @@
   "satisfy the goals once, paint it; return how: ((atom . label) ...)"
   (use name)
   (reseed seed)
-  (let ((w (car (sample (query) :n 1))))
+  (let ((w (multiple-value-bind (gs ts) (query)
+             (car (sample gs :try ts :n 1)))))
     (when w
       (paint w)
       (loop for x being the hash-keys of w using (hash-value v)
@@ -217,7 +216,8 @@
 (defun replay (name how)
   "believe HOW, walk again, paint what gets reached"
   (use name)
-  (let ((w (car (sample (query) :beliefs how :n 1))))
+  (let ((w (multiple-value-bind (gs ts) (query)
+             (car (sample gs :try ts :beliefs how :n 1)))))
     (if w (paint w) (format t ";; that how kills every world~%"))))
 
 (defun parade (&optional (seed 1))

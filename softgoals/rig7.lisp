@@ -70,16 +70,19 @@
 
 ;;; ---- reduce and assess a seed -------------------------------
 (defun replays (seed)
-  (mapcar #'d2h (sample *query* :beliefs seed :n *n2*)))
+  (mapcar #'d2h (sample *query* :beliefs seed :try *soft* :n *n2*)))
 
 (defun passes (seed &aux (ds (replays seed)))
   (incf *tests*)
   (and ds (<= (mu ds) (+ *dbest* *eps*))))
 
 (defun pool (wbest)
-  "settable labels of the best world"
+  "settable labels of the best world; denial of a defined atom
+   is a conclusion, not a choice: skip it"
   (loop for x being the hash-keys of wbest using (hash-value v)
-        when (member x *settable*) collect (cons x v)))
+        when (and (member x *settable*)
+                  (not (and (eq v 'f) (get x 'rules))))
+        collect (cons x v)))
 
 (defun shared (pool ws)
   "the unanimous subset: every world agrees, so forced not chosen"
@@ -105,9 +108,9 @@
 ;;; ---- the pipeline -------------------------------------------
 (defun rig (name &aux (t0 (get-internal-real-time)))
   (statics)
-  (setf *query* (append (copy-list *hard*) (list (cons 'try *soft*)))
+  (setf *query* (copy-list *hard*)
         *tests* 0)
-  (let* ((ws    (sample *query* :n *n1*))
+  (let* ((ws    (sample *query* :try *soft* :n *n1*))
          (ds    (progn (yardstick ws) (mapcar #'d2h ws)))
          (wbest (nth (position (setf *dbest* (reduce #'min ds)) ds) ws))
          (pool  (pool wbest))
@@ -127,5 +130,5 @@
 
 (let ((args sb-ext:*posix-argv*))
   (load (first (last args 2)))
-  (setf *seed* 1)
+  (reseed 1)
   (rig (car (last args))))
