@@ -62,17 +62,17 @@
 (defun believe (x v w)
   (if (known x w) (eq (gethash x w) v) (add x v w)))
 
-(defun many (goals patience try w &optional (mark (mark)))
-  "walk goals via TRY; PATIENCE failures tolerated (each rolled
-   back alone), one more undoes the lot; win early once no
-   losing streak can sink us"
+(defun many (goals patience w &optional (mark (mark)))
+  "walk goals; PATIENCE failures tolerated (each rolled back
+   alone), one more undoes the lot; win early once no losing
+   streak can sink us"
   (cond ((< patience 0)               (undo mark w))
         ((<= (length goals) patience) t)
         (t (let ((try-mark (mark)))
              (many (cdr goals)
-                   (if (funcall try (car goals) w) patience
+                   (if (isamp (car goals) w) patience
                        (progn (undo try-mark w) (1- patience)))
-                   try w mark)))))
+                   w mark)))))
 
 (defun derive (g w)
   "argue one body under g=t; win keeps g=t, loss denies: g=f, nil"
@@ -97,9 +97,9 @@
            ((get g 'rules)  (derive g w))
            (t               (add g 't w))))      ; fiat: abduce to t
     ((eq (car g) '=)   (believe (second g) (third g) w))
-    ((eq (car g) 'seq) (many (cdr g) 0 #'isamp w))
-    ((eq (car g) 'and) (many (eager (cdr g) w) 0 #'isamp w))
-    ((eq (car g) 'or)  (many (eager (cdr g) w) (1- (length (cdr g))) #'isamp w))
+    ((eq (car g) 'seq) (many (cdr g)                               0 w))
+    ((eq (car g) 'and) (many (eager (cdr g) w)                     0 w))
+    ((eq (car g) 'or)  (many (eager (cdr g) w) (1- (length (cdr g))) w))
     ((assoc (car g) *links*)
      (or (known (second g) w)                    ; evidence stands
          (believe (second g) (pick (cdr (assoc (car g) *links*))) w)))
