@@ -62,13 +62,14 @@ if __name__ == '__main__':
   subprocess.run([sys.executable,'to-lisp.py'],
                  capture_output=True)   # regen models/*.lisp
   print("model,ours lo,ours mu(sd),asp lo,asp mu(sd),"
-        "ourkeys,aspkeys,cliffs,ks,cohen,verdict,win,ms")
+        "ourkeys,aspkeys,cliffs,ks,cohen,verdict,win,msnfr7,msasp")
   for p in sorted(glob.glob('models/*.py')) + ['small.py']:
     name = p.split('/')[-1].replace('.py','').replace('CS','',1)
     try:
       t0 = time.perf_counter()
       hard, soft = load(p)
       a = asp_keys(p, Rig(hard, soft))
+      msasp = round(1000*(time.perf_counter()-t0))
       kf = f"{OUT}/{name}_keys.sexp"
       open(kf,'w').write(
         "(" + " ".join(f"({x} . {v})" for x,v in a) + ")\n")
@@ -76,8 +77,7 @@ if __name__ == '__main__':
         ['sbcl','--script','rig7.lisp',
          p.replace('.py','.lisp'), name, kf, seed],
         capture_output=True, text=True).stdout.strip()
-      ms = round(1000*(time.perf_counter()-t0))
-      print(f"{row.splitlines()[-1]},{ms}" if row
+      print(f"{row.splitlines()[-1]},{msasp}" if row
             else f"{name},ERR no output", flush=True)
     except Exception as e:
       print(f"{name},ERR {type(e).__name__}: {e}", flush=True)

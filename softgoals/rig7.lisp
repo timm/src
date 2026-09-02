@@ -154,26 +154,34 @@
     (<= d (* a (sqrt (/ (+ n m) (* n m)))))))
 
 ;;; ---- rivals: our keys vs asp-min keys, one replay engine ----
-(defun rivals (name asp)
+(defun rivals (name asp &aux (t0 (get-internal-real-time)))
   "battery on 30x replays of both key sets; cohen eps = .35 sd(b4);
    win by lo (keys chase the best world), mu printed beside it"
   (multiple-value-bind (seed ds) (ourkeys)
-    (let* ((xs  (replays seed))
-           (ys  (replays asp))
-           (sx  (sort (copy-list xs) #'<))
+    (let* ((msours (round (- (get-internal-real-time) t0)
+                          (/ internal-time-units-per-second 1000)))
+           (xs  (replays seed))
+           (ys  (replays asp)))
+      (when (or (null xs) (null ys))  ; a seed can kill every world
+        (format t "~a,~a,~a,~d,~d,-,-,-,DEAD,~a,~d~%"
+                name (lomu xs) (lomu ys) (length seed) (length asp)
+                (if ys "asp" "ours") msours)
+        (return-from rivals))
+      (let* ((sx  (sort (copy-list xs) #'<))
            (sy  (sort (copy-list ys) #'<))
            (co  (<= (abs (- (mu xs) (mu ys))) (* 0.35 (sd ds))))
            (cl  (cliffs sx sy))
            (kk  (ks sx sy))
            (tie (and co cl kk)))
-      (format t "~a,~a,~a,~d,~d,~a,~a,~a,~a,~a~%"
+      (format t "~a,~a,~a,~d,~d,~a,~a,~a,~a,~a,~d~%"
               name (lomu xs) (lomu ys) (length seed) (length asp)
               (if cl "y" "n") (if kk "y" "n") (if co "y" "n")
               (if tie "SAME" "DIFF")
               (cond (tie "tie")
                     ((< (car sx) (car sy)) "ours")
                     ((> (car sx) (car sy)) "asp")
-                    (t "tie"))))))
+                    (t "tie"))
+              msours)))))
 
 (let ((args (cdr sb-ext:*posix-argv*)))   ; --script strips itself
   (destructuring-bind (model name &optional keys seed) args

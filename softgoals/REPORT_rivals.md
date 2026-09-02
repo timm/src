@@ -361,3 +361,170 @@ reading; the other is a dependency.
   paradigm-level, not a tuning artifact.
 - All rivals scored with our yardstick (b4 min-max from 1000
   untreated worlds, seed 1); numbers >100 mean off-the-ruler.
+
+## The truth-walk shootout: shortr2 = nfr7 (2026-09-02)
+
+Everything above this line compared rivals against the nfr6
+pipeline.  This section re-runs the tournament on its successor:
+shortr2 now names nfr7.lisp + rig7.lisp -- the honest walk (memo
+reports the label, a denied child fails its parent), unfounded
+loops failing by default (*loops* nil: ASP-aligned; the coinductive
+reading survives behind the knob -- see nfr7.md), and an ABSOLUTE
+yardstick: d2h normalized on 0..|quals| x 0..|leaves|, replacing
+the sampled min-max ruler.  That last change was forced by a
+diagnosis: under fiat play the 1000 untreated worlds compress to a
+~1-leaf footprint spread, so the sampled ruler exploded any
+out-of-distribution replay (the 283s and 425s quoted above are
+that artifact, not bad worlds).  Numbers below are not comparable
+to the tables above; the verdicts are.
+
+Protocol, per model per seed 1..20: shortr2 runs its whole
+pipeline (1000-world b4, pool/shared/cands, rebaseline, ddmin ->
+keys).  The rival contributes ONE prescription, found once at seed
+1 under its own machinery -- no minimization on the rival side;
+those searches are too slow to repeat per seed:
+
+  - asp-min: exact cautious/brave hulls + ddmin, clingo as oracle
+    (deterministic, so one run is all runs);
+  - shortr1: best of 1000 runs of the SHORT engine, its touched
+    bases as labels (1/-1 -> t/f; 96-100% of names matched);
+  - NSGA-II, SMAC3: best incumbent/front-point, EVERY leaf labelled
+    (their decision space), searched against the old python engine.
+
+Both prescriptions then replay 30x through the same nfr7.lisp walk
+and meet the battery: cliffs (0.197), ks (1.36), cohen with eps =
+0.35 x sd(b4).  All three agree = tie; else win by lo, mu breaking
+lo collisions.  DEAD = the prescription kills every world (1000
+consecutive misses).  Cells are "lo; mu (sd)" of %d2h (lower
+better), averaged over the 20 seeds; ms(shortr2) is the keys
+pipeline per seed, ms(rival) the rival's one-time search (asp-min:
+per-seed clingo, averaged).
+
+Determinism postscript: asp keys initially flapped between runs.
+Cause: encode() iterates python sets, PYTHONHASHSEED reorders the
+emitted rules, and rule order -- semantically nothing in ASP --
+steers clingo's tie-break among equal optima, flipping a key's
+LABEL.  Both labels pass asp's oracle: its objective counts
+leaves, so it is indifferent between prescriptions the truth walk
+separates sharply.  Fix: write the .lp sorted.  The
+underdetermination is the finding; the sort is the workaround.
+
+### asp-min vs shortr2
+
+    model                  shortr2 lo; mu (sd)  asp lo; mu (sd)  tie  shortr2  asp  dead  ms(shortr2)  ms(asp)
+    Counselling            40; 42 (2)           40; 42 (2)       16   4        0    0     56           310
+    CounsellingManagement  51; 53 (1)           52; 54 (1)       6    14       0    0     35           214
+    FDandMarketing         37; 41 (2)           38; 42 (3)       8    12       0    0     62           394
+    ITDepartment           33; 35 (1)           33; 36 (2)       2    17       1    0     18           233
+    SAProgram              28; 40 (7)           29; 43 (8)       9    11       0    0     23           100
+    Services               26; 34 (3)           27; 34 (3)       13   6        1    0     66           269
+    KidsandYouth           42; 42 (0)           42; 46 (3)       0    20       0    0     10           257
+    Modernize              5; 5 (0)             8; 26 (14)       0    20       0    0     6            252
+    small                  24; 27 (5)           25; 44 (14)      0    20       0    0     3            92
+    TOTAL                  -                    -                54   124      2    0     -            -
+
+### shortr1 vs shortr2
+
+    model                  shortr2 lo; mu (sd)  shortr1 lo; mu (sd)  tie  shortr2  shortr1  dead  ms(shortr2)  ms(shortr1)
+    Counselling            40; 42 (2)           43; 44 (1)           0    20       0        0     58           3064
+    CounsellingManagement  51; 53 (1)           dead                 0    20       0        20    36           1741
+    FDandMarketing         37; 41 (2)           dead                 0    20       0        20    64           5729
+    ITDepartment           33; 35 (1)           45; 47 (2)           0    20       0        0     19           1024
+    SAProgram              28; 40 (7)           43; 52 (7)           0    20       0        0     24           923
+    Services               26; 34 (3)           dead                 0    20       0        20    69           10748
+    KidsandYouth           42; 42 (0)           65; 66 (1)           0    20       0        0     10           441
+    TOTAL                  -                    -                    0    140      0        60    -            -
+
+### NSGA-II vs shortr2
+
+    model                  shortr2 lo; mu (sd)  nsga2 lo; mu (sd)  tie  shortr2  nsga2  dead  ms(shortr2)  ms(nsga2)
+    Counselling            40; 42 (2)           dead               0    20       0      20    59           44368
+    CounsellingManagement  51; 53 (1)           dead               0    20       0      20    36           23316
+    FDandMarketing         37; 41 (2)           dead               0    20       0      20    64           37449
+    ITDepartment           33; 35 (1)           dead               0    20       0      20    19           14457
+    SAProgram              28; 40 (7)           28; 34 (4)         3    3        14     0     24           549
+    Services               26; 34 (3)           dead               0    20       0      20    69           25964
+    KidsandYouth           42; 42 (0)           dead               0    20       0      20    10           489
+    Modernize              5; 5 (0)             dead               0    20       0      20    6            292
+    small                  24; 27 (5)           dead               0    20       0      20    3            59
+    TOTAL                  -                    -                  3    163      14     160   -            -
+
+### SMAC3 vs shortr2
+
+    model                  shortr2 lo; mu (sd)  smac lo; mu (sd)  tie  shortr2  smac  dead  ms(shortr2)  ms(smac)
+    Counselling            40; 42 (2)           dead              0    20       0     20    56           386911
+    CounsellingManagement  51; 53 (1)           dead              0    20       0     20    35           328576
+    FDandMarketing         37; 41 (2)           dead              0    20       0     20    61           440827
+    ITDepartment           33; 35 (1)           dead              0    20       0     20    18           322443
+    SAProgram              28; 40 (7)           28; 34 (4)        3    1        16    0     23           2030
+    Services               26; 34 (3)           dead              0    20       0     20    66           411258
+    KidsandYouth           42; 42 (0)           28; 34 (4)        0    0        20    0     10           329706
+    Modernize              5; 5 (0)             dead              0    20       0     20    6            2387313
+    small                  24; 27 (5)           71; 80 (8)        0    20       0     0     3            333
+    TOTAL                  -                    -                 3    141      36    120   -            -
+
+### Findings
+
+1. ASP-MIN IS THE ONLY REAL RIVAL, AND IT LOSES ON HOLD, NOT
+   REACH.  124-2 with 54 ties.  The lo columns are near-identical
+   everywhere: both key sets can TOUCH the best world.  The mu
+   column splits on every model with relief (Modernize 5 vs 26,
+   small 27 vs 44, KidsandYouth 42 vs 46): asp keys reach the
+   optimum on lucky walks and drift otherwise; shortr2 keys pin
+   the walk there.  Runtimes are the same order (shortr2 3-66ms
+   vs asp 92-394ms per row) -- so this is not speed-vs-quality,
+   shortr2 just wins.
+2. LOOP OPTIMISM IS RETIRED AND NOTHING BROKE.  Finding 3a above
+   called the old memo's loop-forgiveness load-bearing.  nfr7
+   defaults to ASP's rule -- unfounded loops fail -- and the whole
+   tournament re-ran without it: zero cycles ever reach derive on
+   this corpus (all seven graph cycles thread contribution links,
+   which draw labels but never descend; nfr7.md).  Every
+   shortr2-beats-asp row is now dice vs idealization alone.
+3. TOTAL ASSIGNMENTS DIE UNDER TRUTH.  NSGA-II's prescriptions
+   are DEAD on 8 of 9 models; SMAC3's on 6 of 9; shortr1's on its
+   three biggest.  Finding 1 above said totality "usually contains
+   some denial a hard goal needed"; the mechanism is now exact:
+   the old evaluator's memo line returns True for ANY known atom,
+   whatever its label ("memo (and replay)", infer.py) -- an engine
+   that cannot say no -- so these searches never once felt a
+   denial.  The honest walk says no, and their incumbents turn
+   out to be impossible.
+4. WHEN A TOTAL ASSIGNMENT LIVES, IT CAN WIN.  NSGA-II's one
+   survivor (SAProgram) beats shortr2 14-3; SMAC3 wins BOTH of
+   its survivors -- SAProgram 16-1, KidsandYouth 20-0 -- and on
+   KidsandYouth its lo (28) beats anything our 1000-world sample
+   ever visited (42): a surrogate can walk to corners random
+   sampling never reaches, and pinning every leaf then holds them
+   (mu 34 (4) vs our 42 (0)).  So the b4 sample is not the
+   frontier; keys can only pin worlds sampling has seen.
+5. BUT THE TRANSFER IS A COIN-FLIP, AND THE PRICE IS ABSURD.
+   The same SMAC3, same protocol, on small: incumbent scores
+   71; 80 (8) -- confident junk from training on the engine that
+   cannot say no -- losing 20-0.  shortr1's surviving
+   prescriptions (coverage-trained, four-valued optimism) lose
+   80-0 across four models.  And the meter is running: SMAC3
+   spends 5.5-40 MINUTES per model (Modernize 40m: each dead
+   evaluation waits out the sampler's patience), NSGA-II up to
+   44s, shortr1 0.4-10.7s -- against 3-66ms for a whole shortr2
+   keys pipeline.  Nothing here bids to replace sampling; the one
+   genuine lesson (finding 4) is that a smarter GENERATOR could
+   feed our same keys machinery better worlds.
+
+### Caveats
+
+- Rivals searched under their own published setups (old python
+  engine, sampled yardstick).  Re-running their searches against
+  the honest evaluator might close finding 3's gap; nothing about
+  finding 1 or 4 depends on it.
+- SMAC3 here is the real thing (2.4.0, random-forest surrogate,
+  dedicated venv pinning scikit-learn 1.6.1) -- the Optuna
+  stand-in caveat above is retired.
+- shortr1 runs the dr-bigfatnoob clone with mechanical py2->py3
+  shims (iteritems/xrange/unicode/decode-identity); its bases map
+  to our atoms by case-insensitive sanitized name; unmatched
+  orphans: 0-4 per model.
+- Reproduce: `make rivals S=n` (asp-min); `python3 rivals_best.py
+  nsga2|smac|shortr1` then `python3 rivals_best.py replay RIVAL
+  SEED` (searches need pymoo / ~/tmp/smacenv / ~/tmp/shortr1).
+
