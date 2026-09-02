@@ -27,6 +27,9 @@ keys-lisp: ## same table via nfr7.lisp + rig7.lisp (truth walk)
 	     sbcl --script rig7.lisp $$m $$n 2>/dev/null | tail -1; done \
 	 ) | column -s, -t
 
+rivals: ## nfr7 keys vs asp-min keys, one replay engine; make rivals S=3
+	@$(PY) rivals_stats.py $(S) | column -s, -t
+
 M ?= small.lisp
 
 zoo: ## play every zoo model; make zoo S=3

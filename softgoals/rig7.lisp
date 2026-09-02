@@ -56,11 +56,11 @@
           (count-if (lambda (l) (tp l w)) *leaves*)))
 
 (defun yardstick (ws)
-  (loop for w in ws
-        for (b f) = (multiple-value-list (bf w))
-        minimize b into b0 maximize b into b1
-        minimize f into f0 maximize f into f1
-        finally (setf *mm* (list b0 b1 f0 f1))))
+  "absolute scale 0..|quals|, 0..|leaves|: fiat play compresses
+   the sampled spread to ~1 leaf, so sampled min/max explodes
+   the norm of any out-of-distribution replay"
+  (declare (ignore ws))
+  (setf *mm* (list 0 (length *quals*) 0 (length *leaves*))))
 
 (defun d2h (w)
   (multiple-value-bind (b f) (bf w)
@@ -106,7 +106,8 @@
               c)))))
 
 ;;; ---- the pipeline -------------------------------------------
-(defun rig (name &aux (t0 (get-internal-real-time)))
+(defun ourkeys ()
+  "b4 sample, pool/shared/cands, rebaseline, ddmin: the rig core"
   (statics)
   (setf *query* (copy-list *hard*)
         *tests* 0)
@@ -121,6 +122,10 @@
                        (when rb (setf *dbest* (mu rb)))
                        (ddmin #'passes cands 2))
                       (t '()))))
+    (values seed ds rb pool same)))
+
+(defun rig (name &aux (t0 (get-internal-real-time)))
+  (multiple-value-bind (seed ds rb pool same) (ourkeys)
     (format t "~a,~a,~a,~a,~d,~d,~d,~d,~d,~d~%"
             name (lomu ds) (lomu rb) (lomu (replays seed))
             (length pool) (length same) (length seed) *tests*
@@ -128,7 +133,52 @@
             (round (- (get-internal-real-time) t0)
                    (/ internal-time-units-per-second 1000)))))
 
-(let ((args sb-ext:*posix-argv*))
-  (load (first (last args 2)))
-  (reseed 1)
-  (rig (car (last args))))
+;;; ---- stats: are two d2h samples the same? -------------------
+(defun cliffs (xs ys &optional (d 0.197)) ; sorted: rank imbalance
+  (let ((gt 0) (lt 0) (j 0) (k 0)
+        (m (length ys)) (v (coerce ys 'vector)))
+    (dolist (x xs)
+      (loop while (and (< j m) (< (aref v j) x)) do (incf j) (setf k j))
+      (loop while (and (< k m) (<= (aref v k) x)) do (incf k))
+      (incf gt j) (incf lt (- m k)))
+    (<= (/ (abs (- gt lt)) (* (length xs) m)) d)))
+
+(defun ks (xs ys &optional (a 1.36)) ; sorted: 95% kolmogorov-smirnov
+  (let ((n (length xs)) (m (length ys)) (i 0) (j 0) (d 0)
+        (vx (coerce xs 'vector)) (vy (coerce ys 'vector)))
+    (loop while (and (< i n) (< j m)) do
+      (let ((v (min (aref vx i) (aref vy j))))
+        (loop while (and (< i n) (<= (aref vx i) v)) do (incf i))
+        (loop while (and (< j m) (<= (aref vy j) v)) do (incf j))
+        (setf d (max d (abs (- (/ i n) (/ j m)))))))
+    (<= d (* a (sqrt (/ (+ n m) (* n m)))))))
+
+;;; ---- rivals: our keys vs asp-min keys, one replay engine ----
+(defun rivals (name asp)
+  "battery on 30x replays of both key sets; cohen eps = .35 sd(b4);
+   win by lo (keys chase the best world), mu printed beside it"
+  (multiple-value-bind (seed ds) (ourkeys)
+    (let* ((xs  (replays seed))
+           (ys  (replays asp))
+           (sx  (sort (copy-list xs) #'<))
+           (sy  (sort (copy-list ys) #'<))
+           (co  (<= (abs (- (mu xs) (mu ys))) (* 0.35 (sd ds))))
+           (cl  (cliffs sx sy))
+           (kk  (ks sx sy))
+           (tie (and co cl kk)))
+      (format t "~a,~a,~a,~d,~d,~a,~a,~a,~a,~a~%"
+              name (lomu xs) (lomu ys) (length seed) (length asp)
+              (if cl "y" "n") (if kk "y" "n") (if co "y" "n")
+              (if tie "SAME" "DIFF")
+              (cond (tie "tie")
+                    ((< (car sx) (car sy)) "ours")
+                    ((> (car sx) (car sy)) "asp")
+                    (t "tie"))))))
+
+(let ((args (cdr sb-ext:*posix-argv*)))   ; --script strips itself
+  (destructuring-bind (model name &optional keys seed) args
+    (load model)
+    (reseed (if seed (parse-integer seed) 1))
+    (if keys
+        (rivals name (with-open-file (s keys) (read s)))
+        (rig name))))

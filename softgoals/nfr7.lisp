@@ -4,6 +4,7 @@
 ;;;; child fails its parent, classically. One walk, play ==
 ;;;; replay; replay is play started with labels preloaded:
 ;;;;   atom known        -> report its label, never descend
+;;;;   atom open (loop)  -> *loops*; nil = unfounded, fail (ASP)
 ;;;;   and, seq          -> all true (and: knowns first, rest
 ;;;;                        shuffled; seq: given order)
 ;;;;   or                -> any true, eager order; a failed
@@ -26,6 +27,7 @@
 (defvar *links* '((makes t) (breaks f) (helps t t f) (hurts f f t)))
 (defvar *heads* nil)
 (defvar *seed*  1234567891)
+(defvar *loops* nil)   ; loop-hit label: nil = ASP (unfounded), t = coinductive
 
 (defmacro <- (head body)
   `(progn (pushnew ',head *heads*)
@@ -77,10 +79,11 @@
                    w mark)))))
 
 (defun derive (g w)
-  "argue one body under g=t; win keeps g=t, loss denies: g=f, nil"
+  "argue one body under g=open; win closes g=t, loss denies: g=f, nil"
   (let ((mark (mark)))
-    (add g 't w)
-    (or (isamp (pick (get g 'rules)) w)
+    (add g 'open w)
+    (if (isamp (pick (get g 'rules)) w)
+        (setf (gethash g w) 't)   ; key already on trail; undo still works
         (progn (undo mark w) (add g 'f w) nil))))
 
 (defun eager (xs w &optional yes no)
@@ -95,7 +98,8 @@
   "t = g achieved in this world; a denied child fails its parent"
   (cond
     ((symbolp g)
-     (cond ((known g w)     (eq (gethash g w) 't))  ; memo: report the label
+     (cond ((known g w)     (case (gethash g w)     ; memo: report the label
+                              ((t) t) (open *loops*) (otherwise nil)))
            ((get g 'rules)  (derive g w))
            (t               (add g 't w))))      ; fiat: abduce to t
     ((eq (car g) '=)   (believe (second g) (third g) w))
@@ -210,10 +214,12 @@
   (reseed seed)
   (let ((w (multiple-value-bind (gs ts) (query)
              (car (sample gs :try ts :n 1)))))
-    (when w
-      (paint w)
-      (loop for x being the hash-keys of w using (hash-value v)
-            collect (cons x v)))))
+    (if w
+        (progn
+          (paint w)
+          (loop for x being the hash-keys of w using (hash-value v)
+                collect (cons x v)))
+        (format t ";; no world~%"))))
 
 (defun replay (name how)
   "believe HOW, walk again, paint what gets reached"
@@ -249,7 +255,7 @@
           (<- left (and base))
           (<- right (and base))))
 
-(defmodel cycle :doc "memo also breaks loops" :hard (chicken)
+(defmodel cycle :doc "positive loop: unfounded, no world (unless *loops*)" :hard (chicken)
   :rules ((<- chicken (and egg))
           (<- egg (and chicken))))
 

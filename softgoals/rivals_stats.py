@@ -1,23 +1,24 @@
 #!/usr/bin/env python3
 # rivals_stats.py : are asp-min keys statistically different from
-# the sampling pipeline's keys?  Both key sets are replayed 30x
-# through the SAME engine (infer.py, leaf beliefs adopted) and the
-# two d2h samples meet the same/cliffs/ks/cohen battery from
-# ezr-py/xai.py -- except cohen's yardstick, per spec, is
-# eps = 0.35 * sd(b4)  (the untreated worlds' spread), not the
-# pooled sd of the two samples.
-import sys, os, re, random, glob
-from bisect import bisect_left, bisect_right
+# the sampling pipeline's keys?  Python finds the asp keys (clingo
+# cautious/brave hulls + ddmin, clingo as oracle) and writes them
+# as an alist; rig7.lisp (the truth walk, nfr7.lisp) finds our
+# keys, replays BOTH sets 30x through the same engine, and judges
+# with cliffs/ks/cohen -- except cohen's yardstick, per spec, is
+# eps = 0.35 * sd(b4) (the untreated worlds' spread), not the
+# pooled sd of the two samples.  Win by lo (keys chase the best
+# world); mu (sd) printed beside it so disagreement is visible.
+# Usage: python3 rivals_stats.py [SEED]
+import sys, os, re, glob, subprocess, time
 sys.dont_write_bytecode = True
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
-from run import load, Rig, musd, ddmin, the
+from run import load, Rig, ddmin, the
 from rivals_asp import encode, nm, OUT
-import subprocess
 
 def clingo(args):
-  return subprocess.run(['clingo']+args, capture_output=True,
-                        text=True).stdout
+  return subprocess.run([sys.executable,'-m','clingo']+args,
+                        capture_output=True, text=True).stdout
 
 def optvec(out):
   m = re.findall(r'Optimization\s*:\s*([\d ]+)', out)
@@ -36,7 +37,9 @@ def asp_keys(path, rig):
   rules, *_ = encode(path)
   name = path.split('/')[-1].replace('.py','')
   lp = f"{OUT}/{name}_st.lp"
-  open(lp,'w').write('\n'.join(rules)+'\n')
+  # sorted: encode() order varies with PYTHONHASHSEED; rule order
+  # is ASP-irrelevant but steers clingo's tie-break among optima
+  open(lp,'w').write('\n'.join(sorted(rules))+'\n')
   out0 = clingo([lp,'--quiet=1','--time-limit=120'])
   target, w0 = optvec(out0), lbuys(out0)
   hull = lambda m: lbuys(clingo([lp,'--opt-mode=optN',
@@ -51,57 +54,30 @@ def asp_keys(path, rig):
     return 'OPTIMUM FOUND' in out and optvec(out) == target
   keys = ddmin(passes, cands, the.z0) if cands and passes(cands) \
          else cands
-  back = {nm(l): l for l in rig.leaves}
+  back = {nm(l): l.name for l in rig.leaves}
   return [(back[l], 't' if v else 'f') for l,v in keys]
 
-def our_keys(rig):
-  "the sampling pipeline, exactly as run.py's rig()"
-  ws = rig.gen(the.n1)
-  rig.yardstick(ws)
-  ds = [rig.d2h(w) for w in ws]
-  rig.dbest, wbest = min(zip(ds,ws), key=lambda p:p[0])
-  _, _, cands = rig.candidates(wbest, ws)
-  rb = rig.replays(cands)
-  if cands and rb: rig.dbest = musd(rb)[0]
-  return (ddmin(rig.passes, cands, the.z0) if cands else []), ds
-
-def cliffs(xs, ys):
-  ys = sorted(ys); m = len(ys)
-  gt = sum(bisect_left(ys, x)      for x in xs)
-  lt = sum(m - bisect_right(ys, x) for x in xs)
-  return abs(gt - lt) / (len(xs) * m + 1e-32)
-
-def ks(xs, ys):
-  xs, ys = sorted(xs), sorted(ys); n, m = len(xs), len(ys)
-  gap = lambda v: abs(bisect_right(xs,v)/n - bisect_right(ys,v)/m)
-  return max(map(gap, xs + ys))
-
-def battery(xs, ys, sd_b4, cliff=0.195, conf=1.36):
-  mux, sdx = musd(xs); muy, sdy = musd(ys)
-  co = abs(mux - muy) <= 0.35 * sd_b4
-  cl = cliffs(xs, ys)
-  n, m = len(xs), len(ys)
-  k  = ks(xs, ys)
-  kok = k <= conf * ((n+m)/(n*m))**0.5
-  return (co and cl <= cliff and kok,
-          f"{100*mux:.0f} ({100*sdx:.0f}),{100*muy:.0f} ({100*sdy:.0f}),"
-          f"{cl:.2f},{k:.2f},{'y' if co else 'n'},"
-          f"{'SAME' if (co and cl<=cliff and kok) else 'DIFF'}")
-
 if __name__ == '__main__':
-  print("model,ours mu(sd),asp mu(sd),cliffs,ks,cohen,verdict")
+  seed = sys.argv[1] if len(sys.argv) > 1 else '1'
+  subprocess.run([sys.executable,'to-lisp.py'],
+                 capture_output=True)   # regen models/*.lisp
+  print("model,ours lo,ours mu(sd),asp lo,asp mu(sd),"
+        "ourkeys,aspkeys,cliffs,ks,cohen,verdict,win,ms")
   for p in sorted(glob.glob('models/*.py')) + ['small.py']:
     name = p.split('/')[-1].replace('.py','').replace('CS','',1)
     try:
-      random.seed(1)
+      t0 = time.perf_counter()
       hard, soft = load(p)
-      rig = Rig(hard, soft)
-      ours, ds = our_keys(rig)
-      sd_b4 = musd(ds)[1]
-      a = asp_keys(p, rig)
-      xs = rig.replays(ours)
-      ys = rig.replays(a)
-      _, row = battery(xs, ys, sd_b4)
-      print(f"{name},{row}", flush=True)
+      a = asp_keys(p, Rig(hard, soft))
+      kf = f"{OUT}/{name}_keys.sexp"
+      open(kf,'w').write(
+        "(" + " ".join(f"({x} . {v})" for x,v in a) + ")\n")
+      row = subprocess.run(
+        ['sbcl','--script','rig7.lisp',
+         p.replace('.py','.lisp'), name, kf, seed],
+        capture_output=True, text=True).stdout.strip()
+      ms = round(1000*(time.perf_counter()-t0))
+      print(f"{row.splitlines()[-1]},{ms}" if row
+            else f"{name},ERR no output", flush=True)
     except Exception as e:
       print(f"{name},ERR {type(e).__name__}: {e}", flush=True)
