@@ -94,6 +94,43 @@ def smac(path):
   dump(name, 'smac',
        [(bystr[k].name, best[k]) for k in best], ms)
 
+# --- de: binary differential evolution, leaves as bits ---------
+def de(path):
+  # DE/rand/1/bin; same budget as smac/optuna (500 evals x 3
+  # worlds), scalar objective = mean replayed d2h, dead = 2.0.
+  name = short(path)
+  random.seed(1)
+  hard, soft = load(path)
+  rig = Rig(hard, soft)
+  ws = rig.gen(1000); rig.yardstick(ws)
+  leaves = sorted(rig.leaves, key=str)
+  n = len(leaves)
+  NP, GENS, F, CR = 20, 25, 0.5, 0.9
+  def score(bits):
+    beliefs = {l: ('t' if b else 'f') for l,b in zip(leaves,bits)}
+    ds = [rig.d2h(w)
+          for w in rig.gen(3, beliefs.items(), replay=True)]
+    return sum(ds)/len(ds) if ds else 2.0
+  t0 = time.time()
+  pop = [[random.random() < .5 for _ in range(n)]
+         for _ in range(NP)]
+  fs = [score(p) for p in pop]
+  for g in range(1, GENS):
+    for i in range(NP):
+      a, b, c = random.sample(
+        [j for j in range(NP) if j != i], 3)
+      j0 = random.randrange(n)
+      kid = [pop[a][j] ^ ((pop[b][j] ^ pop[c][j])
+                          and random.random() < F)
+             if (j == j0 or random.random() < CR) else pop[i][j]
+             for j in range(n)]
+      f = score(kid)
+      if f <= fs[i]: pop[i], fs[i] = kid, f
+  ms = round(1000*(time.time()-t0))
+  x = pop[min(range(NP), key=lambda i: fs[i])]
+  dump(name, 'de',
+       [(l.name, 't' if b else 'f') for l,b in zip(leaves,x)], ms)
+
 # --- shortr1: the SHORT paper's engine, best of 1000 runs ------
 def shortr1(path):
   # their engine lives in ~/tmp/shortr1; leaves = "bases", four
@@ -160,7 +197,8 @@ if __name__ == '__main__':
     only = sys.argv[2] if len(sys.argv) > 2 else ''
     for p in MODELS:
       if only and only not in p: continue
-      try: {'nsga2':nsga2,'smac':smac,'shortr1':shortr1}[mode](p)
+      try: {'nsga2':nsga2,'smac':smac,'shortr1':shortr1,
+            'de':de}[mode](p)
       except Exception as e:
         print(f"{short(p)},{mode},ERR {type(e).__name__}: {e}",
               flush=True)
