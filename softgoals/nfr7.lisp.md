@@ -1,0 +1,304 @@
+# nfr7.lisp
+
+{% raw %}
+```text
+nfr7.lisp : nfr6 made honest: isamp returns TRUTH.
+(isamp g w) = "is g achieved in this world?"; a denied
+child fails its parent, classically. One walk, play ==
+replay; replay is play started with labels preloaded:
+  atom known        -> report its label, never descend
+  atom open (loop)  -> *loops*; nil = unfounded, fail (ASP)
+  and, seq          -> all true (and: knowns first, rest
+                       shuffled; seq: given order)
+  or                -> any true, eager order; a failed
+                       branch rolls back, next is tried
+  link, target known-> evidence stands, whatever it says
+  (= x v)           -> binding: agree or die
+No gates, no sugar: a hard goal or a believed claim is
+just a goal that must come out t.
+50-100 times faster than prolog, 6-8 tiems faster than python
+```
+
+```lisp
+#+sbcl
+(progn
+  (declaim (sb-ext:muffle-conditions style-warning))
+  (setf sb-ext:*invoke-debugger-hook*
+        (lambda (condition hook)
+          (declare (ignore hook))
+          (format *error-output* "~&Error: ~A~%" condition)
+          (sb-ext:exit :code 1))))
+
+(defvar *links* '((makes t) (breaks f) (helps t t f) (hurts f f t)))
+(defvar *heads* nil)
+(defvar *seed*  1234567891)
+(defvar *loops* nil)   ; loop-hit label: nil = ASP (unfounded), t = coinductive
+
+(defmacro <- (head body)
+  `(progn (pushnew ',head *heads*)
+          (setf (get ',head 'rules)
+                (append (get ',head 'rules) (list ',body)))))
+
+(defun prand () (/ (setf *seed* (mod (* 16807 *seed*) 2147483647)) 2147483647d0))
+(defun reseed (n)   ; park-miller crawls on small seeds:
+  (setf *seed* (mod (* n 1234567891) 2147483647))   ; scramble once
+  n)
+(defun rint (n) (floor (* n (prand))))
+(defun pick (xs) (nth (rint (length xs)) xs))
+
+(defun shuffled (xs &aux (v (coerce xs 'vector)))
+  (loop for i from (1- (length v)) downto 1
+        do (rotatef (aref v i) (aref v (rint (1+ i)))))
+  (coerce v 'list))
+
+(defun syms (g)
+  (cond ((symbolp g)                    (list g))
+        ((member (car g) '(and or seq)) (mapcan #'syms (copy-list (cdr g))))
+        (t                              (list (second g)))))
+
+(defun known (x w) (nth-value 1 (gethash x w)))
+
+(let (trail)   ; the undo trail, reachable ONLY via these verbs
+  (defun add (x v w)
+    "record x=v on the world and the trail; always true"
+    (setf (gethash x w) v) (push x trail) t)
+  (defun mark ()      trail)
+  (defun undo (mark w)
+    "roll back to mark; reports nil: undoing is never success"
+    (loop until (eq trail mark) do (remhash (pop trail) w)))
+  (defun wipe ()      (setf trail nil)))
+
+(defun believe (x v w)
+  (if (known x w) (eq (gethash x w) v) (add x v w)))
+
+(defun many (goals patience w &optional (mark (mark)))
+  "walk goals; PATIENCE failures tolerated (each rolled back
+   alone), one more undoes the lot; win early once no losing
+   streak can sink us"
+  (cond ((< patience 0)               (undo mark w))
+        ((<= (length goals) patience) t)
+        (t (let ((try-mark (mark)))
+             (many (cdr goals)
+                   (if (isamp (car goals) w) patience
+                       (progn (undo try-mark w) (1- patience)))
+                   w mark)))))
+
+(defun derive (g w)
+  "argue one body under g=open; win closes g=t, loss denies: g=f, nil"
+  (let ((mark (mark)))
+    (add g 'open w)
+    (if (isamp (pick (get g 'rules)) w)
+        (setf (gethash g w) 't)   ; key already on trail; undo still works
+        (progn (undo mark w) (add g 'f w) nil))))
+
+(defun eager (xs w &optional yes no)
+  "knowns to the front (free checks); dice only for the rest"
+  (if (null xs)
+      (append yes (shuffled no))
+      (if (every (lambda (a) (known a w)) (syms (car xs)))
+          (eager (cdr xs) w (cons (car xs) yes) no)
+          (eager (cdr xs) w yes                 (cons (car xs) no)))))
+
+(defun isamp (g w)
+  "t = g achieved in this world; a denied child fails its parent"
+  (cond
+    ((symbolp g)
+     (cond ((known g w)     (case (gethash g w)     ; memo: report the label
+                              ((t) t) (open *loops*) (otherwise nil)))
+           ((get g 'rules)  (derive g w))
+           (t               (add g 't w))))      ; fiat: abduce to t
+    ((eq (car g) '=)   (believe (second g) (third g) w))
+    ((eq (car g) 'seq) (many (cdr g)                               0 w))
+    ((eq (car g) 'and) (many (eager (cdr g) w)                     0 w))
+    ((eq (car g) 'or)  (many (eager (cdr g) w) (1- (length (cdr g))) w))
+    ((assoc (car g) *links*)
+     (or (known (second g) w)                    ; evidence stands
+         (add (second g) (pick (cdr (assoc (car g) *links*))) w)))
+    (t nil)))
+
+(defun sample (query &key beliefs try (n 20) (patience 1000))
+  "worlds where QUERY holds; TRY goals are walked, never judged"
+  (let (pre goals worlds (got 0) (miss 0))
+    (loop for (x . v) in beliefs
+          do (if (and (eq v 't) (get x 'rules))
+                 (push x goals)            ; RE-EARN: a claim is a goal
+                 (push (cons x v) pre)))   ; ADOPT: assumptions, denials
+    (setf goals (append goals query))
+    (loop while (and (< got n) (< miss patience))
+          do (let ((w (make-hash-table :test 'eq)))
+               (wipe)
+               (loop for (x . v) in pre do (setf (gethash x w) v))
+               (cond ((every (lambda (g) (isamp g w)) goals)
+                      (mapc (lambda (g) (isamp g w)) try)
+                      (setf miss 0) (incf got) (push w worlds))
+                     (t (incf miss)))))
+    (nreverse worlds)))
+;---------------------------------------------------------------
+;;; paint: print the model annotated with one sampled world:
+;;; green atom/t (won), red atom/f (denied), bare atom (unseen).
+(defvar *hard* nil) (defvar *soft* nil)   ; set by the model file
+(defvar *model* nil) (defvar *doc* nil)   ; who is loaded, and why
+
+(defun tag (x w)
+  (case (gethash x w)
+    ((t)       (format nil "~c[32m~(~a~)/t~c[0m" #\Esc x #\Esc))
+    ((f)       (format nil "~c[31m~(~a~)/f~c[0m" #\Esc x #\Esc))
+    (otherwise (format nil "~(~a~)" x))))
+
+(defun pp (g w)
+  (cond ((symbolp g) (tag g w))
+        ((member (car g) '(and or seq))
+         (format nil "(~(~a~)~{ ~a~})" (car g)
+                 (mapcar (lambda (x) (pp x w)) (cdr g))))
+        ((eq (car g) '=)
+         (format nil "(= ~a ~(~a~))" (tag (second g) w) (third g)))
+        (t (format nil "(~(~a~) ~a)" (car g) (tag (second g) w)))))
+
+(defun paint (w)
+  (format t "~&;; ~(~a~)~@[ : ~a~]~%" *model* *doc*)
+  (format t ";; hard:~{ ~a~}~%" (mapcar (lambda (h) (tag h w)) *hard*))
+  (format t ";; soft:~{ ~a~}~%~%" (mapcar (lambda (s) (pp s w)) *soft*))
+  (dolist (h (reverse *heads*))
+    (dolist (b (get h 'rules))
+      (format t "(<- ~a ~a)~%" (tag h w) (pp b w)))))
+
+(defun clear ()   ; forget the last model: one theory per painted
+  (dolist (h *heads*) (setf (get h 'rules) nil))
+  (setf *heads* nil *hard* nil *soft* nil *model* nil *doc* nil))
+
+(defun query ()   ; hards must hold; softs and bare heads just walk
+  (values (copy-list *hard*)
+          (or (copy-list *soft*)
+              (unless *hard* (reverse *heads*)))))
+
+(defun painted (model &optional (seed 1) beliefs)
+  "load a model, sample one world (with any beliefs), paint it"
+  (clear)
+  (load model)
+  (setf *model* (pathname-name model))
+  (reseed seed)
+  (multiple-value-bind (gs ts) (query)
+    (paint (car (sample gs :try ts :beliefs beliefs :n 1)))))
+
+(defvar *egs*   ; the example suite: every model beside this file
+  (let ((here (or *load-truename* *default-pathname-defaults*)))
+    (cons (merge-pathnames "small.lisp" here)
+          (directory (merge-pathnames "models/*.lisp" here)))))
+
+(defun eg (&optional (seed 1))
+  "paint one sampled world for every model in *egs*"
+  (dolist (m *egs*) (terpri) (painted m seed)))
+;---------------------------------------------------------------
+;;; zoo: tiny in-file models plus the play/replay verbs.
+;;; From a repl:
+;;;   (play 'shop)                => how: ((coders . t) ...)
+;;;   (replay 'shop (play 'shop)) => paint what that how reaches
+;;;   (parade)                    => play the whole zoo
+(defvar *models* nil)
+
+(defmacro defmodel (name &key doc hard soft rules)
+  `(push (list ',name ',hard ',soft ',rules ',doc) *models*))
+
+(defun zoo ()   ; list the models: name, doc
+  (loop for (name nil nil nil doc) in (reverse *models*)
+        do (format t "~(~10a~) ~@[~a~]~%" name doc)))
+
+(defun use (name)
+  (clear)
+  (destructuring-bind (hard soft rules &optional doc)
+      (cdr (assoc name *models*))
+    (setf *hard* hard *soft* soft *model* name *doc* doc)
+    (dolist (r rules)   ; r = (<- head body)
+      (pushnew (second r) *heads*)
+      (setf (get (second r) 'rules)
+            (append (get (second r) 'rules) (list (third r)))))))
+
+(defun play (name &optional (seed 1))
+  "satisfy the goals once, paint it; return how: ((atom . label) ...)"
+  (use name)
+  (reseed seed)
+  (let ((w (multiple-value-bind (gs ts) (query)
+             (car (sample gs :try ts :n 1)))))
+    (if w
+        (progn
+          (paint w)
+          (loop for x being the hash-keys of w using (hash-value v)
+                collect (cons x v)))
+        (format t ";; no world~%"))))
+
+(defun replay (name how)
+  "believe HOW, walk again, paint what gets reached"
+  (use name)
+  (let ((w (multiple-value-bind (gs ts) (query)
+             (car (sample gs :try ts :beliefs how :n 1)))))
+    (if w (paint w) (format t ";; that how kills every world~%"))))
+
+(defun parade (&optional (seed 1))
+  "play every model in the zoo"
+  (loop for (name) in (reverse *models*)
+        do (terpri) (play name seed)))
+
+;;; every model under five lines
+(defmodel diy :doc "one clause, must assume a negation" :hard (diy)
+  :rules ((<- diy (and coders (helps cheap) (hurts fast)))))
+
+(defmodel shop :doc "or-choice with rival links" :hard (built)
+  :soft (cheap fast)
+  :rules ((<- built (or buy diy))
+          (<- buy (and vendor (breaks cheap) (helps fast)))
+          (<- diy (and coders (helps cheap) (hurts fast)))))
+
+(defmodel gate :doc "or tries branches, eager order, till one delivers"
+  :hard (done)
+  :rules ((<- done (or a b))
+          (<- a (and hardwork))
+          (<- b (and luck))))
+
+(defmodel diamond :doc "memo: base decided once, shared"
+  :hard (top)
+  :rules ((<- top (and left right))
+          (<- left (and base))
+          (<- right (and base))))
+
+(defmodel cycle :doc "positive loop: unfounded, no world (unless *loops*)" :hard (chicken)
+  :rules ((<- chicken (and egg))
+          (<- egg (and chicken))))
+
+(defmodel deny :doc "contradiction: plan wants flood f AND t; no world" :hard (plan)
+  :rules ((<- plan (and (= flood f) picnic))
+          (<- picnic (and outdoors (= flood t)))))
+
+(defmodel stubborn :doc "two hard goals; only worlds rolling the link f live"
+  :hard (party cake)
+  :rules ((<- party (seq (= diet f) cake))
+          (<- cake (and bake (helps diet)))))
+
+(defmodel twoface :doc "two clauses, one doomed: win flips across worlds"
+  :rules ((<- win (and talent))
+          (<- win (and (= jinx t) (= jinx f)))))
+
+(defmodel liar :doc "(replay 'liar '((hero . t))) kills every world"
+  :rules ((<- hero (and (= brave t) (= brave f)))))
+
+(defmodel cheapdear :doc "same benefit, one branch buys 3 leaves, one buys 1"
+  :hard (fed) :soft (happy)
+  :rules ((<- fed (or feast snack))
+          (<- feast (and shop cook wash (helps happy)))
+          (<- snack (and grab (helps happy)))))
+
+(defmodel small :doc "the paper's running example: build, deploy, use"
+  :hard (built deployed) :soft (cheap fast private)
+  :rules ((<- built (or buy diy))
+          (<- buy (and vendor (breaks cheap) (helps fast)))
+          (<- diy (and coders (helps cheap) (hurts fast)))
+          (<- deployed (or cloud onprem))
+          (<- cloud (and (helps fast) (hurts private)))
+          (<- onprem (and (makes private) (hurts fast)))
+          (<- usable (and tested (helps fast)))))
+
+(defmodel linkbet :doc "or over links: no task inside, first try delivers"
+  :hard (spin)
+  :rules ((<- spin (or (helps mood) (hurts mood)))))
+```
+
+{% endraw %}
