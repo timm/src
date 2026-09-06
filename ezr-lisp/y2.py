@@ -51,10 +51,9 @@ def add(c, v, inc=1): # new Num, or updated Sym
   m2 = max(0, m2 + inc * d * (v - mu))
   return (n, mu, m2, 0 if n < 2 else (m2 / (n - 1)) ** .5)
 
-def sub(c, b): # c's numbers (or counts), less b's
+def without(c, b): # c's numbers (or counts), less b's
   if not is_num(c):
-    return {k: n for k, v in c.items()
-            if (n := v - b.get(k, 0)) > 0}
+    return {k:n for k,v in c.items() if (n := v - b.get(k,0)) >0}
   (n1, mu1, m21, _), (n2, mu2, m22, _) = c, b
   n = n1 - n2
   if n <= 0: return Num()
@@ -63,14 +62,14 @@ def sub(c, b): # c's numbers (or counts), less b's
   return (n, (n1*mu1-n2*mu2)/n, m2, 0 if n<2 else (m2/(n-1))**.5)
 
 def Tbl(src):
-  t = o(rows=[], cols={}, x=[], y={}, names=src[0],nr=0,mid=None)
-  for at, s in enumerate(t.names):
+  tbl = o(rows=[],cols={},x=[],y={},names=src[0],nr=0,mid=None)
+  for at, s in enumerate(tbl.names):
     if not s.endswith("X"):
-      t.cols[at] = Num() if s[0].isupper() else Sym()
-      if s[-1] in "+-": t.y[at] = s[-1] == "+"
-      else: t.x.append(at)
-  for row in src[1:]: adds(t, row)
-  return t
+      tbl.cols[at] = Num() if s[0].isupper() else Sym()
+      if s[-1] in "+-": tbl.y[at] = s[-1] == "+"
+      else: tbl.x.append(at)
+  for row in src[1:]: adds(tbl, row)
+  return tbl
 
 def clone(t, rows=[]): return Tbl([t.names] + rows)
 
@@ -167,9 +166,9 @@ def cut(t, rows, y=None):
         there = add(there, yy := y(r)); xy.append((x, yy))
     for here, v in (cutNum if is_num(t.cols[at])
                     else cutSym)(xy, acc):
-      if (the.Leaf <= size(here) <= len(xy) - the.Leaf
-          and (s := xpect(here, sub(there, here))) < best[0]):
-        best = (s, at, v)
+      if the.Leaf <= size(here) <= len(xy) - the.Leaf:
+        s = xpect(here, without(there, here))
+        if s < best[0]: best = (s, at, v)
   return best
 
 def routing(t, at, v):

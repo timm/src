@@ -163,11 +163,11 @@ def cut(tbl, rows, y=None): # Best (score, col, val)
            for r in rows if r[col.at] != "?"]
     for here, v in (cutNum if col.num else cutSym)(xy, k):
       if the.Leaf <= here.n <= len(xy) - the.Leaf:
-        s = xpect(here, sub(there, here))
+        s = xpect(here, without(there, here))
         if s < best[0]: best = (s, col, v)
   return best
 
-def sub(a, b): # New col: a's numbers (or counts), less b's
+def without(a, b): # New col: a's numbers (or counts), less b's
   c = Col(a.txt)
   c.n = n = a.n - b.n
   if not a.num:
