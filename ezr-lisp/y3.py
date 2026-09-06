@@ -50,24 +50,33 @@ def add(c, v, inc=1): # new Num, or updated Sym; inc=-1 undoes
   mu += inc * d / max(1, n)
   return (n, mu, max(0, m2 + inc * d * (v - mu)))
 
-def Nums(ys): # one Num over a stream of numbers
-  c = Num()
-  for y in ys: c = add(c, y)
-  return c
+def adds(lst, it=None): # accumulate a list into it
+  if it is None: it = Num()   # NB: "it or Num()" would
+  for y in lst: it = add(it, y)  # clobber an empty Sym()
+  return it
+
+def size(c): return c[0] if is_num(c) else sum(c.values())
+
+def div(c): # Num: sd. Sym: entropy
+  if is_num(c): return sd(c)
+  n = sum(c.values())
+  return -sum(v/n * math.log2(v/n) for v in c.values() if v>0)
 
 def Tbl(src):
-  tbl = o(rows=[], cols={}, x=[], y={}, names=src[0])
+  tbl = o(rows=[], cols={}, x=[], y={}, names=src[0],
+          klass=None)
   for at, s in enumerate(tbl.names):
     if not s.endswith("X"):
       tbl.cols[at] = Num() if s[0].isupper() else Sym()
-      if s[-1] in "+-": tbl.y[at] = s[-1] == "+"
+      if   s[-1] == "!":  tbl.klass = at
+      elif s[-1] in "+-": tbl.y[at] = s[-1] == "+"
       else: tbl.x.append(at)
-  for row in src[1:]: adds(tbl, row)
+  for row in src[1:]: addRow(tbl, row)
   return tbl
 
 def clone(t, rows=[]): return Tbl([t.names] + rows)
 
-def adds(t, row=None, inc=1): # inc=-1 pops the last row
+def addRow(t, row=None, inc=1): # inc=-1 pops the last row
   if inc > 0: t.rows.append(row)
   else: row = t.rows.pop()
   for at in t.cols:
@@ -110,10 +119,10 @@ def pop(t, best, rest, todo):
   return todo.pop()
 
 def label(t, best, rest, row): # b > int(sqrt(m)) iff b*b > m
-  adds(best, row)
+  addRow(best, row)
   best.rows.sort(key=lambda r: ydist(t, r))
   b, r = len(best.rows), len(rest.rows)
-  if b*b > 1 + b + r: adds(rest, adds(best, inc=-1))
+  if b*b > 1 + b + r: addRow(rest, addRow(best, inc=-1))
 
 def acquire(t, cap=None):
   best, rest = clone(t), clone(t)
@@ -127,28 +136,29 @@ def acquire(t, cap=None):
 #-- tree --------------------------------------------------
 # Node = [edge, n, ymu, ymids, go, kid, kid]
 def xpect(a, b): # sizes are >= the.Leaf, so no zero guard
-  return (sd(a)*a[0] + sd(b)*b[0]) / (a[0] + b[0])
+  return ((div(a)*size(a) + div(b)*size(b))
+          / (size(a) + size(b)))
 
-def cutNum(xy): # (left, right, x) per value boundary
+def cutNum(xy, acc): # (left, right, x) per value boundary
   xy.sort()
-  here, there = Num(), Nums(y for _, y in xy)
+  here, there = acc(), adds((y for _, y in xy), acc())
   for i, (x, y) in enumerate(xy[:-1]):
     here, there = add(here, y), add(there, y, -1)
     if x != xy[i+1][0]: yield here, there, x
 
-def cutSym(xy): # (in, out, sym), one per symbol
+def cutSym(xy, acc): # (in, out, sym), one per symbol
   for v in dict.fromkeys(x for x, _ in xy):
-    yield (Nums(y for x, y in xy if x == v),
-           Nums(y for x, y in xy if x != v), v)
+    yield (adds((y for x, y in xy if x == v), acc()),
+           adds((y for x, y in xy if x != v), acc()), v)
 
 def cut(t, rows, ys): # best (col, val) to split rows on
+  acc = Sym if type(ys[0]) is str else Num
   best = (1e30, None, None)
   for at in t.x:
-    xy = [(x, y) for r, y in zip(rows, ys)
-          if (x := r[at]) != "?"]
-    for here, there, v in (cutNum if is_num(t.cols[at])
-                           else cutSym)(xy):
-      if the.Leaf <= here[0] <= len(xy) - the.Leaf:
+    xy = [(x, y) for r,y in zip(rows, ys) if (x := r[at]) != "?"]
+    what = cutNum if is_num(t.cols[at]) else cutSym
+    for here, there, v in what(xy, acc):
+      if the.Leaf <= size(here) <= len(xy) - the.Leaf:
         if (s := xpect(here, there)) < best[0]:
           best = (s, at, v)
   return best[1:]
@@ -160,9 +170,13 @@ def routing(t, at, v):
             lambda r: (c[1] if r[at] == "?" else r[at]) <= v)
   return (f"{s} = {v}", f"{s} != {v}", lambda r: r[at] == v)
 
-def tree(t, rows, edge=""):
-  ys = [ydist(t, r) for r in rows]
-  node = [edge, len(rows), sum(ys)/len(ys), ymids(t, rows)]
+def tree(t, rows, edge="", y=None):
+  y  = y or (lambda r: ydist(t, r))
+  ys = [y(r) for r in rows]
+  node = [edge, len(rows),
+          mid(adds(ys, Sym())) if type(ys[0]) is str
+          else sum(ys) / len(ys),
+          ymids(t, rows)]
   at, v = (cut(t, rows, ys) if len(rows) > the.Leaf
            else (None, None))
   if at is not None:
@@ -170,7 +184,7 @@ def tree(t, rows, edge=""):
     yes = [r for r in rows if go(r)]
     no  = [r for r in rows if not go(r)]
     if yes and no:
-      node += [go, tree(t, yes, e1), tree(t, no, e2)]
+      node += [go, tree(t, yes, e1, y), tree(t, no, e2, y)]
   return node
 
 def kids(n): return n[5:]
@@ -216,12 +230,10 @@ def test_help():
   "Show usage, settings, demos"
   print("usage: python3 y3.py [-Key val ..] [--demo ..]",
         "\nsettings:",
-        *[f"  -{k:<6} {v}"
-          for k, v in sorted(vars(the).items())],
+        *[f"  -{k:<6} {v}" for k,v in sorted(vars(the).items())],
         "\ndemos:",
         *[f"  --{k[5:]:<8} {f.__doc__}"
-          for k, f in sorted(globals().items())
-          if k[:5] == "test_"],
+         for k,f in sorted(globals().items()) if k[:5]=="test_"],
         sep="\n")
 
 def test_tree():
@@ -239,6 +251,19 @@ def test_holdout():
   win = wins(t)
   mu = sum(win(holdout(t)) for _ in range(20)) / 20
   print(f"win {round(mu)}")
+
+def test_klass():
+  "Classify diabetes: accuracy over 5 holdouts"
+  t = Tbl(csv("$MOOT/classify/diabetes.csv"))
+  y = lambda r: r[t.klass]
+  mu = 0
+  for _ in range(5):
+    rows = random.sample(t.rows, len(t.rows))
+    n = len(rows) * 2 // 3
+    tt = tree(clone(t, rows[:n]), rows[:n], y=y)
+    mu += (sum(leaf(tt, r)[2] == y(r) for r in rows[n:])
+           / (len(rows) - n))
+  print(f"accuracy {round(mu/5, 2)}")
 
 def run(f=None):
   random.seed(the.Seed)
