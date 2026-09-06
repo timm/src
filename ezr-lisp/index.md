@@ -36,7 +36,11 @@ So here we go the other direction: seven tricks that make AI
 simple, fast, and understandable &mdash; even for complex
 problems:
 
-- Domain ananalys:
+- Go neuro-symbolic: smmybols sstesms smaller and simpler. combine with heuro
+
+-  Satisfice (Simon, 1956) is the general umbrella — stop at good enough, don't pay for optimal. But it's about stopping criteria, not about indistinguishability, so it only half-fits.
+
+Domain ananalys:
 Parnas (1976) tells us to study the domain first, harvest its recurring parts, then build applications by assembling parts. If you do this right, then the more you code, the more new things
 are just recombiantions of old things.  For example, once you can cluster data into related
 groups, then regression is just  find your cloests cluster; then report the mean
