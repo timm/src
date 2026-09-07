@@ -14,8 +14,15 @@ Options:
   -k=1       bayes: rare klass hack
   -m=2       bayes: rare evidence hack
   -Seed=1234567891  random number seed
-  -File=$MOOT/optimize/misc/auto93.csv
-"""
+  -File=$MOOT/optimize/misc/auto93.csv """
+# pylint: disable=bad-indentation,invalid-name
+# pylint: disable=missing-function-docstring
+# pylint: disable=multiple-statements,multiple-imports
+# pylint: disable=unnecessary-lambda-assignment
+# pylint: disable=inconsistent-return-statements
+# pylint: disable=dangerous-default-value
+# pylint: disable=broad-exception-caught
+
 import os, random, re, sys, traceback
 from math import exp, log, log2, pi, sqrt
 from types import SimpleNamespace as o
@@ -43,7 +50,7 @@ def csv(file):
 Num = lambda: (0, 0, 0) # n, mu, m2: all Welford keeps
 Sym = dict
 
-def is_num(col): return type(col) is tuple
+def is_num(col): return isinstance(col, tuple)
 
 def sd(col): return 0 if col[0] < 2 else sqrt(col[2]/(col[0]-1))
 
@@ -212,7 +219,7 @@ def routing(tbl, at, v):
 def tree(tbl, rows, edge="", y=None):
   y    = y or (lambda r: ydist(tbl, r))
   ys   = [y(r) for r in rows]
-  acc  = Sym if type(ys[0]) is str else Num
+  acc  = Sym if isinstance(ys[0],str) else Num
   node = [edge, len(rows), mid(adds(ys,acc())), ymids(tbl,rows)]
   if (len(rows) > the.Leaf and (best := cut(tbl, rows, ys,acc))):
     e1, e2, go = routing(tbl, *best)
@@ -300,7 +307,8 @@ def test_cuts():
   at, v = cut(t, rows, ys, Num)
   e1, e2, go = routing(t, at, v)
   yes = sum(go(r) for r in rows)
-  assert 0 < yes < len(rows); print(f"cut: {e1} yes={yes}")
+  assert 0 < yes < len(rows)
+  print(f"cut: {e1} yes={yes}; {e2} no={len(rows)-yes}")
 
 def test_wins():
   "wins grades the best row 100"
