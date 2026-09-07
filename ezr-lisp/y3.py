@@ -161,13 +161,12 @@ def liked(tbls, row): # most likely of several tables
 
 def confuse(pairs): # (got, want)s --> per-klass scores
   out = {x: o(l=x, tp=0, fp=0, fn=0, tn=0)
-         for p in pairs for x in p}
+         for x in {x for p in pairs for x in p}}
   for got, want in pairs:
-    for x, c in out.items():
-      if   x == want: c.tp += got == want; c.fn += got != want
-      elif x == got : c.fp += 1
-      else          : c.tn += 1
+    if got == want: out[want].tp += 1
+    else:           out[want].fn += 1; out[got].fp += 1
   for c in out.values():
+    c.tn   = len(pairs) - c.tp - c.fn - c.fp
     c.acc  = (c.tp + c.tn) / len(pairs)
     c.pd   = c.tp / (c.tp + c.fn + 1e-32)
     c.pf   = c.fp / (c.fp + c.tn + 1e-32)
@@ -188,7 +187,7 @@ def cutNum(xy, acc): # (left, right, x) per value boundary
     if x != xy[i+1][0]: yield here, there, x
 
 def cutSym(xy, acc): # (in, out, sym), one per symbol
-  for v in dict.fromkeys(x for x, _ in xy):
+  for v in sorted({x for x, _ in xy}):
     yield (adds((y for x, y in xy if x == v), acc()),
            adds((y for x, y in xy if x != v), acc()), v)
 
