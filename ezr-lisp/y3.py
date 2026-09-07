@@ -23,8 +23,8 @@ def atom(s):
     try: return float(s)
     except ValueError: return s.strip()
 
-the = o(**{k: atom(v) for k, v in
-           re.findall(r"(\w+)=(\S+)", __doc__ or "")})
+pat = r"(\w+)=(\S+)"
+the = o(**{k: atom(v) for k,v in re.findall(pat, __doc__ or "")})
 
 def csv(file):
   file = file.replace("$MOOT", os.environ.get("MOOT")
@@ -34,17 +34,17 @@ def csv(file):
             for line in f if line.strip()]
 
 #-- structs -----------------------------------------------
-def Num(): return (0, 0, 0)  # n, mu, m2: all Welford keeps
+Num = lambda: (0, 0, 0) # n, mu, m2: all Welford keeps
 Sym = dict
 
-def is_num(c): return type(c) is tuple
+def is_num(col): return type(col) is tuple
 
-def sd(c): return 0 if c[0] < 2 else (c[2]/(c[0]-1)) ** .5
+def sd(col): return 0 if col[0] < 2 else (col[2]/(col[0]-1))**.5
 
-def add(c, v, inc=1): # new Num, or updated Sym; inc=-1 undoes
-  if v == "?": return c
-  if not is_num(c): c[v] = c.get(v, 0) + inc; return c
-  n, mu, m2 = c
+def add(col, v, inc=1): # new Num, or updated Sym; inc=-1 undoes
+  if v == "?": return col
+  if not is_num(col): col[v] = col.get(v, 0) + inc; return col
+  n, mu, m2 = col
   n += inc
   d = v - mu
   mu += inc * d / max(1, n)
@@ -55,12 +55,13 @@ def adds(lst, it=None): # accumulate a list into it
   for y in lst: it = add(it, y)  # clobber an empty Sym()
   return it
 
-def size(c): return c[0] if is_num(c) else sum(c.values())
+def size(col):
+  return col[0] if is_num(col) else sum(col.values())
 
-def div(c): # Num: sd. Sym: entropy
-  if is_num(c): return sd(c)
-  n = sum(c.values())
-  return -sum(v/n * math.log2(v/n) for v in c.values() if v>0)
+def div(col): # Num: sd. Sym: entropy
+  if is_num(col): return sd(col)
+  n = sum(col.values())
+  return -sum(v/n * math.log2(v/n) for v in col.values() if v>0)
 
 def Tbl(src):
   tbl = o(rows=[], cols={}, x=[], y={}, names=src[0],
@@ -74,63 +75,63 @@ def Tbl(src):
   for row in src[1:]: addRow(tbl, row)
   return tbl
 
-def clone(t, rows=[]): return Tbl([t.names] + rows)
+def clone(tbl, rows=[]): return Tbl([tbl.names] + rows)
 
-def addRow(t, row=None, inc=1): # inc=-1 pops the last row
-  if inc > 0: t.rows.append(row)
-  else: row = t.rows.pop()
-  for at in t.cols:
-    t.cols[at] = add(t.cols[at], row[at], inc)
+def addRow(tbl, row=None, inc=1): # inc=-1 pops the last row
+  if inc > 0: tbl.rows.append(row)
+  else: row = tbl.rows.pop()
+  for at in tbl.cols:
+    tbl.cols[at] = add(tbl.cols[at], row[at], inc)
   return row
 
 #-- distance ----------------------------------------------
-def norm(c, v):
-  z = max(-3, min(3, (v - c[1]) / (1e-32 + sd(c))))
+def norm(col, v):
+  z = max(-3, min(3, (v - col[1]) / (1e-32 + sd(col))))
   return 1 / (1 + math.exp(-1.7 * z))
 
-def mid(c):
-  return c[1] if is_num(c) else max(c, key=c.get) if c else "?"
+def mid(col):
+  return col[1] if is_num(col) else max(col, key=col.get)
 
-def mids(t): # centroid; only ever read over x columns
-  return {at: mid(t.cols[at]) for at in t.x}
+def mids(tbl): # centroid; only ever read over x columns
+  return {at: mid(tbl.cols[at]) for at in tbl.x}
 
-def ydist(t, row):
-  return (sum(abs(norm(t.cols[at], row[at]) - w) ** the.P
-              for at, w in t.y.items()) / len(t.y))**(1/the.P)
+def ydist(tbl, row):
+  return (sum(abs(norm(tbl.cols[at], row[at]) - w) ** the.P
+             for at, w in tbl.y.items()) / len(tbl.y))**(1/the.P)
 
-def _dist(c, a, b):
+def _dist(col, a, b):
   if a == "?" or b == "?": return 1
-  return abs(norm(c, a) - norm(c, b)) if is_num(c) else a != b
+  return abs(norm(col,a) - norm(col,b)) if is_num(col) else a!=b
 
-def xdist(t, row, m):
-  return (sum(_dist(t.cols[at], row[at], m[at]) ** the.P
-              for at in t.x) / len(t.x)) ** (1 / the.P)
+def xdist(tbl, row, m):
+  return (sum(_dist(tbl.cols[at], row[at], m[at]) ** the.P
+              for at in tbl.x) / len(tbl.x)) ** (1 / the.P)
 
-def ymu(t, rows):
-  return sum(ydist(t, r) for r in rows) / len(rows)
+def ymu(tbl, rows):
+  return sum(ydist(tbl, r) for r in rows) / len(rows)
 
-def ymids(t, rows):
-  return [sum(r[at] for r in rows)/len(rows) for at in t.y]
+def ymids(tbl, rows):
+  return [sum(r[at] for r in rows)/len(rows) for at in tbl.y]
 
 #-- acquire -----------------------------------------------
-def pop(t, best, rest, todo):
+def pop(tbl, best, rest, todo):
   b, r = mids(best), mids(rest)
-  todo.sort(key=lambda z: xdist(t, z, r) - xdist(t, z, b))
+  todo.sort(key=lambda z: xdist(tbl, z, r) - xdist(tbl, z, b))
   return todo.pop()
 
-def label(t, best, rest, row): # b > int(sqrt(m)) iff b*b > m
+def label(tbl, best, rest, row): # b > int(sqrt(m)) iff b*b > m
   addRow(best, row)
-  best.rows.sort(key=lambda r: ydist(t, r))
+  best.rows.sort(key=lambda r: ydist(tbl, r))
   b, r = len(best.rows), len(rest.rows)
   if b*b > 1 + b + r: addRow(rest, addRow(best, inc=-1))
 
-def acquire(t, cap=None):
-  best, rest = clone(t), clone(t)
-  todo = random.sample(t.rows, len(t.rows))[:the.Few]
-  for _ in range(the.Start): label(t, best, rest, todo.pop())
+def acquire(tbl, cap=None):
+  best, rest = clone(tbl), clone(tbl)
+  todo = random.sample(tbl.rows, len(tbl.rows))[:the.Few]
+  for _ in range(the.Start): label(tbl, best, rest, todo.pop())
   cap = cap or the.Stop
   while todo and len(best.rows) + len(rest.rows) < cap:
-    label(t, best, rest, pop(t, best, rest, todo))
+    label(tbl, best, rest, pop(tbl, best, rest, todo))
   return best.rows + rest.rows
 
 #-- tree --------------------------------------------------
@@ -151,40 +152,36 @@ def cutSym(xy, acc): # (in, out, sym), one per symbol
     yield (adds((y for x, y in xy if x == v), acc()),
            adds((y for x, y in xy if x != v), acc()), v)
 
-def cut(t, rows, ys): # best (col, val) to split rows on
-  acc = Sym if type(ys[0]) is str else Num
+def cut(tbl, rows, ys, acc): # best (col, val) split
   best = (1e30, None, None)
-  for at in t.x:
+  for at in tbl.x:
     xy = [(x, y) for r,y in zip(rows, ys) if (x := r[at]) != "?"]
-    what = cutNum if is_num(t.cols[at]) else cutSym
+    what = cutNum if is_num(tbl.cols[at]) else cutSym
     for here, there, v in what(xy, acc):
       if the.Leaf <= size(here) <= len(xy) - the.Leaf:
         if (s := xpect(here, there)) < best[0]:
           best = (s, at, v)
-  return best[1:]
+  if best[1] is not None: return best[1:]
 
-def routing(t, at, v):
-  s, c = t.names[at], t.cols[at]
+def routing(tbl, at, v):
+  s, c = tbl.names[at], tbl.cols[at]
   if is_num(c):
     return (f"{s} <= {round(v,2)}", f"{s} > {round(v,2)}",
             lambda r: (c[1] if r[at] == "?" else r[at]) <= v)
   return (f"{s} = {v}", f"{s} != {v}", lambda r: r[at] == v)
 
-def tree(t, rows, edge="", y=None):
-  y  = y or (lambda r: ydist(t, r))
-  ys = [y(r) for r in rows]
-  node = [edge, len(rows),
-          mid(adds(ys, Sym())) if type(ys[0]) is str
-          else sum(ys) / len(ys),
-          ymids(t, rows)]
-  at, v = (cut(t, rows, ys) if len(rows) > the.Leaf
-           else (None, None))
-  if at is not None:
-    e1, e2, go = routing(t, at, v)
-    yes = [r for r in rows if go(r)]
-    no  = [r for r in rows if not go(r)]
+def tree(tbl, rows, edge="", y=None):
+  y    = y or (lambda r: ydist(tbl, r))
+  ys   = [y(r) for r in rows]
+  acc  = Sym if type(ys[0]) is str else Num
+  node = [edge, len(rows), mid(adds(ys,acc())), ymids(tbl,rows)]
+  if (len(rows) > the.Leaf and (best := cut(tbl, rows, ys,acc))):
+    e1, e2, go = routing(tbl, *best)
+    yes, no = [], []
+    for r in rows:
+      (yes if go(r) else no).append(r)
     if yes and no:
-      node += [go, tree(t, yes, e1, y), tree(t, no, e2, y)]
+      node += [go, tree(tbl, yes, e1, y), tree(tbl, no, e2, y)]
   return node
 
 def kids(n): return n[5:]
@@ -197,10 +194,10 @@ def leaf(tr, row):
 def leafs(tr):
   return [x for k in kids(tr) for x in leafs(k)] or [tr]
 
-def show(t, tr):
+def show(tbl, tr):
   ls = sorted(leafs(tr), key=lambda z: z[2])
-  print("  d2h   n" + "".join(f"{t.names[at]:>7}"
-                              for at in t.y))
+  print("  d2h   n" + "".join(f"{tbl.names[at]:>7}"
+                              for at in tbl.y))
   def walk(z, pre=None):
     m = "+" if z is ls[0] else "-" if z is ls[-1] else " "
     print((f"{m} {round(100*z[2]):>3} {z[1]:>3}"
@@ -210,17 +207,17 @@ def show(t, tr):
   walk(tr)
 
 #-- tests -------------------------------------------------
-def wins(t):
-  ys = sorted(ydist(t, r) for r in t.rows)
+def wins(tbl):
+  ys = sorted(ydist(tbl, r) for r in tbl.rows)
   lo, b4 = ys[0], sum(ys) / len(ys)
   return lambda r: max(-100, min(100,
-    100 * (1 - (ydist(t, r) - lo) / (b4 - lo + 1e-32))))
+    100 * (1 - (ydist(tbl, r) - lo) / (b4 - lo + 1e-32))))
 
-def holdout(t):
-  rows = random.sample(t.rows, len(t.rows))
+def holdout(tbl):
+  rows = random.sample(tbl.rows, len(tbl.rows))
   n = len(rows) // 2
   train, test = rows[:n][:the.Few], rows[n:]
-  tr = clone(t, train)
+  tr = clone(tbl, train)
   tt = tree(tr, acquire(tr, the.Stop - the.Check))
   top = sorted(test, key=lambda r: leaf(tt,r)[2])[:the.Check]
   return min(top, key=lambda r: ydist(tr, r))
@@ -238,29 +235,29 @@ def test_help():
 
 def test_tree():
   "Acquire, grow and show the.File's tree"
-  t = Tbl(csv(the.File))
-  lab = acquire(t)
-  print(f"{the.File} n={len(t.rows)}"
-        f" mid={round(ymu(t, t.rows), 3)}"
-        f" ezr={round(ydist(t, lab[0]), 3)}")
-  show(t, tree(t, lab))
+  tbl = Tbl(csv(the.File))
+  lab = acquire(tbl)
+  print(f"{the.File} n={len(tbl.rows)}"
+        f" mid={round(ymu(tbl, tbl.rows), 3)}"
+        f" ezr={round(ydist(tbl, lab[0]), 3)}")
+  show(tbl, tree(tbl, lab))
 
 def test_holdout():
   "Mean win over 20 train/test holdouts"
-  t = Tbl(csv(the.File))
-  win = wins(t)
-  mu = sum(win(holdout(t)) for _ in range(20)) / 20
+  tbl = Tbl(csv(the.File))
+  win = wins(tbl)
+  mu = sum(win(holdout(tbl)) for _ in range(20)) / 20
   print(f"win {round(mu)}")
 
 def test_klass():
   "Classify diabetes: accuracy over 5 holdouts"
-  t = Tbl(csv("$MOOT/classify/diabetes.csv"))
-  y = lambda r: r[t.klass]
+  tbl = Tbl(csv("$MOOT/classify/diabetes.csv"))
+  y = lambda r: r[tbl.klass]
   mu = 0
   for _ in range(5):
-    rows = random.sample(t.rows, len(t.rows))
+    rows = random.sample(tbl.rows, len(tbl.rows))
     n = len(rows) * 2 // 3
-    tt = tree(clone(t, rows[:n]), rows[:n], y=y)
+    tt = tree(clone(tbl, rows[:n]), rows[:n], y=y)
     mu += (sum(leaf(tt, r)[2] == y(r) for r in rows[n:])
            / (len(rows) - n))
   print(f"accuracy {round(mu/5, 2)}")
