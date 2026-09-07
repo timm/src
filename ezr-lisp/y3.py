@@ -1,6 +1,6 @@
 #!/usr/bin/env python3 -B
 """
-y3.py: y2 with fewer parts (ydist trees, derived sd, no without)
+y3.py: y2 with fewer parts (ydist trees, bayes, derived sd)
 (c) 2026 Tim Menzies <timm@ieee.org> MIT license
 
 Options:
@@ -11,17 +11,22 @@ Options:
   -Few=128   max train rows
   -Leaf=4    tree: min rows in any leaf
   -Check=5   holdout: top picks to label
+  -k=1       bayes: rare klass hack
+  -m=2       bayes: rare evidence hack
   -Seed=1234567891  random number seed
   -File=$MOOT/optimize/misc/auto93.csv
 """
-import math, os, random, re, sys
+import os, random, re, sys, traceback
+from math import exp, log, log2, pi, sqrt
 from types import SimpleNamespace as o
 
-def atom(s):
+def atom(s,bools={'True': True, 'False': False}):
   try: return int(s)
   except ValueError:
     try: return float(s)
-    except ValueError: return s.strip()
+    except ValueError:
+      s = s.strip()
+      return bools.get(s, s)
 
 pat = r"(\w+)=(\S+)"
 the = o(**{k: atom(v) for k,v in re.findall(pat, __doc__ or "")})
@@ -33,13 +38,14 @@ def csv(file):
     return [tuple(atom(x) for x in line.split(","))
             for line in f if line.strip()]
 
+
 #-- structs -----------------------------------------------
 Num = lambda: (0, 0, 0) # n, mu, m2: all Welford keeps
 Sym = dict
 
 def is_num(col): return type(col) is tuple
 
-def sd(col): return 0 if col[0] < 2 else (col[2]/(col[0]-1))**.5
+def sd(col): return 0 if col[0] < 2 else sqrt(col[2]/(col[0]-1))
 
 def add(col, v, inc=1): # new Num, or updated Sym; inc=-1 undoes
   if v == "?": return col
@@ -61,11 +67,10 @@ def size(col):
 def div(col): # Num: sd. Sym: entropy
   if is_num(col): return sd(col)
   n = sum(col.values())
-  return -sum(v/n * math.log2(v/n) for v in col.values() if v>0)
+  return -sum(v/n * log2(v/n) for v in col.values() if v>0)
 
 def Tbl(src):
-  tbl = o(rows=[], cols={}, x=[], y={}, names=src[0],
-          klass=None)
+  tbl = o(rows=[], cols={}, x=[], y={}, names=src[0], klass=None)
   for at, s in enumerate(tbl.names):
     if not s.endswith("X"):
       tbl.cols[at] = Num() if s[0].isupper() else Sym()
@@ -84,10 +89,11 @@ def addRow(tbl, row=None, inc=1): # inc=-1 pops the last row
     tbl.cols[at] = add(tbl.cols[at], row[at], inc)
   return row
 
+
 #-- distance ----------------------------------------------
 def norm(col, v):
   z = max(-3, min(3, (v - col[1]) / (1e-32 + sd(col))))
-  return 1 / (1 + math.exp(-1.7 * z))
+  return 1 / (1 + exp(-1.7 * z))
 
 def mid(col):
   return col[1] if is_num(col) else max(col, key=col.get)
@@ -119,11 +125,11 @@ def pop(tbl, best, rest, todo):
   todo.sort(key=lambda z: xdist(tbl, z, r) - xdist(tbl, z, b))
   return todo.pop()
 
-def label(tbl, best, rest, row): # b > int(sqrt(m)) iff b*b > m
+def label(tbl, best, rest, row): # keep best pool near sqrt
   addRow(best, row)
   best.rows.sort(key=lambda r: ydist(tbl, r))
   b, r = len(best.rows), len(rest.rows)
-  if b*b > 1 + b + r: addRow(rest, addRow(best, inc=-1))
+  if b > sqrt(1 + b + r): addRow(rest, addRow(best, inc=-1))
 
 def acquire(tbl, cap=None):
   best, rest = clone(tbl), clone(tbl)
@@ -134,11 +140,45 @@ def acquire(tbl, cap=None):
     label(tbl, best, rest, pop(tbl, best, rest, todo))
   return best.rows + rest.rows
 
+
+#-- bayes -------------------------------------------------
+def like(col, v, prior=0): # P(v | col)
+  if not is_num(col):
+    return ((col.get(v, 0) + the.m * prior)
+            / (size(col) + the.m + 1e-32))
+  s = sd(col) + 1e-32
+  return exp(-(v-col[1])**2 / (2*s*s)) / sqrt(2*pi*s*s)
+
+def likes(tbl, row, nall, nh): # log P(tbl | row), unscaled
+  prior = (len(tbl.rows) + the.k) / (nall + the.k * nh)
+  return log(prior) + sum(
+    log(1e-32 + like(tbl.cols[at], v, prior))
+    for at in tbl.x if (v := row[at]) != "?")
+
+def liked(tbls, row): # most likely of several tables
+  n = sum(len(t.rows) for t in tbls.values())
+  return max(tbls, key=lambda k:likes(tbls[k],row,n,len(tbls)))
+
+def confuse(pairs): # (got, want)s --> per-klass scores
+  out = {x: o(l=x, tp=0, fp=0, fn=0, tn=0)
+         for p in pairs for x in p}
+  for got, want in pairs:
+    for x, c in out.items():
+      if   x == want: c.tp += got == want; c.fn += got != want
+      elif x == got : c.fp += 1
+      else          : c.tn += 1
+  for c in out.values():
+    c.acc  = (c.tp + c.tn) / len(pairs)
+    c.pd   = c.tp / (c.tp + c.fn + 1e-32)
+    c.pf   = c.fp / (c.fp + c.tn + 1e-32)
+    c.prec = c.tp / (c.tp + c.fp + 1e-32)
+  return out
+
+
 #-- tree --------------------------------------------------
 # Node = [edge, n, ymu, ymids, go, kid, kid]
 def xpect(a, b): # sizes are >= the.Leaf, so no zero guard
-  return ((div(a)*size(a) + div(b)*size(b))
-          / (size(a) + size(b)))
+  return ((div(a)*size(a) + div(b)*size(b))/(size(a) + size(b)))
 
 def cutNum(xy, acc): # (left, right, x) per value boundary
   xy.sort()
@@ -190,6 +230,7 @@ def leaf(tr, row):
   while kids(tr): tr = tr[5] if tr[4](row) else tr[6]
   return tr
 
+
 #-- report ------------------------------------------------
 def leafs(tr):
   return [x for k in kids(tr) for x in leafs(k)] or [tr]
@@ -222,6 +263,7 @@ def holdout(tbl):
   top = sorted(test, key=lambda r: leaf(tt,r)[2])[:the.Check]
   return min(top, key=lambda r: ydist(tr, r))
 
+
 #-- start-up ----------------------------------------------
 def test_help():
   "Show usage, settings, demos"
@@ -229,14 +271,47 @@ def test_help():
         "\nsettings:",
         *[f"  -{k:<6} {v}" for k,v in sorted(vars(the).items())],
         "\ndemos:",
-        *[f"  --{k[5:]:<8} {f.__doc__}"
-         for k,f in sorted(globals().items()) if k[:5]=="test_"],
+        *[f"  --{k[5:]:<10} {f.__doc__}"
+          for k, f in globals().items() if k[:5] == "test_"],
         sep="\n")
+
+def test_num():
+  "Welford add matches textbook mean and sd"
+  c = adds([2, 4, 4, 4, 5, 5, 7, 9])
+  assert c[0] == 8 and c[1] == 5 and abs(sd(c)-2.138) < .01
+  print(f"mu {c[1]} sd {round(sd(c), 3)}")
+
+def test_sym():
+  "Syms count; mid is mode; div is entropy"
+  c = adds("aabbbc", Sym())
+  assert c["b"]==3 and mid(c)=="b" and abs(div(c)-1.459)<.01
+  print(f"mode {mid(c)} ent {round(div(c), 3)}")
+
+def test_tbl():
+  "Headers route columns to x, y, klass, or nowhere"
+  t = Tbl([("Age","job!","SkipX","Weight-"), (2,"a",3,80)])
+  assert t.x == [0] and t.y == {3: False} and t.klass == 1
+  assert 2 not in t.cols
+  print(f"x {t.x} y {t.y} klass {t.klass}")
+
+def test_cuts():
+  "cut returns a legal, routable split"
+  t = Tbl(csv(the.File))
+  rows = t.rows[:64]; ys = [ydist(t, r) for r in rows]
+  at, v = cut(t, rows, ys, Num)
+  e1, e2, go = routing(t, at, v)
+  yes = sum(go(r) for r in rows)
+  assert 0 < yes < len(rows); print(f"cut: {e1} yes={yes}")
+
+def test_wins():
+  "wins grades the best row 100"
+  t = Tbl(csv(the.File))
+  w = wins(t)(min(t.rows, key=lambda r: ydist(t, r)))
+  assert w == 100; print(f"best row wins {w}")
 
 def test_tree():
   "Acquire, grow and show the.File's tree"
-  tbl = Tbl(csv(the.File))
-  lab = acquire(tbl)
+  tbl = Tbl(csv(the.File)); lab = acquire(tbl)
   print(f"{the.File} n={len(tbl.rows)}"
         f" mid={round(ymu(tbl, tbl.rows), 3)}"
         f" ezr={round(ydist(tbl, lab[0]), 3)}")
@@ -249,28 +324,44 @@ def test_holdout():
   mu = sum(win(holdout(tbl)) for _ in range(20)) / 20
   print(f"win {round(mu)}")
 
-def test_klass():
-  "Classify diabetes: accuracy over 5 holdouts"
-  tbl = Tbl(csv("$MOOT/classify/diabetes.csv"))
+def _klass(fit, file="$MOOT/classify/diabetes.csv"):
+  tbl = Tbl(csv(file)) # fit(tbl, rows, y) --> predictor(row)
   y = lambda r: r[tbl.klass]
-  mu = 0
-  for _ in range(5):
+  pairs = []
+  for _ in range(20): # 50:50 train:test, pool all pairs
     rows = random.sample(tbl.rows, len(tbl.rows))
-    n = len(rows) * 2 // 3
-    tt = tree(clone(tbl, rows[:n]), rows[:n], y=y)
-    mu += (sum(leaf(tt, r)[2] == y(r) for r in rows[n:])
-           / (len(rows) - n))
-  print(f"accuracy {round(mu/5, 2)}")
+    n = len(rows) // 2
+    got = fit(tbl, rows[:n], y)
+    pairs += [(got(r), y(r)) for r in rows[n:]]
+  for c in confuse(pairs).values():
+    print(f"{c.l:>15} acc {c.acc:.2f} pd {c.pd:.2f}"
+          f" pf {c.pf:.2f} prec {c.prec:.2f}")
+
+def test_klassTree():
+  "Tree classify diabetes: pd, pf, prec per class"
+  def fit(tbl, rows, y):
+    b4, the.Leaf = the.Leaf, int(sqrt(len(rows)))
+    tt = tree(clone(tbl, rows), rows, y=y)
+    the.Leaf = b4
+    return lambda r: leaf(tt, r)[2]
+  _klass(fit)
+
+def test_klassBayes():
+  "Bayes classify diabetes: pd, pf, prec per class"
+  def fit(tbl, rows, y):
+    tbls = {}
+    for r in rows:
+      if y(r) not in tbls: tbls[y(r)] = clone(tbl)
+      addRow(tbls[y(r)], r)
+    return lambda r: liked(tbls, r)
+  _klass(fit)
 
 def run(f=None):
-  random.seed(the.Seed)
-  try: (f or test_help)()
-  except Exception:
-    import traceback; traceback.print_exc(); return 1
+  try: random.seed(the.Seed); (f or test_help)()
+  except Exception: traceback.print_exc(); return 1
   return 0
 
-def cli(d, args):
-  n = 0
+def cli(d, args, n=0):
   while args:
     s = args.pop(0)
     if   s[:2] == "--": n += run(globals().get("test_"+s[2:]))
