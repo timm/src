@@ -55,13 +55,11 @@ def csv(file):
 Num = lambda: (0, 0, 0) # n, mu, m2: all Welford keeps
 Sym = dict
 
-def is_num(col): return isinstance(col, tuple)
-
 def sd(col): return 0 if col[0] < 2 else sqrt(col[2]/(col[0]-1))
 
 def add(col, v, inc=1): # new Num, or updated Sym; inc=-1 undoes
   if v == "?": return col
-  if not is_num(col): col[v] = col.get(v, 0) + inc; return col
+  if type(col) is Sym: col[v] = col.get(v, 0) + inc; return col
   n, mu, m2 = col
   n += inc
   d = v - mu
@@ -74,10 +72,10 @@ def adds(lst, it=None): # accumulate a list into it
   return it
 
 def size(col):
-  return col[0] if is_num(col) else sum(col.values())
+  return sum(col.values()) if type(col) is Sym else col[0]
 
 def div(col): # Num: sd. Sym: entropy
-  if is_num(col): return sd(col)
+  if type(col) is not Sym: return sd(col)
   n = sum(col.values())
   return -sum(v/n * log2(v/n) for v in col.values() if v>0)
 
@@ -108,7 +106,7 @@ def norm(col, v):
   return 1 / (1 + exp(-1.7 * z))
 
 def mid(col):
-  return col[1] if is_num(col) else max(col, key=col.get)
+  return max(col, key=col.get) if type(col) is Sym else col[1]
 
 def mids(tbl): # centroid; only ever read over x columns
   return {at: mid(tbl.cols[at]) for at in tbl.x}
@@ -119,7 +117,7 @@ def ydist(tbl, row):
 
 def _dist(col, a, b):
   if a == "?" or b == "?": return 1
-  return abs(norm(col,a) - norm(col,b)) if is_num(col) else a!=b
+  return a != b if type(col) is Sym else abs(norm(col,a)-norm(col,b))
 
 def xdist(tbl, row, m):
   return (sum(_dist(tbl.cols[at], row[at], m[at]) ** the.P
@@ -155,7 +153,7 @@ def acquire(tbl, cap=None):
 
 #-- bayes -------------------------------------------------
 def like(col, v, prior=0): # P(v | col)
-  if not is_num(col):
+  if type(col) is Sym:
     return ((col.get(v, 0) + the.m * prior)
             / (size(col) + the.m + 1e-32))
   s = sd(col) + 1e-32
@@ -208,7 +206,7 @@ def cut(tbl, rows, ys, acc): # best (col, val) split
   best = (1e30, None, None)
   for at in tbl.x:
     xy = [(x, y) for r,y in zip(rows, ys) if (x := r[at]) != "?"]
-    what = cutNum if is_num(tbl.cols[at]) else cutSym
+    what = cutSym if type(tbl.cols[at]) is Sym else cutNum
     for here, there, v in what(xy, acc):
       if the.Leaf <= size(here) <= len(xy) - the.Leaf:
         if (s := xpect(here, there)) < best[0]:
@@ -217,7 +215,7 @@ def cut(tbl, rows, ys, acc): # best (col, val) split
 
 def routing(tbl, at, v):
   s, c = tbl.names[at], tbl.cols[at]
-  if is_num(c):
+  if type(c) is not Sym:
     return (f"{s} <= {round(v,2)}", f"{s} > {round(v,2)}",
             lambda r: (c[1] if r[at] == "?" else r[at]) <= v)
   return (f"{s} = {v}", f"{s} != {v}", lambda r: r[at] == v)
