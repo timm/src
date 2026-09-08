@@ -1,6 +1,6 @@
 #!/usr/bin/env python3 -B
 """
-y3.py: y2 with fewer parts (ydist trees, bayes, derived sd)
+y3.py: minimal XAI for multi-objective reasining
 (c) 2026 Tim Menzies <timm@ieee.org> MIT license
 
 Options:
