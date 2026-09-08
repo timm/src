@@ -14,6 +14,7 @@ Options:
   -k=1       bayes: rare klass hack
   -m=2       bayes: rare evidence hack
   -Klass=$MOOT/classify/diabetes.csv  classify demo data
+  -Repeats=30  klass: number of train/test splits
   -Seed=1234567891  random number seed
   -File=$MOOT/optimize/misc/auto93.csv
 """
@@ -261,10 +262,10 @@ def show(tbl, tr):
 
 
 #-- stats -------------------------------------------------
-def cohen(xs, ys, d=0.35): # mean gap, in units of pooled sd
+def cohen(xs, ys, d=0.35, eps=0): # gap vs pooled sd, floored
   a, b = adds(xs), adds(ys)
   pool = ((a[0]-1)*sd(a)**2 + (b[0]-1)*sd(b)**2)/(a[0]+b[0]-2)
-  return abs(a[1] - b[1]) <= d * sqrt(pool)
+  return abs(a[1] - b[1]) <= max(eps, d * sqrt(pool))
 
 def cliffs(xs, ys, d=0.197): # sorted in. rank imbalance ok?
   gt = lt = j = k = 0
@@ -283,9 +284,9 @@ def ks(xs, ys, a=1.36): # sorted in. 95% kolmogorov-smirnov
     d = max(d, abs(i/n - j/m))
   return d <= a * sqrt((n + m) / (n * m))
 
-def same(xs, ys): # indistinguishable, by all three tests
+def same(xs, ys, eps=0): # indistinguishable, by all three
   xs, ys = sorted(xs), sorted(ys)
-  return cliffs(xs, ys) and ks(xs, ys) and cohen(xs, ys)
+  return (cliffs(xs,ys) and ks(xs,ys) and cohen(xs,ys,eps=eps))
 
 #-- tests -------------------------------------------------
 def wins(tbl):
@@ -307,10 +308,7 @@ def holdout(tbl):
 #-- start-up ----------------------------------------------
 def test_help():
   "Show usage, settings, demos"
-  print("usage: python3 y3.py [-Key val ..] [--demo ..]",
-        "\nsettings:",
-        *[f"  -{k:<6} {v}" for k,v in sorted(vars(the).items())],
-        "\ndemos:",
+  print(__doc__, "Demos:\n",
         *[f"  --{k[5:]:<10} {f.__doc__}"
           for k, f in globals().items() if k[:5] == "test_"],
         sep="\n")
@@ -366,38 +364,51 @@ def test_holdout():
   mu = sum(win(holdout(tbl)) for _ in range(20)) / 20
   print(f"win {round(mu)}")
 
-def _klass(fit): # fit(tbl, rows, y) --> predictor(row)
+def _klass(*fits): # each fit(tbl, rows, y) --> predictor(row)
   tbl = Tbl(csv(the.Klass))
   y = lambda r: r[tbl.klass]
-  pairs = []
-  for _ in range(20): # 50:50 train:test, pool all pairs
-    rows = random.sample(tbl.rows, len(tbl.rows))
-    n = len(rows) // 2
-    got = fit(tbl, rows[:n], y)
-    pairs += [(got(r), y(r)) for r in rows[n:]]
-  for c in confuse(pairs).values():
-    print(f"{c.l:>15} acc {c.acc:.2f} pd {c.pd:.2f}"
-          f" pf {c.pf:.2f} prec {c.prec:.2f}")
+  n = len(tbl.rows) // 2
+  splits = [random.sample(tbl.rows, len(tbl.rows))
+            for _ in range(the.Repeats)] # same splits, all fits
+  def one(fit):
+    accs, pairs = [], []
+    for rows in splits:
+      got = fit(tbl, rows[:n], y)
+      now = [(got(r), y(r)) for r in rows[n:]]
+      pairs += now
+      accs += [sum(g == w for g, w in now) / len(now)]
+    for c in confuse(pairs).values():
+      pc = lambda v: round(100 * v)
+      print(f"{fit.__name__:<10} {pc(c.acc):>3} {pc(c.pd):>3}"
+            f" {pc(c.pf):>3} {pc(c.prec):>4}"
+            f" {tbl.cols[tbl.klass].get(c.l, 0):>6}  {c.l}")
+    return accs
+  print(f"{'rx':<10} {'acc':>3} {'pd':>3} {'pf':>3}"
+        f" {'prec':>4} {'n':>6}  class")
+  return [one(fit) for fit in fits]
 
-def test_klassTree():
-  "Tree classify diabetes: pd, pf, prec per class"
-  def fit(tbl, rows, y): # sqrt rule, unless -Leaf was set
-    old = the.Leaf
-    if old == defaults.Leaf: the.Leaf = int(sqrt(len(rows)))
-    tt = tree(clone(tbl, rows), rows, y=y)
-    the.Leaf = old
-    return lambda r: leaf(tt, r)[2]
-  _klass(fit)
+def fitTree(tbl, rows, y): # sqrt rule, unless -Leaf was set
+  old = the.Leaf
+  if old == defaults.Leaf: the.Leaf = int(sqrt(len(rows)))
+  tt = tree(clone(tbl, rows), rows, y=y)
+  the.Leaf = old
+  return lambda r: leaf(tt, r)[2]
 
-def test_klassBayes():
-  "Bayes classify diabetes: pd, pf, prec per class"
-  def fit(tbl, rows, y):
-    tbls = {}
-    for r in rows:
-      if y(r) not in tbls: tbls[y(r)] = clone(tbl)
-      addRow(tbls[y(r)], r)
-    return lambda r: liked(tbls, r)
-  _klass(fit)
+def fitBayes(tbl, rows, y):
+  tbls = {}
+  for r in rows:
+    if y(r) not in tbls: tbls[y(r)] = clone(tbl)
+    addRow(tbls[y(r)], r)
+  return lambda r: liked(tbls, r)
+
+def test_klass():
+  "Tree vs bayes, same splits: confusions, then same?"
+  a, b = _klass(fitTree, fitBayes)
+  x, z = adds(a), adds(b)
+  print(f"\nfitTree {round(100*x[1])} ({round(100*sd(x))})"
+        f" fitBayes {round(100*z[1])} ({round(100*sd(z))})"
+        f" delta {round(100*abs(x[1] - z[1]))}"
+        f" : {'same' if same(a, b, eps=0.01) else 'different'}")
 
 def test_same():
   "Stats tests tell noise from signal"
