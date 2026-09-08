@@ -14,7 +14,9 @@ Options:
   -k=1       bayes: rare klass hack
   -m=2       bayes: rare evidence hack
   -Seed=1234567891  random number seed
-  -File=$MOOT/optimize/misc/auto93.csv """
+  -File=$MOOT/optimize/misc/auto93.csv
+"""
+
 # pylint: disable=bad-indentation,invalid-name
 # pylint: disable=missing-function-docstring
 # pylint: disable=multiple-statements,multiple-imports
@@ -167,9 +169,10 @@ def liked(tbls, row): # most likely of several tables
   return max(tbls, key=lambda k:likes(tbls[k],row,n,len(tbls)))
 
 def confuse(pairs): # (got, want)s --> per-klass scores
-  out = {x: o(l=x, tp=0, fp=0, fn=0, tn=0)
-         for x in {x for p in pairs for x in p}}
+  out = {}
   for got, want in pairs:
+    for x in [got, want]:
+      out[x] = out.get(x) or o(l=x, tp=0, fp=0, fn=0)
     if got == want: out[want].tp += 1
     else:           out[want].fn += 1; out[got].fp += 1
   for c in out.values():
@@ -316,6 +319,7 @@ def test_wins():
   w = wins(t)(min(t.rows, key=lambda r: ydist(t, r)))
   assert w == 100; print(f"best row wins {w}")
 
+
 def test_tree():
   "Acquire, grow and show the.File's tree"
   tbl = Tbl(csv(the.File)); lab = acquire(tbl)
@@ -363,6 +367,12 @@ def test_klassBayes():
     return lambda r: liked(tbls, r)
   _klass(fit)
 
+def test_all():
+  "Run every demo; exit code counts the crashes"
+  sys.exit(sum(run(f) for k, f in list(globals().items())
+               if k[:5] == "test_" and f is not test_all))
+
+
 def run(f=None):
   try: random.seed(the.Seed); (f or test_help)()
   except Exception: traceback.print_exc(); return 1

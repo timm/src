@@ -5,4 +5,4 @@
 <link rel="stylesheet" href="style.css">
 <script src="hl.js" defer></script>
 <script src="pop.js" defer></script>
-<style>pre { font-size: clamp(8px, 2.2vw, 12px); }</style>
+<style>pre, pre.py { font-size: clamp(8px, 2.2vw, 11px); }</style>
