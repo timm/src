@@ -26,6 +26,7 @@ Options:
 # pylint: disable=inconsistent-return-statements
 # pylint: disable=dangerous-default-value
 # pylint: disable=broad-exception-caught
+# pylint: disable=unidiomatic-typecheck
 
 import os, random, re, sys, traceback
 from math import exp, log, log2, pi, sqrt
@@ -117,7 +118,8 @@ def ydist(tbl, row):
 
 def _dist(col, a, b):
   if a == "?" or b == "?": return 1
-  return a != b if type(col) is Sym else abs(norm(col,a)-norm(col,b))
+  return (a != b if type(col) is Sym
+          else abs(norm(col, a) - norm(col, b)))
 
 def xdist(tbl, row, m):
   return (sum(_dist(tbl.cols[at], row[at], m[at]) ** the.P
@@ -218,7 +220,8 @@ def routing(tbl, at, v):
   if type(c) is not Sym:
     return (f"{s} <= {round(v,2)}", f"{s} > {round(v,2)}",
             lambda r: (c[1] if r[at] == "?" else r[at]) <= v)
-  return (f"{s} = {v}", f"{s} != {v}", lambda r: r[at] == v)
+  return (f"{s} = {v}", f"{s} != {v}",
+          lambda r: (mid(c) if r[at] == "?" else r[at]) == v)
 
 def tree(tbl, rows, edge="", y=None):
   y    = y or (lambda r: ydist(tbl, r))
@@ -385,11 +388,9 @@ def _klass(*fits): # each fit(tbl, rows, y) --> predictor(row)
         f" {'prec':>4} {'n':>6}  class")
   return [one(fit) for fit in fits]
 
-def fitTree(tbl, rows, y): # sqrt rule, unless -Leaf was set
-  old = the.Leaf
-  if old == defaults.Leaf: the.Leaf = int(sqrt(len(rows)))
+def fitTree(tbl, rows, y): # sqrt-sized leaves
+  the.Leaf = int(sqrt(len(rows)))
   tt = tree(clone(tbl, rows), rows, y=y)
-  the.Leaf = old
   return lambda r: leaf(tt, r)[2]
 
 def fitBayes(tbl, rows, y):
@@ -418,13 +419,15 @@ def test_same():
 
 def test_all():
   "Run every demo; exit code counts the crashes"
-  sys.exit(sum(run(f) for k, f in list(globals().items())
+  sys.exit(sum(print(f"\n# {k[5:]}") or run(f)
+               for k, f in list(globals().items())
                if k[:5] == "test_" and f is not test_all))
 
 
-def run(f=None):
-  try: random.seed(the.Seed); (f or test_help)()
+def run(f=None): # demos may mutate the; always clean up
+  try:              random.seed(the.Seed); (f or test_help)()
   except Exception: traceback.print_exc(); return 1
+  finally:          vars(the).update(vars(defaults))
   return 0
 
 def cli(d, funs, args, n=0):
