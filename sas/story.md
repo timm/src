@@ -1,0 +1,681 @@
+{% raw %}
+
+# Sophisticated AI: Simple Ain't Stupid
+
+### Dozens of reusable AI skills from a few hundred lines of Python {.unlisted}
+
+Tim Menzies   
+timm@ieee.org   
+August, 2026  
+
+[![v0.1](https://img.shields.io/badge/version-0.1-8B5CF6)](https://github.com/timm/src/releases)
+[![©2026](https://img.shields.io/badge/%C2%A9_2026-Tim_Menzies-1D4ED8)](https://timm.fyi)
+[![text CC BY 4.0](https://img.shields.io/badge/text-CC_BY_4.0-EF9421?logo=creativecommons&logoColor=white)](https://creativecommons.org/licenses/by/4.0/)
+[![code MIT](https://img.shields.io/badge/code-MIT-3DA639?logo=opensourceinitiative&logoColor=white)](https://opensource.org/license/mit/)    
+[![issues](https://img.shields.io/github/issues/timm/src?logo=github)](https://github.com/timm/src/issues)
+[![last commit](https://img.shields.io/github/last-commit/timm/src)](https://github.com/timm/src/commits/main)
+[![DOI](https://img.shields.io/badge/DOI-tbd-lightgrey)](#)
+[![src](https://img.shields.io/badge/src-github.com%2Ftimm%2Fsrc-181717?logo=github)](https://github.com/timm/src)
+
+## 1. Introduction
+
+> "Simplicity is the ultimate sophistication"         
+> - William Gaddis, The Recognitions (1955) p. 457; 
+
+
+![](sas.png){#logo width=400}
+
+Everybody knows that AI has to be  very complicated, right? Serious
+AI needs a trillion parameters, at the very least. Serious models
+cost tens of millions of dollars to train, and hundreds of dollars
+a day to run. No one can say how they work, which only proves how
+advanced they are. Naturally, we must be nervous about everything
+they tell us; that is the price of progress. In this view,
+sophistication means size.
+
+But  everybody also knows that sophistication of that size has
+problems. Big AI is a rented telescope: powerful, but pointed by
+someone else. Only a few large companies can pay for such training,
+so science now depends on tools that science cannot inspect. The
+models change without notice, so yesterday's results may not run
+tomorrow. Their answers can be wrong in confident ways, so every
+output needs a human check. Also, each new model needs exponentially
+more resources, so now we are running out of the environmental,
+power, and financial resources that kind of AI needs. 
+
+To be
+sure, some problems truly need this big machinery.
+Yet just because AI is sometimes complex, it does not follow
+that it is always complex. The current trap is to assume
+complexity without first checking if it is necessary. This book
+is that check. Its wager is Saint-Exupéry's: 
+
+> Perfection comes not when there is nothing 
+> left to add, but when there is nothing 
+> left to throw away.
+
+That is, in this book, the sophisticated move is knowing what to
+leave out. The next chapters collect our simple methods: AI that
+explains itself, that trains useful models in milliseconds, from
+very little data. As you read them, keep score. For your own work,
+how often would these shortcuts be enough?
+
+We make this concrete with an example. Suppose we want to buy a
+car. Someone tells us that a good car accelerates quickly, uses
+less fuel, and weighs less (since a lighter car is cheaper to
+build, and cheaper to buy). Now someone offers us this car:
+
+    Clndrs, Volume, HpX, Model, origin, Lbs-, Acc+, Mpg+
+         4,    140,  92,    76,      1, 2572, 14.9,   30
+
+What would an AI know about this car? It could tell us if this car
+is unusual, or worthwhiile to buy. Maybe it could find us a better
+car.  And if we must buy this car, our AI  could say what changes
+to the car would help it, the most.
+
+This table lists many other ways our AI could support us. It is
+also the map of this book: one row per chapter, in this order.
+Read it now as a menu; return to it later as a table of
+contents.
+
+| task                                             | skill                      | ch | new LOC | %LOC |
+|--------------------------------------------------|:---------------------------|---:|--------:|-----:|
+| Put 400 cars in one table; measure any gap       | remember (representation)  |  3 |     120 |  36% |
+| Guess the fuel use before we see the sticker     | guess (prediction)         |  4 |      35 |  11% |
+| Check our tricks on a hundred other lots         | check (benchmarking)       |  5 |       0 |   0% |
+| Say when "better" is real, and when it is noise  | certify (certification)    |  6 |      32 |  10% |
+| Decide on the spot as cars arrive one at a time  | flow (streaming)           |  7 |      20 |   6% |
+| Say why the bad cars are slow, or thirsty        | blame (diagnosis)          |  8 |      13 |   4% |
+| Justify any verdict to a skeptical buyer         | justify (explanation)      |  9 |      12 |   4% |
+| Find the best car, test-driving very few         | choose (optimization)      | 10 |      11 |   3% |
+| Chart a path from this car to a better one       | route (planning)           | 11 |       5 |   2% |
+| Find the cheapest change that fixes this car     | fix (repair)               | 12 |      11 |   3% |
+| Sketch a better car from halves of two others    | blend (synthesis)          | 13 |       9 |   3% |
+| Spot a strange car: a typo, or a scam            | spot (anomaly detection)   | 14 |       8 |   2% |
+| 400 cars, one afternoon, what to inspect first?  | ration (triage)            | 15 |       8 |   2% |
+| Trade fast against light against cheap           | haggle (trade-off)         | 16 |       6 |   2% |
+| Notice when the lot quietly changes under us     | watch (drift detection)    | 17 |       5 |   2% |
+| Shrink 400 cars to the dozen that summarize      | shrink (compression)       | 18 |       3 |   1% |
+| Keep learning for years as the market moves      | persist (lifelong learning)| 19 |       7 |   2% |
+| Rehearse every skill on one knowable project     | rehearse (simulation)      | 20 |      20 |   6% |
+| Answer the boss's morning questions with data    | brief (analytics)          | 21 |       8 |   2% |
+| Race our skills against the field's best         | race (baselining)          | 22 |       0 |   0% |
+| Teach the next intern to run the lot             | teach (onboarding)         | 23 |       0 |   0% |
+| Totals                                           |                            |    |     333 | 100% |
+
+(Five rows are not single skills: Chapter 3 builds the one data
+structure everything shares, Chapter 5 collects the terrain
+the other chapters are tested on, Chapters 20 and 21 replay
+every skill twice (on a simulated project, then on a manager's
+morning questions), and Chapter 22 races them against standard
+rivals. Certification comes early, at Chapter 6, right after
+the terrain, because everything downstream may run experiments
+and experiments need a referee.)
+
+The two right-hand columns are the book's first claim, in
+miniature: the new executable lines each chapter needs,
+and each chapter's share of the whole. Big at the start
+(the substrate is a third of everything), then small, then
+zero, because the machinery for skill i+1 was already
+built for skills 1 through i. The Totals row says 333
+lines (demos and the ninety-line COCOMO model of Chapter
+20 excluded; percentages round to 101, and we never round
+away the working), and the final rows cost nothing at all:
+by then, everything is wiring.
+(These counts are estimates while this draft is a draft;
+the build pins them at weave time.)
+
+The chapters run in cost order, near enough, and the four
+breaks in the sort each tell a design story. The zero at
+Chapter 5 is data, not code; a corpus needs no lines.
+Chapter 11 undercuts Chapter 12 because planning must
+come before repair (repair edits a plan). Chapter 19
+pays seven lines after Chapter 18's three because
+lifelong learning composes five earlier skills. And
+Chapter 20's twenty lines are no skill at all; they are a
+world generator, bought so every skill can be tested
+against known truth. A chapter is cheap because its parts
+were paid for earlier, so the cheapest chapters depend on
+the most chapters, and a perfect sort is therefore
+impossible: cheap-because-derived, dear-because-shared is
+what a substrate looks like, written as a column of
+integers.
+
+Call the middle column what it is: these are skills.
+Each is a small, named, auditable capability, a few lines
+each, and the table is how one gets selected. Read the left
+column as a dispatch rule: find the row that names your
+situation, and the middle column names the skill to reach
+for, twice over: a short verb for talking (guess, blame,
+haggle), and in parentheses the formal name the index and
+the chapter titles use. The chapter builds it.
+
+The same skills also hang together, by kind. Shown as a
+tree (in the notation of this book's own tree-printer,
+which Chapter 9 builds):
+
+    all skills
+    |.. reading the world
+    |.. |.. remember (representation, 3)
+    |.. |.. guess (prediction, 4)
+    |.. |.. guard: spot (anomaly, 14), watch (drift, 17)
+    |.. |.. explain: blame (diagnosis, 8),
+    |.. |.. . . . . justify (explanation, 9)
+    |.. |.. ration (triage, 15)
+    |.. changing the world
+    |.. |.. decide: choose (optimization, 10),
+    |.. |.. . . . . haggle (trade-off, 16)
+    |.. |.. alter: route (planning, 11), fix (repair, 12),
+    |.. |.. . . . . blend (synthesis, 13)
+    |.. |.. shrink (compression, 18)
+    |.. enduring the world
+    |.. |.. flow (streaming, 7)
+    |.. |.. persist (lifelong learning, 19)
+    |.. trusting the world
+    |.. |.. prove: check (benchmarking, 5),
+    |.. |.. . . . . certify (certification, 6),
+    |.. |.. . . . . race (baselining, 22)
+    |.. |.. rehearse: warroom (simulation, 20),
+    |.. |.. . . . . . meeting (analytics, 21)
+    |.. |.. teach (onboarding, 23)
+
+Two indexes, one book. The table dispatches by situation
+(what just happened on the lot?); the tree dispatches by
+kind (what sort of move do we need?). Both point at the
+same chapters, one skill each. Neither index is special;
+they are two of many ways to cut one small substrate, and
+Chapter 21 cuts it a third way, along a survey of what
+managers ask, at a cost of about a page. And readers who keep
+Pearl's ladder of causation in their heads (seeing, doing,
+imagining) can read the tree's branches as rungs: reading
+the world is association; changing the world is
+intervention and counterfactual; trusting the world is the
+rung the ladder leaves implicit, where claims get checked.
+
+And where is the AI in all this? In two places. Each skill
+is a small AI in its own right: it learns from data, and
+its answers improve with evidence. But there is a second,
+newer reader of this table. Wiring skills together is
+exactly the work now handed to LLM coding assistants, and
+these skills wire well: one shared table type in, receipts
+out. Ask an assistant to "watch the stream; when the smoke
+detector fires, re-curate the memory and hunt again", and
+the glue writes itself. If you need it. Chapter 19 does
+that wiring in six lines; some of it is so easy the
+assistant would only be typing what you already said.
+Chapter 23 returns to this, with house rules for letting
+such an assistant loose on this codebase.
+
+That division of labor deserves one more sentence, because
+it is a forecast. LLMs have proved excellent at two jobs:
+being an organization's interface (they read anything and
+talk to anyone), and natural-language programming (say what
+you want; receive the glue). For the inference underneath,
+the record is murkier. Asking a trillion parameters "which
+of these 400 cars is best?" costs seconds and dollars,
+resists audit, and may answer differently after the next
+model update. So route that question to the skills instead,
+and note the price of the swap: nothing. Every skill here
+answers through the same small contract, a table in and
+receipts out, so the assistant that wired the skills
+together yesterday cannot even tell that the expensive
+inference engine underneath was replaced by five lines and
+a seed.
+
+This book makes two claims. First, behind the curtain, these
+sixteen skills are almost the same skill. That is, the same few
+hundred lines of Python sit under all of them, and most chapters
+of this book add only a few dozen lines more.
+
+Second, each task in the table is simpler than its reputation
+because, often, _AI is simple_.
+The next chapter shows that, mathematically, finding good
+solutions for any of these tasks can be surprisingly easy. Thus,
+"simple" and "does much" do not conflict. William Gaddis (quote
+above) might have called this approach highly sophisticated. The
+sophistication of this AI is not in its size. It is in how little
+the AI needs:
+
+- No trillion parameters
+- Usually, less than a hundred rows of data.
+
+That is sophistication measured in results, not in size.
+
+So we end this introduction with an invitation. Reflect on these
+examples. Then check, for yourself, if the simpler approach to AI
+is also the more sophisticated one.
+
+### Audience
+
+This book is for anyone worried that coding with LLMs means
+flying over the details and missing what really happens under the
+hood. It is for people who, like Donald Knuth, want their role
+to be "on the bottom of things"[^knuth]. Down at the bottom of
+AI's machinery there is good news: much of it can be
+simplified, then shared across many tasks.
+
+We show this in working Python, in the walk-through style of
+Lions' UNIX commentary[^lions] and Norvig's paradigms of AI
+programming[^norvig] (we try,  but may not always succeed, to
+live up to their standards). If Python is new to you, first read
+Downey's *Think Python*[^downey], Matthes' *Python Crash
+Course*[^matthes], or Grus's *Data Science from
+Scratch*[^grus].
+The Grus book one also previews this book's habit: build the tools yourself.
+
+[^knuth]: Knuth, explaining why he gave up email in 1990:
+"Email is a wonderful thing for people whose role in life is to
+be on top of things. But not for me; my role is to be on the
+bottom of things."
+
+[^lions]: John Lions, "Lions' Commentary on UNIX 6th Edition,
+with Source Code", 1977.
+
+[^norvig]: Peter Norvig, "Paradigms of Artificial Intelligence
+Programming: Case Studies in Common Lisp", Morgan Kaufmann, 1992.
+
+[^downey]: Allen Downey, "Think Python", 3rd ed., O'Reilly, 2024.
+
+[^matthes]: Eric Matthes, "Python Crash Course", 3rd ed.,
+No Starch Press, 2023.
+
+[^grus]: Joel Grus, "Data Science from Scratch", 2nd ed.,
+O'Reilly, 2019.
+
+### About the author
+
+Tim Menzies ([timm.fyi](https://timm.fyi), Ph.D. UNSW 1995; ASE Fellow, IEEE Fellow) 
+has worked on AI
+since the 1980s. He has been hookd on practical applications of AI
+since 
+his 1992 "expert system for raising" (written in an MS-DOS Prologin 440K of RAM)
+out-performed humans 
+(measired in increase profit per day).  Since then he
+worked for years with NASA another other industiral partners on
+on software quality. Currently, he works as a  professor of computer science at NC
+State. With career resarch funding of $19M, hs
+is the author to 500+ resaerch papers, the editor in cheif othe AUtoamted Softwaer Engienering journal,
+and has supervised 24 Ph.D. students to completion, 
+refereed papers, and editor-in-chief of a journal whose
+submission rate has tripled on his watch. Four decades of this
+keep teaching him the same lesson: most of a search space is
+empty, so simple methods go much further than anyone expects.
+He has rewritten this book's little learner in a dozen
+languages, counting the characters each time like a monk
+counting beads. He drinks Xinyang Maojian poured past clay
+tea-pigs, and reads Cold War tradecraft for fun; he has a
+weakness for the quiet operators who won wars nobody saw. Hence
+the heresy of this book: the decisive intelligence is usually
+the small one nobody was watching.
+
+
+## 2. Some AI is Simple?
+
+(If maths is not your thing, read the first two sections of
+this chapter and skip the rest.)
+
+This chapter argues, three ways, that simple can be enough.
+First, a cognitive claim: human experts prosper using rules
+that ignore almost everything. Then, an empirical claim: our
+learners do too, on the same kinds of data. Then some
+arithmetic that explains why both keep happening. The layers
+stack: the empirical record explains the cognitive one (minds
+run on less because their worlds offer less), and the maths
+explains the empirical record (why worlds offer less).
+
+### Minds run on less
+
+Herbert Simon's word for how real decisions get made was
+satisficing: search until a good-enough option appears, then
+stop[^simon]. Minds must work this way, he argued, because
+attention, memory, and time are scarce. Forty years later,
+Gigerenzer and Goldstein made the claim sharper and stranger:
+one-reason heuristics like take-the-best (try cues in order
+of validity; decide on the first cue that discriminates;
+ignore the rest) matched or beat multiple regression on real
+prediction tasks[^ttb]. Not despite ignoring information.
+Because of it.
+
+The sightings since then read like this book's chapter list,
+staffed by humans. A coronary care unit triaged chest-pain
+patients with a three-question tree, and beat logistic
+regression at finding the high-risk cases[^green]. Managers
+predicting which customers were gone for good used one
+number, the hiatus (nine months quiet means lost), and beat
+the field's stochastic customer models[^hiatus]. And decades
+earlier, Dawes had shown the general trick: improper linear
+models, where every cue gets the same unit weight, predict
+about as well as optimally fitted regression, and transfer
+better[^dawes]. Psychologists call the pattern less-is-more,
+and its precondition ecological rationality: a heuristic
+works when the environment carries structure the heuristic
+exploits[^homo].
+
+### Data runs on less
+
+If less-is-more were only psychology, this book would be
+short. It is not only psychology. Holte tested one-rule
+classifiers (a single attribute, a few splits) on the
+standard datasets of his day and landed within a few points
+of the best decision trees, on most of them[^holte]. Domingos
+and Pazzani showed the naive Bayes classifier staying
+near-optimal even when its independence assumption is
+plainly false[^dp97]. Hand's survey of classifier progress
+concluded that most of the achievable improvement on most
+problems comes from the first, simple model, and the rest is
+epsilon chased at growing cost[^hand]. A famous audit of 179
+classifiers over 121 datasets found a few method families
+covering nearly all the wins[^fd14]. Even in tuning, plain
+random search matched careful grids at a fraction of the
+cost[^rand]. Learning theory gives these results one voice:
+with little data, complex models pay a variance bill that
+simple models never run up[^geman]; Gigerenzer and Brighton
+make the same bias-variance argument for the mind's own
+heuristics[^homo]. And later in this chapter, twenty more
+sightings, all from software engineering.
+
+Hence the first join in the ladder. Heuristics prosper in
+heads for the same reason simple learners prosper on tables:
+the worlds both live in are governed by a few keys. Which
+leaves the real question: why are worlds like that? For
+that, arithmetic.
+
+### The maths floor
+
+Some AI problems are very, very hard. Suppose we want an agent
+that is ready for anything. Then we must collect enough
+experience, in advance, to cover all future situations. This is
+reward-free exploration: learn a model of everything, before
+anyone says what "good" means. The theory prices that appetite.
+For S states, A actions, plans of length H, accuracy e, and
+confidence C, the samples needed are[^howlow]:
+
+    n(reward free)  >=  S^2 * A * H^3 * log(1/(1-C)) / e^2   (1)
+
+Even small problems make reward-free exploration expensive.
+Consider one-step plans (H=1) over six variables with six states
+each (A=6^6). Set e=0.05 and C=0.95; that is, we want 95% of the
+optimum, with 95% confidence. Equation (1) then asks for at least
+4.6 x 10^15 samples. So reward-free reasoning is Big AI: the kind
+of problem that really does need vast data, vast computers, and
+vast money.
+
+Some AI problems are simpler than that. If someone does tell us
+what "good" means, optimization becomes best-arm identification,
+also called the bandit problem. Pull the most promising levers.
+Drop the duds early. Hoeffding's inequality prices the search
+across A alternatives:
+
+    n(best arm)  >=  (2 / e^2) * log(2A / (1-C))              (2)
+
+For the same problem as above, equation (2) needs only 6,992
+samples. That cost is far below equation (1). But seven thousand
+labels is still months of work, when each label needs a human
+check or a long computer run.
+
+Happily, some problems are even simpler. Let us admit that our
+work is not an exact science. All our data is a small sample of
+some larger phenomenon. In this statistical view, we do not want
+the best solution. We just want one that is indistinguishable
+from best. Call this near-enough optimization, or NEO. (NEO
+is Simon's satisficing, with a price tag.) One random
+guess lands in the top p fraction with probability p. Thus, n
+guesses succeed at least once with probability 1-(1-p)^n. That
+equation rearranges to:
+
+    n(neo)  >  log(1-C) / log(1-p)                            (3)
+
+How big is p? Cohen tells us that two numbers are
+indistinguishable when their difference is under 20% of their
+standard deviation.[^cohen] Suppose our scores are Gaussian; that
+is, the bell curve, which effectively runs from -3sd to +3sd, a
+spread of 6sd. Then that 20% covers p = 0.2/6, which is about 3%
+of the whole range. Set p=0.03 and C=0.95. Equation (3) then asks
+for about 98 samples. Call NEO small AI. A hundred labels is an
+afternoon, not a data center.
+
+xxxx REUSE
+One more assumption makes this simpler again. It is not
+unreasonable to think that someone has modeled this kind of
+problem before. If so, their old model can guess which of two new
+solutions is better. Such guesses let us explore new data with a
+binary chop. This method, called FASTNEO, needs only:
+
+    n(fastneo)  >  log2( log(1-C) / log(1-p) )                (4)
+
+Equation (4) says log2(98) samples, which rounds up to seven.
+Seven. Fifteen orders of magnitude separate equation (1) from
+equation (4). Hence the plan of this book: hunt for the tasks
+where near enough is good enough. And this is not only theory. On
+more than 100 SE optimization tasks, a few dozen labels reached
+over 90% of the best known results[^howlow].
+
+[^cohen]: J. Cohen, "Statistical Power Analysis for the
+  Behavioral Sciences", 2nd ed., Lawrence Erlbaum, 1988.
+  There, d = 0.2 standard deviations marks a "small" effect.
+
+[^simon]: H.A. Simon, "Rational choice and the structure of
+  the environment", Psychological Review 63(2):129-138, 1956.
+
+[^ttb]: G. Gigerenzer and D.G. Goldstein, "Reasoning the
+  fast and frugal way: models of bounded rationality",
+  Psychological Review 103(4):650-669, 1996.
+
+[^green]: L. Green and D.R. Mehr, "What alters physicians'
+  decisions to admit to the coronary care unit?", Journal of
+  Family Practice 45(3):219-226, 1997.
+
+[^hiatus]: M. Wubben and F. von Wangenheim, "Instant
+  customer base analysis: managerial heuristics often 'get
+  it right'", Journal of Marketing 72(3):82-93, 2008.
+
+[^dawes]: R.M. Dawes, "The robust beauty of improper linear
+  models in decision making", American Psychologist
+  34(7):571-582, 1979.
+
+[^homo]: G. Gigerenzer and H. Brighton, "Homo heuristicus:
+  why biased minds make better inferences", Topics in
+  Cognitive Science 1(1):107-143, 2009.
+
+[^holte]: R.C. Holte, "Very simple classification rules
+  perform well on most commonly used datasets", Machine
+  Learning 11(1):63-90, 1993.
+
+[^dp97]: P. Domingos and M. Pazzani, "On the optimality of
+  the simple Bayesian classifier under zero-one loss",
+  Machine Learning 29:103-130, 1997.
+
+[^hand]: D.J. Hand, "Classifier technology and the illusion
+  of progress", Statistical Science 21(1):1-14, 2006.
+
+[^fd14]: M. Fernandez-Delgado, E. Cernadas, S. Barro, and
+  D. Amorim, "Do we need hundreds of classifiers to solve
+  real world classification problems?", Journal of Machine
+  Learning Research 15:3133-3181, 2014.
+
+[^rand]: J. Bergstra and Y. Bengio, "Random search for
+  hyper-parameter optimization", Journal of Machine Learning
+  Research 13:281-305, 2012.
+
+[^geman]: S. Geman, E. Bienenstock, and R. Doursat, "Neural
+  networks and the bias/variance dilemma", Neural
+  Computation 4(1):1-58, 1992.
+
+Nor is that one paper's quirk. Decades of results say that
+software problems often shrink to a few "keys": a few variables,
+or a few rows, that control the rest[^keys]. For example:
+
+- Defect predictors work with less than half a dozen static code
+  attributes.[^k1]
+- Effort estimation needs only small, well-chosen data.[^k2]
+- Security review of 28,750 Mozilla functions needed only 271
+  labeled exemplars.[^k3]
+- Labeling 6,000 GitHub commits needed only 300 exemplars.[^k4]
+- Configuring complex systems needs only tiny decision
+  trees.[^k5]
+- Sampling plus simple learners predicts the performance of
+  configurable systems.[^k6]
+- Cloud data applications can be tested with a few dozen
+  inputs.[^k7]
+- Test suites shrink by orders of magnitude when tests only cover
+  the keys.[^k8]
+- Issue lifetimes are predicted by very simple models.[^k9]
+- Simple parameter tuning beats complex deep analytics for many
+  SE tasks.[^k10]
+- NASA requirements models collapse to a few control
+  variables.[^k11]
+- Avionics control systems reduce to a few automatically found
+  variables.[^k12]
+- Real code is repetitive, so its statistics are simple and
+  exploitable.[^k13]
+- 20% of the code holds 80% of the errors.[^k14]
+- Power laws in fine-grained changes explain why: developers work
+  in small corners.[^k15]
+- Most rows can be discarded without losing the signal.[^k16]
+- Most columns can be discarded, too.[^k17]
+- SAT solvers race when a few "backdoor" variables are set
+  first.[^k18]
+- A few principal components usually carry the signal; the oldest
+  key-finder of all.[^k19]
+- Even outside computing: hospital nutrition audits reduce to a
+  few items.[^k20]
+
+[^keys]: T. Menzies, "Shockingly Simple: 'Keys' for Better AI for
+  SE", IEEE Software 38(2), 2021, doi:10.1109/MS.2020.3043014.
+  That column collects the sightings above.
+
+[^k1]: T. Menzies, J. Greenwald, and A. Frank, "Data mining
+  static code attributes to learn defect predictors", IEEE Trans.
+  Software Eng. 33(1):2-13, 2007. doi:10.1109/TSE.2007.256941
+[^k2]: Z. Chen, T. Menzies, D. Port, and B. Boehm, "Finding the
+  right data for software cost modeling", IEEE Software
+  22(6):38-46, 2005. doi:10.1109/MS.2005.151
+[^k3]: Z. Yu, C. Theisen, L. Williams, and T. Menzies, "Improving
+  vulnerability inspection efficiency using active learning",
+  IEEE Trans. Software Eng., 2019. doi:10.1109/TSE.2019.2949275
+[^k4]: H. Tu, Z. Yu, and T. Menzies, "Better data labelling with
+  EMBLEM (and how that impacts defect prediction)", IEEE Trans.
+  Software Eng., 2020. doi:10.1109/TSE.2020.2986415
+[^k5]: V. Nair, Z. Yu, T. Menzies, N. Siegmund, and S. Apel,
+  "Finding faster configurations using FLASH", IEEE Trans.
+  Software Eng. 46(7):794-811, 2020. doi:10.1109/TSE.2018.2870895
+[^k6]: C. Kaltenecker, A. Grebhahn, N. Siegmund, and S. Apel,
+  "The interplay of sampling and machine learning for software
+  performance prediction", IEEE Software 37(4):58-66, 2020.
+  doi:10.1109/MS.2020.2987024
+[^k7]: Q. Zhang, J. Wang, M.A. Gulzar, R. Padhye, and M. Kim,
+  "BigFuzz: efficient fuzz testing for data analytics using
+  framework abstraction", ASE 2020.
+[^k8]: J. Chen, X. Shen, and T. Menzies, "Building very small
+  test suites (with SNAP)", arXiv:1905.05358, 2019.
+[^k9]: M. Rees-Jones, M. Martin, and T. Menzies, "Better
+  predictors for issue lifetime", arXiv:1702.07735, 2017.
+[^k10]: A. Agrawal, W. Fu, D. Chen, X. Shen, and T. Menzies, "How
+  to 'DODGE' complex software analytics", IEEE Trans. Software
+  Eng., 2019. doi:10.1109/TSE.2019.2945020
+[^k11]: G. Mathew, T. Menzies, N. Ernst, and J. Klein, "'SHORT'er
+  reasoning about larger requirements models", RE 2017,
+  pp.154-163, doi:10.1109/RE.2017.31; M.S. Feather and T.
+  Menzies, "Converging on the optimal attainment of
+  requirements", RE 2002, pp.263-270,
+  doi:10.1109/ICRE.2002.1048537
+[^k12]: G. Gay, T. Menzies, M. Davies, and K. Gundy-Burlet,
+  "Automatically finding the control variables for complex system
+  behavior", Automated Software Eng. 17(4):439-468, 2010.
+  doi:10.1007/s10515-010-0072-x
+[^k13]: A. Hindle, E.T. Barr, Z. Su, M. Gabel, and P. Devanbu,
+  "On the naturalness of software", ICSE 2012, pp.837-847.
+[^k14]: T.J. Ostrand, E.J. Weyuker, and R.M. Bell, "Where the
+  bugs are", ACM SIGSOFT Software Eng. Notes 29(4):86-96, 2004,
+  doi:10.1145/1013886.1007524; M. Hamill and K. Goseva-
+  Popstojanova, "Common trends in software fault and failure
+  data", IEEE Trans. Software Eng. 35(4):484-496, 2009.
+  doi:10.1109/TSE.2009.3
+[^k15]: Z. Lin and J. Whitehead, "Why power laws? An explanation
+  from fine-grained code changes", MSR 2015, pp.68-75.
+  doi:10.1109/MSR.2015.14
+[^k16]: J.A. Olvera-Lopez, J.A. Carrasco-Ochoa, J.F. Martinez-
+  Trinidad, and J. Kittler, "A review of instance selection
+  methods", Artificial Intelligence Review 34(2):133-143, 2010.
+  doi:10.1007/s10462-010-9165-y
+[^k17]: R. Kohavi and G.H. John, "Wrappers for feature subset
+  selection", Artificial Intelligence 97(1-2):273-324, 1997.
+  doi:10.1016/S0004-3702(97)00043-X
+[^k18]: R. Williams, C.P. Gomes, and B. Selman, "Backdoors to
+  typical case complexity", IJCAI 2003, pp.1173-1178.
+[^k19]: K. Pearson, "On lines and planes of closest fit to
+  systems of points in space", Philosophical Magazine
+  2(11):559-572, 1901. doi:10.1080/14786440109462720
+[^k20]: S.N. Partington, T.J. Menzies, T.A. Colburn, B.E.
+  Saelens, and K. Glanz, "Reduced-item food audits based on the
+  nutrition environment measures surveys", American J. Preventive
+  Medicine 49(4):e23-e33, 2015. doi:10.1016/j.amepre.2015.04.036
+
+Twenty sightings, one moral: the above maths is not necessarily
+crazy. Systems that look huge are often governed by a few keys,
+and a few keys need only a few samples.
+
+[^howlow]: Kishan Kumar Ganguly and Tim Menzies, "How Low
+  Can You Go? The Data-Light SE Challenge",
+  arXiv:2512.13524.
+
+Two caveats:
+
+- For mission-critical and safety-critical systems, we would
+  rather be exactly at the best, not near it. But you cannot
+  always get what you want. Only small systems can be
+  exhaustively enumerated. Beyond a (surprisingly small) size,
+  partial sampling is all that anyone can do. Hence even the
+  critical systems need this maths.
+
+- The above maths is optimistic. It assumes well-spread
+  solutions, gentle distributions, and a host of other
+  conditions that need not hold. And yet, as we shall see, it
+  is remarkable how well this optimism holds up in practice.
+
+So the ladder stands, top to bottom. Minds take the best
+and stop early; they can afford to, because the worlds they
+grew up in are ruled by a few keys; and worlds like that
+are exactly the ones where equation (3)'s arithmetic says a
+fat target needs only a few shots. Simon guessed the shape
+of this in 1956, from psychology alone. The rest of this
+book is that guess, run as code, with a referee.
+
+The rest of this book checks this maths. That check waits a few
+chapters. First, we need some basic tools, definitions of core
+concepts, and a large corpus of data to explore. But by about
+Chapter 7, we will show that the optimism of the above maths is
+not misplaced. That result enables a whole new kind of
+sophisticated, simple AI.
+
+## The Basic {.unlisted}
+
+We can answer these questions with two basic AI operators:
+"cluster" and "predict". Clustering groups related things
+together. Prediction reports the expected value within the
+relevant group.
+
+    Clndrs, Volume, HpX, Model, origin, Lbs-, Acc+, Mpg+, | disty
+
+         4,     90,  48,    78,      2, 1985, 21.5,   40, |  0.07
+         4,     98,  68,    78,      1, 2155, 16.5,   30, |  0.26
+        ...
+         4,    140,  92,    76,      1, 2572, 14.9,   30, |  0.41
+         4,     97,  54,    72,      2, 2254, 23.5,   20, |  0.41
+        ...
+         6,    131, 103,    78,      2, 2830, 15.9,   20, |  0.54
+         6,    232, 100,    71,      1, 3288, 15.5,   20, |  0.62
+         8,    305, 145,    77,      1, 3880, 12.5,   20, |  0.81
+         8,    454, 220,    70,      1, 4354,    9,   10, |  0.96
+
+The first thing we need to do is
+
+### Lessons:
+
+- Don't think, remember.
+
+
+## References {.unlisted}
+
+
+{% endraw %}
