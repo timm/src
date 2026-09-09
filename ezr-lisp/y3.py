@@ -381,11 +381,11 @@ def _klass(*fits): # each fit(tbl, rows, y) --> predictor(row)
     for c in confuse(pairs).values():
       pc = lambda v: round(100 * v)
       print(f"{fit.__name__:<10} {pc(c.acc):>3} {pc(c.pd):>3}"
-            f" {pc(c.pf):>3} {pc(c.prec):>4}"
+            f" {pc(c.prec):>4} {pc(c.pf):>3}"
             f" {tbl.cols[tbl.klass].get(c.l, 0):>6}  {c.l}")
     return accs
-  print(f"{'rx':<10} {'acc':>3} {'pd':>3} {'pf':>3}"
-        f" {'prec':>4} {'n':>6}  class")
+  print(f"{'rx':<10} {'acc':>3} {'pd':>3} {'prec':>4}"
+        f" {'pf':>3} {'n':>6}  class")
   return [one(fit) for fit in fits]
 
 def fitTree(tbl, rows, y): # sqrt-sized leaves
